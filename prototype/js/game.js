@@ -9,6 +9,7 @@ import { Director } from './director.js';
 import { Juice } from './juice.js';
 import { World, ROOM_SPACING, HALL_W } from './world.js';
 import { GunModel } from './gun.js';
+import { Trail } from './trail.js';
 import { InputRouter, GESTURE } from './input.js';
 
 /* Chi dua vao pool nhung the DA CAI DAT hieu ung that trong prototype.
@@ -35,6 +36,8 @@ export class Game {
     this.renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
 
     this.world = new World(this.renderer);
+    this.canvas = canvas;
+    this.trail = new Trail(document.getElementById('fxTrail'));
     this.gun = new GunModel(this.world.camera);
     this.gunWanted = false;
     this.gunTimer = 0;
@@ -68,6 +71,7 @@ export class Game {
     const w = window.innerWidth, h = window.innerHeight;
     this.renderer.setSize(w, h, false);
     this.world.resize(w, h);
+    this.trail.resize(w, h);
   }
 
   /* =============================== RUN =============================== */
@@ -274,7 +278,7 @@ export class Game {
     const arc = Math.min(200, mw.arcDeg + this.mods.arcAdd + (heavy ? 30 : 0));
     const maxT = mw.targets + (heavy ? 2 : 0);
 
-    const hits = this.pool.queryArc(0, this.playerZ, dirX, dirZ, reach, arc, maxT);
+    const hits = this._blade(s, reach, arc, maxT);
     const sh = GD.feel.shake.find((x) => x.event === (heavy ? 'Chém nặng' : 'Chém nhẹ')) || { amplitudePx: 6 };
     this.juice.addShake(sh.amplitudePx, nx, ny);
     this.juice.addHitstop(hits.length ? (heavy ? 5 : 3) : 1);
@@ -401,6 +405,21 @@ export class Game {
      gunHoldSec: sung o ngoai them mot nhip sau phat cuoi, neu khong thi mot cai tap
      chi thay sung nhap nhay 0.1s -- doc khong ra trang thai. */
 
+
+  /** Luoi dao = DOAN NGON TAY tren man hinh (docs/05 muc 7c).
+      `arcAdd` cua the nang cap van co tac dung: no lam luoi day them. */
+  _blade(s, reach, arc, maxT) {
+    const M = GD.feel.melee;
+    const w = this.canvas.clientWidth || 1, h = this.canvas.clientHeight || 1;
+    const widthPx = w * M.bladeWidthFrac * (1 + (this.mods.arcAdd || 0) / 110);
+    const from = s.from || { x: 0, y: h * 0.5 };
+    const to = s.to || { x: w, y: h * 0.5 };
+    this.trail?.push(from.x, from.y, to.x, to.y);
+    return this.pool.queryBlade(this.world.camera,
+      { x0: from.x, y0: from.y, x1: to.x, y1: to.y, px: 0, pz: this.playerZ },
+      reach, widthPx, maxT, w, h);
+  }
+
   /** @returns {boolean} co ban duoc khong */
   gunUp() {
     if (!this.running) return false;
@@ -450,8 +469,7 @@ export class Game {
     const arc = Math.min(200, mw.arcDeg + this.mods.arcAdd);
     const maxT = mw.targets;
 
-    const hits = this.pool.queryArc(0, this.playerZ, dirX, dirZ, reach, arc, maxT)
-      .filter((e) => (e.sliceCd || 0) <= 0);
+    const hits = this._blade(s, reach, arc, maxT).filter((e) => (e.sliceCd || 0) <= 0);
     this.juice.addShake(4, nx, ny);
     if (!hits.length) return;
 
@@ -641,6 +659,8 @@ export class Game {
 
     this.world.update(this.playerZ, this.bob, this.juice.shake);
     this.renderer.render(this.world.scene, this.world.camera);
+    this.trail.update(dtRaw);
+    this.trail.draw();
 
     this.perf.frames++;
     this.perf.acc += dtRaw;
@@ -678,6 +698,7 @@ export class Game {
 
   openGate() {
     if (!this.running) return;
+    this.trail.clear();
     const fork = this.director.makeFork({
       hp: this.hp, hpMax: this.hpMax, reserve: this.reserve, reserveMax: this.reserveMax,
     });

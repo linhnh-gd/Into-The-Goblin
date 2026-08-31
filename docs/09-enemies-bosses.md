@@ -119,7 +119,7 @@ màu theo đuốc của biome, `lanes.markerOpacity`.
 x = 1.9 mà vẫn gây damage thì người chơi thấy nó đi qua **cạnh** mình 1.9m rồi mất máu — đọc ra như lỗi.
 Khoảng 0.9m…2.0m là **vùng trống** không có quái nào. Có gate cho ràng buộc này.
 
-`midSpawnFrac` = **0.32** → làn giữa nhận ~30 con mỗi phòng ở R1, làn bên ~123. Hai con số này **tách rời
+`midSpawnFrac` = **0.70** → làn giữa nhận ~105 con mỗi phòng ở R1 (đo được **68%** tổng số), làn bên ~50. Hai con số này **tách rời
 nhau được** nhờ hệ 3 làn: nâng mật độ tổng lên 2.7× (`tpBase`/`tpPerRoom` ở `waves.json`) rồi hạ
 `midSpawnFrac` để giữ số mối đe doạ không đổi — đông hơn mà **không** khó hơn. Đo: không bắn phát nào thì
 mất 175 HP, tức bỏ qua hết làn giữa là chết.
@@ -127,6 +127,11 @@ mất 175 HP, tức bỏ qua hết làn giữa là chết.
 Lưu ý khi tinh chỉnh: wave `pincer` dồn **toàn bộ** ra hai làn bên (`lane: "sides"` ở `waves.json`), nên số
 thực đo ở làn giữa thấp hơn `tổng × midSpawnFrac` khoảng 1/3. Gate của audit là band sanity, không phải số
 chính xác — có ghi chú trong script.
+
+**Quái phải CỤM LẠI, không rải đều** (`clumpChance` 0.72, `clumpZJitterM` 1.1). Rải đều thì mật độ ~0.7
+con/m nghĩa là trong tầm dao chỉ có **trung bình 1.63 con** — đo được — và 32% thời gian **không có con nào**.
+Một nhát quét bắt được 0–2 con thì `targets = 8` là con số vô nghĩa. Cụm lại thì trong tầm dao trung bình
+**16.8 con**, đỉnh 32, và 95% thời gian có ≥3 con. Đây là điều kiện để "chặt chém đã tay" tồn tại.
 
 ### Hệ quả của việc quái đứng yên
 

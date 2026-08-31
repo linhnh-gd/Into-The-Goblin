@@ -469,6 +469,35 @@ export class EnemyPool {
     return best ? { e: best, weakPoint: bestLow } : null;
   }
 
+  /** LUOI DAO KIEU CHEM HOA QUA: cat nhung con ma NGON TAY di qua tren man hinh.
+      Thay cho hinh quat world-space. Ly do: hinh quat 110 do o tam 4.5m phu gan het
+      chieu rong hanh lang, nen "chem lan trai" giet luon ca lan phai -- va trong che do
+      chem lien tuc, moi doan ngon tay doi huong lai quet sang mot phia khac.
+      Xem docs/18 loi #21. Model man hinh dung voi cai nguoi choi THAY. */
+  queryBlade(camera, seg, reach, widthPx, max, w, h) {
+    const out = [];
+    const v = this._vb || (this._vb = new THREE.Vector3());
+    const ax = seg.x0, ay = seg.y0;
+    const abx = seg.x1 - ax, aby = seg.y1 - ay;
+    const abLen2 = abx * abx + aby * aby;
+    for (const e of this.list) {
+      if (!e.alive) continue;
+      const dwx = e.x - seg.px, dwz = e.z - seg.pz;
+      const dw = Math.hypot(dwx, dwz);
+      if (dw > reach + 0.27 * e.scale) continue;        // gioi han TAM trong world
+      v.set(e.x, 0.62 * e.scale, e.z).project(camera);
+      if (v.z > 1) continue;                             // sau lung camera
+      const ex = (v.x * 0.5 + 0.5) * w;
+      const ey = (-v.y * 0.5 + 0.5) * h;
+      let t = abLen2 > 1e-6 ? ((ex - ax) * abx + (ey - ay) * aby) / abLen2 : 0;
+      t = Math.max(0, Math.min(1, t));                   // ep vao trong DOAN, khong phai duong
+      const dPx = Math.hypot(ex - (ax + abx * t), ey - (ay + aby * t));
+      if (dPx <= widthPx + 26 * e.scale) out.push({ e, d: dw });
+    }
+    out.sort((a, b) => a.d - b.d);
+    return out.slice(0, max).map((o) => o.e);
+  }
+
   /** Moi con trong hinh quat quanh huong quet (world space). */
   queryArc(px, pz, dirX, dirZ, reach, arcDeg, max) {
     const out = [];

@@ -66,6 +66,7 @@ export class Director {
     this.roomDist = RN.roomDistanceM;
     this.waveSegM = RN.waveSegmentM;
     this.roomStartZ = null;      // gan o lan update dau tien
+    this._clumpZ = null;
     this.distRun = 0;
     const note = this.layout.note || '';
     if (!this.isCombatRoom) { this.wavesInRoom = 0; this.phase = 'cleared'; return; }
@@ -204,11 +205,21 @@ export class Director {
       const side = rnd() < 0.5 ? -1 : 1;
       return px + side * (LN.midHalfWidthM + 0.3 + rnd() * Math.max(0.1, LN.sideWidthM - 0.6));
     };
-    const x = pat.lane === 'sides'
-      ? sideX()
-      : (rnd() < LN.midSpawnFrac ? px + (rnd() - 0.5) * 2 * LN.midSpawnJitterM : sideX());
+    // moi pattern co the ghi de ti le lan giua bang "midFrac" (pincer thap hon)
+    const midFrac = pat.midFrac != null ? pat.midFrac : LN.midSpawnFrac;
+    const x = rnd() < midFrac ? px + (rnd() - 0.5) * 2 * LN.midSpawnJitterM : sideX();
 
-    const z = pz - (dist[0] + rnd() * Math.max(0, dist[1] - dist[0]));
+    /* CUM LAI, khong rai deu. Rai deu thi mat do 0.69 con/m nghia la trong tam dao
+       4.5m luon chi co ~3 con -- mot nhat quet khong bao gio "da tay". Cum 2-5 con o
+       gan cung mot z thi mot nhat bat duoc ca cum. Xem docs/05 muc 7c. */
+    let z;
+    const clumpZ = this._clumpZ;
+    if (clumpZ != null && rnd() < LN.clumpChance) {
+      z = clumpZ + (rnd() - 0.5) * 2 * LN.clumpZJitterM;
+    } else {
+      z = pz - (dist[0] + rnd() * Math.max(0, dist[1] - dist[0]));
+      this._clumpZ = z;
+    }
 
     const e = this.pool.spawn(id, x, z, this.R, this.waveIdx);
     if (!e) return e;

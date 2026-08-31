@@ -12,7 +12,10 @@
     "slideStaminaPerSec": 34,
     "slideHitCooldownSec": 0.22,
     "slideTickDamageMult": 0.62,
-    "slideMinSegPx": 14
+    "slideMinSegPx": 14,
+    "bladeWidthFrac": 0.058,
+    "trailFadeSec": 0.26,
+    "trailWidthFrac": 0.028
   },
   "gun": {
     "_comment": "Sung rut ra khi tap/hold, cat di khi nha tay roi reload.",
@@ -29,7 +32,9 @@
     "midHalfWidthM": 2.0,
     "midSpawnJitterM": 0.9,
     "sideWidthM": 2.4,
-    "midSpawnFrac": 0.32,
+    "midSpawnFrac": 0.70,
+    "clumpChance": 0.72,
+    "clumpZJitterM": 1.1,
     "markerWidthM": 0.10,
     "markerOpacity": 0.34
   },

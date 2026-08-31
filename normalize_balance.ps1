@@ -40,6 +40,7 @@ $B               = $data.balance
 $dpsBase         = [double]$B.dpsTargetBase
 $dpsGrowth       = [double]$B.dpsTargetGrowth
 $meleeAdv        = [double]$B.meleeAdvantage
+$oneShot         = [double]$B.meleeOneShotFactor
 $staminaRegen    = [double]$B.staminaRegen
 $rangedTol       = [double]$B.rangedTolerance
 $meleeTol        = [double]$B.meleeTolerance
@@ -98,8 +99,19 @@ foreach ($w in $data.weapons) {
         $swing    = [double]$w.swingTime
         $tf       = 1.0 + 0.35 * ($targets - 1.0)
         $interval = [Math]::Max($swing, $stam / $staminaRegen)
-        $new      = Round-Dmg ($target * $meleeAdv * $interval / $tf)
-        $dpsAfter = $new * $tf / $interval
+        # tf KHONG con nam trong ngan sach DPS. Ly do: targets gio DONG NHAT cho moi vu khi
+        # (docs/05 muc 7b) nen tf = 3.45 chi la mot phep chia deu, khong phan biet gi ca --
+        # nhung no keo sat thuong xuong duoi HP cua trash, tuc pha luat "1 nhat 1 mang".
+        # Kha nang chem nhieu muc tieu gio la MOT PHAN CUA FANTASY, khong phai thu phai tra gia.
+        $new      = Round-Dmg ($target * $meleeAdv * $interval)
+        # SAN ONE-SHOT. Luat cung o docs/09 nguyen tac 4: "trash phai chet trong 1 nhat".
+        # tf = 1 + 0.35*(targets-1) = 3.45 khi targets = 8, va vi targets gio DONG NHAT
+        # cho moi vu khi nen tf chi con la mot phep chia deu, khong phan biet gi ca --
+        # nhung no lam trash song sot 5 nhat. Factor 1.65 = 1/slideTickDamageMult, nen
+        # ke ca MOT DOAN quet trong che do chem lien tuc cung du giet trash.
+        $floor    = Round-Dmg ((Get-TrashHp $tier) * $oneShot)
+        if ($new -lt $floor) { $new = $floor }
+        $dpsAfter = $new / $interval
         $metric   = 'dpsMeleeEff'
         $tol      = $meleeTol
         $extra    = ('interval {0:N3}s | targetFactor {1:N2} | dmg/stamina {2:N1}' -f $interval, $tf, ($new / $stam))

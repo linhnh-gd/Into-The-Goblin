@@ -81,7 +81,7 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 
 ## 4. Prototype đã sửa GDD ở đâu
 
-Đây là phần quan trọng nhất của doc này: **prototype tìm ra 20 lỗi mà đọc doc không thấy.**
+Đây là phần quan trọng nhất của doc này: **prototype tìm ra 25 lỗi mà đọc doc không thấy.**
 
 | # | Phát hiện | Sửa |
 |---|---|---|
@@ -106,6 +106,11 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 | 18 | **Thống nhất thông số vũ khí cận chiến làm vỡ mục tiêu DPS theo tier.** DPS = `dmg × targets / swingTime`, nên đổi `targets` từ 2–6 sang 5 cho tất cả làm 9/12 vũ khí lệch khỏi `dpsTarget(tier)` — lệch nhiều nhất **156%** | `normalize_balance.ps1` tính lại `dmg` (thay đổi lớn nhất **60.8%**) → bậc thang sạch 59/139/326/767/1802/4234. Đây là lý do `dmg` phải là **đại lượng suy ra**, không phải số gõ tay |
 | 19 | **Tăng mật độ quái mà không sửa `midSpawnFrac` thì độ khó tăng theo.** Nâng `tpBase`/`tpPerRoom` lên 2.7× cho ra 153 quái/phòng, nhưng nếu giữ nguyên tỉ lệ làn giữa thì số mối đe doạ cũng ×2.7 | Hệ 3 làn cho phép tách hai thứ: hạ `midSpawnFrac` 0.45 → **0.32** giữ làn giữa ở **30 con** (trước là 32) trong khi làn bên tăng 24 → **123**. Đông gấp 2.7× mà độ khó không đổi |
 | 20 | **Wave `pincer` pha loãng tỉ lệ làn giữa ~1/3.** Nó dồn **toàn bộ** ra hai làn bên (`lane: "sides"`), nên `midSpawnFrac` = 0.20 cho ra làn giữa chỉ **19 con** và **không bắn gì cũng chỉ mất 97 HP** — sống sót được mà không làm gì | Bù lên 0.32. Đo lại: làn giữa 30, không bắn gì mất **175 HP**. Gate về số tuyệt đối có ghi chú rằng con số mô hình hoá cao hơn thực đo ~1/3 |
+| 21 | **Chém làn trái giết luôn quái làn phải.** Nhát chém dùng hình quạt world-space; cung 110° ở tầm xa phủ gần hết chiều rộng hành lang. Và trong chế độ chém liên tục, mỗi đoạn ngón tay có hướng riêng nên cung nhảy qua nhảy lại hai bên | Lưỡi dao = **đoạn ngón tay trên màn hình** (`queryBlade`), không phải hình quạt. Đo: quẹt nửa trái cắt quái trái, **không** chạm quái phải; và ngược lại. Vệt slash vẽ đúng đoạn đó nên người chơi **thấy đúng cái đã cắt**. Xem `05` mục 7c |
+| 22 | **Trash cần 5 nhát mới chết**, phá luật cứng "trash chết 1 nhát" (`09` nguyên tắc 4). Nguyên nhân: `dpsMeleeEff` chia sát thương cho `targetFactor = 1 + 0.35×(targets−1)` = **3.45** khi `targets = 8` — mà vì `targets` giờ đồng nhất, hệ số đó không phân biệt vũ khí nào cả, nó chỉ là một phép chia đều | Bỏ `targets` khỏi ngân sách DPS ở **cả** `normalize_balance.ps1` **và** `audit_gdd.ps1` (hai bên lệch nhau thì gate báo), cộng **sàn one-shot** `dmg ≥ trashHp × 1.65` (= 1/`slideTickDamageMult`) nên một đoạn quét cũng đủ giết trash. Gate mới kiểm luật này |
+| 23 | **Chỉ có 1.63 con trong tầm dao**, 32% thời gian không có con nào — nên `targets = 8` là con số chết. Rải đều 0.7 con/m thì tầm 4.5m không bao giờ đủ đông | Tầm **7.0m** (gate mới: phải < `rangedStandoffM` 8.5m, nếu không dao giải quyết luôn cả quái ranged) + **cụm** (`clumpChance` 0.72). Đo lại: trung bình **16.8 con** trong tầm, một nhát giết tối đa **7 con**, trung bình **2.65** |
+| 24 | **Quái làn bên không bao giờ chém được.** FOV ngang của màn hình dọc chỉ 58.8°, nên ở độ sâu 3m thì 3m ngang đã ra ngoài khung — chúng chỉ vào khung từ ~5.3m, nhưng lúc đó vẫn ngoài tầm dao cũ | Không sửa: đây là **phân vai đúng** — làn bên chỉ **bắn** được, làn giữa mới **chém**. Đã ghi vào `09` mục 2c để không ai đi tìm "bug" này nữa |
+| 25 | **Vệt slash vẽ đè lên cả HUD và màn chọn thẻ**, vì canvas 2D của nó có `z-index: 2` trong khi HUD và sheet đều dùng z-index tự động | Bỏ `z-index`: thứ tự DOM đã đúng (`view` → `fxTrail` → `hud` → `screen`) |
 
 > **Lỗi #14 và #16 đã bị chính thiết kế vượt qua.** Khi chuyển sang **quái đứng yên**, bài toán đón đầu của
 > `pincer` (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó **đã bị bỏ khỏi code**.
@@ -126,11 +131,11 @@ toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 l
 | Quái có đứng yên thật không | dịch **0.000m** cả trục x và z sau 2s | ✓ `09` mục 2c |
 | Tốc độ chạy | **4.2 m/s** | ✓ `speedMps` |
 | Một phòng | **150m / 37.5s**, đủ 3 wave | ✓ (mô hình: 35.7s) |
-| Quái mỗi phòng (R1) | **153** (trước khi tăng mật độ: 56) | ✓ mô hình: ~149 |
-| Phân bố | **30 làn giữa** (mối đe doạ) / **123 làn bên** (vàng thêm) | ✓ `midSpawnFrac` 0.32 |
-| Quái cùng lúc trên sàn | đỉnh **48**, trung bình **24** (trước: đỉnh 14) | 60 fps |
-| Một phòng, **không bắn phát nào** | mất **175 HP** | bỏ qua hết làn giữa = chết |
-| Tầm chém · cung · số mục tiêu | **4.50m · 110° · 5** cho mọi vũ khí | ✓ `05` mục 7b |
+| Quái mỗi phòng (R1) | **155**, trong đó **68%** ở làn giữa | ✓ `midSpawnFrac` 0.70 |
+| Quái trong tầm dao (làn giữa) | trung bình **16.8**, đỉnh 32; 95% thời gian có ≥3 | ✓ nhờ tầm 7m + cụm |
+| Một nhát quét giết được | tối đa **7 con**, trung bình **2.65**; 27% số nhát giết 4–7 con | ✓ `targets` 8 |
+| Trash chết trong mấy nhát | **1** (dmg 142 vs 112 HP) | ✓ `09` nguyên tắc 4 |
+| Chém nửa trái màn hình | cắt quái trái, **không** chạm quái phải | ✓ `05` mục 7c |
 
 ### Kiểm chứng súng và chém liên tục
 

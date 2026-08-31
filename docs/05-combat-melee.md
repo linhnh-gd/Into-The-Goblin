@@ -116,14 +116,14 @@ Mọi vũ khí cận chiến dùng **cùng một bộ thông số nhắm bắn**
 
 | Thông số | Giá trị (toàn bộ 12 vũ khí) |
 |---|---|
-| `reachM` | **4.50** |
-| `arcDeg` | **110** |
-| `targets` | **5** |
+| `reachM` | **7.00** |
+| `arcDeg` | 110 — **không còn quyết định vùng cắt**, xem mục 7c |
+| `targets` | **8** |
 | `staminaCost` | 16 |
 | `swingTime` | 0.34 |
 | `knockback` · `critMult` · `corpseLaunch` | 1.0 · 2.5 · 4.0 |
 
-`dmg` là bậc thang duy nhất: **59 → 139 → 326 → 767 → 1802 → 4234** (tier 1→6).
+`dmg` là bậc thang duy nhất: **142 → 333 → 783 → 1840 → 4324 → 10161** (tier 1→6).
 
 Ba lý do đây là luật, không phải chỗ tinh chỉnh:
 1. **Không có vũ khí nào "xấu" ở một trục nào.** Trước đây `targets` từ 2 đến 6 và `reachM` từ 2.0 đến 3.4 —
@@ -142,6 +142,49 @@ Audit có gate cho cả hai chiều: một gate bắt mọi thông số ngoài `
 > (`09` mục 2b). Nếu muốn vũ khí có bản sắc trở lại thì `archetype` là chỗ để làm, chứ không phải các con số
 > nhắm bắn — vì `archetype` là *counter*, không phải *sức mạnh*.
 
+## 7c. Lưỡi dao là ĐƯỜNG NGÓN TAY, không phải hình quạt
+
+Trước đây nhát chém dùng **hình quạt world-space**: lấy vector quẹt trên màn hình, đổi thành hướng trong
+thế giới rồi quét một hình quạt `arcDeg` quanh nó. Hai lỗi không tránh được:
+
+1. **Cung 110° ở tầm xa phủ gần hết chiều rộng hành lang** → *chém làn trái giết luôn quái làn phải*.
+2. Trong chế độ **chém liên tục**, mỗi đoạn ngón tay có hướng riêng, nên cung nhảy qua nhảy lại hai bên.
+
+Model hiện tại: **cắt những con mà đoạn ngón tay đi qua trên màn hình.**
+
+```
+tam the gioi : bo con nao xa hon reachM
+chieu man hinh: quai -> (ex, ey);  ngon tay -> doan (x0,y0)-(x1,y1)
+cat neu       : khoang cach tu (ex,ey) den DOAN do  <=  bladeWidthPx + 26*scale
+```
+
+Ba thứ được cùng lúc:
+- **Chém trái không giết phải** — đo được: quẹt nửa trái cắt quái trái, không chạm quái phải, và ngược lại.
+- **Vệt slash chính là lưỡi dao.** `trail.js` vẽ đúng đoạn thẳng mà `queryBlade` dùng, nên người chơi
+  **thấy đúng cái đã cắt**. Không có hai nguồn sự thật.
+- Thẻ nâng cấp `arcAdd` vẫn còn tác dụng: nó làm lưỡi **dày** thêm.
+
+`arcDeg` trong `weapons.json` giờ **không còn quyết định vùng cắt** — nó chỉ còn là hệ số dày lưỡi qua
+`arcAdd`. Giữ trong data cho thẻ nâng cấp, nhưng đừng tinh chỉnh nó rồi mong vùng cắt đổi.
+
+**Một nhát quẹt ngang cắt một DẢI NGANG, tức một khoảng độ sâu.** Quái ở xa nằm cao trên màn hình, quái ở
+gần nằm thấp — nên muốn cắt cả cụm trải theo độ sâu thì phải quẹt **chéo** hoặc quẹt nhiều lần. Đây là hệ
+quả cố hữu của model, và nó biến việc **nhắm** thành một kỹ năng thật.
+
+### Tại sao `targets` không nằm trong ngân sách DPS nữa
+
+`normalize_balance.ps1` từng tính `dpsMeleeEff = dmg × (1 + 0.35×(targets−1)) / interval`. Khi `targets`
+còn khác nhau giữa các vũ khí (2…6) thì hệ số đó là cái giá phải trả cho khả năng đánh nhiều mục tiêu.
+
+Giờ `targets = 8` cho **mọi** vũ khí, nên nó chỉ còn là **một phép chia đều cho 3.45** — không phân biệt gì,
+mà kéo sát thương xuống **dưới HP của trash**: đo được trash cần **5 nhát** mới chết, phá luật cứng
+"trash phải chết trong 1 nhát" (`09` nguyên tắc 4).
+
+Sửa: bỏ `targets` khỏi ngân sách (`dpsMeleeEff = dmg / interval`), và thêm **sàn one-shot**
+`dmg ≥ trashHp(tier) × meleeOneShotFactor` với `meleeOneShotFactor = 1.65 ≈ 1 / slideTickDamageMult` — nên
+**kể cả một đoạn quét trong chế độ chém liên tục cũng đủ giết trash**. Cả `normalize_balance.ps1` và
+`audit_gdd.ps1` đều dùng công thức mới; nếu lệch nhau thì gate báo ngay.
+
 ## 8. Ràng buộc cân bằng (audit)
 
 1. **`staminaCost` ≤ 25 với MỌI vũ khí cận chiến.** Vì `staminaRegen × 1.4s = 25.2`, luật này đảm bảo
@@ -150,7 +193,7 @@ Audit có gate cho cả hai chiều: một gate bắt mọi thông số ngoài `
    và đó là kiểu chết khiến người chơi bỏ game. **Sức nặng của vũ khí nằm ở `swingTime`, `targets`,
    `corpseLaunch`, `knockback` — không nằm ở stamina.**
 2. Stamina đầy cho **4 nhát** ở vũ khí nặng nhất và **8 nhát** ở vũ khí rẻ nhất.
-3. `dpsMeleeEff` (đã tính `targetFactor` và giới hạn stamina) nằm trong **±25%** đường cong
+3. `dpsMeleeEff` = `dmg / max(swingTime, staminaCost/staminaRegen)` — **không** tính `targets` (mục 7c) — nằm trong **±25%** đường cong
    `dpsTarget(tier) × 1.45` — xem `16` mục 4.1.
 4. Melee DPS **phải cao hơn** ranged DPS ở cùng tier (**≥ +30%**) — nếu không thì không ai dám vào gần và
    cơ chế Cướp Đạn chết. Audit so trung bình theo từng tier.

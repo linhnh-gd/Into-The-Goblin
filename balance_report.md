@@ -40,22 +40,22 @@
 | Lõi Nổ | ranged | 6 | 3285 | 3285 | 0.0% | dpsSustained | 7,884 | 7,884 | 0.0% OK | mag clear 0.11 | reserve 0.7 wave | TTK trash 0.25s |
 | Miệng Mỏ | ranged | 6 | 558 | 558 | 0.0% | dpsSustained | 7,878 | 7,884 | -0.1% OK | mag clear 0.14 | reserve 1.0 wave | TTK trash 0.25s |
 | Ruột Sắt | ranged | 6 | 574 | 574 | 0.0% | dpsSustained | 7,878 | 7,884 | -0.1% OK | mag clear 0.23 | reserve 1.4 wave | TTK trash 0.25s |
-| Dao Găm | melee | 1 | 79 | 59 | -25.3% | dpsMeleeEff | 159 | 160 | -0.1% OK | interval 0.889s | targetFactor 2.40 | dmg/stamina 3.7 |
-| Rựa Rừng | melee | 1 | 94 | 59 | -37.2% | dpsMeleeEff | 159 | 160 | -0.1% OK | interval 0.889s | targetFactor 2.40 | dmg/stamina 3.7 |
-| Búa Đá | melee | 2 | 355 | 139 | -60.8% | dpsMeleeEff | 375 | 375 | +0.1% OK | interval 0.889s | targetFactor 2.40 | dmg/stamina 8.7 |
-| Giáo Tre | melee | 2 | 196 | 139 | -29.1% | dpsMeleeEff | 375 | 375 | +0.1% OK | interval 0.889s | targetFactor 2.40 | dmg/stamina 8.7 |
-| Đại Đao | melee | 3 | 427 | 326 | -23.7% | dpsMeleeEff | 880 | 881 | -0.1% OK | interval 0.889s | targetFactor 2.40 | dmg/stamina 20.4 |
-| Song Đao | melee | 3 | 326 | 326 | 0.0% | dpsMeleeEff | 880 | 881 | -0.1% OK | interval 0.889s | targetFactor 2.40 | dmg/stamina 20.4 |
-| Cưa Máy | melee | 4 | 1488 | 767 | -48.5% | dpsMeleeEff | 2,071 | 2,070 | 0.0% OK | interval 0.889s | targetFactor 2.40 | dmg/stamina 47.9 |
-| Phủ Nguyệt | melee | 4 | 1346 | 767 | -43.0% | dpsMeleeEff | 2,071 | 2,070 | 0.0% OK | interval 0.889s | targetFactor 2.40 | dmg/stamina 47.9 |
-| Lưỡi Liềm | melee | 5 | 2179 | 1802 | -17.3% | dpsMeleeEff | 4,865 | 4,864 | 0.0% OK | interval 0.889s | targetFactor 2.40 | dmg/stamina 112.6 |
-| Chuỳ Trời | melee | 5 | 3974 | 1802 | -54.7% | dpsMeleeEff | 4,865 | 4,864 | 0.0% OK | interval 0.889s | targetFactor 2.40 | dmg/stamina 112.6 |
-| Lưỡi Lõi | melee | 6 | 6196 | 4234 | -31.7% | dpsMeleeEff | 11,432 | 11,431 | 0.0% OK | interval 0.889s | targetFactor 2.40 | dmg/stamina 264.6 |
-| Xẻ Long | melee | 6 | 4602 | 4234 | -8.0% | dpsMeleeEff | 11,432 | 11,431 | 0.0% OK | interval 0.889s | targetFactor 2.40 | dmg/stamina 264.6 |
+| Dao Găm | melee | 1 | 66 | 142 | +115.2% | dpsMeleeEff | 160 | 160 | +0.2% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 8.9 |
+| Rựa Rừng | melee | 1 | 66 | 142 | +115.2% | dpsMeleeEff | 160 | 160 | +0.2% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 8.9 |
+| Búa Đá | melee | 2 | 105 | 333 | +217.1% | dpsMeleeEff | 375 | 375 | -0.1% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 20.8 |
+| Giáo Tre | melee | 2 | 105 | 333 | +217.1% | dpsMeleeEff | 375 | 375 | -0.1% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 20.8 |
+| Đại Đao | melee | 3 | 227 | 783 | +244.9% | dpsMeleeEff | 881 | 881 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 48.9 |
+| Song Đao | melee | 3 | 227 | 783 | +244.9% | dpsMeleeEff | 881 | 881 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 48.9 |
+| Cưa Máy | melee | 4 | 533 | 1840 | +245.2% | dpsMeleeEff | 2,070 | 2,070 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 115.0 |
+| Phủ Nguyệt | melee | 4 | 533 | 1840 | +245.2% | dpsMeleeEff | 2,070 | 2,070 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 115.0 |
+| Lưỡi Liềm | melee | 5 | 1253 | 4324 | +245.1% | dpsMeleeEff | 4,865 | 4,864 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 270.3 |
+| Chuỳ Trời | melee | 5 | 1253 | 4324 | +245.1% | dpsMeleeEff | 4,865 | 4,864 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 270.3 |
+| Lưỡi Lõi | melee | 6 | 3201 | 10161 | +217.4% | dpsMeleeEff | 11,431 | 11,431 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 635.1 |
+| Xẻ Long | melee | 6 | 3201 | 10161 | +217.4% | dpsMeleeEff | 11,431 | 11,431 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 635.1 |
 
 ## Ket luan
 
-- Thay doi lon nhat: **60.8%**
+- Thay doi lon nhat: **245.2%**
 - Moi vu khi bay gio nam dung tren duong cong tier. Cac rang buoc con lai (mag clear ratio,
   reserve waves, TTK trash, melee > ranged) do `audit_gdd.ps1` kiem tra va co the FAIL/WARN.
 - Day la so **first-pass**: dung de bat dau playtest, khong phai so da tune.

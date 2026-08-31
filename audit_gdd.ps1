@@ -279,9 +279,9 @@ foreach ($itW in $gdWpn.weapons) {
         $rangedByTier[$tier] += $dps
     }
     else {
-        $tf = 1.0 + 0.35 * ([double]$itW.targets - 1.0)
+        # targets KHONG tinh vao ngan sach DPS (xem normalize_balance.ps1 + docs/05 muc 7b)
         $iv = [Math]::Max([double]$itW.swingTime, [double]$itW.staminaCost / $sRegen)
-        $dps = [double]$itW.dmg * $tf / $iv
+        $dps = [double]$itW.dmg / $iv
         $dev = [Math]::Abs($dps / ((Get-DpsTarget $tier) * $mAdv) - 1.0)
         if ($dev -gt [double]$gdWpn.balance.meleeTolerance) { $offCurve += "$($itW.id) $([Math]::Round($dev*100))%" }
         if (-not $meleeByTier.ContainsKey($tier)) { $meleeByTier[$tier] = @() }
@@ -673,6 +673,36 @@ Assert-True 'WEAPON' 'Moi vu khi can chien voi xa hon khoang quai dung (tapNearM
     ("can >= {0:N2}m; ngan nhat hien tai = {1:N2}m" -f $needReach, (($gdMel | ForEach-Object { [double]$_.reachM } | Measure-Object -Minimum).Minimum) +
      $(if ($shortMelee.Count) { ' | VI PHAM: ' + ($shortMelee -join ', ') } else { '' }))
 
+# Can chien khong duoc voi XA HON cho quai ranged dung: neu khong thi dao giai quyet
+# luon ca quai ranged va cai gia cua viec de chung dung xa mat y nghia.
+$melMax = (($gdMel | ForEach-Object { [double]$_.reachM } | Measure-Object -Maximum).Maximum)
+Assert-True 'WEAPON' 'Tam can chien ngan hon khoang quai ranged dung' `
+    ($melMax -lt [double]$gdRun.rangedStandoffM) `
+    ("tam dao {0:N2}m vs rangedStandoffM {1:N2}m" -f $melMax, [double]$gdRun.rangedStandoffM)
+
+# LUAT CUNG (docs/09 nguyen tac 4): trash phai chet trong MOT nhat -- ke ca mot doan quet
+# trong che do chem lien tuc (dmg x slideTickDamageMult). Khong co gate nay thi
+# normalize chia sat thuong cho targetFactor va trash song sot 5 nhat, tuc "chat chem"
+# mat het cam giac. Xem docs/18 loi #22.
+$trashBase = 40.0
+$hpPerRoom = 1.068
+$anchorRoom = @(3, 12, 22, 34, 48, 62)
+$badOne = @()
+foreach ($itM in $gdMel) {
+    $ti = [int]$itM.tier
+    if ($ti -lt 1 -or $ti -gt 6) { continue }
+    $hp = $trashBase * [Math]::Pow($hpPerRoom, $anchorRoom[$ti - 1] - 1)
+    $tick = [double]$itM.dmg * [double]$gdFel.melee.slideTickDamageMult
+    if ($tick -lt $hp) {
+        $badOne += ("$($itM.id) T$ti : 1 doan quet = {0:N0} dmg < trash {1:N0} HP" -f $tick, $hp)
+    }
+}
+Assert-True 'WEAPON' 'Mot doan quet du giet trash cung tier (luat 1 nhat 1 mang)' `
+    ($badOne.Count -eq 0) `
+    ("kiem $($gdMel.Count) vu khi; dmg x slideTickDamageMult {0:N2}" -f [double]$gdFel.melee.slideTickDamageMult) `
+    -failStatus 'FAIL'
+if ($badOne.Count) { $auditResults[-1].Detail += ' | VI PHAM: ' + ($badOne -join ' ; ') }
+
 # HOP DONG DON AoE: nguoi choi chay tien nen telegraph AN MAT speed*telegraphSec met.
 # Don giang o impactM, va Buoc Lui phai dua ra NGOAI aoeRadius tu do.
 $badAoe = @()
@@ -722,8 +752,8 @@ for ($w = 1; $w -le $nWaveRoom; $w++) {
 # Luu y: wave co pattern lane="sides" (pincer) don TOAN BO ra hai lan ben, nen so thuc
 # do duoc thap hon con nay ~1/3. Day la band sanity, khong phai so chinh xac.
 $threatRoom = $totalRoom * [double]$gdLan.midSpawnFrac
-Assert-True 'WAVE' 'So quai LAN GIUA moi phong (R1) nam trong 20-60' `
-    ($threatRoom -ge 20 -and $threatRoom -le 60) `
+Assert-True 'WAVE' 'So quai LAN GIUA moi phong (R1) nam trong 60-150' `
+    ($threatRoom -ge 60 -and $threatRoom -le 150) `
     ("phong R1: ~{0:N0} quai tong, lan giua ~{1:N0} (moi de), lan ben ~{2:N0} (vang them)" -f $totalRoom, $threatRoom, ($totalRoom - $threatRoom))
 
 Assert-True 'WAVE' 'Tong quai / phong khong vuot cap maxTotalAlive' `
@@ -813,8 +843,8 @@ Assert-True 'FEEL' 'Chem lien tuc co tran: giu toi da 2-5s roi het stamina' `
     ("stamina 100 / {0:N0} moi giay = {1:N2}s giu lien tuc; moi con an dmg toi da 1 lan moi {2:N2}s" -f [double]$gdMel2.slideStaminaPerSec, $sliceSec, [double]$gdMel2.slideHitCooldownSec)
 
 Assert-True 'FEEL' 'Chem lien tuc yeu hon nhat chem don (khong thay the han)' `
-    ([double]$gdMel2.slideTickDamageMult -gt 0 -and [double]$gdMel2.slideTickDamageMult -lt 1) `
-    ("slideTickDamageMult = {0:N2}" -f [double]$gdMel2.slideTickDamageMult)
+    ([double]$gdFel.melee.slideTickDamageMult -gt 0 -and [double]$gdFel.melee.slideTickDamageMult -lt 1) `
+    ("slideTickDamageMult = {0:N2}" -f [double]$gdFel.melee.slideTickDamageMult)
 
 # Sung phai o ngoai du lau de NHIN THAY duoc, khong thi mot cai tap chi thay nhap nhay.
 $gdGun = $gdFel.gun

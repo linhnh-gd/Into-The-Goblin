@@ -158,3 +158,8 @@ button.cta:active{transform:translateY(3px);box-shadow:0 3px 0 #8a4a00}
 /* thanh quang duong: mo hinh chay X met (docs/07 muc 3.5) */
 #distBar{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(20,24,33,.75)}
 #distFill{display:block;height:100%;width:0;background:var(--gold);opacity:.75;transition:width .1s linear}
+
+/* vet slash (chem hoa qua) — canvas 2D de tren canvas WebGL, khong nhan input */
+/* KHONG dat z-index: thu tu DOM da dung (view -> fxTrail -> hud -> screen).
+   Dat z-index:2 thi vet ve DE LEN ca HUD va man chon the. */
+#fxTrail{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
