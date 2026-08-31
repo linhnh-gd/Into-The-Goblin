@@ -97,71 +97,50 @@ ne duoc bang 1 Buoc Lui  : impact + dodgeBackM > aoeRadiusM  -> 1.96 + 1.80 > 2.
 1.2m chỉ đưa người chơi ra 2.36m — **vẫn nằm trong vòng AoE 2.5m**, tức né không thoát. Cả hai bất biến
 trên đều có gate, nên đổi một con số là biết ngay con nào vỡ.
 
-## 2c. Hai kiểu tiến, và luật "va một lần rồi biến mất"
+## 2c. Quái ĐỨNG YÊN, người chơi chạy — và BA LÀN
 
-Trong mô hình quãng đường (`07` mục 3.5) người chơi **luôn** tiến lên, nên mọi con quái rồi cũng bị vượt qua.
-Chia làm hai kiểu, đọc từ `role` và `behavior`:
+Mô hình cuối: **quái không di chuyển chút nào**. Người chơi chạy qua chúng. Đây là dáng của
+*Into the Dead*: bạn là thứ duy nhất chuyển động, thế giới đứng chờ.
 
-| Kiểu | Ai | Cách tiến |
+### Ba làn
+
+| Làn | Bề rộng | Quái ở đây |
 |---|---|---|
-| **Đứng lại** (`holds`) | `role: ranged`, và quái có `behavior.kind = "slam"` | Tiến tới `atkRange` rồi **cắm chân** đánh từ đó. `atkRange` luôn ≥ `run.tapNearM` nên **luôn còn tap được** |
-| **Xông tới** | mọi loại còn lại | Không dừng ở khoảng nào cả, tiến thẳng tới `run.contactM` |
+| **Giữa** | **4.0m** (`lanes.midHalfWidthM` = 2.0 mỗi bên) | **Gây damage.** Va vào người chơi → mất máu 1 lần, quái biến mất, **không rơi vàng** |
+| Hai bên | 2.4m mỗi bên | **Không chạm được.** Người chơi chạy qua, không mất gì. Giết là **vàng THÊM** |
 
-**Con nào tới được người chơi thì gây damage MỘT lần rồi BIẾN MẤT, và không rơi vàng.**
+Đo thực tế, ngưỡng đúng bằng `midHalfWidthM`: **x ≤ 1.9m → mất 6 HP · x ≥ 2.1m → 0 HP**.
 
-Ba lý do đây là luật đúng, không phải luật cho tiện:
-1. **Không con nào được chặn đường chạy.** Nếu quái dừng lại húc mãi thì mô hình quãng đường vỡ.
-2. **9/21 loài chạy nhanh hơn người chơi** (Đầu Bò 5.2 m/s vs 2.4). Nếu chúng sống sót sau khi va thì
-   chúng sẽ đuổi lại và đánh từ **phía sau màn hình** — chỗ người chơi không thấy và không thể giết. Không
-   có phản biện nào cho damage kiểu đó.
-3. **Không rơi vàng** giữ nguyên động lực thật sự phải giết quái: bỏ qua thì mất máu *và* mất vàng.
+**Vạch làn phải vẽ trên sàn.** Luật "chỉ làn giữa gây damage" chỉ công bằng khi người chơi **nhìn thấy**
+ranh giới. Không có vạch thì việc con nào nguy hiểm là thông tin ẩn. Hai vạch ở `x = ±2.0m`,
+màu theo đuốc của biome, `lanes.markerOpacity`.
 
-Trước đây **mọi** con đều dừng ở `atkRange = 1.2m` và đứng đó húc. Ở 1.2m điểm tap của quái nằm ở **92.7%**
-chiều cao màn hình — dưới cả nút NẠP. Đó là lỗi #9 ở `18` mục 4.
+**Quái làn giữa spawn quanh trục** (`midSpawnJitterM` ±0.9), không trải hết làn. Nếu để một con đứng ở
+x = 1.9 mà vẫn gây damage thì người chơi thấy nó đi qua **cạnh** mình 1.9m rồi mất máu — đọc ra như lỗi.
+Khoảng 0.9m…2.0m là **vùng trống** không có quái nào. Có gate cho ràng buộc này.
 
-## 2d. Quái ĐI THẲNG, và làn nào là mối đe doạ
+`midSpawnFrac` = 0.45 → 45% quái vào làn giữa. Không có tham số này thì hành lang 9m với làn giữa 4m cho
+ra tỉ lệ khác, mà ngân sách TP (`07` mục 3) được tính khi **mọi** con đều là mối đe doạ. Gate giữ 0.30–0.70.
 
-**Quái không lái theo người chơi.** Hướng của mỗi con **cố định từ lúc spawn** (`hx`, `hz`) và không đổi nữa.
-Hệ quả trực tiếp: con nào spawn ở **rìa hành lang thì đi thẳng qua người chơi và không làm gì cả**.
+### Hệ quả của việc quái đứng yên
 
-| Số (`data/gamefeel.json` khối `run`) | Giá trị | Việc |
+1. **Tốc độ tiếp cận = duy nhất tốc độ chạy của người chơi.** Nên cửa sổ phản ứng do **khoảng cách spawn**
+   quyết định, không phải `speed` của quái.
+2. **Trường `speed` trong `enemies.json` không còn điều khiển gì.** Giữ lại trong data cho boss và các
+   hành vi riêng sau này, nhưng hiện tại nó là số chết — đừng tinh chỉnh nó rồi mong game đổi.
+3. **`back_ambush` không thể spawn phía sau nữa** — quái đứng yên thì con ở sau lưng không bao giờ gặp được
+   người chơi. Nó thành "khoảng cảnh báo ngắn nhất còn hợp lệ" (9–12m). Gate chặn mọi `spawnDistM ≤ 0`.
+4. **Mọi khoảng cách spawn phải ≥ `tapNearM + minReactionSec × speedMps`** = 2.4 + 1.2×4.2 = **7.44m**.
+   `ceiling_drop` trước đây spawn ở **5m** → chỉ 0.62s trước khi quái tụt khỏi vùng tap được. Xem `18` lỗi #17.
+
+Hai loại quái vẫn khác nhau ở chỗ **có đánh chủ động hay không**:
+
+| Kiểu | Ai | Hành vi |
 |---|---|---|
-| `contactHalfWidthM` | 0.85 | Nửa bề rộng thân người chơi |
-| — | `0.85 + 0.30 × scale` | Nửa bề rộng **làn**. Với goblin scale 1.0 → **1.15m** |
-| `threatLaneFrac` | 0.45 | 45% quái spawn **trong làn** (sẽ va), 55% ở rìa (đi thẳng qua) |
-| `laneSpringPerSec` | 3.2 | Kéo quái về làn spawn của nó |
-| `sepLateralMult` | 0.35 | Giảm lực đẩy **ngang** của separation |
+| **Đánh chủ động** (`holds`) | `role: ranged`, và quái có `behavior.kind = "slam"` | Đứng yên, quay theo người chơi, và **đánh** khi người chơi vào trong `atkRange`. Bắn/đập được sang cả làn khác |
+| **Chỉ chặn đường** | mọi loại còn lại | Đứng yên hoàn toàn. Chỉ gây damage nếu người chơi **chạy vào** nó, và chỉ khi nó ở làn giữa |
 
-Đo thực tế, ngưỡng làn chính xác: **x ≤ 1.1m → va vào (6 dmg) · x ≥ 1.3m → đi thẳng qua (0 dmg)**.
-
-**Giết quái ở rìa là vàng THÊM, không bắt buộc.** Vàng chỉ đến từ việc giết; va vào người chơi thì quái
-biến mất mà **không rơi vàng**. Nên bỏ qua một con ở rìa là bỏ một khoản bonus, còn bỏ qua một con trong
-làn là mất máu.
-
-### `threatLaneFrac` phải tồn tại, không phải để tinh chỉnh
-
-Hành lang rộng 9m, làn người chơi rộng 2.3m. Trải đều thì chỉ **~25%** quái là mối đe doạ thật — mà ngân
-sách TP (`07` mục 3) được tính khi **mọi** con đều là mối đe doạ. Không có `threatLaneFrac` thì độ khó
-tự nhiên giảm ~4 lần và phần lớn spawn thành đồ trang trí. Gate giữ nó trong 0.30–0.70: dưới 0.30 thì quá
-nhiều quái vô nghĩa, trên 0.70 thì cơ chế làn mất tác dụng vì gần như con nào cũng va.
-
-### Hai pattern cần xử lý riêng
-
-**`pincer` (gọng kìm) phải ĐÓN ĐẦU.** Nó spawn ở rìa rồi đi chéo cắt vào làn. Nhưng nhắm vào **vị trí hiện
-tại** của người chơi là sai — người chơi còn chạy tiếp nên đường chéo sẽ cắt qua **phía sau lưng**, không bao
-giờ gặp. Phải giải bài toán đón đầu, với `B = pz − z`, `k = (px − x)/(se·B)`, `a = k·se`, `b = k·sp`:
-
-```
-(a^2 + 1) * hz^2  +  2ab * hz  +  (b^2 - 1)  =  0      -> lay nghiem duong
-hx = a*hz + b
-```
-
-Kiểm chứng: spawn ở `x = 3.5`, cách 12m, speed 2.2 → hướng `(−0.560, 0.829)`, tới sát **1.02m** và trúng.
-
-**`back_ambush` (đánh sau lưng) chỉ dùng được quái NHANH HƠN người chơi.** Người chơi luôn chạy tiến 2.4 m/s,
-nên con spawn ở phía sau mà chậm hơn thì **không bao giờ đuổi tới**. Wave `wv_saulung` trước đây dùng Goblin
-Đào Hầm (2.4 — bằng đúng người chơi) và Goblin Cùi (2.2) → **cả wave vô tác dụng**. Sửa: Đào Hầm lên **3.4**,
-và thay Goblin Cùi bằng Goblin Chạy (4.4). Audit có gate cho ràng buộc này.
+Đó là khác biệt thật giữa hai nhóm: **quái ranged đe doạ từ mọi làn, quái thường chỉ đe doạ ở làn giữa.**
 
 ## 3. Affix (chỉ từ Depth 4)
 

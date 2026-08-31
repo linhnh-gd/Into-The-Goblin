@@ -152,7 +152,7 @@ footer{padding:34px 0 0;color:var(--muted);font-size:12.5px;border-top:1px solid
 <p class="sub">FPS màn hình dọc, chơi một tay — lối di chuyển của Into the Dead, cộng cảm giác mật độ quái đông của Guns 'n Goblins (chỉ lấy feel, không lấy cơ chế)</p>
 <p class="quote">Xuống sâu nữa. Vàng ở dưới đó.</p>
 <ul class="chips"><li><b>30</b><span>vũ khí</span></li><li><b>21</b><span>loại quái</span></li><li><b>7</b><span>boss</span></li><li><b>50</b><span>thẻ nâng cấp</span></li><li><b>12</b><span>bảo vật</span></li><li><b>24</b><span>talent</span></li><li><b>19</b><span>wave template</span></li><li><b>7</b><span>tầng hầm</span></li><li><b>12</b><span>công trình</span></li></ul>
-<div class="stat"><div><b class="ok">73</b><span>audit pass</span></div><div><b class="warn">2</b><span>warn</span></div><div><b class="bad">0</b><span>fail</span></div><div><b>19</b><span>pillar doc</span></div></div>
+<div class="stat"><div><b class="ok">74</b><span>audit pass</span></div><div><b class="warn">2</b><span>warn</span></div><div><b class="bad">0</b><span>fail</span></div><div><b>19</b><span>pillar doc</span></div></div>
 </header>
 <section class="doc" id="escal"><p class="docnum">HOOK</p><h2>Nhịp leo thang &amp; mật độ quái</h2><div class="rule"></div><div class="body"><p>Không có nút nào cho người chơi tự bơm độ khó. Hầm tự đông dần và tự khoẻ dần theo từng phòng — đúng dòng docs gốc &quot;độ khó mỗi wave sẽ tăng dần, có thể là tăng số lượng, loại quái mới khoẻ hơn&quot;. Cột vàng bên dưới là số quái mỗi wave; cột tím là HP mỗi con. Chỗ hai cột doãng ra xa nhau chính là chỗ cảm giác &quot;một mình giữa cả hầm&quot; xuất hiện.</p><div class="ladder">
 <div class="rung"><span class="g">R1</span><span class="bars"><i class="bar gold" style="width:5.93%"></i><i class="bar bell" style="width:1.07%"></i></span><span class="mult">29 / x1.0</span></div>
@@ -1000,15 +1000,16 @@ TP_budget(R, G) = round( (14 + 4.2 * R) * (1 + 0.35 * G) * roomTypeMult )
 <p>Phòng <strong>không</strong> kết thúc khi diệt hết quái. Phòng kết thúc khi người chơi <strong>chạy hết <code>run.roomDistanceM</code> mét</strong>. Đây là mô hình của <em>Into the Dead</em>: nhân vật tự tiến lên liên tục, quái ra dọc đường, và <strong>không cần giết hết</strong>.</p>
 <div class="tw"><table>
 <thead><tr><th>Số (ở <code>data/gamefeel.json</code> khối <code>run</code>)</th><th>Giá trị</th><th>Ý nghĩa</th></tr></thead><tbody>
-<tr><td><code>speedMps</code></td><td>2.4</td><td>Người chơi tự chạy, không có nút di chuyển</td></tr>
-<tr><td><code>roomDistanceM</code></td><td>90</td><td>Một phòng = 90m ≈ <strong>37.5s</strong></td></tr>
-<tr><td><code>waveSegmentM</code></td><td>30</td><td>90 / 30 = <strong>3 wave</strong>, mỗi wave một đoạn đường</td></tr>
+<tr><td><code>speedMps</code></td><td><strong>4.2</strong></td><td>Người chơi tự chạy, không có nút di chuyển. <strong>Quái đứng yên</strong></td></tr>
+<tr><td><code>roomDistanceM</code></td><td><strong>150</strong></td><td>Một phòng = 150m ≈ <strong>35.7s</strong></td></tr>
+<tr><td><code>waveSegmentM</code></td><td><strong>50</strong></td><td>150 / 50 = <strong>3 wave</strong>, mỗi wave một đoạn đường</td></tr>
 <tr><td><code>densityRampEnd</code></td><td>1.35</td><td>Số mũ đường cong ra quái trong một đoạn: cuối đoạn đông hơn đầu đoạn</td></tr>
-<tr><td><code>contactM</code></td><td>1.0</td><td>Quái tới đây thì <strong>va vào người chơi</strong></td></tr>
+<tr><td><code>contactM</code></td><td>1.0</td><td>Người chơi chạy vào trong khoảng này thì <strong>va phải quái</strong></td></tr>
+<tr><td><code>lanes.midHalfWidthM</code></td><td>2.0</td><td><strong>Làn giữa (±2.0m) là làn duy nhất gây damage</strong> — xem <code>09</code> mục 2c</td></tr>
 <tr><td><code>tapNearM</code></td><td>2.4</td><td>Khoảng gần nhất mà quái còn <strong>tap được</strong> (xem mục dưới)</td></tr>
 </tbody></table></div>
 <p><strong>Wave sau dồn dập hơn mà không cần dial:</strong> số wave suy ra từ quãng đường, và <code>tpBudget(R, w)</code> đã tăng theo <code>w</code> (<code>×1.18</code> mỗi wave). Nên một phòng 90m tự động là ba đợt tăng dần — không có tham số &quot;độ khó&quot; nào phải tinh chỉnh tay.</p>
-<p><strong>Quái không giết kịp thì VA vào người chơi:</strong> gây damage <strong>một lần</strong> rồi <strong>biến mất</strong>, và <strong>không rơi vàng</strong> (người chơi không giết nó). Đây là áp lực thay thế cho &quot;diệt hết&quot;: bỏ qua quái thì mất máu, không phải mất thời gian.</p>
+<p><strong>Quái ở làn giữa mà không giết kịp thì người chơi VA phải:</strong> mất máu <strong>một lần</strong>, quái <strong>biến mất</strong>, và <strong>không rơi vàng</strong>. Quái ở hai làn bên thì chạy qua vô hại — giết chúng là <strong>vàng thêm</strong>. Đây là áp lực thay thế cho &quot;diệt hết&quot;: bỏ qua làn giữa thì mất máu, bỏ qua làn bên thì chỉ mất bonus.</p>
 <blockquote><strong>Sương Đen mất lý do tồn tại ở phòng thường.</strong> Nó được thiết kế để chống cắm phòng (<code>08</code>). Trong mô hình quãng đường người chơi <strong>không thể</strong> cắm phòng — luôn bị đẩy về phía trước. Áp lực chống thụ động giờ là chính đám quái tích tụ. Sương Đen chỉ còn hiệu lực ở phòng <strong>boss</strong> (nơi người chơi đứng lại). Số liệu vẫn giữ trong <code>waves.json</code> để dùng cho boss.</blockquote>
 <h4>Vì sao <code>tapNearM</code> phải tồn tại</h4>
 <p>Camera cao 1.62m, fov dọc 72°, chúi xuống 8°. Chiếu phối cảnh cho ra: điểm tap của quái (ở <code>0.62 × scale</code>) nằm ở <strong>92.7% chiều cao màn hình</strong> khi quái ở 1.2m — tức <strong>dưới cả nút NẠP</strong>, không thể bấm.</p>
@@ -1291,45 +1292,36 @@ trung duoc khi dung im   : aoeRadiusM &gt;= impact              -&gt; 2.50 &gt;=
 ne duoc bang 1 Buoc Lui  : impact + dodgeBackM &gt; aoeRadiusM  -&gt; 1.96 + 1.80 &gt; 2.50 OK
 </code></pre>
 <p><strong>Bước Lùi phải là 1.8m, không phải 1.2m.</strong> Chạy tiến 2.4 m/s trong 0.6s telegraph ăn mất 1.44m, nên lùi 1.2m chỉ đưa người chơi ra 2.36m — <strong>vẫn nằm trong vòng AoE 2.5m</strong>, tức né không thoát. Cả hai bất biến trên đều có gate, nên đổi một con số là biết ngay con nào vỡ.</p>
-<h3>2c. Hai kiểu tiến, và luật &quot;va một lần rồi biến mất&quot;</h3>
-<p>Trong mô hình quãng đường (<code>07</code> mục 3.5) người chơi <strong>luôn</strong> tiến lên, nên mọi con quái rồi cũng bị vượt qua. Chia làm hai kiểu, đọc từ <code>role</code> và <code>behavior</code>:</p>
+<h3>2c. Quái ĐỨNG YÊN, người chơi chạy — và BA LÀN</h3>
+<p>Mô hình cuối: <strong>quái không di chuyển chút nào</strong>. Người chơi chạy qua chúng. Đây là dáng của <em>Into the Dead</em>: bạn là thứ duy nhất chuyển động, thế giới đứng chờ.</p>
+<h4>Ba làn</h4>
 <div class="tw"><table>
-<thead><tr><th>Kiểu</th><th>Ai</th><th>Cách tiến</th></tr></thead><tbody>
-<tr><td><strong>Đứng lại</strong> (<code>holds</code>)</td><td><code>role: ranged</code>, và quái có <code>behavior.kind = &quot;slam&quot;</code></td><td>Tiến tới <code>atkRange</code> rồi <strong>cắm chân</strong> đánh từ đó. <code>atkRange</code> luôn ≥ <code>run.tapNearM</code> nên <strong>luôn còn tap được</strong></td></tr>
-<tr><td><strong>Xông tới</strong></td><td>mọi loại còn lại</td><td>Không dừng ở khoảng nào cả, tiến thẳng tới <code>run.contactM</code></td></tr>
+<thead><tr><th>Làn</th><th>Bề rộng</th><th>Quái ở đây</th></tr></thead><tbody>
+<tr><td><strong>Giữa</strong></td><td><strong>4.0m</strong> (<code>lanes.midHalfWidthM</code> = 2.0 mỗi bên)</td><td><strong>Gây damage.</strong> Va vào người chơi → mất máu 1 lần, quái biến mất, <strong>không rơi vàng</strong></td></tr>
+<tr><td>Hai bên</td><td>2.4m mỗi bên</td><td><strong>Không chạm được.</strong> Người chơi chạy qua, không mất gì. Giết là <strong>vàng THÊM</strong></td></tr>
 </tbody></table></div>
-<p><strong>Con nào tới được người chơi thì gây damage MỘT lần rồi BIẾN MẤT, và không rơi vàng.</strong></p>
-<p>Ba lý do đây là luật đúng, không phải luật cho tiện:</p>
+<p>Đo thực tế, ngưỡng đúng bằng <code>midHalfWidthM</code>: <strong>x ≤ 1.9m → mất 6 HP · x ≥ 2.1m → 0 HP</strong>.</p>
+<p><strong>Vạch làn phải vẽ trên sàn.</strong> Luật &quot;chỉ làn giữa gây damage&quot; chỉ công bằng khi người chơi <strong>nhìn thấy</strong> ranh giới. Không có vạch thì việc con nào nguy hiểm là thông tin ẩn. Hai vạch ở <code>x = ±2.0m</code>, màu theo đuốc của biome, <code>lanes.markerOpacity</code>.</p>
+<p><strong>Quái làn giữa spawn quanh trục</strong> (<code>midSpawnJitterM</code> ±0.9), không trải hết làn. Nếu để một con đứng ở x = 1.9 mà vẫn gây damage thì người chơi thấy nó đi qua <strong>cạnh</strong> mình 1.9m rồi mất máu — đọc ra như lỗi. Khoảng 0.9m…2.0m là <strong>vùng trống</strong> không có quái nào. Có gate cho ràng buộc này.</p>
+<p><code>midSpawnFrac</code> = 0.45 → 45% quái vào làn giữa. Không có tham số này thì hành lang 9m với làn giữa 4m cho ra tỉ lệ khác, mà ngân sách TP (<code>07</code> mục 3) được tính khi <strong>mọi</strong> con đều là mối đe doạ. Gate giữ 0.30–0.70.</p>
+<h4>Hệ quả của việc quái đứng yên</h4>
 <ol>
-<li><strong>Không con nào được chặn đường chạy.</strong> Nếu quái dừng lại húc mãi thì mô hình quãng đường vỡ.</li>
-<li><strong>9/21 loài chạy nhanh hơn người chơi</strong> (Đầu Bò 5.2 m/s vs 2.4). Nếu chúng sống sót sau khi va thì</li>
-<span class="cont">chúng sẽ đuổi lại và đánh từ <strong>phía sau màn hình</strong> — chỗ người chơi không thấy và không thể giết. Không</span>
-<span class="cont">có phản biện nào cho damage kiểu đó.</span>
-<li><strong>Không rơi vàng</strong> giữ nguyên động lực thật sự phải giết quái: bỏ qua thì mất máu <em>và</em> mất vàng.</li>
+<li><strong>Tốc độ tiếp cận = duy nhất tốc độ chạy của người chơi.</strong> Nên cửa sổ phản ứng do <strong>khoảng cách spawn</strong></li>
+<span class="cont">quyết định, không phải <code>speed</code> của quái.</span>
+<li><strong>Trường <code>speed</code> trong <code>enemies.json</code> không còn điều khiển gì.</strong> Giữ lại trong data cho boss và các</li>
+<span class="cont">hành vi riêng sau này, nhưng hiện tại nó là số chết — đừng tinh chỉnh nó rồi mong game đổi.</span>
+<li><strong><code>back_ambush</code> không thể spawn phía sau nữa</strong> — quái đứng yên thì con ở sau lưng không bao giờ gặp được</li>
+<span class="cont">người chơi. Nó thành &quot;khoảng cảnh báo ngắn nhất còn hợp lệ&quot; (9–12m). Gate chặn mọi <code>spawnDistM ≤ 0</code>.</span>
+<li><strong>Mọi khoảng cách spawn phải ≥ <code>tapNearM + minReactionSec × speedMps</code></strong> = 2.4 + 1.2×4.2 = <strong>7.44m</strong>.</li>
+<span class="cont"><code>ceiling_drop</code> trước đây spawn ở <strong>5m</strong> → chỉ 0.62s trước khi quái tụt khỏi vùng tap được. Xem <code>18</code> lỗi #17.</span>
 </ol>
-<p>Trước đây <strong>mọi</strong> con đều dừng ở <code>atkRange = 1.2m</code> và đứng đó húc. Ở 1.2m điểm tap của quái nằm ở <strong>92.7%</strong> chiều cao màn hình — dưới cả nút NẠP. Đó là lỗi #9 ở <code>18</code> mục 4.</p>
-<h3>2d. Quái ĐI THẲNG, và làn nào là mối đe doạ</h3>
-<p><strong>Quái không lái theo người chơi.</strong> Hướng của mỗi con <strong>cố định từ lúc spawn</strong> (<code>hx</code>, <code>hz</code>) và không đổi nữa. Hệ quả trực tiếp: con nào spawn ở <strong>rìa hành lang thì đi thẳng qua người chơi và không làm gì cả</strong>.</p>
+<p>Hai loại quái vẫn khác nhau ở chỗ <strong>có đánh chủ động hay không</strong>:</p>
 <div class="tw"><table>
-<thead><tr><th>Số (<code>data/gamefeel.json</code> khối <code>run</code>)</th><th>Giá trị</th><th>Việc</th></tr></thead><tbody>
-<tr><td><code>contactHalfWidthM</code></td><td>0.85</td><td>Nửa bề rộng thân người chơi</td></tr>
-<tr><td>—</td><td><code>0.85 + 0.30 × scale</code></td><td>Nửa bề rộng <strong>làn</strong>. Với goblin scale 1.0 → <strong>1.15m</strong></td></tr>
-<tr><td><code>threatLaneFrac</code></td><td>0.45</td><td>45% quái spawn <strong>trong làn</strong> (sẽ va), 55% ở rìa (đi thẳng qua)</td></tr>
-<tr><td><code>laneSpringPerSec</code></td><td>3.2</td><td>Kéo quái về làn spawn của nó</td></tr>
-<tr><td><code>sepLateralMult</code></td><td>0.35</td><td>Giảm lực đẩy <strong>ngang</strong> của separation</td></tr>
+<thead><tr><th>Kiểu</th><th>Ai</th><th>Hành vi</th></tr></thead><tbody>
+<tr><td><strong>Đánh chủ động</strong> (<code>holds</code>)</td><td><code>role: ranged</code>, và quái có <code>behavior.kind = &quot;slam&quot;</code></td><td>Đứng yên, quay theo người chơi, và <strong>đánh</strong> khi người chơi vào trong <code>atkRange</code>. Bắn/đập được sang cả làn khác</td></tr>
+<tr><td><strong>Chỉ chặn đường</strong></td><td>mọi loại còn lại</td><td>Đứng yên hoàn toàn. Chỉ gây damage nếu người chơi <strong>chạy vào</strong> nó, và chỉ khi nó ở làn giữa</td></tr>
 </tbody></table></div>
-<p>Đo thực tế, ngưỡng làn chính xác: <strong>x ≤ 1.1m → va vào (6 dmg) · x ≥ 1.3m → đi thẳng qua (0 dmg)</strong>.</p>
-<p><strong>Giết quái ở rìa là vàng THÊM, không bắt buộc.</strong> Vàng chỉ đến từ việc giết; va vào người chơi thì quái biến mất mà <strong>không rơi vàng</strong>. Nên bỏ qua một con ở rìa là bỏ một khoản bonus, còn bỏ qua một con trong làn là mất máu.</p>
-<h4><code>threatLaneFrac</code> phải tồn tại, không phải để tinh chỉnh</h4>
-<p>Hành lang rộng 9m, làn người chơi rộng 2.3m. Trải đều thì chỉ <strong>~25%</strong> quái là mối đe doạ thật — mà ngân sách TP (<code>07</code> mục 3) được tính khi <strong>mọi</strong> con đều là mối đe doạ. Không có <code>threatLaneFrac</code> thì độ khó tự nhiên giảm ~4 lần và phần lớn spawn thành đồ trang trí. Gate giữ nó trong 0.30–0.70: dưới 0.30 thì quá nhiều quái vô nghĩa, trên 0.70 thì cơ chế làn mất tác dụng vì gần như con nào cũng va.</p>
-<h4>Hai pattern cần xử lý riêng</h4>
-<p><strong><code>pincer</code> (gọng kìm) phải ĐÓN ĐẦU.</strong> Nó spawn ở rìa rồi đi chéo cắt vào làn. Nhưng nhắm vào <strong>vị trí hiện tại</strong> của người chơi là sai — người chơi còn chạy tiếp nên đường chéo sẽ cắt qua <strong>phía sau lưng</strong>, không bao giờ gặp. Phải giải bài toán đón đầu, với <code>B = pz − z</code>, <code>k = (px − x)/(se·B)</code>, <code>a = k·se</code>, <code>b = k·sp</code>:</p>
-<pre class="ascii"><code>
-(a^2 + 1) * hz^2  +  2ab * hz  +  (b^2 - 1)  =  0      -&gt; lay nghiem duong
-hx = a*hz + b
-</code></pre>
-<p>Kiểm chứng: spawn ở <code>x = 3.5</code>, cách 12m, speed 2.2 → hướng <code>(−0.560, 0.829)</code>, tới sát <strong>1.02m</strong> và trúng.</p>
-<p><strong><code>back_ambush</code> (đánh sau lưng) chỉ dùng được quái NHANH HƠN người chơi.</strong> Người chơi luôn chạy tiến 2.4 m/s, nên con spawn ở phía sau mà chậm hơn thì <strong>không bao giờ đuổi tới</strong>. Wave <code>wv_saulung</code> trước đây dùng Goblin Đào Hầm (2.4 — bằng đúng người chơi) và Goblin Cùi (2.2) → <strong>cả wave vô tác dụng</strong>. Sửa: Đào Hầm lên <strong>3.4</strong>, và thay Goblin Cùi bằng Goblin Chạy (4.4). Audit có gate cho ràng buộc này.</p>
+<p>Đó là khác biệt thật giữa hai nhóm: <strong>quái ranged đe doạ từ mọi làn, quái thường chỉ đe doạ ở làn giữa.</strong></p>
 <h3>3. Affix (chỉ từ Depth 4)</h3>
 <div class="tw"><table>
 <thead><tr><th>Affix</th><th>Hiệu ứng</th><th>Tín hiệu</th></tr></thead><tbody>
@@ -2357,11 +2349,11 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>Thanh <strong>MÉT</strong> + thanh tiến độ dưới màn hình</td><td><strong>Có</strong></td></tr>
 <tr><td>Số wave = quãng đường / 30m, <code>tpBudget(R,w)</code> tăng theo w → <strong>wave sau dồn dập hơn</strong></td><td><strong>Có</strong></td></tr>
 <tr><td>Quái tới được người chơi thì <strong>gây dmg 1 lần rồi biến mất</strong>, không rơi vàng</td><td><strong>Có</strong> — <code>09</code> mục 2c</td></tr>
-<tr><td><strong>Quái đi thẳng</strong>, hướng cố định từ lúc spawn — không lái theo người chơi</td><td><strong>Có</strong> — <code>09</code> mục 2d</td></tr>
-<tr><td>Quái ở <strong>rìa hành lang đi thẳng qua</strong>, không gây damage; giết là <strong>vàng thêm</strong></td><td><strong>Có</strong> — ngưỡng đo được: x ≤ 1.1m va, x ≥ 1.3m đi qua</td></tr>
-<tr><td><code>threatLaneFrac</code> phân 45% quái vào làn người chơi, 55% ra rìa</td><td><strong>Có</strong> — đo thực tế <code>front_stream</code> cho 53%</td></tr>
-<tr><td><code>pincer</code> <strong>đón đầu</strong> bằng nghiệm giải tích, không nhắm vào vị trí hiện tại</td><td><strong>Có</strong> — tới sát 1.02m</td></tr>
-<tr><td>Lane spring giữ làn, separation không phá được (trôi ngang 0.00m)</td><td><strong>Có</strong></td></tr>
+<tr><td><strong>Quái ĐỨNG YÊN</strong>, người chơi chạy 4.2 m/s (mô hình Into the Dead)</td><td><strong>Có</strong> — <code>09</code> mục 2c</td></tr>
+<tr><td><strong>3 làn</strong>: giữa 4.0m gây damage, hai bên 2.4m chạy qua vô hại</td><td><strong>Có</strong> — ngưỡng đo được đúng 2.0m</td></tr>
+<tr><td><strong>Vạch làn vẽ trên sàn</strong>, màu theo đuốc của biome</td><td><strong>Có</strong> — không có nó thì luật làn là thông tin ẩn</td></tr>
+<tr><td>Giết quái làn bên = <strong>vàng thêm</strong>, không bắt buộc</td><td><strong>Có</strong></td></tr>
+<tr><td>Khoảng spawn của mọi pattern nằm trong <code>waves.json</code>, có gate cửa sổ phản ứng</td><td><strong>Có</strong></td></tr>
 <tr><td>Quái <code>ranged</code> + Ogre <strong>cắm chân</strong> ở khoảng còn tap được; loại khác <strong>xông tới</strong></td><td><strong>Có</strong></td></tr>
 <tr><td><strong>Súng rút ra / cất đi</strong>: tap-hold rút súng bắn, nhả tay cất + reload</td><td><strong>Có</strong> — có model súng, nhảy lửa đầu nòng</td></tr>
 <tr><td>Huỷ reload khi <strong>còn đạn</strong>; <strong>không</strong> huỷ được khi hết sạch đạn</td><td><strong>Có</strong> — <code>03</code> mục 2b</td></tr>
@@ -2398,7 +2390,7 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <span class="cont"><strong>Đã cài: Goblin Khiên + Ogre Hầm</strong> (xem <code>09</code> mục 2b).</span>
 </ul>
 <h3>4. Prototype đã sửa GDD ở đâu</h3>
-<p>Đây là phần quan trọng nhất của doc này: <strong>prototype tìm ra 16 lỗi mà đọc doc không thấy.</strong></p>
+<p>Đây là phần quan trọng nhất của doc này: <strong>prototype tìm ra 17 lỗi mà đọc doc không thấy.</strong></p>
 <div class="tw"><table>
 <thead><tr><th>#</th><th>Phát hiện</th><th>Sửa</th></tr></thead><tbody>
 <tr><td>1</td><td>17 con cùng đi tới <strong>một điểm</strong> → xếp chồng lên nhau, màn hình thành một bức tường capsule, không đọc được gì</td><td>Thêm separation bằng spatial hash. Đây là thứ doc chưa bao giờ nói tới nhưng bắt buộc phải có</td></tr>
@@ -2419,25 +2411,24 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <thead><tr><th>14</th><th><strong><code>pincer</code> nhắm vào vị trí hiện tại của người chơi thì không bao giờ trúng.</strong> Người chơi chạy tiến 2.4 m/s nên đường chéo cố định cắt qua <strong>phía sau lưng</strong>. Doc tả pattern &quot;vào từ hai bên&quot; mà không nói cách tính hướng</th><th>Giải bài toán <strong>đón đầu</strong> khi spawn (nghiệm dương của <code>(a²+1)hz² + 2ab·hz + b²−1 = 0</code>). Đo: spawn <code>x=3.5</code> cách 12m → hướng <code>(−0.560, 0.829)</code>, tới sát <strong>1.02m</strong> và trúng. Đã ghi vào <code>09</code> mục 2d</th></tr></thead><tbody>
 <tr><td>15</td><td><strong>Cả wave <code>wv_saulung</code> (đánh sau lưng) vô tác dụng.</strong> Nó dùng Goblin Đào Hầm (2.4 m/s = <strong>bằng đúng</strong> người chơi) và Goblin Cùi (2.2). Spawn từ phía sau mà không nhanh hơn thì không bao giờ đuổi tới</td><td>Đào Hầm 2.4 → <strong>3.4</strong>; thay Goblin Cùi bằng Goblin Chạy (4.4). Gate: mọi quái trong wave <code>back_ambush</code> phải có <code>speed &gt; run.speedMps</code></td></tr>
 <tr><td>16</td><td><strong>Separation xoá sạch làn.</strong> Nó được thêm vào ở lỗi #1 để chống quái xếp chồng khi tất cả cùng lao vào một điểm. Giờ quái đi thẳng theo làn thì lực đẩy ngang của nó phá vỡ đúng cái cơ chế &quot;quái ở rìa đi thẳng qua&quot;</td><td>Giảm lực đẩy ngang (<code>sepLateralMult</code> 0.35) và thêm <strong>lane spring</strong> kéo quái về làn spawn. Đẩy dọc giữ nguyên nên quái cùng làn xếp hàng sau nhau. Đo lại: trôi ngang = <strong>0.00m</strong> trên cả 5 làn</td></tr>
+<tr><td>17</td><td><strong><code>ceiling_drop</code> spawn ở 5m là không kịp phản ứng.</strong> Khi quái đứng yên thì tốc độ tiếp cận = tốc độ chạy, nên 5m ở 4.2 m/s chỉ cho <strong>0.62s</strong> trước khi quái tụt khỏi vùng tap được. Và <code>back_ambush</code> spawn <strong>phía sau</strong> thì với quái đứng yên là <strong>không bao giờ gặp được</strong> người chơi</td><td>Khoảng spawn của mọi pattern chuyển vào <code>waves.json</code> (<code>spawnDistM</code>) để director và audit đọc <strong>cùng một nguồn</strong>. Gate: mọi <code>spawnDistM[0] ≥ tapNearM + minReactionSec × speedMps</code> = <strong>7.44m</strong>, và chặn mọi giá trị ≤ 0. <code>ceiling_drop</code> → 9–14m, <code>back_ambush</code> → 9–12m</td></tr>
 </tbody></table></div>
+<blockquote><strong>Lỗi #14 và #16 đã bị chính thiết kế vượt qua.</strong> Khi chuyển sang <strong>quái đứng yên</strong>, bài toán đón đầu của <code>pincer</code> (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó <strong>đã bị bỏ khỏi code</strong>. Lane spring (#16) thì vẫn giữ, nhưng giờ nó chỉ chống separation làm lệch làn khi quái spawn chồng nhau, không còn phải chống lực đẩy dồn theo suốt đường đi. Ghi lại ở đây vì hai lỗi đó <strong>là lỗi thật</strong> ở thời điểm phát hiện, và vì nó cho thấy giá của việc đổi mô hình di chuyển: mọi thứ suy ra từ tốc độ quái đều phải tính lại.</blockquote>
 <p>Ngoài ra prototype xác nhận <strong>công thức số quái phải tính theo <code>composition</code></strong>, không phải <code>tpCost</code> trung bình toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 lần. Đã ghi vào <code>16</code> mục 4.4.</p>
 <h4>Kiểm chứng mô hình quãng đường (test tiền định, <code>ITG.run</code> bước dt cố định)</h4>
 <div class="tw"><table>
 <thead><tr><th>Tình huống</th><th>Kết quả</th><th>Đúng docs?</th></tr></thead><tbody>
-<tr><td>Chạy hết một phòng</td><td><strong>90m / 39.9s</strong>, đủ 3 wave</td><td>✓ <code>07</code> mục 3.5</td></tr>
-<tr><td>Tốc độ chạy thực đo</td><td>23.7m trong 10s = <strong>2.37 m/s</strong></td><td>✓ <code>speedMps</code> 2.4</td></tr>
-<tr><td>Mật độ quái đỉnh trong phòng</td><td>11 con ở giây 10 → <strong>55 con</strong> cuối phòng</td><td>✓ crescendo</td></tr>
-<tr><td>Quái nằm trong vùng <strong>không tap được</strong> (&lt; 2.4m)</td><td><strong>8.7%</strong> số quái phía trước, tại một thời điểm</td><td>—</td></tr>
-<tr><td>Thời gian <strong>lâu nhất</strong> một con ở trong vùng đó</td><td><strong>0.68s</strong> — đi ngang qua, không đậu lại</td><td>✓ (trước đây là vĩnh viễn)</td></tr>
 <tr><td>Va vào người chơi</td><td>mất máu <strong>1 lần</strong>, con quái <strong>biến mất</strong>, <strong>vàng +0</strong></td><td>✓ <code>09</code> mục 2c</td></tr>
 <tr><td>Vị trí quái trên màn hình ở <code>tapNearM</code></td><td><strong>72.1%</strong> (con nhỏ nhất, scale 0.74)</td><td>✓ dải 45–75%</td></tr>
 <tr><td>Quái ranged ở <code>rangedStandoffM</code> 8.5m</td><td><strong>48.7%</strong></td><td>✓</td></tr>
-<tr><td>Ngưỡng làn: quái ở x ≤ 1.1m</td><td><strong>va vào</strong>, mất 6 HP</td><td>✓ <code>09</code> mục 2d</td></tr>
-<tr><td>Ngưỡng làn: quái ở x ≥ 1.3m</td><td><strong>đi thẳng qua</strong>, mất 0 HP</td><td>✓</td></tr>
-<tr><td>Trôi ngang sau ~5s (5 làn khác nhau)</td><td><strong>0.00m</strong> cả 5</td><td>✓ lane spring</td></tr>
-<tr><td><code>pincer</code> đón đầu từ x=3.5 cách 12m</td><td>hướng <code>(−0.560, 0.829)</code>, tới sát <strong>1.02m</strong>, trúng</td><td>✓ khớp phép tính tay</td></tr>
-<tr><td>Một phòng, <strong>không bắn phát nào</strong></td><td>52 con gặp phải, mất <strong>114 HP</strong></td><td>bỏ qua hết = chết, vừa sát ngưỡng</td></tr>
-<tr><td>Quái cùng lúc trên sàn (đỉnh)</td><td><strong>11</strong> (trước khi đi thẳng: 55)</td><td>quái giờ chảy qua thay vì dồn lại</td></tr>
+<tr><td>Quái có đứng yên thật không</td><td>dịch <strong>0.000m</strong> cả trục x và z sau 2s</td><td>✓ <code>09</code> mục 2c</td></tr>
+<tr><td>Tốc độ chạy</td><td><strong>4.2 m/s</strong></td><td>✓ <code>speedMps</code></td></tr>
+<tr><td>Một phòng</td><td><strong>150m / 37.4s</strong>, đủ 3 wave</td><td>✓ (mô hình: 35.7s)</td></tr>
+<tr><td>Ngưỡng làn: quái ở x ≤ 1.9m</td><td>mất <strong>6 HP</strong> (làn giữa)</td><td>✓ đúng <code>midHalfWidthM</code> = 2.0</td></tr>
+<tr><td>Ngưỡng làn: quái ở x ≥ 2.1m</td><td><strong>0 HP</strong> (làn bên)</td><td>✓</td></tr>
+<tr><td>Phân bố thực tế trong một phòng</td><td>56 con: <strong>32 làn giữa / 24 làn bên</strong> (57%)</td><td>✓ <code>midSpawnFrac</code> 0.45</td></tr>
+<tr><td>Một phòng, <strong>không bắn phát nào</strong></td><td>mất <strong>164 HP</strong></td><td>bỏ qua hết làn giữa = chết</td></tr>
+<tr><td>Quái cùng lúc trên sàn (đỉnh)</td><td><strong>14</strong></td><td>quái đứng chờ, không dồn cục</td></tr>
 </tbody></table></div>
 <h4>Kiểm chứng súng và chém liên tục</h4>
 <div class="tw"><table>
@@ -3096,5 +3087,5 @@ powershell -ExecutionPolicy Bypass -File .\deploy_vercel.ps1 -Token &quot;&lt;ve
 </tbody></table></div>
 
 </section>
-<footer><p>Trang này do build_pages.ps1 sinh ra từ data/*.json và docs/*.md — KHÔNG sửa tay. &middot; audit: 75 check</p></footer>
+<footer><p>Trang này do build_pages.ps1 sinh ra từ data/*.json và docs/*.md — KHÔNG sửa tay. &middot; audit: 76 check</p></footer>
 </main></div>

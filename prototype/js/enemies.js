@@ -199,7 +199,8 @@ export class EnemyPool {
         }
       }
       // keo ve lan cu (chi voi quai di song song hanh lang; quai cheo giu nguyen duong cheo)
-      if (e.hx === 0) e.x += (e.lane - e.x) * Math.min(1, RN.laneSpringPerSec * dt);
+      // quai dung yen: luon keo ve lan spawn, separation khong duoc lam lech lan
+      e.x += (e.lane - e.x) * Math.min(1, RN.laneSpringPerSec * dt);
       const lim = 4.0;
       if (e.x < -lim) e.x = -lim;
       if (e.x > lim) e.x = lim;
@@ -212,6 +213,7 @@ export class EnemyPool {
    */
   update(dt, px, pz, fx) {
     const RN = GD.feel.run;
+    const LN = GD.feel.lanes;
     let dmgToPlayer = 0;
     for (const e of this.list) {
       if (!e.alive) continue;
@@ -232,7 +234,7 @@ export class EnemyPool {
          Ngoai le: quai DUNG LAI de danh (ranged / slam) co ngam, nen quay ve nguoi choi.
          Gioi han toc do quay van con y nghia cho Goblin Khien: nguoi choi o lan khac
          thi da tu dong danh vao suon khien no -- hinh hoc lo viec, khong can counter giay. */
-      const want = e.holds ? Math.atan2(dx, dzp) : Math.atan2(e.hx, e.hz);
+      const want = Math.atan2(dx, dzp);      // dung yen cho nguoi choi -> luon huong ve phia no
       const diff = wrapAngle(want - e.face);
       const maxTurn = e.turnRate * dt;
       e.face = wrapAngle(e.face + Math.max(-maxTurn, Math.min(maxTurn, diff)));
@@ -261,35 +263,28 @@ export class EnemyPool {
          COMMIT: quai dang trong telegraph thi KHONG bien mat -- don cua no van ra, dung
          nhu hop dong o docs/09 muc 2b. Khong co ngoai le nay thi chay tien se HUY don
          AoE thay vi phai NE no. */
-      /* zGap = khoang cach DOC theo truc chay. Duong = quai con o phia truoc. */
+      /* ---- QUAI DUNG YEN (docs/09 muc 2d) ----
+         Quai khong di chuyen chut nao. Nguoi choi chay qua chung. He qua:
+           - toc do tiep can = DUY NHAT toc do chay cua nguoi choi
+           - "cua so phan ung" chi phu thuoc khoang cach spawn, khong phu thuoc speed quai
+           - truong `speed` trong enemies.json khong con dieu khien gi (xem docs/09 muc 2d)
+
+         BA LAN: chi quai o LAN GIUA moi va vao nguoi choi. Quai o hai lan ben dung
+         yen cho nguoi choi chay qua va khong lam gi -- giet chung la vang THEM. */
       const zGap = pz - e.z;
-      const laneHalf = RN.contactHalfWidthM + 0.30 * e.scale;
-      const inLane = Math.abs(e.x - px) <= laneHalf;
-      const stopAt = e.holds ? e.atkRange : RN.contactM;
+      const inMidLane = Math.abs(e.x - px) <= LN.midHalfWidthM;
       const behind = -zGap;
 
-      if (!e.holds && Math.abs(zGap) <= RN.contactM && inLane && !e.committed) {
-        /* VA VAO NGUOI CHOI: gay dmg MOT lan roi BIEN MAT.
-           CHI khi cung LAN (inLane). Quai di o hai ben ria di thang qua nguoi choi va
-           khong lam gi ca -- giet chung la vang THEM, khong phai bat buoc (docs/09 muc 2d).
-           Khong roi vang khi va: nguoi choi khong giet no, chi bi no huc phai. */
+      if (!e.holds && Math.abs(zGap) <= RN.contactM && inMidLane && !e.committed) {
+        /* VA VAO NGUOI CHOI: dmg MOT lan roi BIEN MAT, khong roi vang
+           (nguoi choi khong giet no, chi chay vao no). */
         dmgToPlayer += e.dmg;
         fx?.onContact?.(e);
         e.alive = false;
         continue;
-      } else if (!e.holds || zGap > stopAt) {
-        /* DI THANG. Quai KHONG lai theo nguoi choi: x giu nguyen, chi tien theo +Z.
-           Day la ly do quai o ria bo qua duoc, va cung la ly do dam quai trai deu ra
-           ca chieu rong hanh lang thay vi don thanh mot cuc truoc mat. */
-        e.x += e.hx * e.speed * dt;
-        e.z += e.hz * e.speed * dt;
-        e.tele = 0;
-        e.ringShown = false;
-      } else if (behind > RN.contactM && !e.committed) {
-        /* Quai PLANT da bi vuot qua: di thang tiep, va KHONG duoc ban tu phia sau man
-           hinh -- cho nguoi choi khong the thay va khong the giet no. */
-        e.x += e.hx * e.speed * dt;
-        e.z += e.hz * e.speed * dt;
+      } else if (!e.holds || zGap > e.atkRange || behind > RN.contactM) {
+        /* Dung yen: khong lam gi. Quai PLANT chua vao tam, hoac da bi chay qua
+           (khong duoc ban tu phia sau man hinh -- nguoi choi khong the thay no). */
         e.tele = 0;
         e.ringShown = false;
       } else {

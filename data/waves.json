@@ -23,13 +23,14 @@
     },
     "tpSpikeLimit": 1.8,
     "spawnPatterns": {
-      "front_stream": "Tới đều từ chính giữa dải Xa",
-      "pincer": "Hai bên hành lang, lệch nhau 0.8s",
-      "rush_line": "Một hàng ngang, cùng lúc, tốc độ cao",
-      "back_ambush": "Trồi lên từ sàn phía sau người chơi",
-      "ceiling_drop": "Thả từ trần xuống dải Giữa",
-      "far_static": "Đứng yên ở dải Xa, không tiến",
-      "flood": "Spawn liên tục 60+ con trong 6 giây"
+      "_comment": "spawnDistM = khoang cach truoc mat nguoi choi luc spawn. Quai DUNG YEN nen toc do tiep can = toc do chay, vi vay day chinh la cua so phan ung. Audit gate: min >= tapNearM + minReactionSec * speedMps. lane: mixed = theo lanes.midSpawnFrac, sides = chi hai lan ben.",
+      "front_stream": { "desc": "Tới đều từ chính giữa dải Xa", "spawnDistM": [12, 21], "lane": "mixed" },
+      "pincer": { "desc": "Dồn cả hai làn bên, để trống làn giữa", "spawnDistM": [12, 21], "lane": "sides" },
+      "rush_line": { "desc": "Một hàng ngang, cùng lúc", "spawnDistM": [16, 18], "lane": "mixed" },
+      "back_ambush": { "desc": "Hiện ra sát trước mặt — cảnh báo ngắn nhất còn hợp lệ", "spawnDistM": [9, 12], "lane": "mixed" },
+      "ceiling_drop": { "desc": "Thả từ trần xuống dải Giữa", "spawnDistM": [9, 14], "lane": "mixed" },
+      "far_static": { "desc": "Đứng yên ở dải Xa", "spawnDistM": [17, 21], "lane": "mixed" },
+      "flood": { "desc": "Spawn liên tục, dày nhất", "spawnDistM": [11, 22], "lane": "mixed" }
     }
   },
   "waveTemplates": [

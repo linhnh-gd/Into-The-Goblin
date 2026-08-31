@@ -63,7 +63,7 @@
       "sfxSpawn": "ogre_roar", "tags": ["teaches_kbresist", "heavy"],
       "behavior": {
         "kind": "slam",
-        "attackRangeM": 3.4,
+        "attackRangeM": 4.8,
         "telegraphSec": 0.6,
         "aoeRadiusM": 2.5,
         "cooldownSec": 2.6,

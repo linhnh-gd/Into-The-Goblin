@@ -184,86 +184,34 @@ export class Director {
     return null;
   }
 
-  /* Quai DI THANG (docs/09 muc 2d): huong co dinh tu luc spawn, khong lai theo nguoi
-     choi. Nen x luc spawn LA cai quyet dinh con nay co va vao nguoi choi hay khong.
+  /* BA LAN (docs/09 muc 2d). Quai DUNG YEN nen x luc spawn la vinh vien:
+       lan GIUA  (|x| <= lanes.midHalfWidthM) -> se va vao nguoi choi
+       hai lan BEN                            -> nguoi choi chay qua, khong cham duoc
 
-     Vi sao can threatLaneFrac: hanh lang rong 9m, lan nguoi choi rong ~1.7m. Trai deu
-     thi chi ~23% quai la moi de thuc su, con lai thanh trang tri -- va ngan sach TP
-     (tinh khi MOI con deu la moi de) bong nhien de gap 4 lan. */
+     Quai lan giua spawn quanh truc (jitter +-midSpawnJitterM) chu khong trai het ca
+     lan: neu de mot con dung o x = 1.9 ma van gay dmg thi nguoi choi thay no di qua
+     canh minh 1.9m roi mat mau -- doc ra nhu loi. Giua 0.9 va 2.0 la vung TRONG.
+
+     KHOANG SPAWN: quai dung yen nen toc do tiep can = toc do chay. Moi pattern phai
+     spawn xa hon tapNearM + minReactionSec * speedMps (audit co gate). */
   _spawnOne(id, px, pz) {
     const rnd = this.spawnRnd || Math.random;
-    const RN = GD.feel.run;
-    const half = RN.contactHalfWidthM;
-    const edgeMax = Math.max(half + 0.5, HALL_W / 2 - 0.9);
+    const LN = GD.feel.lanes;
+    const pat = GD.waves.directorRules.spawnPatterns[this.spawnPattern] || {};
+    const dist = pat.spawnDistM || [12, 21];
 
-    let x;
-    if (rnd() < RN.threatLaneFrac) {
-      x = px + (rnd() - 0.5) * 2 * half;                 // LAN GIUA: se va vao nguoi choi
-    } else {
-      const side = rnd() < 0.5 ? -1 : 1;                 // RIA: di thang qua, giet la vang them
-      x = px + side * (half + 0.35 + rnd() * Math.max(0.1, edgeMax - half - 0.35));
-    }
-    let z = pz - (12 + rnd() * 9);
-    let aimed = false;
+    const sideX = () => {
+      const side = rnd() < 0.5 ? -1 : 1;
+      return px + side * (LN.midHalfWidthM + 0.3 + rnd() * Math.max(0.1, LN.sideWidthM - 0.6));
+    };
+    const x = pat.lane === 'sides'
+      ? sideX()
+      : (rnd() < LN.midSpawnFrac ? px + (rnd() - 0.5) * 2 * LN.midSpawnJitterM : sideX());
 
-    switch (this.spawnPattern) {
-      case 'pincer':
-        // Gong kim: vao tu hai ben ria nhung di theo duong CHEO cat qua lan nguoi choi.
-        // Van la di thang (huong co dinh), chi khong song song voi hanh lang.
-        x = px + (rnd() < 0.5 ? -1 : 1) * (HALL_W / 2 - 1 - rnd() * 0.8);
-        aimed = true;
-        break;
-      case 'rush_line':
-        z = pz - (16 + rnd() * 2);
-        break;
-      case 'back_ambush':
-        z = pz + (3 + rnd() * 4);
-        // khong nham: quai o sau chi can DUOI, va phai nhanh hon nguoi choi (audit gate)
-        break;
-      case 'ceiling_drop':
-        z = pz - (5 + rnd() * 5);
-        break;
-      case 'far_static':
-        z = pz - (17 + rnd() * 4);
-        break;
-      case 'flood':
-        z = pz - (11 + rnd() * 11);
-        break;
-    }
+    const z = pz - (dist[0] + rnd() * Math.max(0, dist[1] - dist[0]));
 
     const e = this.pool.spawn(id, x, z, this.R, this.waveIdx);
     if (!e) return e;
-    if (this.spawnPattern === 'far_static') e.speed *= 0.18;
-
-    /* Huong DI THANG. Quai o phia truoc (z < pz) di theo +Z; quai o phia SAU phai di
-       theo -Z de duoi -- va chi duoi kip neu speed > run.speedMps (audit co gate). */
-    e.hz = (pz - z) >= 0 ? 1 : -1;
-    e.hx = 0;
-
-    if (aimed) {
-      /* DON DAU. Nguoi choi chay -Z voi toc do sp; quai di thang voi se tu (x, z).
-         Giai huong (hx, hz) sao cho hai duong gap nhau:
-             x + se*hx*t = px          z + se*hz*t = pz - sp*t
-         Dat B = pz - z, k = (px - x)/(se*B), a = k*se, b = k*sp:
-             (a^2+1)*hz^2 + 2ab*hz + (b^2-1) = 0
-         Lay nghiem duong. Nham vao VI TRI HIEN TAI la sai: nguoi choi con chay tiep
-         nen duong cheo se cat qua PHIA SAU lung, khong bao gio gap. */
-      const B = pz - z;
-      const se = e.speed;
-      if (B > 0.01 && se > 0.01) {
-        const k = (px - x) / (se * B);
-        const a = k * se;
-        const b = k * GD.feel.run.speedMps;
-        const disc = a * a - b * b + 1;
-        if (disc > 0) {
-          const hz = (-a * b + Math.sqrt(disc)) / (a * a + 1);
-          const hx = a * hz + b;
-          const len = Math.hypot(hx, hz) || 1;
-          e.hx = hx / len;
-          e.hz = hz / len;
-        }
-      }
-    }
     e.lane = e.x;
     return e;
   }

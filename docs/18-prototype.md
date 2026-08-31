@@ -39,11 +39,11 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 | Thanh **MÉT** + thanh tiến độ dưới màn hình | **Có** |
 | Số wave = quãng đường / 30m, `tpBudget(R,w)` tăng theo w → **wave sau dồn dập hơn** | **Có** |
 | Quái tới được người chơi thì **gây dmg 1 lần rồi biến mất**, không rơi vàng | **Có** — `09` mục 2c |
-| **Quái đi thẳng**, hướng cố định từ lúc spawn — không lái theo người chơi | **Có** — `09` mục 2d |
-| Quái ở **rìa hành lang đi thẳng qua**, không gây damage; giết là **vàng thêm** | **Có** — ngưỡng đo được: x ≤ 1.1m va, x ≥ 1.3m đi qua |
-| `threatLaneFrac` phân 45% quái vào làn người chơi, 55% ra rìa | **Có** — đo thực tế `front_stream` cho 53% |
-| `pincer` **đón đầu** bằng nghiệm giải tích, không nhắm vào vị trí hiện tại | **Có** — tới sát 1.02m |
-| Lane spring giữ làn, separation không phá được (trôi ngang 0.00m) | **Có** |
+| **Quái ĐỨNG YÊN**, người chơi chạy 4.2 m/s (mô hình Into the Dead) | **Có** — `09` mục 2c |
+| **3 làn**: giữa 4.0m gây damage, hai bên 2.4m chạy qua vô hại | **Có** — ngưỡng đo được đúng 2.0m |
+| **Vạch làn vẽ trên sàn**, màu theo đuốc của biome | **Có** — không có nó thì luật làn là thông tin ẩn |
+| Giết quái làn bên = **vàng thêm**, không bắt buộc | **Có** |
+| Khoảng spawn của mọi pattern nằm trong `waves.json`, có gate cửa sổ phản ứng | **Có** |
 | Quái `ranged` + Ogre **cắm chân** ở khoảng còn tap được; loại khác **xông tới** | **Có** |
 | **Súng rút ra / cất đi**: tap-hold rút súng bắn, nhả tay cất + reload | **Có** — có model súng, nhảy lửa đầu nòng |
 | Huỷ reload khi **còn đạn**; **không** huỷ được khi hết sạch đạn | **Có** — `03` mục 2b |
@@ -81,7 +81,7 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 
 ## 4. Prototype đã sửa GDD ở đâu
 
-Đây là phần quan trọng nhất của doc này: **prototype tìm ra 16 lỗi mà đọc doc không thấy.**
+Đây là phần quan trọng nhất của doc này: **prototype tìm ra 17 lỗi mà đọc doc không thấy.**
 
 | # | Phát hiện | Sửa |
 |---|---|---|
@@ -102,6 +102,14 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 | 14 | **`pincer` nhắm vào vị trí hiện tại của người chơi thì không bao giờ trúng.** Người chơi chạy tiến 2.4 m/s nên đường chéo cố định cắt qua **phía sau lưng**. Doc tả pattern "vào từ hai bên" mà không nói cách tính hướng | Giải bài toán **đón đầu** khi spawn (nghiệm dương của `(a²+1)hz² + 2ab·hz + b²−1 = 0`). Đo: spawn `x=3.5` cách 12m → hướng `(−0.560, 0.829)`, tới sát **1.02m** và trúng. Đã ghi vào `09` mục 2d |
 | 15 | **Cả wave `wv_saulung` (đánh sau lưng) vô tác dụng.** Nó dùng Goblin Đào Hầm (2.4 m/s = **bằng đúng** người chơi) và Goblin Cùi (2.2). Spawn từ phía sau mà không nhanh hơn thì không bao giờ đuổi tới | Đào Hầm 2.4 → **3.4**; thay Goblin Cùi bằng Goblin Chạy (4.4). Gate: mọi quái trong wave `back_ambush` phải có `speed > run.speedMps` |
 | 16 | **Separation xoá sạch làn.** Nó được thêm vào ở lỗi #1 để chống quái xếp chồng khi tất cả cùng lao vào một điểm. Giờ quái đi thẳng theo làn thì lực đẩy ngang của nó phá vỡ đúng cái cơ chế "quái ở rìa đi thẳng qua" | Giảm lực đẩy ngang (`sepLateralMult` 0.35) và thêm **lane spring** kéo quái về làn spawn. Đẩy dọc giữ nguyên nên quái cùng làn xếp hàng sau nhau. Đo lại: trôi ngang = **0.00m** trên cả 5 làn |
+| 17 | **`ceiling_drop` spawn ở 5m là không kịp phản ứng.** Khi quái đứng yên thì tốc độ tiếp cận = tốc độ chạy, nên 5m ở 4.2 m/s chỉ cho **0.62s** trước khi quái tụt khỏi vùng tap được. Và `back_ambush` spawn **phía sau** thì với quái đứng yên là **không bao giờ gặp được** người chơi | Khoảng spawn của mọi pattern chuyển vào `waves.json` (`spawnDistM`) để director và audit đọc **cùng một nguồn**. Gate: mọi `spawnDistM[0] ≥ tapNearM + minReactionSec × speedMps` = **7.44m**, và chặn mọi giá trị ≤ 0. `ceiling_drop` → 9–14m, `back_ambush` → 9–12m |
+
+> **Lỗi #14 và #16 đã bị chính thiết kế vượt qua.** Khi chuyển sang **quái đứng yên**, bài toán đón đầu của
+> `pincer` (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó **đã bị bỏ khỏi code**.
+> Lane spring (#16) thì vẫn giữ, nhưng giờ nó chỉ chống separation làm lệch làn khi quái spawn chồng nhau,
+> không còn phải chống lực đẩy dồn theo suốt đường đi. Ghi lại ở đây vì hai lỗi đó **là lỗi thật** ở thời điểm
+> phát hiện, và vì nó cho thấy giá của việc đổi mô hình di chuyển: mọi thứ suy ra từ tốc độ quái đều phải tính lại.
+
 Ngoài ra prototype xác nhận **công thức số quái phải tính theo `composition`**, không phải `tpCost` trung bình
 toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 lần. Đã ghi vào `16` mục 4.4.
 
@@ -109,20 +117,17 @@ toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 l
 
 | Tình huống | Kết quả | Đúng docs? |
 |---|---|---|
-| Chạy hết một phòng | **90m / 39.9s**, đủ 3 wave | ✓ `07` mục 3.5 |
-| Tốc độ chạy thực đo | 23.7m trong 10s = **2.37 m/s** | ✓ `speedMps` 2.4 |
-| Mật độ quái đỉnh trong phòng | 11 con ở giây 10 → **55 con** cuối phòng | ✓ crescendo |
-| Quái nằm trong vùng **không tap được** (< 2.4m) | **8.7%** số quái phía trước, tại một thời điểm | — |
-| Thời gian **lâu nhất** một con ở trong vùng đó | **0.68s** — đi ngang qua, không đậu lại | ✓ (trước đây là vĩnh viễn) |
 | Va vào người chơi | mất máu **1 lần**, con quái **biến mất**, **vàng +0** | ✓ `09` mục 2c |
 | Vị trí quái trên màn hình ở `tapNearM` | **72.1%** (con nhỏ nhất, scale 0.74) | ✓ dải 45–75% |
 | Quái ranged ở `rangedStandoffM` 8.5m | **48.7%** | ✓ |
-| Ngưỡng làn: quái ở x ≤ 1.1m | **va vào**, mất 6 HP | ✓ `09` mục 2d |
-| Ngưỡng làn: quái ở x ≥ 1.3m | **đi thẳng qua**, mất 0 HP | ✓ |
-| Trôi ngang sau ~5s (5 làn khác nhau) | **0.00m** cả 5 | ✓ lane spring |
-| `pincer` đón đầu từ x=3.5 cách 12m | hướng `(−0.560, 0.829)`, tới sát **1.02m**, trúng | ✓ khớp phép tính tay |
-| Một phòng, **không bắn phát nào** | 52 con gặp phải, mất **114 HP** | bỏ qua hết = chết, vừa sát ngưỡng |
-| Quái cùng lúc trên sàn (đỉnh) | **11** (trước khi đi thẳng: 55) | quái giờ chảy qua thay vì dồn lại |
+| Quái có đứng yên thật không | dịch **0.000m** cả trục x và z sau 2s | ✓ `09` mục 2c |
+| Tốc độ chạy | **4.2 m/s** | ✓ `speedMps` |
+| Một phòng | **150m / 37.4s**, đủ 3 wave | ✓ (mô hình: 35.7s) |
+| Ngưỡng làn: quái ở x ≤ 1.9m | mất **6 HP** (làn giữa) | ✓ đúng `midHalfWidthM` = 2.0 |
+| Ngưỡng làn: quái ở x ≥ 2.1m | **0 HP** (làn bên) | ✓ |
+| Phân bố thực tế trong một phòng | 56 con: **32 làn giữa / 24 làn bên** (57%) | ✓ `midSpawnFrac` 0.45 |
+| Một phòng, **không bắn phát nào** | mất **164 HP** | bỏ qua hết làn giữa = chết |
+| Quái cùng lúc trên sàn (đỉnh) | **14** | quái đứng chờ, không dồn cục |
 
 ### Kiểm chứng súng và chém liên tục
 

@@ -97,6 +97,17 @@ export class World {
     this.ribs.count = k;
     this.ribs.instanceMatrix.needsUpdate = true;
     g.add(this.ribs);
+    /* VACH LAN tren san. Bat buoc phai co: luat "chi quai lan giua gay dmg" chi cong
+       bang khi nguoi choi NHIN THAY duoc ranh gioi lan. Khong co vach thi viec con nao
+       nguy hiem la thong tin an. */
+    const LN = GD.feel.lanes;
+    this.matLane = new THREE.MeshBasicMaterial({ color: 0xffc53d, transparent: true, opacity: LN.markerOpacity });
+    for (const sx of [-1, 1]) {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(LN.markerWidthM, LEN), this.matLane);
+      m.rotation.x = -Math.PI / 2;
+      m.position.set(sx * LN.midHalfWidthM, 0.012, -LEN / 2 + 20);
+      g.add(m);
+    }
   }
 
   setDepth(d) {
@@ -106,6 +117,7 @@ export class World {
     this.matWall.color.setHex(b.wall);
     this.matFloor.color.setHex(b.floor);
     this.torch.color.setHex(b.light);
+    this.matLane.color.setHex(b.light);
     this.torchBase = b.i;
     this.torch.intensity = b.i;
   }

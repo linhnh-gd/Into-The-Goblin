@@ -690,40 +690,52 @@ Assert-True 'ENEMY' 'Don AoE: vua trung duoc khi dung im, vua ne duoc bang 1 Buo
     ($badAoe.Count -eq 0) `
     ("impact = max(contactM, attackRange - speed*telegraph)" + $(if ($badAoe.Count) { ' | ' + ($badAoe -join ' ; ') } else { '' }))
 
-# ================== LAN (quai di thang, khong lai theo nguoi choi) ==================
-# Quai di thang nen x luc spawn quyet dinh no co va vao nguoi choi hay khong. Con o
-# ria di thang qua va khong lam gi -- giet chung la vang THEM.
-$laneFull = 2.0 * [double]$gdRun.contactHalfWidthM
-Assert-True 'RUN' 'Lan nguoi choi hep hon hanh lang (quai o ria phai di thang qua duoc)' `
-    ($laneFull -lt 9.0 -and [double]$gdRun.contactHalfWidthM -gt 0) `
-    ("lan rong {0:N2}m tren hanh lang 9m -> trai deu thi chi {1:N0}% quai la moi de" -f $laneFull, (100.0 * $laneFull / 9.0))
+# ================== LAN (3 lan, quai dung yen) ==================
+$gdLan = $gdFel.lanes
+Assert-True 'RUN' 'Lan giua rong hon moi lan ben (yeu cau thiet ke)' `
+    ((2.0 * [double]$gdLan.midHalfWidthM) -gt [double]$gdLan.sideWidthM) `
+    ("lan giua rong {0:N2}m, moi lan ben {1:N2}m; hanh lang 9m" -f (2.0 * [double]$gdLan.midHalfWidthM), [double]$gdLan.sideWidthM)
 
-# Neu khong co threatLaneFrac thi ngan sach TP (tinh khi MOI con la moi de) bong nhien
-# de gap ~4 lan. Duoi 0.30 thi phan lon spawn thanh trang tri; tren 0.70 thi co che lan
-# khong con y nghia vi gan nhu con nao cung va vao nguoi choi.
-Assert-True 'RUN' 'threatLaneFrac nam trong 0.30-0.70 (lan van co y nghia, ma khong rong)' `
-    ([double]$gdRun.threatLaneFrac -ge 0.30 -and [double]$gdRun.threatLaneFrac -le 0.70) `
-    ("threatLaneFrac = {0:N2}" -f [double]$gdRun.threatLaneFrac)
+# Quai lan giua spawn quanh truc chu khong trai het lan: neu mot con dung o sat ranh
+# lan (1.9m) ma van gay dmg thi nguoi choi thay no di qua canh minh roi mat mau.
+Assert-True 'RUN' 'Quai lan giua spawn quanh truc, khong trai sat ranh lan' `
+    ([double]$gdLan.midSpawnJitterM -gt 0 -and [double]$gdLan.midSpawnJitterM -lt [double]$gdLan.midHalfWidthM) `
+    ("jitter +-{0:N2}m trong lan +-{1:N2}m -> vung trong {2:N2}m..{1:N2}m khong co quai nao" -f [double]$gdLan.midSpawnJitterM, [double]$gdLan.midHalfWidthM, [double]$gdLan.midSpawnJitterM)
 
-Assert-True 'RUN' 'Lane spring keo quai ve lan nhanh hon separation day no ra' `
+Assert-True 'RUN' 'midSpawnFrac nam trong 0.30-0.70' `
+    ([double]$gdLan.midSpawnFrac -ge 0.30 -and [double]$gdLan.midSpawnFrac -le 0.70) `
+    ("midSpawnFrac = {0:N2} -> {1:N0}% quai la moi de, con lai la vang them" -f [double]$gdLan.midSpawnFrac, (100.0 * [double]$gdLan.midSpawnFrac))
+
+Assert-True 'RUN' 'Lane spring ton tai va separation khong day ngang qua manh' `
     ([double]$gdRun.laneSpringPerSec -gt 0 -and [double]$gdRun.sepLateralMult -gt 0 -and [double]$gdRun.sepLateralMult -lt 1) `
     ("laneSpringPerSec {0:N1}/s, sepLateralMult {1:N2}" -f [double]$gdRun.laneSpringPerSec, [double]$gdRun.sepLateralMult)
 
-# WAVE DANH SAU LUNG: nguoi choi luon chay tien, nen quai spawn o phia sau chi duoi kip
-# neu NHANH HON. Quai cham hon = ca wave thanh do trang tri, khong bao giu cham duoc.
-$badBack = @()
-foreach ($itW in @($gdWav.waveTemplates | Where-Object { $_.spawnPattern -eq 'back_ambush' })) {
-    foreach ($itC in @($itW.composition)) {
-        $en = $gdEne.enemies | Where-Object { $_.id -eq $itC.enemy } | Select-Object -First 1
-        if ($en -and [double]$en.speed -le [double]$gdRun.speedMps) {
-            $badBack += ("$($itW.id) dung $($itC.enemy) speed $($en.speed) <= chay $($gdRun.speedMps)")
-        }
+# ================== CUA SO PHAN UNG ==================
+# QUAI DUNG YEN nen toc do tiep can = DUY NHAT toc do chay cua nguoi choi. Cua so phan
+# ung vi vay do KHOANG CACH SPAWN quyet dinh, khong phai speed quai.
+$needDist = [double]$gdRun.tapNearM + [double]$gdRun.minReactionSec * [double]$gdRun.speedMps
+$badSpawn = @()
+$pats = $gdWav.directorRules.spawnPatterns
+foreach ($pn in @($pats.PSObject.Properties.Name | Where-Object { $_ -ne '_comment' })) {
+    $p = $pats.$pn
+    if ($null -eq $p.spawnDistM) { $badSpawn += "$pn thieu spawnDistM"; continue }
+    $lo = [double]$p.spawnDistM[0]
+    if ($lo -le 0) { $badSpawn += "$pn spawn PHIA SAU ($lo m) -- quai dung yen thi khong bao gio gap duoc"; continue }
+    if ($lo -lt $needDist) {
+        $badSpawn += ("$pn spawn o {0:N1}m -> chi {1:N2}s truoc khi tut khoi vung tap duoc" -f $lo, (($lo - [double]$gdRun.tapNearM) / [double]$gdRun.speedMps))
     }
 }
-Assert-True 'WAVE' 'Wave danh sau lung chi dung quai nhanh hon nguoi choi' `
-    ($badBack.Count -eq 0) `
-    ("quai cham hon thi khong bao gio duoi cham -> ca wave vo tac dung" +
-     $(if ($badBack.Count) { ' | VI PHAM: ' + ($badBack -join ', ') } else { ': 0 vi pham' }))
+Assert-True 'WAVE' 'Moi spawn pattern cho du cua so phan ung (quai dung yen)' `
+    ($badSpawn.Count -eq 0) `
+    ("can spawn xa >= tapNearM + minReactionSec*speedMps = {0:N2}m" -f $needDist) `
+    -failStatus 'FAIL'
+if ($badSpawn.Count) { $auditResults[-1].Detail += ' | VI PHAM: ' + ($badSpawn -join ' ; ') }
+
+$windowSec = ([double]$gdRun.tapFarM - [double]$gdRun.tapNearM) / [double]$gdRun.speedMps
+Assert-True 'RUN' 'Cua so tu luc thay quai den luc no tut khoi vung tap duoc' `
+    ($windowSec -ge [double]$gdRun.minReactionSec) `
+    ("(tapFar {0:N1} - tapNear {1:N1}) / chay {2:N1} = {3:N2}s (can >= {4:N2}s)" -f [double]$gdRun.tapFarM, [double]$gdRun.tapNearM, [double]$gdRun.speedMps, $windowSec, [double]$gdRun.minReactionSec)
+
 # CUA SO TELEGRAPH: quai PLANT phai co du thoi gian vung truoc khi nguoi choi
 # chay den contactM va don no ra sau. Neu khong, don dac trung cua no khong bao gio
 # thay duoc -- prototype cho thay Ogre bi chay qua truoc khi kip dap (docs/18 loi #11).
@@ -739,14 +751,6 @@ foreach ($itT in @($gdEne.enemies | Where-Object { $_.behavior -and $_.behavior.
 Assert-True 'ENEMY' 'Quai PLANT co du cua so de vung truoc khi bi chay qua' `
     ($badTele.Count -eq 0) `
     ("cua so = (attackRangeM - contactM) / speedMps" + $(if ($badTele.Count) { ' | ' + ($badTele -join ' ; ') } else { '' }))
-# CUA SO PHAN UNG: quai nhanh nhat phai o trong dai tap duoc du lau de kip xu ly.
-$fastest = (($gdEne.enemies | ForEach-Object { [double]$_.speed } | Measure-Object -Maximum).Maximum)
-$closing = [double]$gdRun.speedMps + $fastest
-$window = ([double]$gdRun.tapFarM - [double]$gdRun.tapNearM) / $closing
-Assert-True 'ENEMY' 'Cua so phan ung voi quai nhanh nhat >= minReactionSec' `
-    ($window -ge [double]$gdRun.minReactionSec) `
-    ("nhanh nhat {0:N1} m/s + chay {1:N1} = {2:N1} m/s; cua so {3:N2}s (can >= {4:N2}s)" -f $fastest, [double]$gdRun.speedMps, $closing, $window, [double]$gdRun.minReactionSec)
-
 # Do dai phong tinh theo quang duong, khong phai theo dong ho.
 $roomSec = [double]$gdRun.roomDistanceM / [double]$gdRun.speedMps
 $nWaves = [Math]::Round([double]$gdRun.roomDistanceM / [double]$gdRun.waveSegmentM)

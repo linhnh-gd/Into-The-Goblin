@@ -119,18 +119,20 @@ Phòng **không** kết thúc khi diệt hết quái. Phòng kết thúc khi ng�
 
 | Số (ở `data/gamefeel.json` khối `run`) | Giá trị | Ý nghĩa |
 |---|---|---|
-| `speedMps` | 2.4 | Người chơi tự chạy, không có nút di chuyển |
-| `roomDistanceM` | 90 | Một phòng = 90m ≈ **37.5s** |
-| `waveSegmentM` | 30 | 90 / 30 = **3 wave**, mỗi wave một đoạn đường |
+| `speedMps` | **4.2** | Người chơi tự chạy, không có nút di chuyển. **Quái đứng yên** |
+| `roomDistanceM` | **150** | Một phòng = 150m ≈ **35.7s** |
+| `waveSegmentM` | **50** | 150 / 50 = **3 wave**, mỗi wave một đoạn đường |
 | `densityRampEnd` | 1.35 | Số mũ đường cong ra quái trong một đoạn: cuối đoạn đông hơn đầu đoạn |
-| `contactM` | 1.0 | Quái tới đây thì **va vào người chơi** |
+| `contactM` | 1.0 | Người chơi chạy vào trong khoảng này thì **va phải quái** |
+| `lanes.midHalfWidthM` | 2.0 | **Làn giữa (±2.0m) là làn duy nhất gây damage** — xem `09` mục 2c |
 | `tapNearM` | 2.4 | Khoảng gần nhất mà quái còn **tap được** (xem mục dưới) |
 
 **Wave sau dồn dập hơn mà không cần dial:** số wave suy ra từ quãng đường, và `tpBudget(R, w)` đã tăng theo `w`
 (`×1.18` mỗi wave). Nên một phòng 90m tự động là ba đợt tăng dần — không có tham số "độ khó" nào phải tinh chỉnh tay.
 
-**Quái không giết kịp thì VA vào người chơi:** gây damage **một lần** rồi **biến mất**, và **không rơi vàng**
-(người chơi không giết nó). Đây là áp lực thay thế cho "diệt hết": bỏ qua quái thì mất máu, không phải mất thời gian.
+**Quái ở làn giữa mà không giết kịp thì người chơi VA phải:** mất máu **một lần**, quái **biến mất**, và
+**không rơi vàng**. Quái ở hai làn bên thì chạy qua vô hại — giết chúng là **vàng thêm**. Đây là áp lực
+thay thế cho "diệt hết": bỏ qua làn giữa thì mất máu, bỏ qua làn bên thì chỉ mất bonus.
 
 > **Sương Đen mất lý do tồn tại ở phòng thường.** Nó được thiết kế để chống cắm phòng (`08`). Trong mô hình
 > quãng đường người chơi **không thể** cắm phòng — luôn bị đẩy về phía trước. Áp lực chống thụ động giờ là

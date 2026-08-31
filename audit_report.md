@@ -2,7 +2,7 @@
 
 > File nay do `audit_gdd.ps1` sinh ra. KHONG sua tay.
 
-**PASS 73 / WARN 2 / FAIL 0** trong 75 check.
+**PASS 74 / WARN 2 / FAIL 0** trong 76 check.
 
 | Nhom | Trang thai | Check | Chi tiet |
 |---|---|---|---|
@@ -71,13 +71,14 @@
 | RUN | **PASS** | Quai ranged o rangedStandoffM van trong dai man hinh | o 8.5m nam o 48.7%; cho phep 45-75% |
 | WEAPON | **PASS** | Moi vu khi can chien voi xa hon khoang quai dung (tapNearM + margin) | can >= 2.80m; ngan nhat hien tai = 2.80m |
 | ENEMY | **PASS** | Don AoE: vua trung duoc khi dung im, vua ne duoc bang 1 Buoc Lui | impact = max(contactM, attackRange - speed*telegraph) |
-| RUN | **PASS** | Lan nguoi choi hep hon hanh lang (quai o ria phai di thang qua duoc) | lan rong 1.70m tren hanh lang 9m -> trai deu thi chi 19% quai la moi de |
-| RUN | **PASS** | threatLaneFrac nam trong 0.30-0.70 (lan van co y nghia, ma khong rong) | threatLaneFrac = 0.45 |
-| RUN | **PASS** | Lane spring keo quai ve lan nhanh hon separation day no ra | laneSpringPerSec 3.2/s, sepLateralMult 0.35 |
-| WAVE | **PASS** | Wave danh sau lung chi dung quai nhanh hon nguoi choi | quai cham hon thi khong bao gio duoi cham -> ca wave vo tac dung: 0 vi pham |
+| RUN | **PASS** | Lan giua rong hon moi lan ben (yeu cau thiet ke) | lan giua rong 4.00m, moi lan ben 2.40m; hanh lang 9m |
+| RUN | **PASS** | Quai lan giua spawn quanh truc, khong trai sat ranh lan | jitter +-0.90m trong lan +-2.00m -> vung trong 0.90m..2.00m khong co quai nao |
+| RUN | **PASS** | midSpawnFrac nam trong 0.30-0.70 | midSpawnFrac = 0.45 -> 45% quai la moi de, con lai la vang them |
+| RUN | **PASS** | Lane spring ton tai va separation khong day ngang qua manh | laneSpringPerSec 3.2/s, sepLateralMult 0.35 |
+| WAVE | **PASS** | Moi spawn pattern cho du cua so phan ung (quai dung yen) | can spawn xa >= tapNearM + minReactionSec*speedMps = 7.44m |
+| RUN | **PASS** | Cua so tu luc thay quai den luc no tut khoi vung tap duoc | (tapFar 14.0 - tapNear 2.4) / chay 4.2 = 2.76s (can >= 1.20s) |
 | ENEMY | **PASS** | Quai PLANT co du cua so de vung truoc khi bi chay qua | cua so = (attackRangeM - contactM) / speedMps |
-| ENEMY | **PASS** | Cua so phan ung voi quai nhanh nhat >= minReactionSec | nhanh nhat 5.2 m/s + chay 2.4 = 7.6 m/s; cua so 1.53s (can >= 1.20s) |
-| WAVE | **PASS** | Do dai 1 phong (quang duong / toc do) nam trong 25-60 giay | 90m / 2.4 m/s = 37.5s, chia 3 wave x 30m |
+| WAVE | **PASS** | Do dai 1 phong (quang duong / toc do) nam trong 25-60 giay | 150m / 4.2 m/s = 35.7s, chia 3 wave x 50m |
 | FEEL | **PASS** | Chem lien tuc co tran: giu toi da 2-5s roi het stamina | stamina 100 / 34 moi giay = 2.94s giu lien tuc; moi con an dmg toi da 1 lan moi 0.22s |
 | FEEL | **PASS** | Chem lien tuc yeu hon nhat chem don (khong thay the han) | slideTickDamageMult = 0.62 |
 | FEEL | **PASS** | Sung o ngoai du lau de doc duoc trang thai (gunHoldSec >= drawSec) | gunHoldSec 0.30s vs drawSec 0.14s + holsterSec 0.18s |
