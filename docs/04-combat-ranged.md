@@ -126,6 +126,34 @@ shotgun **1 phát** (4 viên ghém), nỏ **1 phát** (446 sát thương).
 Hai gate mới: mọi súng phải có `dmg ≥ rangedMinDmg`, và `rpm` phải nằm trong dải của archetype nó. Không có
 gate thứ hai thì các archetype sẽ trôi về gần nhau khi tinh chỉnh, và lý do có nhiều loại súng biến mất.
 
+
+## 5c. Một phát đạn chạm vào đám quái thế nào — theo từng archetype
+
+`weapons.json` → `balance.archetypeHit`. **Đây mới là thứ phân biệt shotgun với rifle, không phải sát thương.**
+
+| Kiểu | Archetype | Cách chạm |
+|---|---|---|
+| `single` | pistol · rifle · smg · lmg · minigun | 1 mục tiêu |
+| `spread` | **shotgun** · flamer | Chia viên ghém ra **nhiều con** gần nhất, mỗi con ăn phần của nó |
+| `pierce` | marksman (1) · crossbow (2) · **sniper (4)** | Xuyên qua con đầu, trúng thêm n con **phía sau nó trên cùng trục** |
+| `aoe` | launcher (3.2m) · deeptech (2.4m) · acid (1.8m) | Nổ theo bán kính quanh điểm trúng, có vòng hiển thị |
+
+Trước đây **mọi** súng đều dùng `dmg × pellets` **dồn hết vào một con**. Shotgun 4 viên ghém vì thế chỉ giết
+được **1 quái** — không khác gì rifle, chỉ là bắn chậm hơn. Đó là lỗi #33 ở `18`.
+
+Đo sau khi sửa, cùng một cảnh 6 con (4 làn giữa rải theo độ sâu, 2 làn bên):
+
+| Súng | Số con trúng 1 phát | Sát thương mỗi con |
+|---|---|---|
+| Gọng Sắt (rifle) | **1** | 120 |
+| Miệng Hang (shotgun) | **4** | 120 mỗi con |
+| Gai Mực (nỏ, xuyên 2) | **3** | full mỗi con |
+
+> **Lưu ý cân bằng:** `spread` giữ nguyên tổng sát thương một phát (chia ra chứ không nhân lên), nên nó
+> **không** phá đường cong DPS. Nhưng `pierce` và `aoe` thì **có** nhân lên trong đám đông — mô hình
+> `dpsSustained` chỉ đo đơn mục tiêu. Đó là bản sắc của archetype, không phải lỗi; nhưng khi tinh chỉnh
+> `pierce`/`aoeRadiusM` thì phải nhớ chúng nằm **ngoài** ngân sách DPS.
+
 ## 6. Knockback từ đạn (docs: "quái chết thì bị đẩy lùi về phía sau")
 
 | | Công thức |

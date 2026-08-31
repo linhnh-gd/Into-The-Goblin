@@ -63,9 +63,9 @@
 | CARD | **PASS** | The cuc manh (delta >= 80%) phai co gia phai tra | khong co gia: khong |
 | FEEL | **PASS** | Luat juice: cap rung, do tre input, hitstop, coin chime | shake cap 26px / input 3 frame / 9 hitstop; sai: 0 |
 | FEEL | **PASS** | Rung khi chem phai co huong theo vector slide | 3 su kien rung theo vector slide |
-| CTRL | **PASS** | Vung chet giua goc chem va goc di chuyen >= 5 do | melee <= 55 deg, move >= 65 deg, dead zone = 10 deg |
-| CTRL | **PASS** | Co phuong an thoat cho rui ro R1 (Che do Hai Vung) | ac_haivung ton tai |
-| CTRL | **PASS** | Co gesture cho ca tam xa va can chien, va co vung chet | ranged=4, melee=2, deadzone=1 |
+| CTRL | **PASS** | Co gesture cho ca tam xa va can chien | ranged=4, melee=2 |
+| CTRL | **PASS** | Khong con gesture di chuyen, va khong con vung chet | Bo quet doc thi moi cu quet deu la chem -> vung chet 55-65 do khong con gi de tach. gesture di chuyen=0, vung chet=0 |
+| CTRL | **PASS** | Khong con tham so dieu khien chet trong controls.json | meleeAngleMax / moveAngleMin da go: goc quet khong con quyet dinh gi |
 | RUN | **PASS** | gamefeel.json co khoi camera + run day du | camera=True run=True |
 | RUN | **PASS** | Quai o tapNearM van nam trong dai man hinh cho phep (tap duoc) | con thap nhat (scale 0.74) o 2.40m nam o 72.1% chieu cao man hinh; cho phep 45-75% |
 | RUN | **PASS** | Quai ranged o rangedStandoffM van trong dai man hinh | o 8.5m nam o 48.7%; cho phep 45-75% |
@@ -74,7 +74,7 @@
 | WEAPON | **PASS** | Moi sung deu co sat thuong >= rangedMinDmg | nguong 120; thap nhat hien tai 120 |
 | WEAPON | **PASS** | Moi sung nam trong dai rpm cua archetype (feeling khac nhau) | 13 archetype co dai rpm; 0 vi pham |
 | WPN | **PASS** | So sung bi san sat thuong keo ra ngoai duong cong DPS khong qua nua | 6/18 sung bi san sat thuong toi thieu keo len tren duong cong DPS: rw_pistol_kendong, rw_shotgun_mienghang, rw_smg_ochuot, rw_rifle_gongsat, rw_shotgun_longmoc, rw_flamer_hoingam |
-| ENEMY | **PASS** | Don AoE: vua trung duoc khi dung im, vua ne duoc bang 1 Buoc Lui | impact = max(contactM, attackRange - speed*telegraph) |
+| ENEMY | **PASS** | Don AoE trung duoc khi nguoi choi chay qua (khong con Buoc Lui de ne) | impact = max(contactM, attackRange - speed*telegraph) |
 | RUN | **PASS** | Lan giua rong hon moi lan ben (yeu cau thiet ke) | lan giua rong 3.60m, moi lan ben 1.45m; hanh lang 9m |
 | RUN | **PASS** | Quai lan giua spawn quanh truc, khong trai sat ranh lan | jitter +-0.90m trong lan +-1.80m -> vung 0.90m..1.80m khong co quai nao |
 | WAVE | **PASS** | So quai LAN GIUA moi phong (R1) nam trong 60-150 | phong R1: ~149 quai tong, lan giua ~98 (moi de), lan ben ~51 (vang them) |

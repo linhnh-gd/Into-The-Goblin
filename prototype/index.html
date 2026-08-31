@@ -62,38 +62,39 @@
       <h1>INTO THE <em>GOBLIN</em></h1>
       <p class="tag">Xuống sâu nữa. Vàng ở dưới đó.</p>
       <ul class="how">
-        <li><b>CHẠM</b> vào quái để bắn · <b>GIỮ</b> để bắn liên tục</li>
-        <li><b>QUẸT NGANG</b> để chém · quẹt dài hơn nửa màn hình = chém nặng</li>
-        <li><b>QUẸT DỌC XUỐNG</b> = bước lùi · <b>QUẸT DỌC LÊN</b> = xốc tới</li>
-        <li>Hết đạn thì chỉ còn dao. <b>6 mạng chém = 1 băng đạn.</b></li>
+        <li><b>CHẠM / GIỮ</b> bất kỳ đâu — súng <b>tự nhắm</b> con gần nhất ở làn giữa</li>
+        <li><b>Nhả tay</b> = cất súng, nạp đạn. Còn đạn thì chạm tiếp huỷ nạp; <b>hết sạch phải đợi</b></li>
+        <li><b>QUẸT</b> = chém. Rê tiếp thì <b>chém liên tục</b>, tốn stamina</li>
+        <li><b>3 làn</b>: chỉ quái <b>làn giữa</b> đụng được bạn. Hai bên giết là <b>vàng thêm</b></li>
+        <li>Tự chạy 4.2 m/s · hết <b>150m</b> là xong phòng · <b>6 mạng chém = 1 băng đạn</b></li>
       </ul>
       <button class="cta" id="btnStart" disabled>XUỐNG HẦM</button>
       <div class="opts">
-        <label><input type="checkbox" id="optTwoZone" /> Chế độ Hai Vùng (nửa trên bắn / nửa dưới chém)</label>
         <label><input type="checkbox" id="optDbg" /> Hiện đo input (Sprint 0)</label>
         <label class="sel">Bắt đầu ở
           <select id="optDepth">
-            <option value="1">Depth 1 — Hầm Đá (goblin thường)</option>
-            <option value="3" selected>Depth 3 — Hang Nấm (Goblin Khiên + Ogre)</option>
+            <option value="1" selected>Depth 1 — Hầm Đá (goblin thường)</option>
+            <option value="3">Depth 3 — Hang Nấm (Goblin Khiên + Ogre)</option>
             <option value="5">Depth 5 — Nhà Tù</option>
           </select>
         </label>
         <label class="sel">Súng
           <select id="optRanged">
-            <option value="rw_rifle_gongsat">Gọng Sắt — assault rifle · 155 nhịp/phút · băng 26</option>
-            <option value="rw_pistol_kendong">Kèn Đồng — súng lục · 115 nhịp/phút · băng 8</option>
-            <option value="rw_shotgun_mienghang">Miệng Hang — shotgun · 48 nhịp/phút · 4 viên ghém</option>
-            <option value="rw_smg_ochuot">Ổ Chuột — SMG · 230 nhịp/phút · băng 10</option>
-            <option value="rw_crossbow_gaimuc">Gai Mực — nỏ · 51 nhịp/phút · 446 sát thương</option>
+            <option value="rw_rifle_gongsat">Gọng Sắt · assault rifle — 155 nhịp/phút, băng 26, 1 mục tiêu</option>
+            <option value="rw_shotgun_mienghang">Miệng Hang · shotgun — 48 nhịp/phút, 4 viên ghém chia ra <b>4 con</b></option>
+            <option value="rw_smg_ochuot">Ổ Chuột · SMG — 230 nhịp/phút, băng 10, 1 mục tiêu</option>
+            <option value="rw_pistol_kendong">Kèn Đồng · súng lục — 115 nhịp/phút, băng 8, 1 mục tiêu</option>
+            <option value="rw_crossbow_gaimuc">Gai Mực · nỏ — 51 nhịp/phút, <b>xuyên 3 con</b>, 446 sát thương</option>
           </select>
         </label>
         <label class="sel">Dao
           <select id="optMelee">
-            <option value="mw_dagger_daogam">Dao Găm — rẻ stamina</option>
-            <option value="mw_machete_ruarung">Rựa Rừng — 3 mục tiêu</option>
-            <option value="mw_hammer_buada">Búa Đá — BỎ QUA KHIÊN</option>
+            <option value="mw_dagger_daogam">Dao Găm — archetype dagger</option>
+            <option value="mw_machete_ruarung">Rựa Rừng — archetype machete</option>
+            <option value="mw_hammer_buada">Búa Đá — <b>BỎ QUA KHIÊN</b> Goblin Khiên</option>
           </select>
         </label>
+        <p class="foot">Mọi dao đều chém <b>8 mục tiêu</b>, tầm <b>6m</b>, cùng nhịp — tier chỉ tăng sát thương.</p>
       </div>
       <p class="foot" id="loadNote">Đang tải dữ liệu cân bằng từ <code>data/*.json</code>…</p>
     </div>

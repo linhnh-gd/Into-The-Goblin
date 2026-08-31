@@ -162,7 +162,7 @@ footer{padding:34px 0 0;color:var(--muted);font-size:12.5px;border-top:1px solid
 <main><header class="hero"><p class="eyebrow"><a href="GDD.html">INTO THE GOBLIN</a> &middot; Dữ liệu</p>
 <h1>Game Feel &amp; Điều khiển</h1><p class="sub">data/gamefeel.json + controls.json &mdash; Trang này do build_pages.ps1 sinh ra từ data/*.json và docs/*.md — KHÔNG sửa tay.</p></header>
 <section class="doc"><div class="filter"><input id="q" type="search" placeholder="Lọc theo tên, id, tag..." /><span class="count">Đang hiện <b id="qc"></b> dòng</span></div>
-<h3>gestures &middot; 10 dòng</h3>
+<h3>gestures &middot; 7 dòng</h3>
 <div class="tw" data-table="gestures"><table>
 <thead><tr><th>Gesture</th><th>ID</th><th>Điều kiện</th><th>Hành động</th><th>Vũ khí</th></tr></thead><tbody>
 <tr data-hay="tap gs_tap nhấc ngón &lt; 180ms và di chuyển &lt; 0.05s 1 phát bắn nhắm vào điểm tap ranged"><td>Tap</td><td>gs_tap</td><td>nhấc ngón &lt; 180ms VÀ di chuyển &lt; 0.05S</td><td>1 phát bắn nhắm vào điểm tap</td><td>ranged</td></tr>
@@ -170,14 +170,11 @@ footer{padding:34px 0 0;color:var(--muted);font-size:12.5px;border-top:1px solid
 <tr data-hay="hold &amp; drag gs_holddrag đã ở hold rồi mới di chuyển, tốc độ &lt; 900 px/s bắn liên tục, tâm ngắm đi theo ngón ranged"><td>Hold &amp; Drag</td><td>gs_holddrag</td><td>đã ở Hold rồi mới di chuyển, tốc độ &lt; 900 px/s</td><td>Bắn liên tục, tâm ngắm đi theo ngón</td><td>ranged</td></tr>
 <tr data-hay="slide nhẹ gs_slide_light tốc độ đỉnh &gt;= 900 px/s trong &lt;=250ms đầu, dài 0.12s–0.55s, góc lệch khỏi ngang &lt;= 55° chém nhẹ melee"><td>Slide nhẹ</td><td>gs_slide_light</td><td>tốc độ đỉnh &gt;= 900 px/s trong &lt;=250ms đầu, dài 0.12S–0.55S, góc lệch khỏi ngang &lt;= 55°</td><td>Chém nhẹ</td><td>melee</td></tr>
 <tr data-hay="slide nặng gs_slide_heavy như slide nhẹ nhưng dài &gt; 0.55s chém nặng: 2x stamina, 2.0x damage, 2.2x knockback, arc +30° melee"><td>Slide nặng</td><td>gs_slide_heavy</td><td>như slide nhẹ nhưng dài &gt; 0.55S</td><td>Chém nặng: 2x stamina, 2.0x damage, 2.2x knockback, arc +30°</td><td>melee</td></tr>
-<tr data-hay="slide dọc xuống gs_slide_down &gt;= 900 px/s, góc lệch khỏi dọc &lt;= 25°, hướng xuống bước lùi: lùi 1.2m, 0.15s bất tử, cooldown 2.5s none"><td>Slide dọc xuống</td><td>gs_slide_down</td><td>&gt;= 900 px/s, góc lệch khỏi dọc &lt;= 25°, hướng xuống</td><td>Bước Lùi: lùi 1.2m, 0.15s bất tử, cooldown 2.5s</td><td>none</td></tr>
-<tr data-hay="slide dọc lên gs_slide_up như trên, hướng lên xốc tới: tiến 2.0m, đẩy văng quái trên đường, cooldown 4s none"><td>Slide dọc lên</td><td>gs_slide_up</td><td>như trên, hướng lên</td><td>Xốc Tới: tiến 2.0m, đẩy văng quái trên đường, cooldown 4s</td><td>none</td></tr>
 <tr data-hay="two-finger tap gs_twofinger 2 ngón chạm trong 120ms kích bảo vật / ultimate none"><td>Two-finger tap</td><td>gs_twofinger</td><td>2 ngón chạm trong 120ms</td><td>Kích Bảo Vật / Ultimate</td><td>none</td></tr>
 <tr data-hay="nút reload gs_reload tap nút góc phải-dưới reload thủ công / bắt cửa sổ nạp hoàn hảo ranged"><td>Nút Reload</td><td>gs_reload</td><td>tap nút góc phải-dưới</td><td>Reload thủ công / bắt cửa sổ Nạp Hoàn Hảo</td><td>ranged</td></tr>
-<tr data-hay="vùng chết gs_deadzone slide có góc lệch khỏi ngang trong khoảng 55°–65° bỏ qua hoàn toàn + rung 8ms. thà mất input còn hơn làm sai input none"><td>VÙNG CHẾT</td><td>gs_deadzone</td><td>slide có góc lệch khỏi ngang trong khoảng 55°–65°</td><td>BỎ QUA HOÀN TOÀN + rung 8ms. Thà mất input còn hơn làm sai input</td><td>none</td></tr>
 </tbody></table></div>
 
-<h3>ctrlparams &middot; 12 dòng</h3>
+<h3>ctrlparams &middot; 10 dòng</h3>
 <div class="tw" data-table="ctrlparams"><table>
 <thead><tr><th>Tham số</th><th>Giá trị</th><th>Đơn vị</th><th>Ghi chú</th></tr></thead><tbody>
 <tr data-hay="tapmaxduration 110 ms do tre truoc khi sung bat dau ban lien tuc. tang neu tester muon ban ma ra dao"><td>tapMaxDuration</td><td>110</td><td>ms</td><td>Do TRE truoc khi sung bat dau ban lien tuc. Tang neu tester muon ban ma ra dao</td></tr>
@@ -186,8 +183,6 @@ footer{padding:34px 0 0;color:var(--muted);font-size:12.5px;border-top:1px solid
 <tr data-hay="slidedetectwindow 250 ms "><td>slideDetectWindow</td><td>250</td><td>ms</td><td></td></tr>
 <tr data-hay="slideminlength 0.12 s dưới ngưỡng này coi là tap"><td>slideMinLength</td><td>0.12</td><td>S</td><td>Dưới ngưỡng này coi là tap</td></tr>
 <tr data-hay="heavyslidelength 0.55 s cho phép người chơi tune 0.40–0.70"><td>heavySlideLength</td><td>0.55</td><td>S</td><td>Cho phép người chơi tune 0.40–0.70</td></tr>
-<tr data-hay="meleeanglemax 55 deg lệch khỏi trục ngang"><td>meleeAngleMax</td><td>55</td><td>deg</td><td>lệch khỏi trục ngang</td></tr>
-<tr data-hay="moveanglemin 65 deg lệch khỏi trục ngang"><td>moveAngleMin</td><td>65</td><td>deg</td><td>lệch khỏi trục ngang</td></tr>
 <tr data-hay="dodgecooldown 2.5 s "><td>dodgeCooldown</td><td>2.5</td><td>s</td><td></td></tr>
 <tr data-hay="dashcooldown 4.0 s "><td>dashCooldown</td><td>4.0</td><td>s</td><td></td></tr>
 <tr data-hay="camerapitchdown 8 deg để dải cận chiến rơi vào 45–75% chiều cao, không bị ngón tay che"><td>cameraPitchDown</td><td>8</td><td>deg</td><td>Để dải Cận chiến rơi vào 45–75% chiều cao, không bị ngón tay che</td></tr>

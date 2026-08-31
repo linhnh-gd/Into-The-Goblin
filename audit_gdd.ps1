@@ -617,18 +617,27 @@ Assert-True 'FEEL' 'Rung khi chem phai co huong theo vector slide' ($dirShake.Co
 
 $meleeMax = [double](($gdCtr.params | Where-Object { $_.key -eq 'meleeAngleMax' }).value)
 $moveMin  = [double](($gdCtr.params | Where-Object { $_.key -eq 'moveAngleMin' }).value)
-Assert-True 'CTRL' 'Vung chet giua goc chem va goc di chuyen >= 5 do' (($moveMin - $meleeMax) -ge 5) `
-    ("melee <= $meleeMax deg, move >= $moveMin deg, dead zone = $($moveMin - $meleeMax) deg")
+# So do dieu khien sau khi BO quet doc len/xuong (docs/03 muc 2c): moi cu quet deu la
+# chem, nen khong con "goc chem" vs "goc di chuyen" va vung chet mat ly do ton tai.
+$gRanged = @($gdCtr.gestures | Where-Object { $_.weapon -eq 'ranged' }).Count
+$gMelee  = @($gdCtr.gestures | Where-Object { $_.weapon -eq 'melee' }).Count
+$gDead   = @($gdCtr.gestures | Where-Object { $_.id -eq 'gs_deadzone' }).Count
+$gMove   = @($gdCtr.gestures | Where-Object { $_.id -like 'gs_slide_up' -or $_.id -like 'gs_slide_down' }).Count
+Assert-True 'CTRL' 'Co gesture cho ca tam xa va can chien' `
+    ($gRanged -ge 3 -and $gMelee -ge 2) `
+    ("ranged=$gRanged, melee=$gMelee")
 
-$hasTwoZone = (@($gdCtr.accessibility | Where-Object { $_.id -eq 'ac_haivung' }).Count -eq 1)
-Assert-True 'CTRL' 'Co phuong an thoat cho rui ro R1 (Che do Hai Vung)' $hasTwoZone `
-    ($(if ($hasTwoZone) { 'ac_haivung ton tai' } else { 'THIEU fallback cho rui ro chi tu' }))
+Assert-True 'CTRL' 'Khong con gesture di chuyen, va khong con vung chet' `
+    ($gMove -eq 0 -and $gDead -eq 0) `
+    ("Bo quet doc thi moi cu quet deu la chem -> vung chet 55-65 do khong con gi de tach. gesture di chuyen=$gMove, vung chet=$gDead")
 
-$gestureWeapons = @($gdCtr.gestures | Where-Object { $_.weapon -eq 'ranged' }).Count
-$gestureMelee   = @($gdCtr.gestures | Where-Object { $_.weapon -eq 'melee' }).Count
-Assert-True 'CTRL' 'Co gesture cho ca tam xa va can chien, va co vung chet' `
-    ($gestureWeapons -ge 3 -and $gestureMelee -ge 2 -and (@($gdCtr.gestures | Where-Object { $_.id -eq 'gs_deadzone' }).Count -eq 1)) `
-    ("ranged=$gestureWeapons, melee=$gestureMelee, deadzone=$(@($gdCtr.gestures | Where-Object { $_.id -eq 'gs_deadzone' }).Count)")
+# Sau khi bo Buoc Lui, don AoE cua Ogre khong con counter bang NE nua -- counter duy nhat
+# la GIET no truoc khi vung. Nen cua so telegraph phai du de kip giet, va gate do da co
+# o muc ENEMY ('Quai PLANT co du cua so de vung truoc khi bi chay qua').
+Assert-True 'CTRL' 'Khong con tham so dieu khien chet trong controls.json' `
+    (@($gdCtr.params | Where-Object { $_.key -in @('meleeAngleMax', 'moveAngleMin') }).Count -eq 0) `
+    ('meleeAngleMax / moveAngleMin da go: goc quet khong con quyet dinh gi')
+
 
 # ============================ RUN / CAMERA (mo hinh chay X met) =========================
 # Nhung check nay ton tai vi prototype cho thay quai dung o 1.2m thi diem tap roi vao
@@ -725,11 +734,11 @@ foreach ($itS in @($gdEne.enemies | Where-Object { $_.behavior -and $_.behavior.
     if ([double]$bh.aoeRadiusM -lt $impact) {
         $badAoe += ("$($itS.id): aoeRadius {0:N2} < impact {1:N2} -> don KHONG BAO GIO trung" -f [double]$bh.aoeRadiusM, $impact)
     }
-    if (($impact + [double]$gdRun.dodgeBackM) -le [double]$bh.aoeRadiusM) {
-        $badAoe += ("$($itS.id): impact {0:N2} + dodgeBack {1:N2} <= aoeRadius {2:N2} -> NE KHONG THOAT" -f $impact, [double]$gdRun.dodgeBackM, [double]$bh.aoeRadiusM)
-    }
+    # KHONG con kiem "ne duoc bang Buoc Lui": quet doc len/xuong da bi bo (docs/03 muc 2c)
+    # nen counter duy nhat cua don AoE la GIET quai truoc khi no vung. Cua so de kip giet
+    # do gate "Quai PLANT co du cua so de vung truoc khi bi chay qua" giu.
 }
-Assert-True 'ENEMY' 'Don AoE: vua trung duoc khi dung im, vua ne duoc bang 1 Buoc Lui' `
+Assert-True 'ENEMY' 'Don AoE trung duoc khi nguoi choi chay qua (khong con Buoc Lui de ne)' `
     ($badAoe.Count -eq 0) `
     ("impact = max(contactM, attackRange - speed*telegraph)" + $(if ($badAoe.Count) { ' | ' + ($badAoe -join ' ; ') } else { '' }))
 

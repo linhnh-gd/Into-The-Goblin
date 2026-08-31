@@ -6,6 +6,22 @@
     "meleeAdvantage": 0.307,
     "rangedMinDmg": 120,
     "magClearMax": 0.95,
+    "_archetypeHitNote": "Cach mot phat dan CHAM vao dam quai. Day la thu phan biet shotgun voi rifle, khong phai sat thuong. single = 1 muc tieu; spread = chia vien ghem ra nhieu con; pierce = xuyen qua con dau trung them n con phia sau; aoe = no theo ban kinh.",
+    "archetypeHit": {
+      "pistol":   { "style": "single" },
+      "rifle":    { "style": "single" },
+      "smg":      { "style": "single" },
+      "lmg":      { "style": "single" },
+      "minigun":  { "style": "single" },
+      "shotgun":  { "style": "spread" },
+      "flamer":   { "style": "spread", "maxTargets": 4 },
+      "marksman": { "style": "pierce", "pierce": 1 },
+      "crossbow": { "style": "pierce", "pierce": 2 },
+      "sniper":   { "style": "pierce", "pierce": 4 },
+      "launcher": { "style": "aoe", "aoeRadiusM": 3.2 },
+      "deeptech": { "style": "aoe", "aoeRadiusM": 2.4 },
+      "acid":     { "style": "aoe", "aoeRadiusM": 1.8 }
+    },
     "_archetypeRpmNote": "Dai rpm cho tung archetype -- day la thu tao ra FEELING khac nhau giua cac sung. Normalizer ep rpm vao dai roi giai dmg tu do.",
     "archetypeRpm": {
       "sniper":    [28, 42],

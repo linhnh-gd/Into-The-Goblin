@@ -56,7 +56,6 @@ export class Game {
       onSlideStart: () => { this.slicing = true; this.holdPt = null; this.gunRelease(); },
       onSlideMove: (s) => this.sliceTick(s),
       onSlideEnd: () => { this.slicing = false; },
-      onMove: (dir) => this.dodge(dir),
       onCancelled: () => { if (navigator.vibrate) navigator.vibrate(8); },
     });
 
@@ -213,6 +212,23 @@ export class Game {
   get chainMult() { return this.chain >= 15 ? 1.4 : this.chain >= 8 ? 1.25 : this.chain >= 4 ? 1.1 : 1; }
 
   /* ============================= BAN =============================== */
+  /** Danh sach muc tieu tu nham, gan nhat truoc, uu tien LAN GIUA (docs/04 muc 2b). */
+  pickAutoList(n) {
+    const LN = GD.feel.lanes, far = GD.feel.run.tapFarM;
+    const mid = [], side = [];
+    for (const e of this.pool.list) {
+      if (!e.alive) continue;
+      const zGap = this.playerZ - e.z;
+      if (zGap <= 0.1) continue;
+      const d = Math.hypot(e.x, zGap);
+      if (d > far) continue;
+      (Math.abs(e.x) <= LN.midHalfWidthM ? mid : side).push({ e, d });
+    }
+    mid.sort((a, b) => a.d - b.d);
+    side.sort((a, b) => a.d - b.d);
+    return mid.concat(side).slice(0, n).map((o) => o.e);
+  }
+
   /** TU NHAM: con gan nhat o LAN GIUA, khong can tap trung nguoi no (docs/04 muc 2b).
       Neu lan giua trong thi lay con gan nhat bat ky -- de quai lan ben van giet duoc
       lay vang, dung nhu "giet la vang them" o docs/09 muc 2c.
@@ -257,21 +273,61 @@ export class Game {
     if (!picked) { this.chain = 0; if (this.mag <= 0) this.startReload(); return; }
     const target = picked.e;
 
+    /* MOT PHAT DAN CHAM VAO DAM QUAI THEO DAC DIEM TUNG LOAI SUNG (docs/04 muc 5c).
+       Truoc day moi sung deu dung `dmg * pellets` DON HET vao mot con -- nen shotgun
+       4 vien ghem chi giet duoc 1 quai, khong khac gi khau rifle. Xem docs/18 loi #33. */
+    const hitCfg = (GD.weapons.balance.archetypeHit || {})[rw.archetype] || { style: 'single' };
     const crit = Math.random() < this.mods.crit;
-    let dmg = rw.dmg * rw.pellets * this.mods.rangedDmg * this.dmgBuff * this.chainMult;
-    if (this.perfectMag) dmg *= 1.15;
-    if (this.buffNextShot > 0) { dmg *= 1.6; this.buffNextShot = 0; }
-    if (crit) dmg *= this.mods.critMult;
-    dmg = Math.round(dmg);
+    let unit = rw.dmg * this.mods.rangedDmg * this.dmgBuff * this.chainMult;
+    if (this.perfectMag) unit *= 1.15;
+    if (this.buffNextShot > 0) { unit *= 1.6; this.buffNextShot = 0; }
+    if (crit) unit *= this.mods.critMult;
 
-    // vector dan: tu nguoi choi toi quai -> xac bay NGUOC VE SAU (docs)
-    const dx = target.x - 0, dz = target.z - this.playerZ;
-    const len = Math.hypot(dx, dz) || 1;
-    this.hitEnemy(target, dmg, {
-      kx: dx / len, kz: dz / len, kbForce: rw.knockback * this.mods.kb,
-      source: 'ranged', archetype: rw.archetype, heavy: false,
-      weakPoint: picked.weakPoint, crit,
-    });
+    const pellets = Math.max(1, rw.pellets || 1);
+    let victims = [];          // { e, mult }
+    if (hitCfg.style === 'spread') {
+      // chia vien ghem ra cac con gan nhat, chia deu vong tron
+      const maxT = Math.min(pellets, hitCfg.maxTargets || pellets);
+      const list = this.pickAutoList(maxT);
+      if (!list.length) list.push(target);
+      const per = new Map();
+      for (let i = 0; i < pellets; i++) {
+        const e = list[i % list.length];
+        per.set(e, (per.get(e) || 0) + 1);
+      }
+      victims = [...per].map(([e, n]) => ({ e, mult: n }));
+    } else if (hitCfg.style === 'pierce') {
+      // xuyen qua: con dau + n con phia sau no tren cung truc chay
+      const extra = [];
+      for (const e of this.pool.list) {
+        if (!e.alive || e === target) continue;
+        if (e.z >= target.z) continue;                        // phai o SAU muc tieu
+        if (Math.abs(e.x - target.x) > 1.1) continue;         // cung mot truc
+        extra.push({ e, d: target.z - e.z });
+      }
+      extra.sort((a, b) => a.d - b.d);
+      victims = [{ e: target, mult: pellets }]
+        .concat(extra.slice(0, hitCfg.pierce || 0).map((o) => ({ e: o.e, mult: pellets })));
+    } else if (hitCfg.style === 'aoe') {
+      const r = hitCfg.aoeRadiusM || 2.0;
+      victims = this.pool.list
+        .filter((e) => e.alive && Math.hypot(e.x - target.x, e.z - target.z) <= r)
+        .map((e) => ({ e, mult: pellets }));
+      if (!victims.length) victims = [{ e: target, mult: pellets }];
+      this.juice.addRing(target.x, target.z, r, 0.22, false);
+    } else {
+      victims = [{ e: target, mult: pellets }];
+    }
+
+    for (const v of victims) {
+      const dx = v.e.x - 0, dz = v.e.z - this.playerZ;
+      const len = Math.hypot(dx, dz) || 1;
+      this.hitEnemy(v.e, Math.round(unit * v.mult), {
+        kx: dx / len, kz: dz / len, kbForce: rw.knockback * this.mods.kb,
+        source: 'ranged', archetype: rw.archetype, heavy: false,
+        weakPoint: v.e === target && picked.weakPoint, crit,
+      });
+    }
 
     this.chain++;
     if (this.mods.twoBlades) this.buffNextSlash = 1;
@@ -545,6 +601,8 @@ export class Game {
   }
 
   /* ============================= NE ============================== */
+  /* KHONG con gesture nao goi ham nay: quet doc len/xuong da bi bo (docs/03 muc 2c).
+     Giu lai vi the nang cap va boss co the con dung toi. */
   dodge(dir) {
     if (this.advancing) return;
     const c = GD.ctrl;

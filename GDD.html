@@ -619,6 +619,21 @@ HOLD_FIRE
 <p><code>tapMaxDuration</code> <strong>180 → 110ms</strong>. Đây là độ trễ từ lúc chạm tới lúc súng bắt đầu bắn liên tục — nó phải đủ dài để phân biệt với một cú quẹt chém, và đủ ngắn để không thấy khựng.</p>
 <p><strong>Máy trạng thái phải được đánh thức bằng HẸN GIỜ, không phải bằng <code>pointermove</code>.</strong> Bản đầu chỉ kiểm tra <code>elapsed &gt;= tapMaxDuration</code> bên trong hàm xử lý <code>pointermove</code>; giữ ngón tay <strong>đứng yên</strong> thì không có sự kiện move nào, máy trạng thái kẹt ở <code>PENDING</code>, và tới lúc nhả tay nó thành một cái TAP. Nghĩa là <strong>phải rê tay mới bắn liên tục được</strong>. Đo sau khi sửa: giữ yên hoàn toàn → vào chế độ bắn liên tục sau <strong>132ms</strong>.</p>
 <p>Hẹn giờ phải bị <strong>huỷ</strong> ở hai chỗ: khi khoá sang SLIDE, và khi nhả tay. Không huỷ thì một cú quẹt chém sẽ rút súng ra giữa chừng. Đo: quẹt nhanh → vào chế độ chém, <strong>không</strong> ra súng, tốn <strong>0 đạn</strong>.</p>
+<h3>2c. BỎ quẹt dọc — và vùng chết mất lý do tồn tại theo</h3>
+<p>Quẹt dọc lên (Xốc Tới) và quẹt dọc xuống (Bước Lùi) <strong>đã bị gỡ</strong>. Hệ quả dây chuyền:</p>
+<ol>
+<li><strong>Mọi cú quẹt đều là chém</strong>, bất kể góc. Không còn phải phân giải hướng.</li>
+<li><strong>Vùng chết 55–65° không còn gì để tách.</strong> Nó sinh ra để phân biệt &quot;quẹt để chém&quot; với &quot;quẹt để di</li>
+<span class="cont">chuyển&quot;; bỏ vế thứ hai thì vế thứ nhất chiếm trọn. Đã gỡ <code>gs_deadzone</code>, <code>gs_slide_up</code>, <code>gs_slide_down</code></span>
+<span class="cont">khỏi <code>controls.json</code>, và gỡ luôn hai tham số chết <code>meleeAngleMax</code> / <code>moveAngleMin</code>.</span>
+<li><strong>Tỉ lệ input bị huỷ — cổng go/no-go của Sprint 0 — về 0 theo định nghĩa.</strong> Không còn input nào bị bỏ</li>
+<span class="cont">qua. Rủi ro R1 (&quot;người chơi muốn bắn mà ra dao&quot;) giờ chỉ còn ở ranh giới tap-vs-quẹt, không phải ở góc.</span>
+<li><strong>Chế độ Hai Vùng đã gỡ.</strong> Nó là phương án thoát cho rủi ro R1; với sơ đồ hai gesture (chạm = bắn,</li>
+<span class="cont">quẹt = chém) thì nó thừa.</span>
+<li><strong>Đòn AoE của Ogre không còn counter bằng NÉ.</strong> Counter duy nhất còn lại là <strong>giết nó trước khi vung</strong> —</li>
+<span class="cont">xem <code>09</code> mục 2b. Gate &quot;né được bằng 1 Bước Lùi&quot; đã gỡ khỏi audit; gate cửa sổ telegraph vẫn giữ, và giờ</span>
+<span class="cont">nó có nghĩa là &quot;đủ thời gian để kịp giết&quot;.</span>
+</ol>
 <h3>3. Tham số tinh chỉnh (đưa vào <code>data/controls.json</code>, không hardcode)</h3>
 <div class="tw"><table>
 <thead><tr><th>Tham số</th><th>Mặc định</th><th>Ghi chú tune</th></tr></thead><tbody>
@@ -751,6 +766,24 @@ HOLD_FIRE
 <p><strong>Sàn sát thương <code>rangedMinDmg = 120</code>.</strong> Mọi viên đạn phải hiện số ≥ 120 — con số nhỏ hơn đọc ra như &quot;cào nhẹ&quot;, không ra cảm giác súng. Sàn này <strong>thắng</strong> đường cong DPS khi hai thứ xung đột.</p>
 <p><strong>Chọn súng ở màn hình đầu</strong> (<code>optRanged</code>): Gọng Sắt (rifle) · Kèn Đồng (pistol) · Miệng Hang (shotgun) · Ổ Chuột (SMG) · Gai Mực (nỏ). Đo thực tế trong 1 giây giữ tay: rifle <strong>3 phát</strong>, SMG <strong>4 phát</strong>, shotgun <strong>1 phát</strong> (4 viên ghém), nỏ <strong>1 phát</strong> (446 sát thương).</p>
 <p>Hai gate mới: mọi súng phải có <code>dmg ≥ rangedMinDmg</code>, và <code>rpm</code> phải nằm trong dải của archetype nó. Không có gate thứ hai thì các archetype sẽ trôi về gần nhau khi tinh chỉnh, và lý do có nhiều loại súng biến mất.</p>
+<h3>5c. Một phát đạn chạm vào đám quái thế nào — theo từng archetype</h3>
+<p><code>weapons.json</code> → <code>balance.archetypeHit</code>. <strong>Đây mới là thứ phân biệt shotgun với rifle, không phải sát thương.</strong></p>
+<div class="tw"><table>
+<thead><tr><th>Kiểu</th><th>Archetype</th><th>Cách chạm</th></tr></thead><tbody>
+<tr><td><code>single</code></td><td>pistol · rifle · smg · lmg · minigun</td><td>1 mục tiêu</td></tr>
+<tr><td><code>spread</code></td><td><strong>shotgun</strong> · flamer</td><td>Chia viên ghém ra <strong>nhiều con</strong> gần nhất, mỗi con ăn phần của nó</td></tr>
+<tr><td><code>pierce</code></td><td>marksman (1) · crossbow (2) · <strong>sniper (4)</strong></td><td>Xuyên qua con đầu, trúng thêm n con <strong>phía sau nó trên cùng trục</strong></td></tr>
+<tr><td><code>aoe</code></td><td>launcher (3.2m) · deeptech (2.4m) · acid (1.8m)</td><td>Nổ theo bán kính quanh điểm trúng, có vòng hiển thị</td></tr>
+</tbody></table></div>
+<p>Trước đây <strong>mọi</strong> súng đều dùng <code>dmg × pellets</code> <strong>dồn hết vào một con</strong>. Shotgun 4 viên ghém vì thế chỉ giết được <strong>1 quái</strong> — không khác gì rifle, chỉ là bắn chậm hơn. Đó là lỗi #33 ở <code>18</code>.</p>
+<p>Đo sau khi sửa, cùng một cảnh 6 con (4 làn giữa rải theo độ sâu, 2 làn bên):</p>
+<div class="tw"><table>
+<thead><tr><th>Súng</th><th>Số con trúng 1 phát</th><th>Sát thương mỗi con</th></tr></thead><tbody>
+<tr><td>Gọng Sắt (rifle)</td><td><strong>1</strong></td><td>120</td></tr>
+<tr><td>Miệng Hang (shotgun)</td><td><strong>4</strong></td><td>120 mỗi con</td></tr>
+<tr><td>Gai Mực (nỏ, xuyên 2)</td><td><strong>3</strong></td><td>full mỗi con</td></tr>
+</tbody></table></div>
+<blockquote><strong>Lưu ý cân bằng:</strong> <code>spread</code> giữ nguyên tổng sát thương một phát (chia ra chứ không nhân lên), nên nó <strong>không</strong> phá đường cong DPS. Nhưng <code>pierce</code> và <code>aoe</code> thì <strong>có</strong> nhân lên trong đám đông — mô hình <code>dpsSustained</code> chỉ đo đơn mục tiêu. Đó là bản sắc của archetype, không phải lỗi; nhưng khi tinh chỉnh <code>pierce</code>/<code>aoeRadiusM</code> thì phải nhớ chúng nằm <strong>ngoài</strong> ngân sách DPS.</blockquote>
 <h3>6. Knockback từ đạn (docs: &quot;quái chết thì bị đẩy lùi về phía sau&quot;)</h3>
 <div class="tw"><table>
 <thead><tr><th></th><th>Công thức</th></tr></thead><tbody>
@@ -2516,7 +2549,7 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <span class="cont"><strong>Đã cài: Goblin Khiên + Ogre Hầm</strong> (xem <code>09</code> mục 2b).</span>
 </ul>
 <h3>4. Prototype đã sửa GDD ở đâu</h3>
-<p>Đây là phần quan trọng nhất của doc này: <strong>prototype tìm ra 32 lỗi mà đọc doc không thấy.</strong></p>
+<p>Đây là phần quan trọng nhất của doc này: <strong>prototype tìm ra 35 lỗi mà đọc doc không thấy.</strong></p>
 <div class="tw"><table>
 <thead><tr><th>#</th><th>Phát hiện</th><th>Sửa</th></tr></thead><tbody>
 <tr><td>1</td><td>17 con cùng đi tới <strong>một điểm</strong> → xếp chồng lên nhau, màn hình thành một bức tường capsule, không đọc được gì</td><td>Thêm separation bằng spatial hash. Đây là thứ doc chưa bao giờ nói tới nhưng bắt buộc phải có</td></tr>
@@ -2553,6 +2586,9 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>30</td><td><strong>Ba nơi mô hình hoá cùng một cái wave, bằng ba công thức khác nhau.</strong> <code>normalize_balance.ps1</code> và <code>audit_gdd.ps1</code> đều hardcode <code>tp = 14 + 4.2R</code>, trong khi <code>data/waves.json</code> đã đổi sang <code>38 + 11.5R</code> từ lúc tăng mật độ quái. Hai script vì thế đánh giá wave <strong>nhỏ hơn thực tế 2.7 lần</strong>, làm gate <code>magClearRatio</code> báo FAIL oan cho 7 vũ khí — tôi suýt cắt băng đạn xuống một nửa để chiều một con số sai</td><td>Cả hai script đọc <code>tpBase</code>/<code>tpPerRoom</code> từ <code>waves.json</code>. Sửa xong thì 7 FAIL đó biến mất <strong>mà không đụng vào một con số cân bằng nào</strong>. Kéo theo: vàng khai báo ở <code>economy.json</code> + <code>depths.json</code> lệch 2.25× so với mật độ mới → cập nhật cả hai</td></tr>
 <tr><td>31</td><td><strong>&quot;Mọi viên đạn ≥ 120 sát thương&quot; mâu thuẫn trực tiếp với đường cong DPS.</strong> Ở T1 mục tiêu DPS là 110, nên <strong>một viên</strong> 120 dmg đã hơn cả một giây DPS. Bản đầu tôi cho normalizer hạ <code>rpm</code> để giữ DPS — nó kéo shotgun xuống <strong>8 rpm</strong>, tức 7 giây một phát</td><td>Sàn sát thương <strong>thắng</strong> đường cong: chấp nhận 4 súng tier thấp vượt DPS mục tiêu, và audit <strong>liệt kê</strong> chúng thay vì báo FAIL. Nhịp bắn do dải archetype quyết định, không do phương trình DPS</td></tr>
 <tr><td>32</td><td><strong>Shotgun T1 bị ép xuống băng 1 viên.</strong> 120 dmg × 8 viên ghém = 960 mỗi phát, mà cả một wave T1 chỉ có ~1423 EHP → hai phát đã dọn sạch wave, vỡ trụ P2. Sàn &quot;băng ≥ 2 viên&quot; thì lại vỡ gate</td><td>Giảm viên ghém của riêng nó 8 → <strong>4</strong> (vẫn là shotgun, vẫn 120/viên). Đây là archetype bị sàn 120 bóp nghẹt nhất: nhân sát thương với số viên ghém thì trần wave đến rất nhanh</td></tr>
+<tr><td>33</td><td><strong>Shotgun chỉ giết được 1 con.</strong> Mọi súng đều tính <code>dmg × pellets</code> rồi <strong>dồn hết vào một mục tiêu</strong> — nên shotgun 4 viên ghém không khác gì rifle, chỉ là bắn chậm hơn. Cả bảng archetype trong <code>04</code> mục 5 chỉ là <strong>mô tả văn xuôi</strong>, chưa bao giờ có cơ chế nào đứng sau</td><td><code>balance.archetypeHit</code> trong data: <code>single</code> / <code>spread</code> (chia viên ghém ra nhiều con) / <code>pierce</code> (xuyên n con phía sau) / <code>aoe</code> (nổ theo bán kính). Đo cùng một cảnh 6 con: rifle trúng <strong>1</strong>, shotgun trúng <strong>4</strong>, nỏ xuyên <strong>3</strong></td></tr>
+<tr><td>34</td><td><strong>Bỏ quẹt dọc thì vùng chết 55–65° mất hết lý do tồn tại</strong>, nhưng nó vẫn nằm trong <code>controls.json</code> cùng hai tham số chết <code>meleeAngleMax</code> / <code>moveAngleMin</code>, và Chế độ Hai Vùng vẫn còn trong UI. Vùng chết sinh ra để tách &quot;quẹt để chém&quot; khỏi &quot;quẹt để di chuyển&quot; — bỏ vế sau thì vế trước chiếm trọn</td><td>Gỡ <code>gs_deadzone</code> + <code>gs_slide_up</code> + <code>gs_slide_down</code> + 2 tham số + Chế độ Hai Vùng. Gate CTRL viết lại: giờ nó <strong>kiểm rằng không còn</strong> vùng chết và gesture di chuyển. Kéo theo: đòn AoE của Ogre mất counter &quot;né&quot;, chỉ còn &quot;giết trước khi nó vung&quot;</td></tr>
+<tr><td>35</td><td><strong>Màn hình đầu vẫn dạy cơ chế đã bị thay.</strong> Nó ghi &quot;CHẠM vào quái để bắn&quot; (giờ tự nhắm), &quot;QUẸT DỌC XUỐNG = bước lùi&quot; (đã gỡ), &quot;Rựa Rừng — 3 mục tiêu&quot; (giờ mọi dao đều 8), và Chế độ Hai Vùng. Không có gate nào bắt được text UI lệch khỏi cơ chế</td><td>Viết lại toàn bộ. Cũng sửa 2 lỗi layout: thừa một <code>&lt;/div&gt;</code> làm dòng trạng thái văng ra ngoài khung, và <code>.screen</code> không cho cuộn nên nút XUỐNG HẦM bị cắt trên máy màn nhỏ</td></tr>
 </tbody></table></div>
 <blockquote><strong>Lỗi #14 và #16 đã bị chính thiết kế vượt qua.</strong> Khi chuyển sang <strong>quái đứng yên</strong>, bài toán đón đầu của <code>pincer</code> (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó <strong>đã bị bỏ khỏi code</strong>. Lane spring (#16) thì vẫn giữ, nhưng giờ nó chỉ chống separation làm lệch làn khi quái spawn chồng nhau, không còn phải chống lực đẩy dồn theo suốt đường đi. Ghi lại ở đây vì hai lỗi đó <strong>là lỗi thật</strong> ở thời điểm phát hiện, và vì nó cho thấy giá của việc đổi mô hình di chuyển: mọi thứ suy ra từ tốc độ quái đều phải tính lại.</blockquote>
 <p>Ngoài ra prototype xác nhận <strong>công thức số quái phải tính theo <code>composition</code></strong>, không phải <code>tpCost</code> trung bình toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 lần. Đã ghi vào <code>16</code> mục 4.4.</p>
@@ -2581,6 +2617,10 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>Dao chém 1 nhát vào trash</td><td>30 dmg → trash <strong>còn 10 HP</strong>, cần 2 nhát</td><td>✓ luật one-shot đã bỏ</td></tr>
 <tr><td>Nhịp bắn 1 giây giữ tay</td><td>rifle <strong>3</strong> · SMG <strong>4</strong> · shotgun <strong>1</strong> · nỏ <strong>1</strong></td><td>✓ dải archetype</td></tr>
 <tr><td>Chọn súng ở màn hình đầu</td><td>5 lựa chọn, đổi được archetype</td><td>✓ <code>04</code> mục 5b</td></tr>
+<tr><td>Shotgun bắn 1 phát vào 6 con</td><td>trúng <strong>4 con</strong>, 120 mỗi con</td><td>✓ <code>04</code> mục 5c</td></tr>
+<tr><td>Rifle bắn 1 phát vào 6 con</td><td>trúng <strong>1 con</strong></td><td>✓</td></tr>
+<tr><td>Nỏ bắn 1 phát vào 6 con</td><td><strong>xuyên 3 con</strong></td><td>✓</td></tr>
+<tr><td>Màn hình đầu</td><td>dòng trạng thái nằm trong khung, cuộn được (697px trên viewport 682px)</td><td>✓</td></tr>
 </tbody></table></div>
 <h4>Kiểm chứng súng và chém liên tục</h4>
 <div class="tw"><table>

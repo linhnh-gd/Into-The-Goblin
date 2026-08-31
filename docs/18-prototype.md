@@ -81,7 +81,7 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 
 ## 4. Prototype đã sửa GDD ở đâu
 
-Đây là phần quan trọng nhất của doc này: **prototype tìm ra 32 lỗi mà đọc doc không thấy.**
+Đây là phần quan trọng nhất của doc này: **prototype tìm ra 35 lỗi mà đọc doc không thấy.**
 
 | # | Phát hiện | Sửa |
 |---|---|---|
@@ -118,6 +118,9 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 | 30 | **Ba nơi mô hình hoá cùng một cái wave, bằng ba công thức khác nhau.** `normalize_balance.ps1` và `audit_gdd.ps1` đều hardcode `tp = 14 + 4.2R`, trong khi `data/waves.json` đã đổi sang `38 + 11.5R` từ lúc tăng mật độ quái. Hai script vì thế đánh giá wave **nhỏ hơn thực tế 2.7 lần**, làm gate `magClearRatio` báo FAIL oan cho 7 vũ khí — tôi suýt cắt băng đạn xuống một nửa để chiều một con số sai | Cả hai script đọc `tpBase`/`tpPerRoom` từ `waves.json`. Sửa xong thì 7 FAIL đó biến mất **mà không đụng vào một con số cân bằng nào**. Kéo theo: vàng khai báo ở `economy.json` + `depths.json` lệch 2.25× so với mật độ mới → cập nhật cả hai |
 | 31 | **"Mọi viên đạn ≥ 120 sát thương" mâu thuẫn trực tiếp với đường cong DPS.** Ở T1 mục tiêu DPS là 110, nên **một viên** 120 dmg đã hơn cả một giây DPS. Bản đầu tôi cho normalizer hạ `rpm` để giữ DPS — nó kéo shotgun xuống **8 rpm**, tức 7 giây một phát | Sàn sát thương **thắng** đường cong: chấp nhận 4 súng tier thấp vượt DPS mục tiêu, và audit **liệt kê** chúng thay vì báo FAIL. Nhịp bắn do dải archetype quyết định, không do phương trình DPS |
 | 32 | **Shotgun T1 bị ép xuống băng 1 viên.** 120 dmg × 8 viên ghém = 960 mỗi phát, mà cả một wave T1 chỉ có ~1423 EHP → hai phát đã dọn sạch wave, vỡ trụ P2. Sàn "băng ≥ 2 viên" thì lại vỡ gate | Giảm viên ghém của riêng nó 8 → **4** (vẫn là shotgun, vẫn 120/viên). Đây là archetype bị sàn 120 bóp nghẹt nhất: nhân sát thương với số viên ghém thì trần wave đến rất nhanh |
+| 33 | **Shotgun chỉ giết được 1 con.** Mọi súng đều tính `dmg × pellets` rồi **dồn hết vào một mục tiêu** — nên shotgun 4 viên ghém không khác gì rifle, chỉ là bắn chậm hơn. Cả bảng archetype trong `04` mục 5 chỉ là **mô tả văn xuôi**, chưa bao giờ có cơ chế nào đứng sau | `balance.archetypeHit` trong data: `single` / `spread` (chia viên ghém ra nhiều con) / `pierce` (xuyên n con phía sau) / `aoe` (nổ theo bán kính). Đo cùng một cảnh 6 con: rifle trúng **1**, shotgun trúng **4**, nỏ xuyên **3** |
+| 34 | **Bỏ quẹt dọc thì vùng chết 55–65° mất hết lý do tồn tại**, nhưng nó vẫn nằm trong `controls.json` cùng hai tham số chết `meleeAngleMax` / `moveAngleMin`, và Chế độ Hai Vùng vẫn còn trong UI. Vùng chết sinh ra để tách "quẹt để chém" khỏi "quẹt để di chuyển" — bỏ vế sau thì vế trước chiếm trọn | Gỡ `gs_deadzone` + `gs_slide_up` + `gs_slide_down` + 2 tham số + Chế độ Hai Vùng. Gate CTRL viết lại: giờ nó **kiểm rằng không còn** vùng chết và gesture di chuyển. Kéo theo: đòn AoE của Ogre mất counter "né", chỉ còn "giết trước khi nó vung" |
+| 35 | **Màn hình đầu vẫn dạy cơ chế đã bị thay.** Nó ghi "CHẠM vào quái để bắn" (giờ tự nhắm), "QUẸT DỌC XUỐNG = bước lùi" (đã gỡ), "Rựa Rừng — 3 mục tiêu" (giờ mọi dao đều 8), và Chế độ Hai Vùng. Không có gate nào bắt được text UI lệch khỏi cơ chế | Viết lại toàn bộ. Cũng sửa 2 lỗi layout: thừa một `</div>` làm dòng trạng thái văng ra ngoài khung, và `.screen` không cho cuộn nên nút XUỐNG HẦM bị cắt trên máy màn nhỏ |
 
 > **Lỗi #14 và #16 đã bị chính thiết kế vượt qua.** Khi chuyển sang **quái đứng yên**, bài toán đón đầu của
 > `pincer` (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó **đã bị bỏ khỏi code**.
@@ -154,6 +157,10 @@ toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 l
 | Dao chém 1 nhát vào trash | 30 dmg → trash **còn 10 HP**, cần 2 nhát | ✓ luật one-shot đã bỏ |
 | Nhịp bắn 1 giây giữ tay | rifle **3** · SMG **4** · shotgun **1** · nỏ **1** | ✓ dải archetype |
 | Chọn súng ở màn hình đầu | 5 lựa chọn, đổi được archetype | ✓ `04` mục 5b |
+| Shotgun bắn 1 phát vào 6 con | trúng **4 con**, 120 mỗi con | ✓ `04` mục 5c |
+| Rifle bắn 1 phát vào 6 con | trúng **1 con** | ✓ |
+| Nỏ bắn 1 phát vào 6 con | **xuyên 3 con** | ✓ |
+| Màn hình đầu | dòng trạng thái nằm trong khung, cuộn được (697px trên viewport 682px) | ✓ |
 
 ### Kiểm chứng súng và chém liên tục
 

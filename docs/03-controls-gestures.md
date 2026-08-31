@@ -134,6 +134,23 @@ bắn liên tục được**. Đo sau khi sửa: giữ yên hoàn toàn → vào
 Hẹn giờ phải bị **huỷ** ở hai chỗ: khi khoá sang SLIDE, và khi nhả tay. Không huỷ thì một cú quẹt chém sẽ
 rút súng ra giữa chừng. Đo: quẹt nhanh → vào chế độ chém, **không** ra súng, tốn **0 đạn**.
 
+
+## 2c. BỎ quẹt dọc — và vùng chết mất lý do tồn tại theo
+
+Quẹt dọc lên (Xốc Tới) và quẹt dọc xuống (Bước Lùi) **đã bị gỡ**. Hệ quả dây chuyền:
+
+1. **Mọi cú quẹt đều là chém**, bất kể góc. Không còn phải phân giải hướng.
+2. **Vùng chết 55–65° không còn gì để tách.** Nó sinh ra để phân biệt "quẹt để chém" với "quẹt để di
+   chuyển"; bỏ vế thứ hai thì vế thứ nhất chiếm trọn. Đã gỡ `gs_deadzone`, `gs_slide_up`, `gs_slide_down`
+   khỏi `controls.json`, và gỡ luôn hai tham số chết `meleeAngleMax` / `moveAngleMin`.
+3. **Tỉ lệ input bị huỷ — cổng go/no-go của Sprint 0 — về 0 theo định nghĩa.** Không còn input nào bị bỏ
+   qua. Rủi ro R1 ("người chơi muốn bắn mà ra dao") giờ chỉ còn ở ranh giới tap-vs-quẹt, không phải ở góc.
+4. **Chế độ Hai Vùng đã gỡ.** Nó là phương án thoát cho rủi ro R1; với sơ đồ hai gesture (chạm = bắn,
+   quẹt = chém) thì nó thừa.
+5. **Đòn AoE của Ogre không còn counter bằng NÉ.** Counter duy nhất còn lại là **giết nó trước khi vung** —
+   xem `09` mục 2b. Gate "né được bằng 1 Bước Lùi" đã gỡ khỏi audit; gate cửa sổ telegraph vẫn giữ, và giờ
+   nó có nghĩa là "đủ thời gian để kịp giết".
+
 ## 3. Tham số tinh chỉnh (đưa vào `data/controls.json`, không hardcode)
 
 | Tham số | Mặc định | Ghi chú tune |

@@ -25,12 +25,11 @@ const ST = { IDLE: 0, PENDING: 1, SLIDE: 2, HOLD_FIRE: 3, CONSUMED: 4, SLIDE_CON
 export class InputRouter {
   /**
    * @param {HTMLElement} el
-   * @param {{onTap,onHoldStart,onHoldMove,onHoldEnd,onMelee,onMove,onCancelled}} h handlers
+   * @param {{onTap,onHoldStart,onHoldMove,onHoldEnd,onMelee,onSlideStart,onSlideMove,onSlideEnd}} h handlers
    */
   constructor(el, h) {
     this.el = el;
     this.h = h;
-    this.twoZone = false;
 
     const c = GD.ctrl;
     this.P = {
@@ -40,8 +39,6 @@ export class InputRouter {
       slideWindow: c.slideDetectWindow,
       slideMinLen: c.slideMinLength,
       heavyLen: c.heavySlideLength,
-      meleeAngleMax: c.meleeAngleMax,
-      moveAngleMin: c.moveAngleMin,
       slideResolveMax: 400,
       slideMinSegPx: GD.feel.melee.slideMinSegPx,
     };
@@ -101,12 +98,6 @@ export class InputRouter {
     const elapsed = now - this.t0;
 
     if (this.state === ST.PENDING) {
-      // Hai Vung: bo qua phan giai, quyet dinh theo nua man hinh (accessibility / fallback R1)
-      if (this.twoZone) {
-        if (this._inMeleeZone(this.p0.y) && vel >= this.P.slideVel * 0.5) this.state = ST.SLIDE;
-        else if (elapsed >= this.P.tapMaxDuration && !this._inMeleeZone(this.p0.y)) this._enterHold();
-        return;
-      }
       if (elapsed <= this.P.slideWindow && vel >= this.P.slideVel) {
         clearTimeout(this._holdTimer);
         this.state = ST.SLIDE;                       // KHOA sang nhanh chem
@@ -154,8 +145,6 @@ export class InputRouter {
       if (elapsed < this.P.tapMaxDuration && travel < this.P.tapMaxTravel * this.screenW) {
         this._emit(GESTURE.TAP);
         this.h.onTap?.(this.p0.x, this.p0.y);
-      } else if (this.twoZone && this._inMeleeZone(this.p0.y)) {
-        this._resolveSlide();                        // Hai Vung: nua duoi luon la chem
       } else {
         // giu lau nhung khong du van toc -> coi la 1 phat ban don
         this._emit(GESTURE.TAP);
@@ -179,21 +168,16 @@ export class InputRouter {
     this.h.onHoldStart?.(this.p.x, this.p.y);
   }
 
-  _inMeleeZone(y) {
-    return y > this.el.clientHeight * 0.5;
-  }
-
-  /** Phan giai HUONG cua mot lan quet. Neu la chem thi KHOA sang che do chem lien tuc. */
+  /** Phan giai mot lan quet. BO quet doc len/xuong (yeu cau nguoi choi), nen MOI cu quet
+      deu la chem -- va vung chet 55-65 do khong con ly do ton tai: no sinh ra de tach
+      "quet de chem" khoi "quet de di chuyen", ma gio khong con quet de di chuyen nua.
+      Xem docs/03 muc 2c va docs/18 loi #34. */
   _resolveSlide() {
     const dx = this.p.x - this.p0.x;
     const dy = this.p.y - this.p0.y;
-    const lenPx = Math.hypot(dx, dy);
-    const len = lenPx / this.screenW;
-
-    // goc lech khoi truc NGANG, 0..90
+    const len = Math.hypot(dx, dy) / this.screenW;
     const a = Math.abs((Math.atan2(dy, dx) * 180) / Math.PI);
-    const devH = Math.min(a, 180 - a);
-    this.stats.lastAngle = Math.round(devH);
+    this.stats.lastAngle = Math.round(Math.min(a, 180 - a));
     this.stats.lastVel = Math.round(this.peakVel);
 
     if (len < this.P.slideMinLen) {              // qua ngan -> coi la tap (docs/03)
@@ -203,28 +187,14 @@ export class InputRouter {
       return;
     }
 
-    if (this.twoZone || devH <= this.P.meleeAngleMax) {
-      /* CHEM LIEN TUC (kieu chem hoa qua): khong ket thuc sau mot nhat. Giu ngon tay
-         va re tiep thi moi doan duong tren man hinh la mot nhat nua, va stamina bi
-         drain lien tuc. Nha tay moi ket thuc. */
-      this.state = ST.SLIDE_CONT;
-      this.seg = { ...this.p };
-      const heavy = len > this.P.heavyLen;
-      this._emit(heavy ? GESTURE.SLIDE_HEAVY : GESTURE.SLIDE_LIGHT);
-      this.h.onSlideStart?.();
-      this.h.onMelee?.({ dx, dy, len, heavy, from: { ...this.p0 }, to: { ...this.p } });
-      return;
-    }
-    this.state = ST.CONSUMED;
-    if (devH >= this.P.moveAngleMin) {
-      const down = dy > 0;                        // y tang xuong duoi
-      this._emit(down ? GESTURE.DODGE_BACK : GESTURE.DASH_FWD);
-      this.h.onMove?.(down ? 'back' : 'forward');
-      return;
-    }
-    // VUNG CHET 55-65 do
-    this._emit(GESTURE.CANCELLED);
-    this.h.onCancelled?.();
+    /* CHEM LIEN TUC (kieu chem hoa qua): khong ket thuc sau mot nhat. Giu ngon tay va re
+       tiep thi moi doan duong tren man hinh la mot nhat nua. Nha tay moi ket thuc. */
+    this.state = ST.SLIDE_CONT;
+    this.seg = { ...this.p };
+    const heavy = len > this.P.heavyLen;
+    this._emit(heavy ? GESTURE.SLIDE_HEAVY : GESTURE.SLIDE_LIGHT);
+    this.h.onSlideStart?.();
+    this.h.onMelee?.({ dx, dy, len, heavy, from: { ...this.p0 }, to: { ...this.p } });
   }
 
   _emit(g) {

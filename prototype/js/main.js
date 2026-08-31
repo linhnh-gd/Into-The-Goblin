@@ -33,7 +33,6 @@ function fail(err) {
     ui.showDbg = document.getElementById('optDbg').checked;
     document.getElementById('dbg').classList.toggle('hidden', !ui.showDbg);
     if (!game) game = new Game(canvas, hud, audio, ui);
-    game.input.twoZone = document.getElementById('optTwoZone').checked;
     const depth = parseInt(document.getElementById('optDepth').value, 10) || 1;
     const melee = document.getElementById('optMelee').value;
     const ranged = document.getElementById('optRanged').value;
@@ -56,8 +55,6 @@ function fail(err) {
   window.addEventListener('keydown', (e) => {
     if (!game?.running) return;
     if (e.code === 'KeyR') game.reloading ? game.tryPerfectReload() : game.startReload();
-    if (e.code === 'KeyS') game.dodge('back');
-    if (e.code === 'KeyW') game.dodge('forward');
   });
 
   /* ---- vong lap ----

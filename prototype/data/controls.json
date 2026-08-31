@@ -6,11 +6,8 @@
     { "id": "gs_holddrag", "name": "Hold & Drag", "condition": "đã ở Hold rồi mới di chuyển, tốc độ < 900 px/s", "action": "Bắn liên tục, tâm ngắm đi theo ngón", "weapon": "ranged" },
     { "id": "gs_slide_light", "name": "Slide nhẹ", "condition": "tốc độ đỉnh >= 900 px/s trong <=250ms đầu, dài 0.12S–0.55S, góc lệch khỏi ngang <= 55°", "action": "Chém nhẹ", "weapon": "melee" },
     { "id": "gs_slide_heavy", "name": "Slide nặng", "condition": "như slide nhẹ nhưng dài > 0.55S", "action": "Chém nặng: 2x stamina, 2.0x damage, 2.2x knockback, arc +30°", "weapon": "melee" },
-    { "id": "gs_slide_down", "name": "Slide dọc xuống", "condition": ">= 900 px/s, góc lệch khỏi dọc <= 25°, hướng xuống", "action": "Bước Lùi: lùi 1.2m, 0.15s bất tử, cooldown 2.5s", "weapon": "none" },
-    { "id": "gs_slide_up", "name": "Slide dọc lên", "condition": "như trên, hướng lên", "action": "Xốc Tới: tiến 2.0m, đẩy văng quái trên đường, cooldown 4s", "weapon": "none" },
     { "id": "gs_twofinger", "name": "Two-finger tap", "condition": "2 ngón chạm trong 120ms", "action": "Kích Bảo Vật / Ultimate", "weapon": "none" },
-    { "id": "gs_reload", "name": "Nút Reload", "condition": "tap nút góc phải-dưới", "action": "Reload thủ công / bắt cửa sổ Nạp Hoàn Hảo", "weapon": "ranged" },
-    { "id": "gs_deadzone", "name": "VÙNG CHẾT", "condition": "slide có góc lệch khỏi ngang trong khoảng 55°–65°", "action": "BỎ QUA HOÀN TOÀN + rung 8ms. Thà mất input còn hơn làm sai input", "weapon": "none" }
+    { "id": "gs_reload", "name": "Nút Reload", "condition": "tap nút góc phải-dưới", "action": "Reload thủ công / bắt cửa sổ Nạp Hoàn Hảo", "weapon": "ranged" }
   ],
   "params": [
     { "key": "tapMaxDuration", "value": 110, "unit": "ms", "note": "Do TRE truoc khi sung bat dau ban lien tuc. Tang neu tester muon ban ma ra dao" },
@@ -19,8 +16,6 @@
     { "key": "slideDetectWindow", "value": 250, "unit": "ms", "note": "" },
     { "key": "slideMinLength", "value": 0.12, "unit": "S", "note": "Dưới ngưỡng này coi là tap" },
     { "key": "heavySlideLength", "value": 0.55, "unit": "S", "note": "Cho phép người chơi tune 0.40–0.70" },
-    { "key": "meleeAngleMax", "value": 55, "unit": "deg", "note": "lệch khỏi trục ngang" },
-    { "key": "moveAngleMin", "value": 65, "unit": "deg", "note": "lệch khỏi trục ngang" },
     { "key": "dodgeCooldown", "value": 2.5, "unit": "s", "note": "" },
     { "key": "dashCooldown", "value": 4.0, "unit": "s", "note": "" },
     { "key": "cameraPitchDown", "value": 8, "unit": "deg", "note": "Để dải Cận chiến rơi vào 45–75% chiều cao, không bị ngón tay che" },

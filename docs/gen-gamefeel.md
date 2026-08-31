@@ -78,11 +78,8 @@
 | Hold & Drag | gs_holddrag | đã ở Hold rồi mới di chuyển, tốc độ < 900 px/s | Bắn liên tục, tâm ngắm đi theo ngón | ranged |
 | Slide nhẹ | gs_slide_light | tốc độ đỉnh >= 900 px/s trong <=250ms đầu, dài 0.12S–0.55S, góc lệch khỏi ngang <= 55° | Chém nhẹ | melee |
 | Slide nặng | gs_slide_heavy | như slide nhẹ nhưng dài > 0.55S | Chém nặng: 2x stamina, 2.0x damage, 2.2x knockback, arc +30° | melee |
-| Slide dọc xuống | gs_slide_down | >= 900 px/s, góc lệch khỏi dọc <= 25°, hướng xuống | Bước Lùi: lùi 1.2m, 0.15s bất tử, cooldown 2.5s | none |
-| Slide dọc lên | gs_slide_up | như trên, hướng lên | Xốc Tới: tiến 2.0m, đẩy văng quái trên đường, cooldown 4s | none |
 | Two-finger tap | gs_twofinger | 2 ngón chạm trong 120ms | Kích Bảo Vật / Ultimate | none |
 | Nút Reload | gs_reload | tap nút góc phải-dưới | Reload thủ công / bắt cửa sổ Nạp Hoàn Hảo | ranged |
-| VÙNG CHẾT | gs_deadzone | slide có góc lệch khỏi ngang trong khoảng 55°–65° | BỎ QUA HOÀN TOÀN + rung 8ms. Thà mất input còn hơn làm sai input | none |
 
 ### Game Feel & Điều khiển
 
@@ -94,8 +91,6 @@
 | slideDetectWindow | 250 | ms |  |
 | slideMinLength | 0.12 | S | Dưới ngưỡng này coi là tap |
 | heavySlideLength | 0.55 | S | Cho phép người chơi tune 0.40–0.70 |
-| meleeAngleMax | 55 | deg | lệch khỏi trục ngang |
-| moveAngleMin | 65 | deg | lệch khỏi trục ngang |
 | dodgeCooldown | 2.5 | s |  |
 | dashCooldown | 4.0 | s |  |
 | cameraPitchDown | 8 | deg | Để dải Cận chiến rơi vào 45–75% chiều cao, không bị ngón tay che |
