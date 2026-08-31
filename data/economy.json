@@ -1,0 +1,97 @@
+{
+  "_comment": "GATE: moi currency phai co >=1 source VA >=1 sink (audit_gdd.ps1). tickets KHONG duoc gate Depth 1-7 / Endless. Khong con dial do kho nguoi choi tu bom (co che cua Guns n Goblins) -> vang khong bi nhan boi dial nao.",
+  "formulas": {
+    "goldPerKill": "e.goldDrop * 1.15^(D-1) * campGoldBonus",
+    "goldRunEnd": "= tong vang da thu. Khong co he so nhan nao o cuoi run.",
+    "luckGain": "Elite +2 / hom +1 / clear phong khong mat mau +1 / moi 10 Chem Hoan Hao +1 / boss +3. Cap 20 (24 voi talent, 28 voi relic Loi Mo).",
+    "cardRarity": "theo LOC, khong theo do kho: docs/16 muc 4.6",
+    "weaponUpgradeCost": "round(120 * 1.215^(L-1))",
+    "shrineCost": "4 Loc + 200 vang -> 1 the epic chon tu 3  |  6 Loc + 350 vang -> hoi day HP",
+    "pillarCost": "Cot Chong Ham: 400 vang, hoan Suong Den +20s cho 3 phong toi"
+  },
+  "currencies": [
+    {
+      "id": "gold", "name": "Vàng", "type": "soft",
+      "sources": ["Giết kẻ địch (3–14 đồng/mạng)", "Cột vàng (4% + 0.4%/Lộc, mở từ Depth 3)", "Hòm Kho Báu", "Phòng Sự Kiện", "Lò Vàng (gauntlet)", "Trại Mỏ: Hầm Vàng (idle, cap 8 giờ)", "Nhiệm vụ ngày/tuần", "Challenge Depth", "Rewarded ad x2 cuối run"],
+      "sinks": ["Shop trong run: đạn / máu / thẻ", "Cột Chống Hầm ở shop (hoãn Sương Đen)", "Đổi Lộc ở Miếu Mỏ (kèm phí vàng)", "Cân Vàng (đổi vàng lấy thẻ)", "Reroll thẻ ở Cổng", "Nâng level vũ khí (hố lớn nhất)", "Talent bậc 1–4", "Trại Mỏ building"]
+    },
+    {
+      "id": "luck", "name": "Lộc", "type": "run",
+      "sources": ["Giết Elite (+2)", "Phá hòm Kho Báu (+1)", "Clear phòng không mất máu (+1)", "Mỗi 10 Chém Hoàn Hảo (+1)", "Giết boss (+3)", "Talent Lộc Sẵn", "Trại Mỏ: Giếng Sâu"],
+      "sinks": ["Miếu Mỏ: 4 Lộc → thẻ epic chọn từ 3", "Miếu Mỏ: 6 Lộc → hồi đầy HP", "Suối Máu: 4 Lộc → hồi 100% HP thay vì 60%"],
+      "note": "Loc chi ton tai trong run. Day la thay the cho vai tro 'thuong theo rui ro' — nhung Loc kiem duoc bang CHOI GIOI, khong phai bang tu lam kho minh."
+    },
+    {
+      "id": "shards", "name": "Mảnh Cốt", "type": "meta",
+      "sources": ["Clear Depth", "Giết boss", "Đổi vũ khí / Bảo Vật trùng", "Challenge Depth", "Sổ Thợ Hầm", "Hầm Ngày"],
+      "sinks": ["Talent bậc 4–5", "Mở Tier vũ khí", "Mở slot khắc (mod)", "Bàn Thẻ ở Trại Mỏ (loại thẻ rác khỏi pool)"]
+    },
+    {
+      "id": "ingots", "name": "Phôi Rèn", "type": "material",
+      "sources": ["Boss (3–12 phôi)", "Hòm Kho Báu", "Elite Depth", "Hòm thợ săn (ad)", "Sổ Thợ Hầm"],
+      "sinks": ["Lên Tier vũ khí T→T+1", "Rèn lại mod (reroll khắc)"]
+    },
+    {
+      "id": "gems", "name": "Ngọc", "type": "hard",
+      "sources": ["IAP", "Nhiệm vụ tuần", "Achievement", "Sổ Thợ Hầm (nhánh miễn phí)", "Xếp hạng Endless tuần"],
+      "sinks": ["Sổ Thợ Hầm", "Bundle", "Skin vũ khí / skin đèn", "Hồi sinh lần thứ 2", "Mở nhanh Depth", "Mua thêm Dầu Đèn"]
+    },
+    {
+      "id": "tickets", "name": "Dầu Đèn", "type": "entry",
+      "sources": ["3 bình miễn phí mỗi ngày (hồi 1 bình / 4 giờ)", "Nhiệm vụ ngày", "Rewarded ad (2/ngày)", "IAP", "Ngọc"],
+      "sinks": ["Vào Hầm Ngày", "Vào Event Hầm"],
+      "note": "KHONG dung cho Depth 1-7 va Endless. Bai hoc tu Archero: energy chi gate live content."
+    }
+  ],
+  "shop": [
+    { "id": "sh_dan", "name": "1 băng đạn", "price": 60, "currency": "gold", "scope": "in-run" },
+    { "id": "sh_danbig", "name": "Nạp đầy đạn dự trữ", "price": 420, "currency": "gold", "scope": "in-run" },
+    { "id": "sh_mau30", "name": "Hồi 30% HP", "price": 180, "currency": "gold", "scope": "in-run" },
+    { "id": "sh_mau100", "name": "Hồi đầy HP", "price": 520, "currency": "gold", "scope": "in-run" },
+    { "id": "sh_the_random", "name": "1 thẻ ngẫu nhiên", "price": 250, "currency": "gold", "scope": "in-run" },
+    { "id": "sh_the_epic", "name": "Chọn 1 thẻ epic từ 3", "price": 700, "currency": "gold", "scope": "in-run" },
+    { "id": "sh_odan", "name": "Ổ đạn to hơn (+3 mag cả run)", "price": 480, "currency": "gold", "scope": "in-run" },
+    { "id": "sh_chongham", "name": "Cột Chống Hầm (hoãn Sương Đen +20s cho 3 phòng tới)", "price": 400, "currency": "gold", "scope": "in-run" },
+    { "id": "sh_stamina", "name": "Bình hơi (+30 stamina tối đa cả run)", "price": 380, "currency": "gold", "scope": "in-run" },
+    { "id": "sh_relic", "name": "1 Bảo Vật ngẫu nhiên", "price": 1800, "currency": "gold", "scope": "in-run" },
+    { "id": "sh_reroll", "name": "Reroll thẻ ở Cổng", "price": 80, "currency": "gold", "scope": "in-run", "freePerDepth": 1 },
+    { "id": "sh_dau", "name": "1 bình Dầu Đèn", "price": 120, "currency": "gems", "scope": "meta" },
+    { "id": "sh_skin", "name": "Skin vũ khí", "price": 350, "currency": "gems", "scope": "meta" }
+  ],
+  "_goldCurveNote": "expectedGold = TONG TICH LUY expectedGoldG0 tu Depth 1 den Depth do. audit_gdd.ps1 kiem tra lai (+-10%).",
+  "goldCurve": [
+    { "milestone": "Clear Depth 1", "depth": 1, "expectedGold": 1400 },
+    { "milestone": "Clear Depth 2 (tích luỹ)", "depth": 2, "expectedGold": 4500 },
+    { "milestone": "Clear Depth 3 (tích luỹ)", "depth": 3, "expectedGold": 9950 },
+    { "milestone": "Clear Depth 4 (tích luỹ)", "depth": 4, "expectedGold": 18600 },
+    { "milestone": "Clear Depth 5 (tích luỹ)", "depth": 5, "expectedGold": 31750 },
+    { "milestone": "Clear Depth 6 (tích luỹ)", "depth": 6, "expectedGold": 51200 },
+    { "milestone": "Clear Depth 7 (tích luỹ)", "depth": 7, "expectedGold": 83100 },
+    { "milestone": "Endless phòng 40 (R=110), 1 run", "depth": null, "expectedGold": 600000 }
+  ],
+  "monetization": {
+    "rewardedAds": [
+      { "id": "ad_revive", "placement": "Hồi sinh tại chỗ (50% HP, giữ Lộc và vàng)", "capPerRun": 1 },
+      { "id": "ad_x2gold", "placement": "x2 vàng cuối run", "capPerRun": 1 },
+      { "id": "ad_reroll", "placement": "Reroll thẻ ở Cổng", "capPerRun": 2 },
+      { "id": "ad_fork", "placement": "Mở cửa thứ 3 ở Ngã Ba Hầm", "capPerRun": 2 },
+      { "id": "ad_ticket", "placement": "+1 bình Dầu Đèn", "capPerDay": 2 },
+      { "id": "ad_idle", "placement": "x2 vàng idle Hầm Vàng", "capPerCollect": 1 },
+      { "id": "ad_chest", "placement": "Hòm thợ săn (phôi/mảnh)", "capPerDay": 3 }
+    ],
+    "iap": [
+      { "id": "iap_noads", "name": "Bỏ quảng cáo bắt buộc + x1.2 vàng", "usd": 4.99 },
+      { "id": "iap_pass", "name": "Sổ Thợ Hầm (battle pass 28 ngày, 60 bậc)", "usd": 9.99 },
+      { "id": "iap_starter", "name": "Starter Pack (sau khi clear Depth 2, 1 lần)", "usd": 2.99 },
+      { "id": "iap_gems", "name": "Ngọc (6 bậc)", "usd": "0.99 – 99.99" },
+      { "id": "iap_depth", "name": "Gói mở nhanh 1 Depth", "usd": 6.99 },
+      { "id": "iap_skin", "name": "Skin vũ khí / đèn", "usd": "1.99 – 7.99" }
+    ],
+    "rules": [
+      "KHONG ban suc manh chien dau truc tiep",
+      "KHONG loot box tra tien mu; moi hom deu hien ti le",
+      "KHONG ban buff giam do kho",
+      "KHONG ban Loc (Loc phai kiem bang ky nang, ban Loc la ban suc manh)"
+    ]
+  }
+}

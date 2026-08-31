@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quái &amp; Boss | Into the Goblin</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap");
+:root{
+  --ground:#0B0D10; --surface:#141821; --surface2:#1B212C; --line:#262E3B;
+  --ink:#E7E9ED; --muted:#8B93A2;
+  --gold:#FFC53D; --gold-deep:#FF8A00; --bell:#B14CFF; --danger:#FF4438; --ok:#3ED598;
+  --shadow:0 1px 0 rgba(255,255,255,.03), 0 12px 32px rgba(0,0,0,.45);
+  --rail:250px;
+  --f-disp:"Anton",Impact,"Arial Narrow Bold",sans-serif;
+  --f-lab:"Oswald","Arial Narrow",sans-serif;
+  --f-body:"Be Vietnam Pro",-apple-system,Segoe UI,Roboto,sans-serif;
+  --f-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+:root:not([data-theme="light"]){ color-scheme:dark; }
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --ground:#ECEEF2; --surface:#FFFFFF; --surface2:#F5F6F9; --line:#D8DCE4;
+    --ink:#12161C; --muted:#5A6373;
+    --gold:#9A6200; --gold-deep:#C07800; --bell:#7A21C7; --danger:#C42B20; --ok:#0E7C55;
+    --shadow:0 1px 0 rgba(255,255,255,.6), 0 10px 26px rgba(16,22,32,.10);
+    color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --ground:#ECEEF2; --surface:#FFFFFF; --surface2:#F5F6F9; --line:#D8DCE4;
+  --ink:#12161C; --muted:#5A6373;
+  --gold:#9A6200; --gold-deep:#C07800; --bell:#7A21C7; --danger:#C42B20; --ok:#0E7C55;
+  --shadow:0 1px 0 rgba(255,255,255,.6), 0 10px 26px rgba(16,22,32,.10);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--f-body);font-weight:400;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--gold);text-decoration:none;border-bottom:1px solid color-mix(in srgb, var(--gold) 35%, transparent)}
+a:hover{color:var(--gold-deep)}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--bell);outline-offset:2px}
+.wrap{display:grid;grid-template-columns:var(--rail) minmax(0,1fr);gap:0;min-height:100vh}
+nav.rail{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:26px 18px 40px;border-right:1px solid var(--line);background:var(--surface)}
+nav.rail .brand{font-family:var(--f-disp);font-size:23px;letter-spacing:.5px;line-height:1.05;color:var(--ink);margin:0 0 2px}
+nav.rail .brand span{color:var(--gold)}
+nav.rail .tag{font-family:var(--f-lab);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 22px}
+nav.rail h4{font-family:var(--f-lab);font-weight:500;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:20px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+nav.rail ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px}
+nav.rail a{display:flex;gap:9px;padding:5px 8px;border-radius:5px;border:0;color:var(--ink);font-size:13.5px;line-height:1.35}
+nav.rail a:hover{background:var(--surface2);color:var(--gold)}
+nav.rail a .n{font-family:var(--f-mono);font-size:11px;color:var(--muted);padding-top:2px;min-width:20px}
+main{min-width:0;padding:0 clamp(18px,4vw,60px) 90px}
+header.hero{padding:70px 0 34px;border-bottom:1px solid var(--line);margin-bottom:14px}
+header.hero .eyebrow{font-family:var(--f-lab);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--bell);margin:0 0 14px}
+header.hero h1{font-family:var(--f-disp);font-size:clamp(46px,8.4vw,104px);line-height:.92;letter-spacing:-.5px;margin:0;text-wrap:balance}
+header.hero h1 em{font-style:normal;color:var(--gold)}
+header.hero .sub{max-width:62ch;color:var(--muted);font-size:16.5px;margin:16px 0 0}
+header.hero .quote{font-family:var(--f-lab);font-weight:400;font-size:15px;letter-spacing:.06em;color:var(--gold);margin:20px 0 0;padding-left:14px;border-left:3px solid var(--gold)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 0;padding:0;list-style:none}
+.chips li{background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:7px 11px;display:flex;gap:7px;align-items:baseline}
+.chips b{font-family:var(--f-disp);font-size:19px;color:var(--gold);font-variant-numeric:tabular-nums}
+.chips span{font-family:var(--f-lab);font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
+section.doc{padding:44px 0;border-bottom:1px solid var(--line);scroll-margin-top:14px}
+section.doc>h2{font-family:var(--f-disp);font-size:clamp(27px,3.4vw,40px);line-height:1.06;margin:0 0 4px;text-wrap:balance}
+section.doc>.docnum{font-family:var(--f-mono);font-size:12px;color:var(--bell);letter-spacing:.1em;margin:0 0 6px}
+section.doc>h2+.rule{height:2px;background:linear-gradient(90deg,var(--gold),transparent);margin:0 0 22px;max-width:220px}
+.body{max-width:74ch}
+.body.wide{max-width:none}
+h3{font-family:var(--f-lab);font-weight:600;font-size:19px;letter-spacing:.01em;margin:34px 0 10px;color:var(--ink)}
+h4{font-family:var(--f-lab);font-weight:500;font-size:15.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:26px 0 8px}
+h5{font-family:var(--f-lab);font-weight:600;font-size:14px;margin:20px 0 6px}
+p{margin:0 0 13px}
+ul,ol{margin:0 0 13px;padding-left:22px}
+li{margin:0 0 5px}
+li>.cont{display:block;color:var(--muted)}
+strong{font-weight:700}
+code{font-family:var(--f-mono);font-size:.87em;background:var(--surface2);border:1px solid var(--line);border-radius:3px;padding:1px 5px}
+pre.ascii{font-family:var(--f-mono);font-size:12.2px;line-height:1.5;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--bell);border-radius:4px;padding:16px 18px;overflow-x:auto;margin:0 0 18px}
+pre.ascii code{background:none;border:0;padding:0;font-size:inherit}
+blockquote{margin:0 0 18px;padding:14px 18px;background:var(--surface);border-left:3px solid var(--gold);border-radius:0 4px 4px 0;color:var(--ink)}
+blockquote p:last-child{margin:0}
+hr{border:0;border-top:1px solid var(--line);margin:28px 0}
+.tw{overflow-x:auto;margin:0 0 20px;border:1px solid var(--line);border-radius:5px;background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13.4px}
+thead th{position:sticky;top:0;background:var(--surface2);font-family:var(--f-lab);font-weight:500;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);white-space:nowrap}
+tbody td{padding:8px 11px;border-bottom:1px solid var(--line);vertical-align:top;font-variant-numeric:tabular-nums}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--surface2)}
+tbody td:first-child{font-weight:600;white-space:nowrap}
+.filter{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px}
+.filter input{flex:1 1 240px;min-width:180px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:9px 12px;font-family:var(--f-body);font-size:14px}
+.filter .count{font-family:var(--f-lab);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.ladder{display:flex;flex-direction:column;gap:3px;margin:0 0 12px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:5px}
+.rung{display:grid;grid-template-columns:38px 1fr 122px;gap:10px;align-items:center}
+.rung .g{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+.rung .bars{display:flex;flex-direction:column;gap:2px;min-width:0}
+.rung .bar{display:block;height:7px;border-radius:1px;min-width:2px}
+.bar.gold{background:linear-gradient(90deg,var(--gold),var(--gold-deep))}
+.bar.bell{background:var(--bell);opacity:.75}
+.rung .mult{font-family:var(--f-mono);font-size:11.5px;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
+.legend{font-size:12.5px;color:var(--muted)}
+.legend .sw{display:inline-block;width:22px;height:7px;border-radius:1px;vertical-align:middle}
+.legend .sw.gold{background:var(--gold)} .legend .sw.bell{background:var(--bell)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:12px;margin:8px 0 0;padding:0;list-style:none}
+.cards li{background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:15px 16px}
+.cards a{border:0;font-family:var(--f-lab);font-weight:600;font-size:15px;letter-spacing:.02em}
+.cards p{margin:5px 0 0;font-size:12.8px;color:var(--muted)}
+.stat{display:flex;gap:26px;flex-wrap:wrap;margin:0 0 20px;padding:16px 18px;background:var(--surface);border:1px solid var(--line);border-radius:5px}
+.stat div{display:flex;flex-direction:column}
+.stat b{font-family:var(--f-disp);font-size:26px;line-height:1;font-variant-numeric:tabular-nums}
+.stat b.ok{color:var(--ok)} .stat b.warn{color:var(--gold)} .stat b.bad{color:var(--danger)}
+.stat span{font-family:var(--f-lab);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+footer{padding:34px 0 0;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);margin-top:26px}
+.top{position:fixed;right:16px;bottom:16px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:8px 12px;font-family:var(--f-lab);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr}
+  nav.rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  main{padding:0 18px 70px}
+  header.hero{padding:34px 0 24px}
+  .rung{grid-template-columns:32px 1fr 96px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="rail"><p class="brand">INTO THE<br /><span>GOBLIN</span></p><p class="tag">Xuống sâu nữa. Vàng ở dưới đó.</p>
+<h4>Thiết kế</h4><ol>
+<li><a href="GDD.html#doc-00"><span class="n">00</span><span>Research &amp; Benchmark</span></a></li>
+<li><a href="GDD.html#doc-01"><span class="n">01</span><span>Overview</span></a></li>
+<li><a href="GDD.html#doc-02"><span class="n">02</span><span>Core Loop</span></a></li>
+<li><a href="GDD.html#doc-03"><span class="n">03</span><span>Controls &amp; Gesture Disambiguation</span></a></li>
+<li><a href="GDD.html#doc-04"><span class="n">04</span><span>Combat: Vũ khí tầm xa</span></a></li>
+<li><a href="GDD.html#doc-05"><span class="n">05</span><span>Combat: Vũ khí cận chiến</span></a></li>
+<li><a href="GDD.html#doc-06"><span class="n">06</span><span>Dải cự ly, Knockback = phòng thủ, và Sương Đen</span></a></li>
+<li><a href="GDD.html#doc-07"><span class="n">07</span><span>Wave Director &amp; Room Graph</span></a></li>
+<li><a href="GDD.html#doc-08"><span class="n">08</span><span>NGÃ BA HẦM &amp; NHỊP LEO THANG</span></a></li>
+<li><a href="GDD.html#doc-09"><span class="n">09</span><span>Quái &amp; Boss</span></a></li>
+<li><a href="GDD.html#doc-10"><span class="n">10</span><span>Progression: trong run &amp; meta</span></a></li>
+<li><a href="GDD.html#doc-11"><span class="n">11</span><span>Economy</span></a></li>
+<li><a href="GDD.html#doc-12"><span class="n">12</span><span>Monetization &amp; Retention</span></a></li>
+<li><a href="GDD.html#doc-13"><span class="n">13</span><span>Game Feel &amp; Juice</span></a></li>
+<li><a href="GDD.html#doc-14"><span class="n">14</span><span>UI / UX (portrait, một tay)</span></a></li>
+<li><a href="GDD.html#doc-15"><span class="n">15</span><span>Art Direction &amp; Audio</span></a></li>
+<li><a href="GDD.html#doc-16"><span class="n">16</span><span>Data Schema &amp; Balancing (doc gốc cho MỌI con số)</span></a></li>
+<li><a href="GDD.html#doc-17"><span class="n">17</span><span>Production Roadmap, Playtest &amp; Risk</span></a></li>
+<li><a href="GDD.html#doc-18"><span class="n">18</span><span>Prototype three.js (playable)</span></a></li>
+</ol>
+<h4>Dữ liệu</h4><ol>
+<li><a href="weapons.html"><span class="n">&#9679;</span><span>Vũ khí</span></a></li>
+<li><a href="enemies.html"><span class="n">&#9679;</span><span>Quái &amp; Boss</span></a></li>
+<li><a href="content.html"><span class="n">&#9679;</span><span>Hầm: Depth · Phòng · Wave</span></a></li>
+<li><a href="meta.html"><span class="n">&#9679;</span><span>Thẻ · Bảo vật · Talent · Trại Mỏ</span></a></li>
+<li><a href="economy.html"><span class="n">&#9679;</span><span>Kinh tế &amp; Kiếm tiền</span></a></li>
+<li><a href="feel.html"><span class="n">&#9679;</span><span>Game Feel &amp; Điều khiển</span></a></li>
+</ol>
+<h4>Kiểm tra</h4><ol>
+<li><a href="audit_report.md"><span class="n">&#9679;</span><span>audit_report.md</span></a></li>
+<li><a href="balance_report.md"><span class="n">&#9679;</span><span>balance_report.md</span></a></li>
+</ol></nav>
+
+<main><header class="hero"><p class="eyebrow"><a href="GDD.html">INTO THE GOBLIN</a> &middot; Dữ liệu</p>
+<h1>Quái &amp; Boss</h1><p class="sub">data/enemies.json &mdash; Trang này do build_pages.ps1 sinh ra từ data/*.json và docs/*.md — KHÔNG sửa tay.</p></header>
+<section class="doc"><div class="filter"><input id="q" type="search" placeholder="Lọc theo tên, id, tag..." /><span class="count">Đang hiện <b id="qc"></b> dòng</span></div>
+<h3>enemies &middot; 21 dòng</h3>
+<div class="tw" data-table="enemies"><table>
+<thead><tr><th>Tên</th><th>ID</th><th>Vai trò</th><th>Xuất hiện</th><th>HP</th><th>Damage</th><th>Tốc độ</th><th>Kháng KB</th><th>TP</th><th>Vàng</th><th>Cơ chế</th><th>Cách xử lý</th></tr></thead><tbody>
+<tr data-hay="bóng hầm en_special_bongham special d1 - 8 2.6 0.30 - - sinh ra bởi sương đen. không giết được — chỉ knockback được. chạm gây 8 damage + tối màn 0.3s dọn sạch phòng nhanh hơn. đây không phải kẻ địch, đây là đồng hồ đếm"><td>Bóng Hầm</td><td>en_special_bongham</td><td>special</td><td>D1</td><td>-</td><td>8</td><td>2.6</td><td>0.30</td><td>-</td><td>-</td><td>Sinh ra bởi Sương Đen. KHÔNG GIẾT ĐƯỢC — chỉ knockback được. Chạm gây 8 damage + tối màn 0.3s</td><td>Dọn sạch phòng nhanh hơn. Đây không phải kẻ địch, đây là đồng hồ đếm</td></tr>
+<tr data-hay="goblin cùi en_trash_goblincui trash d1 40 6 2.2 - 1.0 3 đi thẳng tới người chơi, vung tay ở 1.2m bất cứ gì. đây là nền để nổ vàng và nuôi combo."><td>Goblin Cùi</td><td>en_trash_goblincui</td><td>trash</td><td>D1</td><td>40</td><td>6</td><td>2.2</td><td>-</td><td>1.0</td><td>3</td><td>Đi thẳng tới người chơi, vung tay ở 1.2m</td><td>Bất cứ gì. Đây là nền để nổ vàng và nuôi combo.</td></tr>
+<tr data-hay="goblin bầy en_trash_goblinbay trash d1 18 4 2.8 - 0.8 2 luôn spawn theo cụm 8 con, đi sát nhau chém hoàn hảo — cụm này tồn tại để bị quẹt một nhát"><td>Goblin Bầy</td><td>en_trash_goblinbay</td><td>trash</td><td>D1</td><td>18</td><td>4</td><td>2.8</td><td>-</td><td>0.8</td><td>2</td><td>Luôn spawn theo cụm 8 con, đi sát nhau</td><td>Chém Hoàn Hảo — cụm này tồn tại để bị quẹt một nhát</td></tr>
+<tr data-hay="goblin chạy en_trash_goblinchay trash d1 26 5 4.4 0.10 1.2 4 chạy rất nhanh, lao thẳng qua dải giữa không dừng chém quét hoặc shotgun — không kịp nhắm từng con"><td>Goblin Chạy</td><td>en_trash_goblinchay</td><td>trash</td><td>D1</td><td>26</td><td>5</td><td>4.4</td><td>0.10</td><td>1.2</td><td>4</td><td>Chạy rất nhanh, lao thẳng qua dải Giữa không dừng</td><td>Chém quét hoặc shotgun — không kịp nhắm từng con</td></tr>
+<tr data-hay="tướng goblin en_elite_tuonggoblin elite d2 700 30 2.2 0.70 12.0 60 có 2 affix ngẫu nhiên. hô hào: mọi trash trong phòng +20% damage. rơi chìa khoá dồn burst damage, dùng relic/ultimate"><td>Tướng Goblin</td><td>en_elite_tuonggoblin</td><td>elite</td><td>D2</td><td>700</td><td>30</td><td>2.2</td><td>0.70</td><td>12.0</td><td>60</td><td>Có 2 affix ngẫu nhiên. Hô hào: mọi trash trong phòng +20% damage. Rơi Chìa Khoá</td><td>Dồn burst damage, dùng relic/ultimate</td></tr>
+<tr data-hay="goblin ném đá en_ranged_nemda ranged d2 34 12 1.8 0.15 2.0 6 đứng ở dải xa ném đá theo đường vòng cung, tốc độ 11 m/s phải tiến lên hoặc bắn tỉa — không được rùa tại chỗ"><td>Goblin Ném Đá</td><td>en_ranged_nemda</td><td>ranged</td><td>D2</td><td>34</td><td>12</td><td>1.8</td><td>0.15</td><td>2.0</td><td>6</td><td>Đứng ở dải Xa ném đá theo đường vòng cung, tốc độ 11 m/s</td><td>Phải tiến lên hoặc bắn tỉa — không được rùa tại chỗ</td></tr>
+<tr data-hay="goblin thuốc nổ en_special_thuocno special d2 30 25 3.0 0.05 2.2 6 lao vào rồi tự nổ bán kính 3m. bình nổ trên lưng bắn được — nổ sớm gây 25 damage lên đồng bọn knockback hoặc bắn bình nổ khi nó còn ở dải giữa"><td>Goblin Thuốc Nổ</td><td>en_special_thuocno</td><td>special</td><td>D2</td><td>30</td><td>25</td><td>3.0</td><td>0.05</td><td>2.2</td><td>6</td><td>Lao vào rồi tự nổ bán kính 3m. Bình nổ trên lưng bắn được — nổ sớm gây 25 damage lên đồng bọn</td><td>Knockback hoặc bắn bình nổ khi nó còn ở dải Giữa</td></tr>
+<tr data-hay="ogre hầm en_heavy_ogreham heavy d3 320 26 1.4 0.85 6.0 20 gần như không đẩy được. đập đất gây aoe 2.5m, telegraph 0.6s kite bằng bước lùi, bắn yếu điểm ở bụng (x2.0)"><td>Ogre Hầm</td><td>en_heavy_ogreham</td><td>heavy</td><td>D3</td><td>320</td><td>26</td><td>1.4</td><td>0.85</td><td>6.0</td><td>20</td><td>Gần như không đẩy được. Đập đất gây AoE 2.5m, telegraph 0.6s</td><td>Kite bằng Bước Lùi, bắn yếu điểm ở bụng (x2.0)</td></tr>
+<tr data-hay="goblin khiên en_special_khien special d3 90 10 1.6 0.55 3.0 7 khiên chắn chính diện: damage tầm xa x0.3, kbresist 0.55 (sau lưng chỉ 0.05). vung khiên mỗi 4s, hở 0.8s búa (bỏ qua khiên), chém nặng, axit, hoặc đánh khi nó vung khiên"><td>Goblin Khiên</td><td>en_special_khien</td><td>special</td><td>D3</td><td>90</td><td>10</td><td>1.6</td><td>0.55</td><td>3.0</td><td>7</td><td>Khiên chắn chính diện: damage tầm xa x0.3, kbResist 0.55 (sau lưng chỉ 0.05). Vung khiên mỗi 4s, hở 0.8s</td><td>Búa (bỏ qua khiên), chém nặng, axit, hoặc đánh khi nó vung khiên</td></tr>
+<tr data-hay="tên đồ tể en_elite_dote elite d4 900 45 3.2 0.75 14.0 80 lao tới dải cận chiến và ở đó. móc câu kéo người chơi lại gần từ 6m giữ khoảng cách bằng shotgun/chuỳ, đừng đấu dao với hắn"><td>Tên Đồ Tể</td><td>en_elite_dote</td><td>elite</td><td>D4</td><td>900</td><td>45</td><td>3.2</td><td>0.75</td><td>14.0</td><td>80</td><td>Lao tới dải Cận chiến và ở đó. Móc câu kéo người chơi lại gần từ 6m</td><td>Giữ khoảng cách bằng shotgun/chuỳ, đừng đấu dao với hắn</td></tr>
+<tr data-hay="dơi hầm en_special_doiham special d4 22 7 3.6 0.40 1.6 5 bay ở độ cao 2–4m, lao xuống theo đường chéo. bị đẩy cả trục dọc (bay lên nhìn rất sướng) bắn, hoặc chém chéo lên — chém ngang không tới"><td>Dơi Hầm</td><td>en_special_doiham</td><td>special</td><td>D4</td><td>22</td><td>7</td><td>3.6</td><td>0.40</td><td>1.6</td><td>5</td><td>Bay ở độ cao 2–4m, lao xuống theo đường chéo. Bị đẩy cả trục dọc (bay lên nhìn rất sướng)</td><td>Bắn, hoặc chém chéo lên — chém ngang không tới</td></tr>
+<tr data-hay="goblin đào hầm en_special_daoham special d4 45 14 2.4 0.20 2.4 8 trồi lên từ sàn phía sau người chơi sau 2.5s, có tiếng đất nứt báo trước 0.8s bước lùi rồi quay chém — dạy người chơi rằng phía sau cũng tồn tại"><td>Goblin Đào Hầm</td><td>en_special_daoham</td><td>special</td><td>D4</td><td>45</td><td>14</td><td>2.4</td><td>0.20</td><td>2.4</td><td>8</td><td>Trồi lên từ sàn PHÍA SAU người chơi sau 2.5s, có tiếng đất nứt báo trước 0.8s</td><td>Bước Lùi rồi quay chém — dạy người chơi rằng phía sau cũng tồn tại</td></tr>
+<tr data-hay="ổ vàng en_elite_omvang elite d5 800 25 2.6 0.65 15.0 100 ăn mọi đồng vàng rơi trên sàn. sau 25s nó bỏ chạy qua cửa và mang theo toàn bộ số vàng đã ăn. giết được thì nhả ra x1.5 chọn: rượt nó (bỏ mặt trước) hay giữ hàng và chấp nhận mất vàng"><td>Ổ Vàng</td><td>en_elite_omvang</td><td>elite</td><td>D5</td><td>800</td><td>25</td><td>2.6</td><td>0.65</td><td>15.0</td><td>100</td><td>Ăn mọi đồng vàng rơi trên sàn. Sau 25s nó bỏ chạy qua cửa và mang theo toàn bộ số vàng đã ăn. Giết được thì nhả ra x1.5</td><td>Chọn: rượt nó (bỏ mặt trước) hay giữ hàng và chấp nhận mất vàng</td></tr>
+<tr data-hay="goblin trống en_support_trong support d5 70 6 2.0 0.20 3.2 12 đứng ở dải xa gõ trống: đồng bọn trong 12m được +35% tốc độ di chuyển ưu tiên giết — dạy người chơi chọn mục tiêu thay vì bắn con gần nhất"><td>Goblin Trống</td><td>en_support_trong</td><td>support</td><td>D5</td><td>70</td><td>6</td><td>2.0</td><td>0.20</td><td>3.2</td><td>12</td><td>Đứng ở dải Xa gõ trống: đồng bọn trong 12m được +35% tốc độ di chuyển</td><td>Ưu tiên giết — dạy người chơi chọn mục tiêu thay vì bắn con gần nhất</td></tr>
+<tr data-hay="pháp sư xanh en_support_phapsuxanh support d5 70 15 1.8 0.25 3.6 12 tạo khiên năng lượng cho 3 đồng bọn gần nhất (hấp thụ 60 damage). khiên vỡ có tiếng riêng giết trước, hoặc dùng aoe để phá nhiều khiên cùng lúc"><td>Pháp Sư Xanh</td><td>en_support_phapsuxanh</td><td>support</td><td>D5</td><td>70</td><td>15</td><td>1.8</td><td>0.25</td><td>3.6</td><td>12</td><td>Tạo khiên năng lượng cho 3 đồng bọn gần nhất (hấp thụ 60 damage). Khiên vỡ có tiếng riêng</td><td>Giết trước, hoặc dùng AoE để phá nhiều khiên cùng lúc</td></tr>
+<tr data-hay="đầu bò đá en_heavy_daubo heavy d6 260 32 5.2 0.80 5.4 18 đứng gầm 1.2s rồi lao thẳng hết hành lang. đâm tường thì choáng 2s bước lùi sang bên và để nó đâm tường — rồi chém lúc nó choáng"><td>Đầu Bò Đá</td><td>en_heavy_daubo</td><td>heavy</td><td>D6</td><td>260</td><td>32</td><td>5.2</td><td>0.80</td><td>5.4</td><td>18</td><td>Đứng gầm 1.2s rồi lao thẳng hết hành lang. Đâm tường thì choáng 2s</td><td>Bước Lùi sang bên và để nó đâm tường — rồi chém lúc nó choáng</td></tr>
+<tr data-hay="goblin béo en_heavy_goblinbeo heavy d6 200 18 1.5 0.60 4.6 16 khi chết nổ ra 6 con goblin bầy tại chỗ giết khi nó còn ở dải xa — giết ở gần là tự tạo ra một wave nữa"><td>Goblin Béo</td><td>en_heavy_goblinbeo</td><td>heavy</td><td>D6</td><td>200</td><td>18</td><td>1.5</td><td>0.60</td><td>4.6</td><td>16</td><td>Khi chết nổ ra 6 con Goblin Bầy tại chỗ</td><td>Giết khi nó còn ở dải Xa — giết ở gần là tự tạo ra một wave nữa</td></tr>
+<tr data-hay="goblin nỏ en_ranged_no ranged d6 40 20 2.0 0.15 2.6 9 bắn thẳng, tốc độ 14 m/s, có tia laser đỏ báo trước 0.5s đổi mục tiêu ưu tiên khi thấy tia laser, hoặc dùng vật cản"><td>Goblin Nỏ</td><td>en_ranged_no</td><td>ranged</td><td>D6</td><td>40</td><td>20</td><td>2.0</td><td>0.15</td><td>2.6</td><td>9</td><td>Bắn thẳng, tốc độ 14 m/s, có tia laser đỏ báo trước 0.5s</td><td>Đổi mục tiêu ưu tiên khi thấy tia laser, hoặc dùng vật cản</td></tr>
+<tr data-hay="quỷ hầm en_heavy_quyham heavy d7 520 40 1.6 0.90 8.0 30 bắt người chơi 1.2s (khoá cả tap và slide), phải quẹt liên tục 4 lần để thoát không để nó vào dải cận chiến. đây là bài kiểm tra cuối của knockback"><td>Quỷ Hầm</td><td>en_heavy_quyham</td><td>heavy</td><td>D7</td><td>520</td><td>40</td><td>1.6</td><td>0.90</td><td>8.0</td><td>30</td><td>Bắt người chơi 1.2s (khoá cả tap và slide), phải quẹt liên tục 4 lần để thoát</td><td>Không để nó vào dải Cận chiến. Đây là bài kiểm tra cuối của knockback</td></tr>
+<tr data-hay="goblin lửa en_special_goblinlua special d7 60 16 2.6 0.20 3.0 10 để lại vũng lửa 4s ở nơi nó đi qua. chết nổ vũng lửa bán kính 2.5m giết ở xa, hoặc dùng knockback đẩy nó ra khỏi đường đi của mình"><td>Goblin Lửa</td><td>en_special_goblinlua</td><td>special</td><td>D7</td><td>60</td><td>16</td><td>2.6</td><td>0.20</td><td>3.0</td><td>10</td><td>Để lại vũng lửa 4s ở nơi nó đi qua. Chết nổ vũng lửa bán kính 2.5m</td><td>Giết ở xa, hoặc dùng knockback đẩy nó ra khỏi đường đi của mình</td></tr>
+<tr data-hay="thầy mo en_support_thaymo support d7 110 10 1.7 0.30 4.4 14 mỗi 6s hồi sinh 1 kẻ địch đã chết trong 8m với 50% hp. có cột sáng xanh khi đang niệm (1.2s) giết trong lúc niệm, hoặc kéo xác ra xa bằng knockback"><td>Thầy Mo</td><td>en_support_thaymo</td><td>support</td><td>D7</td><td>110</td><td>10</td><td>1.7</td><td>0.30</td><td>4.4</td><td>14</td><td>Mỗi 6s hồi sinh 1 kẻ địch đã chết trong 8m với 50% HP. Có cột sáng xanh khi đang niệm (1.2s)</td><td>Giết trong lúc niệm, hoặc kéo xác ra xa bằng knockback</td></tr>
+</tbody></table></div>
+
+<h3>bosses &middot; 7 dòng</h3>
+<div class="tw" data-table="bosses"><table>
+<thead><tr><th>Tên</th><th>Depth</th><th>HP</th><th>TTK mục tiêu</th><th>Các phase</th><th>Cửa sổ dao</th><th>Rơi ra</th><th>Dạy gì</th></tr></thead><tbody>
+<tr data-hay="goblin vương béo d1 2600 50s p1: lăn ngang hành lang, nhả 4 goblin bầy mỗi 8s. yếu điểm: bụng phát sáng khi nó dừng lăn  //  p2 (dưới 50% hp): nôn vũng axit chặn 40% chiều ngang, buộc di chuyển  //  p3 (chỉ elite depth): chia thành 2 con nhỏ, mỗi con 30% hp, cùng lăn sau mỗi lần lăn nó choáng 1.5s — chỉ chém được, súng bị nó chắn mở depth 2, 3 phôi rèn, 1 relic ngẫu nhiên, rw_shotgun_longmoc bắn yếu điểm, và phải dùng cả dao"><td>Goblin Vương Béo</td><td>D1</td><td>2600</td><td>50s</td><td>P1: Lăn ngang hành lang, nhả 4 Goblin Bầy mỗi 8s. Yếu điểm: bụng phát sáng khi nó dừng lăn  //  P2 (dưới 50% HP): Nôn vũng axit chặn 40% chiều ngang, buộc di chuyển  //  P3 (chỉ Elite Depth): Chia thành 2 con nhỏ, mỗi con 30% HP, cùng lăn</td><td>Sau mỗi lần lăn nó choáng 1.5s — chỉ chém được, súng bị nó chắn</td><td>mở Depth 2, 3 Phôi Rèn, 1 relic ngẫu nhiên, rw_shotgun_longmoc</td><td>Bắn yếu điểm, và phải dùng cả dao</td></tr>
+<tr data-hay="đôi song sinh rỉ d2 4200 55s p1: 2 con chia sẻ thanh hp. đứng hai bên, ném lưỡi câu xen kẽ  //  p2 (một con chết): con còn lại điên máu +60% tốc độ, +40% damage  //  p3 (chỉ elite depth): hai con hợp thành một, hp hồi 30% lưỡi câu bị chém đứt được — chém đúng lúc thì nó tự trúng đòn mở depth 3, 4 phôi rèn, mw_twinblade_songdao chọn mục tiêu và quản lý thứ tự giết"><td>Đôi Song Sinh Rỉ</td><td>D2</td><td>4200</td><td>55s</td><td>P1: 2 con chia sẻ thanh HP. Đứng hai bên, ném lưỡi câu xen kẽ  //  P2 (một con chết): Con còn lại điên máu +60% tốc độ, +40% damage  //  P3 (chỉ Elite Depth): Hai con hợp thành một, HP hồi 30%</td><td>Lưỡi câu bị chém đứt được — chém đúng lúc thì nó tự trúng đòn</td><td>mở Depth 3, 4 Phôi Rèn, mw_twinblade_songdao</td><td>Chọn mục tiêu và quản lý thứ tự giết</td></tr>
+<tr data-hay="tường khiên sống d3 6800 60s p1: khiên chắn 90% damage chính diện. mở khiên 2.0s sau mỗi 4 đòn nó đánh  //  p2 (dưới 55%): sinh 3 goblin khiên làm hàng rào di động  //  p3 (chỉ elite depth): khiên phản 30% damage tầm xa về người chơi cửa sổ 2.0s là lúc duy nhất damage vào đủ — phải sẵn sàng burst mở depth 4, 5 phôi rèn, rw_rifle_matcu kiên nhẫn và timing — không phải trận nào cũng spam được"><td>Tường Khiên Sống</td><td>D3</td><td>6800</td><td>60s</td><td>P1: Khiên chắn 90% damage chính diện. Mở khiên 2.0s sau mỗi 4 đòn nó đánh  //  P2 (dưới 55%): Sinh 3 Goblin Khiên làm hàng rào di động  //  P3 (chỉ Elite Depth): Khiên phản 30% damage tầm xa về người chơi</td><td>Cửa sổ 2.0s là lúc duy nhất damage vào đủ — phải sẵn sàng burst</td><td>mở Depth 4, 5 Phôi Rèn, rw_rifle_matcu</td><td>Kiên nhẫn và timing — không phải trận nào cũng spam được</td></tr>
+<tr data-hay="nhện trần hầm d4 9500 62s p1: bám trần, thả xuống theo đường thẳng đứng. hoàn toàn miễn knockback  //  p2 (dưới 60%): tơ khoá màn hình 1.0s (không tap, không slide) mỗi 12s  //  p3 (chỉ elite depth): vô hình giữa các đòn, chỉ thấy 8 mắt đỏ khi nó thả xuống chém được chân — cắt 1 chân giảm 20% tốc độ mở depth 5, 6 phôi rèn, rw_sniper_dinhsat sống mà không có công cụ knockback"><td>Nhện Trần Hầm</td><td>D4</td><td>9500</td><td>62s</td><td>P1: Bám trần, thả xuống theo đường thẳng đứng. Hoàn toàn miễn knockback  //  P2 (dưới 60%): Tơ khoá màn hình 1.0s (không tap, không slide) mỗi 12s  //  P3 (chỉ Elite Depth): Vô hình giữa các đòn, chỉ thấy 8 mắt đỏ</td><td>Khi nó thả xuống chém được chân — cắt 1 chân giảm 20% tốc độ</td><td>mở Depth 5, 6 Phôi Rèn, rw_sniper_dinhsat</td><td>Sống mà không có công cụ knockback</td></tr>
+<tr data-hay="ogre mỏ d5 13500 65s p1: đập trụ chống hầm. mỗi 20s một phần trần sập: hành lang hẹp lại 15% (tối đa 3 lần) — càng đánh lâu càng ít chỗ lùi  //  p2 (dưới 50%): sóng xung hình vòng từ chân, phải bước lùi đúng lúc  //  p3 (chỉ elite depth): cướp 1 thẻ nâng cấp của người chơi cho tới hết trận chém được xà chống nó đang cầm để chặn lần đập tiếp theo — súng không phá được xà mở depth 6, 7 phôi rèn, rw_deeptech_loino, mw_deeptech_luoiloi áp lực thời gian — và rằng không gian cũng là tài nguyên"><td>Ogre Mỏ</td><td>D5</td><td>13500</td><td>65s</td><td>P1: Đập trụ chống hầm. Mỗi 20s một phần trần sập: hành lang hẹp lại 15% (tối đa 3 lần) — càng đánh lâu càng ít chỗ lùi  //  P2 (dưới 50%): Sóng xung hình vòng từ chân, phải Bước Lùi đúng lúc  //  P3 (chỉ Elite Depth): Cướp 1 thẻ nâng cấp của người chơi cho tới hết trận</td><td>Chém được xà chống nó đang cầm để chặn lần đập tiếp theo — súng không phá được xà</td><td>mở Depth 6, 7 Phôi Rèn, rw_deeptech_loino, mw_deeptech_luoiloi</td><td>Áp lực thời gian — và rằng không gian cũng là tài nguyên</td></tr>
+<tr data-hay="vua xác vàng d6 18000 68s p1: ăn vàng trên sàn để hồi 1% hp mỗi 100 vàng. người chơi phải hút vàng trước nó  //  p2 (dưới 55%): nhả vàng thành đạn, 18 damage mỗi đồng  //  p3 (chỉ elite depth): toàn bộ vàng trên sàn biến thành goblin bầy lúc nó cúi xuống ăn vàng: bất động 1.4s, chỉ chém được (miệng chắn đạn) mở depth 7, 8 phôi rèn, rw_minigun_ruotsat bỏ tham đúng lúc — bài học ngược của cả game"><td>Vua Xác Vàng</td><td>D6</td><td>18000</td><td>68s</td><td>P1: Ăn vàng trên sàn để hồi 1% HP mỗi 100 vàng. Người chơi phải hút vàng trước nó  //  P2 (dưới 55%): Nhả vàng thành đạn, 18 damage mỗi đồng  //  P3 (chỉ Elite Depth): Toàn bộ vàng trên sàn biến thành Goblin Bầy</td><td>Lúc nó cúi xuống ăn vàng: bất động 1.4s, chỉ chém được (miệng chắn đạn)</td><td>mở Depth 7, 8 Phôi Rèn, rw_minigun_ruotsat</td><td>Bỏ tham đúng lúc — bài học ngược của cả game</td></tr>
+<tr data-hay="mẹ mỏ d7 26000 70s p1: khối thịt-quặng gắn vào vách hầm, treo bằng 4 gân rễ. phải chém đứt cả 4 — đạn không cắt được gân  //  p2 (2 gân đứt): nhả ra bóng của 6 boss trước, mỗi con 15% hp gốc  //  p3 (chỉ elite depth): đảo ngược điều khiển 5s — tap thành chém, quẹt thành bắn toàn bộ phase 1 là melee-check. đây là lý do game bắt ngươi học dao từ phút đầu mở endless, 12 phôi rèn, mw_greatsword_xelong, rw_deeptech_miengmo, skin sập hầm tổng hợp: tap, slide, knockback, quản lý tài nguyên, và giữ bình tĩnh khi hầm đầy quái"><td>MẸ MỎ</td><td>D7</td><td>26000</td><td>70s</td><td>P1: Khối thịt-quặng gắn vào vách hầm, treo bằng 4 gân rễ. Phải CHÉM đứt cả 4 — đạn không cắt được gân  //  P2 (2 gân đứt): Nhả ra bóng của 6 boss trước, mỗi con 15% HP gốc  //  P3 (chỉ Elite Depth): Đảo ngược điều khiển 5s — tap thành chém, quẹt thành bắn</td><td>Toàn bộ phase 1 là melee-check. Đây là lý do game bắt ngươi học dao từ phút đầu</td><td>mở Endless, 12 Phôi Rèn, mw_greatsword_xelong, rw_deeptech_miengmo, skin Sập Hầm</td><td>Tổng hợp: tap, slide, knockback, quản lý tài nguyên, và giữ bình tĩnh khi hầm đầy quái</td></tr>
+</tbody></table></div>
+
+<h3>affixes &middot; 7 dòng</h3>
+<div class="tw" data-table="affixes"><table>
+<thead><tr><th>Tên</th><th>ID</th><th>Hiệu ứng</th><th>Tín hiệu</th><th></th></tr></thead><tbody>
+<tr data-hay="bọc giáp af_bocgiap +60% hp, kbresist +0.30 vảy kim loại sáng bạc g"><td>Bọc Giáp</td><td>af_bocgiap</td><td>+60% HP, kbResist +0.30</td><td>vảy kim loại sáng bạc</td><td>G</td></tr>
+<tr data-hay="điên máu af_dienmau +45% tốc độ khi hp &lt; 50% vệt đỏ kéo theo g"><td>Điên Máu</td><td>af_dienmau</td><td>+45% tốc độ khi HP &lt; 50%</td><td>vệt đỏ kéo theo</td><td>G</td></tr>
+<tr data-hay="chai sạn af_chaisan -40% damage nhận từ vũ khí tầm xa khói xám quanh người g"><td>Chai Sạn</td><td>af_chaisan</td><td>-40% damage nhận từ vũ khí tầm xa</td><td>khói xám quanh người</td><td>G</td></tr>
+<tr data-hay="da cứng af_dacung -40% damage nhận từ vũ khí cận chiến vỏ đá trên vai g"><td>Da Cứng</td><td>af_dacung</td><td>-40% damage nhận từ vũ khí cận chiến</td><td>vỏ đá trên vai</td><td>G</td></tr>
+<tr data-hay="nổ xác af_noxac chết nổ aoe 20 damage bán kính 2.5m bụng phát sáng đỏ g"><td>Nổ Xác</td><td>af_noxac</td><td>Chết nổ AoE 20 damage bán kính 2.5m</td><td>bụng phát sáng đỏ</td><td>G</td></tr>
+<tr data-hay="hút vàng af_hutvang ăn vàng trên sàn; giết lại nhả ra x2 vàng bám quanh người g"><td>Hút Vàng</td><td>af_hutvang</td><td>Ăn vàng trên sàn; giết lại nhả ra x2</td><td>vàng bám quanh người</td><td>G</td></tr>
+<tr data-hay="bóng đôi af_bongdoi khi chết sinh 1 bản sao 30% hp có bóng mờ lệch nửa nhịp g"><td>Bóng Đôi</td><td>af_bongdoi</td><td>Khi chết sinh 1 bản sao 30% HP</td><td>có bóng mờ lệch nửa nhịp</td><td>G</td></tr>
+</tbody></table></div>
+
+</section><footer><p><a href="GDD.html">&larr; GDD</a></p></footer></main></div>
+<script>
+(function(){
+  var inp=document.getElementById('q');if(!inp)return;
+  var out=document.getElementById('qc');
+  function run(){
+    var v=inp.value.trim().toLowerCase(),shown=0,total=0;
+    document.querySelectorAll('tbody tr[data-hay]').forEach(function(tr){
+      total++;var hit=!v||tr.getAttribute('data-hay').indexOf(v)>-1;
+      tr.style.display=hit?'':'none';if(hit)shown++;
+    });
+    if(out)out.textContent=shown+' / '+total;
+  }
+  inp.addEventListener('input',run);run();
+})();
+</script>
+
+</body>
+</html>

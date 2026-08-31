@@ -1,0 +1,124 @@
+{
+  "_comment": "7 Depth x 10 phong. R = (depth-1)*10 + room. entryCost KHONG duoc dung tickets (docs/11 muc 6.5).",
+  "depths": [
+    {
+      "depth": 1, "name": "Hầm Đá", "biome": "hầm đá xám, đuốc vàng, nước nhỏ giọt", "rooms": 10,
+      "introEnemies": ["en_trash_goblincui", "en_trash_goblinchay", "en_trash_goblinbay"],
+      "boss": "bs_d1_goblinvuongbeo",
+      "loadoutUnlocks": ["rw_pistol_kendong", "rw_shotgun_mienghang", "rw_smg_ochuot", "mw_dagger_daogam", "mw_machete_ruarung"],
+      "expectedGoldG0": 1400, "entryCost": null,
+      "teaches": "tap, hold, quẹt chém, Chém Hoàn Hảo, Cướp Đạn, Ngã Ba Hầm lần đầu",
+      "challenges": [
+        { "id": "ch_d1_1", "name": "Clear Depth 1", "reward": "300 vàng + mở Trại Mỏ" },
+        { "id": "ch_d1_2", "name": "Clear không dùng súng", "reward": "10 Mảnh Cốt" },
+        { "id": "ch_d1_3", "name": "Clear với Lộc >= 6", "reward": "1 Phôi Rèn" },
+        { "id": "ch_d1_4", "name": "Chém Hoàn Hảo 10 lần trong 1 run", "reward": "600 vàng" },
+        { "id": "ch_d1_5", "name": "Clear dưới 4 phút", "reward": "mở Elite Depth 1" }
+      ]
+    },
+    {
+      "depth": 2, "name": "Mỏ Cũ", "biome": "đường ray, xe goòng, bụi than, đèn dầu", "rooms": 10,
+      "introEnemies": ["en_ranged_nemda", "en_special_thuocno", "en_elite_tuonggoblin"],
+      "boss": "bs_d2_doisongsinhri",
+      "loadoutUnlocks": ["rw_rifle_gongsat", "rw_crossbow_gaimuc", "rw_shotgun_longmoc", "mw_hammer_buada", "mw_spear_giaotre"],
+      "expectedGoldG0": 3100, "entryCost": null,
+      "teaches": "không được rùa (Ném Đá), knockback cứu mạng (Thuốc Nổ), Elite",
+      "challenges": [
+        { "id": "ch_d2_1", "name": "Clear Depth 2", "reward": "700 vàng + mở Talent" },
+        { "id": "ch_d2_2", "name": "Clear không để Thuốc Nổ nào nổ gần mình", "reward": "12 Mảnh Cốt" },
+        { "id": "ch_d2_3", "name": "Clear với Lộc >= 10", "reward": "2 Phôi Rèn + mở Ngã Ba 3 cửa" },
+        { "id": "ch_d2_4", "name": "Giết 2 Elite trong 1 run", "reward": "1 Bảo Vật" },
+        { "id": "ch_d2_5", "name": "Clear không mất máu", "reward": "mở Elite Depth 2" }
+      ]
+    },
+    {
+      "depth": 3, "name": "Hang Nấm", "biome": "nấm phát quang xanh lam, bào tử bay, ẩm", "rooms": 10,
+      "introEnemies": ["en_special_khien", "en_heavy_ogreham"],
+      "boss": "bs_d3_tuongkhiensong",
+      "loadoutUnlocks": ["rw_rifle_matcu", "rw_lmg_trongdoi", "rw_flamer_hoingam", "mw_greatsword_daidao", "mw_twinblade_songdao"],
+      "expectedGoldG0": 5450, "entryCost": null,
+      "teaches": "spam bắn thẳng không còn hiệu quả; kbResist tồn tại",
+      "challenges": [
+        { "id": "ch_d3_1", "name": "Clear Depth 3", "reward": "1500 vàng" },
+        { "id": "ch_d3_2", "name": "Giết 20 Goblin Khiên bằng cận chiến", "reward": "15 Mảnh Cốt" },
+        { "id": "ch_d3_3", "name": "Clear không để Sương Đen kích hoạt lần nào", "reward": "3 Phôi Rèn" },
+        { "id": "ch_d3_4", "name": "Clear với Nạp Hoàn Hảo >= 80%", "reward": "1 Bảo Vật" },
+        { "id": "ch_d3_5", "name": "Clear dùng đúng 1 vũ khí", "reward": "mở Elite Depth 3" }
+      ]
+    },
+    {
+      "depth": 4, "name": "Xưởng Rèn", "biome": "lò nung đỏ, đe sắt, tia lửa, nóng", "rooms": 10,
+      "introEnemies": ["en_special_doiham", "en_special_daoham", "en_elite_dote"],
+      "boss": "bs_d4_nhentranham",
+      "loadoutUnlocks": ["rw_launcher_noidat", "rw_smg_muikim", "rw_sniper_dinhsat", "mw_chainsaw_cuamay", "mw_axe_phunguyet"],
+      "expectedGoldG0": 8650, "entryCost": null,
+      "teaches": "trục dọc (bay) và phía sau (đào hầm) — màn hình không chỉ có phía trước",
+      "challenges": [
+        { "id": "ch_d4_1", "name": "Clear Depth 4", "reward": "3200 vàng" },
+        { "id": "ch_d4_2", "name": "Giết 15 Dơi Hầm bằng cận chiến", "reward": "20 Mảnh Cốt" },
+        { "id": "ch_d4_3", "name": "Clear với Lộc >= 14", "reward": "4 Phôi Rèn" },
+        { "id": "ch_d4_4", "name": "Không bị Goblin Đào Hầm đánh trúng lần nào", "reward": "1 Bảo Vật" },
+        { "id": "ch_d4_5", "name": "Clear dưới 5 phút", "reward": "mở Elite Depth 4" }
+      ]
+    },
+    {
+      "depth": 5, "name": "Nhà Tù", "biome": "lồng sắt, xương, đuốc lụi, tiếng rên", "rooms": 10,
+      "introEnemies": ["en_support_trong", "en_support_phapsuxanh", "en_elite_omvang"],
+      "boss": "bs_d5_ogremo",
+      "loadoutUnlocks": ["rw_shotgun_hamtoi", "rw_acid_ruotdat", "rw_launcher_ongsam", "mw_scythe_luoiliem", "mw_hammer_chuytroi"],
+      "expectedGoldG0": 13150, "entryCost": null,
+      "teaches": "ưu tiên mục tiêu — bắn con gần nhất không còn đúng",
+      "challenges": [
+        { "id": "ch_d5_1", "name": "Clear Depth 5", "reward": "7000 vàng" },
+        { "id": "ch_d5_2", "name": "Giết mọi Pháp Sư Xanh trước khi nó tạo khiên", "reward": "30 Mảnh Cốt" },
+        { "id": "ch_d5_3", "name": "Clear mà luôn giữ >= 5.000 vàng trong túi (không tiêu)", "reward": "5 Phôi Rèn" },
+        { "id": "ch_d5_4", "name": "Giết Ổ Vàng trước khi nó ăn quá 500 vàng", "reward": "1 Bảo Vật" },
+        { "id": "ch_d5_5", "name": "Clear không dùng shop", "reward": "mở Elite Depth 5" }
+      ]
+    },
+    {
+      "depth": 6, "name": "Đền Vàng", "biome": "đá chạm khắc, quặng vàng lộ thiên, tượng thợ mỏ, tím và vàng", "rooms": 10,
+      "introEnemies": ["en_heavy_daubo", "en_heavy_goblinbeo", "en_ranged_no"],
+      "boss": "bs_d6_vuaxacvang",
+      "loadoutUnlocks": ["rw_deeptech_loino", "mw_deeptech_luoiloi"],
+      "expectedGoldG0": 19450, "entryCost": null,
+      "teaches": "hỗn chiến thật sự; hành lang là tài sản phải giành",
+      "challenges": [
+        { "id": "ch_d6_1", "name": "Clear Depth 6", "reward": "16000 vàng" },
+        { "id": "ch_d6_2", "name": "Để 5 Đầu Bò Đá tự đâm tường", "reward": "40 Mảnh Cốt" },
+        { "id": "ch_d6_3", "name": "Clear với Lộc = 20", "reward": "7 Phôi Rèn" },
+        { "id": "ch_d6_4", "name": "Giết Goblin Béo ở dải Xa 10 lần", "reward": "1 Bảo Vật" },
+        { "id": "ch_d6_5", "name": "Clear với combo cận chiến bậc 5 giữ trong 60 giây tổng", "reward": "mở Elite Depth 6" }
+      ]
+    },
+    {
+      "depth": 7, "name": "Lõi Đỏ", "biome": "đá nóng chảy, rễ quặng khổng lồ đập như mạch máu, đỏ rực, rung liên tục", "rooms": 10,
+      "introEnemies": ["en_special_goblinlua", "en_support_thaymo", "en_heavy_quyham"],
+      "boss": "bs_d7_meemo",
+      "loadoutUnlocks": ["rw_deeptech_miengmo", "rw_minigun_ruotsat", "mw_greatsword_xelong"],
+      "expectedGoldG0": 31900, "entryCost": null,
+      "teaches": "kỳ thi tốt nghiệp — mọi cơ chế cùng lúc, affix mặc định bật",
+      "challenges": [
+        { "id": "ch_d7_1", "name": "Clear Depth 7", "reward": "40000 vàng + mở Endless" },
+        { "id": "ch_d7_2", "name": "Chém đứt 4 gân rễ MẸ MỎ dưới 20 giây", "reward": "60 Mảnh Cốt" },
+        { "id": "ch_d7_3", "name": "Clear khi Sương Đen đã bật ở >= 5 phòng mà vẫn không mất máu", "reward": "12 Phôi Rèn + skin Sập Hầm" },
+        { "id": "ch_d7_4", "name": "Clear không hồi sinh", "reward": "1 Bảo Vật" },
+        { "id": "ch_d7_5", "name": "Clear cả 7 Depth liên tiếp trong 1 phiên", "reward": "mở Elite Depth 7 + danh hiệu" }
+      ]
+    }
+  ],
+  "endless": {
+    "name": "Hầm Không Đáy", "unlockAfter": "bs_d7_meemo",
+    "rooms": "vô hạn, R tiếp tục tăng từ 71",
+    "boss": "boss ngẫu nhiên mỗi 10 phòng, HP x(1 + 0.25 * số lần đã gặp)",
+    "leaderboard": "điểm = số phòng đạt được x (1 + Lộc/20)",
+    "entryCost": null,
+    "note": "Day la noi duong cong quai (x1.068/phong) cuoi cung thang duoc nguoi choi — xem docs/16 muc 7"
+  },
+  "dailyDungeon": {
+    "name": "Hầm Ngày", "seed": "1 seed chung toàn server mỗi ngày",
+    "rooms": 8, "loadout": "ép sẵn, mọi người giống nhau -> thi kỹ năng thuần",
+    "entryCost": { "currency": "tickets", "amount": 1 },
+    "reward": "vàng, Mảnh Cốt, xếp hạng ngày"
+  }
+}

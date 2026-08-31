@@ -1,0 +1,49 @@
+{
+  "_comment": "RUI RO KY THUAT SO 1 CUA DU AN. S = chieu rong man hinh. Xem docs/03 muc 2 cho may trang thai.",
+  "gestures": [
+    { "id": "gs_tap", "name": "Tap", "condition": "nhấc ngón < 180ms VÀ di chuyển < 0.05S", "action": "1 phát bắn nhắm vào điểm tap", "weapon": "ranged" },
+    { "id": "gs_hold", "name": "Hold", "condition": "giữ >= 180ms, tốc độ < 900 px/s", "action": "Bắn liên tục vào điểm đang giữ (theo RPM)", "weapon": "ranged" },
+    { "id": "gs_holddrag", "name": "Hold & Drag", "condition": "đã ở Hold rồi mới di chuyển, tốc độ < 900 px/s", "action": "Bắn liên tục, tâm ngắm đi theo ngón", "weapon": "ranged" },
+    { "id": "gs_slide_light", "name": "Slide nhẹ", "condition": "tốc độ đỉnh >= 900 px/s trong <=250ms đầu, dài 0.12S–0.55S, góc lệch khỏi ngang <= 55°", "action": "Chém nhẹ", "weapon": "melee" },
+    { "id": "gs_slide_heavy", "name": "Slide nặng", "condition": "như slide nhẹ nhưng dài > 0.55S", "action": "Chém nặng: 2x stamina, 2.0x damage, 2.2x knockback, arc +30°", "weapon": "melee" },
+    { "id": "gs_slide_down", "name": "Slide dọc xuống", "condition": ">= 900 px/s, góc lệch khỏi dọc <= 25°, hướng xuống", "action": "Bước Lùi: lùi 1.2m, 0.15s bất tử, cooldown 2.5s", "weapon": "none" },
+    { "id": "gs_slide_up", "name": "Slide dọc lên", "condition": "như trên, hướng lên", "action": "Xốc Tới: tiến 2.0m, đẩy văng quái trên đường, cooldown 4s", "weapon": "none" },
+    { "id": "gs_twofinger", "name": "Two-finger tap", "condition": "2 ngón chạm trong 120ms", "action": "Kích Bảo Vật / Ultimate", "weapon": "none" },
+    { "id": "gs_reload", "name": "Nút Reload", "condition": "tap nút góc phải-dưới", "action": "Reload thủ công / bắt cửa sổ Nạp Hoàn Hảo", "weapon": "ranged" },
+    { "id": "gs_deadzone", "name": "VÙNG CHẾT", "condition": "slide có góc lệch khỏi ngang trong khoảng 55°–65°", "action": "BỎ QUA HOÀN TOÀN + rung 8ms. Thà mất input còn hơn làm sai input", "weapon": "none" }
+  ],
+  "params": [
+    { "key": "tapMaxDuration", "value": 180, "unit": "ms", "note": "Tăng nếu tester 'muốn bắn mà ra dao'" },
+    { "key": "tapMaxTravel", "value": 0.05, "unit": "S", "note": "" },
+    { "key": "slideVelocityThreshold", "value": 900, "unit": "px/s", "note": "SO QUAN TRONG NHAT CUA GAME. Test tren may 60Hz va 120Hz" },
+    { "key": "slideDetectWindow", "value": 250, "unit": "ms", "note": "" },
+    { "key": "slideMinLength", "value": 0.12, "unit": "S", "note": "Dưới ngưỡng này coi là tap" },
+    { "key": "heavySlideLength", "value": 0.55, "unit": "S", "note": "Cho phép người chơi tune 0.40–0.70" },
+    { "key": "meleeAngleMax", "value": 55, "unit": "deg", "note": "lệch khỏi trục ngang" },
+    { "key": "moveAngleMin", "value": 65, "unit": "deg", "note": "lệch khỏi trục ngang" },
+    { "key": "dodgeCooldown", "value": 2.5, "unit": "s", "note": "" },
+    { "key": "dashCooldown", "value": 4.0, "unit": "s", "note": "" },
+    { "key": "cameraPitchDown", "value": 8, "unit": "deg", "note": "Để dải Cận chiến rơi vào 45–75% chiều cao, không bị ngón tay che" },
+    { "key": "crosshairScreenHeight", "value": 0.62, "unit": "tỉ lệ", "note": "Thấp hơn giữa vì ngón tay đến từ dưới" }
+  ],
+  "stateMachine": {
+    "latchRule": "Mot lan cham CHI duoc la MOT loai hanh dong. Da vao HOLD_FIRE thi quet nhanh cung khong ra dao; da vao SLIDE thi giu lai cung khong ra sung.",
+    "multiTouch": "Chi ngon DAU TIEN dieu khien combat. Ngon thu 2 chi dung cho two-finger tap.",
+    "states": ["TOUCH_DOWN", "PENDING (180ms)", "SLIDE (locked)", "HOLD_FIRE (locked)", "IDLE"]
+  },
+  "accessibility": [
+    { "id": "ac_haivung", "name": "Chế độ Hai Vùng", "desc": "Nửa dưới màn hình = chỉ chém, nửa trên = chỉ bắn. TU DONG goi y neu ti le input bi huy > 15% trong 2 run. Mac dinh BAT cho nguoi moi trong 3 run dau (A/B test)" },
+    { "id": "ac_nutchem", "name": "Nút Chém", "desc": "Hiện 1 nút chém góc trái-dưới, tự chém con gần nhất" },
+    { "id": "ac_autoreload", "name": "Auto-reload", "desc": "Bật mặc định. Vẫn tap được để lấy Nạp Hoàn Hảo" },
+    { "id": "ac_aimassist", "name": "Aim assist", "desc": "Hút tâm 4° tới đầu quái gần nhất ở dải Giữa/Xa, giảm còn 1.5° từ Depth 5" },
+    { "id": "ac_haptic", "name": "Rung", "desc": "3 mức + tắt" },
+    { "id": "ac_slidelen", "name": "Nhạy độ dài slide", "desc": "Kéo heavySlideLength từ 0.40S đến 0.70S" }
+  ],
+  "onboarding": [
+    { "sec": "0–2", "event": "Vào thẳng hành lang, 1 goblin đi tới. Chữ to: CHẠM VÀO NÓ" },
+    { "sec": "2–4", "event": "Nó chết nổ vàng. 3 con nữa tới. Chữ: GIỮ ĐỂ BẮN LIÊN TỤC" },
+    { "sec": "4–7", "event": "Hết đạn (script cứng), súng khoá, 2 con vào gần. Chữ: QUẸT NGANG ĐỂ CHÉM" },
+    { "sec": "7–10", "event": "Chém chết 3 con 1 nhát, slow-mo. Chữ: CHÉM HOÀN HẢO +ĐẠN" },
+    { "sec": "10–15", "event": "Tới Ngã Ba đầu tiên: 2 cửa, một biển ghi ĐÔNG · VÀNG x1.25, một ghi TỐI · VÀNG x1.3. Chữ: CHỌN CỬA" }
+  ]
+}

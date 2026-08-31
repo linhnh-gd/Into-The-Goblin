@@ -1,0 +1,12 @@
+# Windows / editor
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.swp
+
+# backup tam khi sua data
+data.bak/
+*.bak
+
+# khong ignore output cua pipeline: GDD.html, *.html, docs/gen-*.md, *_report.md
+# duoc commit co chu dich de review duoc va de Vercel serve duoc prototype/

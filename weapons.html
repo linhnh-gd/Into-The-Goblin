@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Vũ khí | Into the Goblin</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap");
+:root{
+  --ground:#0B0D10; --surface:#141821; --surface2:#1B212C; --line:#262E3B;
+  --ink:#E7E9ED; --muted:#8B93A2;
+  --gold:#FFC53D; --gold-deep:#FF8A00; --bell:#B14CFF; --danger:#FF4438; --ok:#3ED598;
+  --shadow:0 1px 0 rgba(255,255,255,.03), 0 12px 32px rgba(0,0,0,.45);
+  --rail:250px;
+  --f-disp:"Anton",Impact,"Arial Narrow Bold",sans-serif;
+  --f-lab:"Oswald","Arial Narrow",sans-serif;
+  --f-body:"Be Vietnam Pro",-apple-system,Segoe UI,Roboto,sans-serif;
+  --f-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+:root:not([data-theme="light"]){ color-scheme:dark; }
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --ground:#ECEEF2; --surface:#FFFFFF; --surface2:#F5F6F9; --line:#D8DCE4;
+    --ink:#12161C; --muted:#5A6373;
+    --gold:#9A6200; --gold-deep:#C07800; --bell:#7A21C7; --danger:#C42B20; --ok:#0E7C55;
+    --shadow:0 1px 0 rgba(255,255,255,.6), 0 10px 26px rgba(16,22,32,.10);
+    color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --ground:#ECEEF2; --surface:#FFFFFF; --surface2:#F5F6F9; --line:#D8DCE4;
+  --ink:#12161C; --muted:#5A6373;
+  --gold:#9A6200; --gold-deep:#C07800; --bell:#7A21C7; --danger:#C42B20; --ok:#0E7C55;
+  --shadow:0 1px 0 rgba(255,255,255,.6), 0 10px 26px rgba(16,22,32,.10);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--f-body);font-weight:400;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--gold);text-decoration:none;border-bottom:1px solid color-mix(in srgb, var(--gold) 35%, transparent)}
+a:hover{color:var(--gold-deep)}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--bell);outline-offset:2px}
+.wrap{display:grid;grid-template-columns:var(--rail) minmax(0,1fr);gap:0;min-height:100vh}
+nav.rail{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:26px 18px 40px;border-right:1px solid var(--line);background:var(--surface)}
+nav.rail .brand{font-family:var(--f-disp);font-size:23px;letter-spacing:.5px;line-height:1.05;color:var(--ink);margin:0 0 2px}
+nav.rail .brand span{color:var(--gold)}
+nav.rail .tag{font-family:var(--f-lab);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 22px}
+nav.rail h4{font-family:var(--f-lab);font-weight:500;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:20px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+nav.rail ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px}
+nav.rail a{display:flex;gap:9px;padding:5px 8px;border-radius:5px;border:0;color:var(--ink);font-size:13.5px;line-height:1.35}
+nav.rail a:hover{background:var(--surface2);color:var(--gold)}
+nav.rail a .n{font-family:var(--f-mono);font-size:11px;color:var(--muted);padding-top:2px;min-width:20px}
+main{min-width:0;padding:0 clamp(18px,4vw,60px) 90px}
+header.hero{padding:70px 0 34px;border-bottom:1px solid var(--line);margin-bottom:14px}
+header.hero .eyebrow{font-family:var(--f-lab);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--bell);margin:0 0 14px}
+header.hero h1{font-family:var(--f-disp);font-size:clamp(46px,8.4vw,104px);line-height:.92;letter-spacing:-.5px;margin:0;text-wrap:balance}
+header.hero h1 em{font-style:normal;color:var(--gold)}
+header.hero .sub{max-width:62ch;color:var(--muted);font-size:16.5px;margin:16px 0 0}
+header.hero .quote{font-family:var(--f-lab);font-weight:400;font-size:15px;letter-spacing:.06em;color:var(--gold);margin:20px 0 0;padding-left:14px;border-left:3px solid var(--gold)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 0;padding:0;list-style:none}
+.chips li{background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:7px 11px;display:flex;gap:7px;align-items:baseline}
+.chips b{font-family:var(--f-disp);font-size:19px;color:var(--gold);font-variant-numeric:tabular-nums}
+.chips span{font-family:var(--f-lab);font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
+section.doc{padding:44px 0;border-bottom:1px solid var(--line);scroll-margin-top:14px}
+section.doc>h2{font-family:var(--f-disp);font-size:clamp(27px,3.4vw,40px);line-height:1.06;margin:0 0 4px;text-wrap:balance}
+section.doc>.docnum{font-family:var(--f-mono);font-size:12px;color:var(--bell);letter-spacing:.1em;margin:0 0 6px}
+section.doc>h2+.rule{height:2px;background:linear-gradient(90deg,var(--gold),transparent);margin:0 0 22px;max-width:220px}
+.body{max-width:74ch}
+.body.wide{max-width:none}
+h3{font-family:var(--f-lab);font-weight:600;font-size:19px;letter-spacing:.01em;margin:34px 0 10px;color:var(--ink)}
+h4{font-family:var(--f-lab);font-weight:500;font-size:15.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:26px 0 8px}
+h5{font-family:var(--f-lab);font-weight:600;font-size:14px;margin:20px 0 6px}
+p{margin:0 0 13px}
+ul,ol{margin:0 0 13px;padding-left:22px}
+li{margin:0 0 5px}
+li>.cont{display:block;color:var(--muted)}
+strong{font-weight:700}
+code{font-family:var(--f-mono);font-size:.87em;background:var(--surface2);border:1px solid var(--line);border-radius:3px;padding:1px 5px}
+pre.ascii{font-family:var(--f-mono);font-size:12.2px;line-height:1.5;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--bell);border-radius:4px;padding:16px 18px;overflow-x:auto;margin:0 0 18px}
+pre.ascii code{background:none;border:0;padding:0;font-size:inherit}
+blockquote{margin:0 0 18px;padding:14px 18px;background:var(--surface);border-left:3px solid var(--gold);border-radius:0 4px 4px 0;color:var(--ink)}
+blockquote p:last-child{margin:0}
+hr{border:0;border-top:1px solid var(--line);margin:28px 0}
+.tw{overflow-x:auto;margin:0 0 20px;border:1px solid var(--line);border-radius:5px;background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13.4px}
+thead th{position:sticky;top:0;background:var(--surface2);font-family:var(--f-lab);font-weight:500;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);white-space:nowrap}
+tbody td{padding:8px 11px;border-bottom:1px solid var(--line);vertical-align:top;font-variant-numeric:tabular-nums}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--surface2)}
+tbody td:first-child{font-weight:600;white-space:nowrap}
+.filter{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px}
+.filter input{flex:1 1 240px;min-width:180px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:9px 12px;font-family:var(--f-body);font-size:14px}
+.filter .count{font-family:var(--f-lab);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.ladder{display:flex;flex-direction:column;gap:3px;margin:0 0 12px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:5px}
+.rung{display:grid;grid-template-columns:38px 1fr 122px;gap:10px;align-items:center}
+.rung .g{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+.rung .bars{display:flex;flex-direction:column;gap:2px;min-width:0}
+.rung .bar{display:block;height:7px;border-radius:1px;min-width:2px}
+.bar.gold{background:linear-gradient(90deg,var(--gold),var(--gold-deep))}
+.bar.bell{background:var(--bell);opacity:.75}
+.rung .mult{font-family:var(--f-mono);font-size:11.5px;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
+.legend{font-size:12.5px;color:var(--muted)}
+.legend .sw{display:inline-block;width:22px;height:7px;border-radius:1px;vertical-align:middle}
+.legend .sw.gold{background:var(--gold)} .legend .sw.bell{background:var(--bell)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:12px;margin:8px 0 0;padding:0;list-style:none}
+.cards li{background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:15px 16px}
+.cards a{border:0;font-family:var(--f-lab);font-weight:600;font-size:15px;letter-spacing:.02em}
+.cards p{margin:5px 0 0;font-size:12.8px;color:var(--muted)}
+.stat{display:flex;gap:26px;flex-wrap:wrap;margin:0 0 20px;padding:16px 18px;background:var(--surface);border:1px solid var(--line);border-radius:5px}
+.stat div{display:flex;flex-direction:column}
+.stat b{font-family:var(--f-disp);font-size:26px;line-height:1;font-variant-numeric:tabular-nums}
+.stat b.ok{color:var(--ok)} .stat b.warn{color:var(--gold)} .stat b.bad{color:var(--danger)}
+.stat span{font-family:var(--f-lab);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+footer{padding:34px 0 0;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);margin-top:26px}
+.top{position:fixed;right:16px;bottom:16px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:8px 12px;font-family:var(--f-lab);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr}
+  nav.rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  main{padding:0 18px 70px}
+  header.hero{padding:34px 0 24px}
+  .rung{grid-template-columns:32px 1fr 96px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="rail"><p class="brand">INTO THE<br /><span>GOBLIN</span></p><p class="tag">Xuống sâu nữa. Vàng ở dưới đó.</p>
+<h4>Thiết kế</h4><ol>
+<li><a href="GDD.html#doc-00"><span class="n">00</span><span>Research &amp; Benchmark</span></a></li>
+<li><a href="GDD.html#doc-01"><span class="n">01</span><span>Overview</span></a></li>
+<li><a href="GDD.html#doc-02"><span class="n">02</span><span>Core Loop</span></a></li>
+<li><a href="GDD.html#doc-03"><span class="n">03</span><span>Controls &amp; Gesture Disambiguation</span></a></li>
+<li><a href="GDD.html#doc-04"><span class="n">04</span><span>Combat: Vũ khí tầm xa</span></a></li>
+<li><a href="GDD.html#doc-05"><span class="n">05</span><span>Combat: Vũ khí cận chiến</span></a></li>
+<li><a href="GDD.html#doc-06"><span class="n">06</span><span>Dải cự ly, Knockback = phòng thủ, và Sương Đen</span></a></li>
+<li><a href="GDD.html#doc-07"><span class="n">07</span><span>Wave Director &amp; Room Graph</span></a></li>
+<li><a href="GDD.html#doc-08"><span class="n">08</span><span>NGÃ BA HẦM &amp; NHỊP LEO THANG</span></a></li>
+<li><a href="GDD.html#doc-09"><span class="n">09</span><span>Quái &amp; Boss</span></a></li>
+<li><a href="GDD.html#doc-10"><span class="n">10</span><span>Progression: trong run &amp; meta</span></a></li>
+<li><a href="GDD.html#doc-11"><span class="n">11</span><span>Economy</span></a></li>
+<li><a href="GDD.html#doc-12"><span class="n">12</span><span>Monetization &amp; Retention</span></a></li>
+<li><a href="GDD.html#doc-13"><span class="n">13</span><span>Game Feel &amp; Juice</span></a></li>
+<li><a href="GDD.html#doc-14"><span class="n">14</span><span>UI / UX (portrait, một tay)</span></a></li>
+<li><a href="GDD.html#doc-15"><span class="n">15</span><span>Art Direction &amp; Audio</span></a></li>
+<li><a href="GDD.html#doc-16"><span class="n">16</span><span>Data Schema &amp; Balancing (doc gốc cho MỌI con số)</span></a></li>
+<li><a href="GDD.html#doc-17"><span class="n">17</span><span>Production Roadmap, Playtest &amp; Risk</span></a></li>
+<li><a href="GDD.html#doc-18"><span class="n">18</span><span>Prototype three.js (playable)</span></a></li>
+</ol>
+<h4>Dữ liệu</h4><ol>
+<li><a href="weapons.html"><span class="n">&#9679;</span><span>Vũ khí</span></a></li>
+<li><a href="enemies.html"><span class="n">&#9679;</span><span>Quái &amp; Boss</span></a></li>
+<li><a href="content.html"><span class="n">&#9679;</span><span>Hầm: Depth · Phòng · Wave</span></a></li>
+<li><a href="meta.html"><span class="n">&#9679;</span><span>Thẻ · Bảo vật · Talent · Trại Mỏ</span></a></li>
+<li><a href="economy.html"><span class="n">&#9679;</span><span>Kinh tế &amp; Kiếm tiền</span></a></li>
+<li><a href="feel.html"><span class="n">&#9679;</span><span>Game Feel &amp; Điều khiển</span></a></li>
+</ol>
+<h4>Kiểm tra</h4><ol>
+<li><a href="audit_report.md"><span class="n">&#9679;</span><span>audit_report.md</span></a></li>
+<li><a href="balance_report.md"><span class="n">&#9679;</span><span>balance_report.md</span></a></li>
+</ol></nav>
+
+<main><header class="hero"><p class="eyebrow"><a href="GDD.html">INTO THE GOBLIN</a> &middot; Dữ liệu</p>
+<h1>Vũ khí</h1><p class="sub">data/weapons.json &mdash; Trang này do build_pages.ps1 sinh ra từ data/*.json và docs/*.md — KHÔNG sửa tay.</p></header>
+<section class="doc"><div class="filter"><input id="q" type="search" placeholder="Lọc theo tên, id, tag..." /><span class="count">Đang hiện <b id="qc"></b> dòng</span></div>
+<h3>ranged &middot; 18 dòng</h3>
+<div class="tw" data-table="ranged"><table>
+<thead><tr><th>Tên</th><th>ID</th><th>Kiểu</th><th>Tier</th><th>Mở ở</th><th>Damage</th><th>RPM</th><th>Viên</th><th>Băng</th><th>Dự trữ</th><th>Reload</th><th>Tầm</th><th>Xuyên</th><th>Knockback</th><th>Crit</th><th>DPS bền</th><th>Tag</th><th>Mô tả</th></tr></thead><tbody>
+<tr data-hay="kèn đồng rw_pistol_kendong pistol t1 start 44 300 1 7 84 1.4s 22m - 0.35m x2.5 110 precision, starter ổ quay sáu viên han gỉ. một phát một mạng goblin — nếu ngươi nhắm."><td>Kèn Đồng</td><td>rw_pistol_kendong</td><td>pistol</td><td>T1</td><td>start</td><td>44</td><td>300</td><td>1</td><td>7</td><td>84</td><td>1.4s</td><td>22m</td><td>-</td><td>0.35m</td><td>x2.5</td><td>110</td><td>precision, starter</td><td>Ổ quay sáu viên han gỉ. Một phát một mạng goblin — nếu ngươi nhắm.</td></tr>
+<tr data-hay="miệng hang rw_shotgun_mienghang shotgun t1 start 29 75 8 2 16 2.6s 12m - 1.6m x2.0 110 spacing, crowd, starter nòng cưa ngắn. công cụ dãn cách tốt nhất trong hầm: một phát là cả hàng đầu lùi lại."><td>Miệng Hang</td><td>rw_shotgun_mienghang</td><td>shotgun</td><td>T1</td><td>start</td><td>29</td><td>75</td><td>8</td><td>2</td><td>16</td><td>2.6s</td><td>12m</td><td>-</td><td>1.6m</td><td>x2.0</td><td>110</td><td>spacing, crowd, starter</td><td>Nòng cưa ngắn. Công cụ dãn cách tốt nhất trong hầm: một phát là cả hàng đầu lùi lại.</td></tr>
+<tr data-hay="ổ chuột rw_smg_ochuot smg t1 depth1 17.8 750 1 22 206 1.8s 16m - 0.15m x2.0 110 sustain, holddrag bắn như chuột gặm. giữ và rê ngón — để dành nhắm cho khẩu khác."><td>Ổ Chuột</td><td>rw_smg_ochuot</td><td>smg</td><td>T1</td><td>depth1</td><td>17.8</td><td>750</td><td>1</td><td>22</td><td>206</td><td>1.8s</td><td>16m</td><td>-</td><td>0.15m</td><td>x2.0</td><td>110</td><td>sustain, holddrag</td><td>Bắn như chuột gặm. Giữ và rê ngón — để dành nhắm cho khẩu khác.</td></tr>
+<tr data-hay="gai mực rw_crossbow_gaimuc crossbow t2 depth2 448 60 1 3 34 2.2s 22m 5 1.1m x3.0 258 pierce, precision một mũi xuyên năm cái đầu. xếp hàng đi, lũ goblin."><td>Gai Mực</td><td>rw_crossbow_gaimuc</td><td>crossbow</td><td>T2</td><td>depth2</td><td>448</td><td>60</td><td>1</td><td>3</td><td>34</td><td>2.2s</td><td>22m</td><td>5</td><td>1.1m</td><td>x3.0</td><td>258</td><td>pierce, precision</td><td>Một mũi xuyên năm cái đầu. Xếp hàng đi, lũ goblin.</td></tr>
+<tr data-hay="gọng sắt rw_rifle_gongsat rifle t2 depth2 60 420 1 22 253 2.0s 22m - 0.4m x2.5 257 allround, midband khẩu không có nhược điểm và cũng không có gì đặc biệt. đó là điểm mạnh của nó."><td>Gọng Sắt</td><td>rw_rifle_gongsat</td><td>rifle</td><td>T2</td><td>depth2</td><td>60</td><td>420</td><td>1</td><td>22</td><td>253</td><td>2.0s</td><td>22m</td><td>-</td><td>0.4m</td><td>x2.5</td><td>257</td><td>allround, midband</td><td>Khẩu không có nhược điểm và cũng không có gì đặc biệt. Đó là điểm mạnh của nó.</td></tr>
+<tr data-hay="lồng móc rw_shotgun_longmoc shotgun t2 boss1 33 90 10 5 46 3.0s 14m - 1.9m x2.0 261 spacing, crowd lên quy lát nghe như xương gãy. đẩy lùi cả một cửa vòm."><td>Lồng Móc</td><td>rw_shotgun_longmoc</td><td>shotgun</td><td>T2</td><td>boss1</td><td>33</td><td>90</td><td>10</td><td>5</td><td>46</td><td>3.0s</td><td>14m</td><td>-</td><td>1.9m</td><td>x2.0</td><td>261</td><td>spacing, crowd</td><td>Lên quy lát nghe như xương gãy. Đẩy lùi cả một cửa vòm.</td></tr>
+<tr data-hay="hơi ngầm rw_flamer_hoingam flamer t3 boss2 59 900 1 90 540 2.8s 7m - 0.0m x1.0 603 dot, areadenial, nokb không đẩy được ai. nhưng lửa lan, và cả hành lang cháy theo."><td>Hơi Ngầm</td><td>rw_flamer_hoingam</td><td>flamer</td><td>T3</td><td>boss2</td><td>59</td><td>900</td><td>1</td><td>90</td><td>540</td><td>2.8s</td><td>7m</td><td>-</td><td>0.0m</td><td>x1.0</td><td>603</td><td>dot, areadenial, nokb</td><td>Không đẩy được ai. Nhưng lửa lan, và cả hành lang cháy theo.</td></tr>
+<tr data-hay="trống đôi rw_lmg_trongdoi lmg t3 depth3 95 620 1 60 360 3.6s 18m - 0.2m x1.8 606 sustain, holddrag, crowd sáu mươi viên trong một băng trống. rê ngón qua cả wave, đừng thả."><td>Trống Đôi</td><td>rw_lmg_trongdoi</td><td>lmg</td><td>T3</td><td>depth3</td><td>95</td><td>620</td><td>1</td><td>60</td><td>360</td><td>3.6s</td><td>18m</td><td>-</td><td>0.2m</td><td>x1.8</td><td>606</td><td>sustain, holddrag, crowd</td><td>Sáu mươi viên trong một băng trống. Rê ngón qua cả wave, đừng thả.</td></tr>
+<tr data-hay="mắt cú rw_rifle_matcu marksman t3 depth3 324 180 1 11 70 2.2s 22m 1 0.7m x3.0 608 precision, headshot dành cho kẻ thích tap từng phát. headshot x3 và không tha ai."><td>Mắt Cú</td><td>rw_rifle_matcu</td><td>marksman</td><td>T3</td><td>depth3</td><td>324</td><td>180</td><td>1</td><td>11</td><td>70</td><td>2.2s</td><td>22m</td><td>1</td><td>0.7m</td><td>x3.0</td><td>608</td><td>precision, headshot</td><td>Dành cho kẻ thích tap từng phát. Headshot x3 và không tha ai.</td></tr>
+<tr data-hay="nồi đất rw_launcher_noidat launcher t4 depth4 2855 50 1 4 24 3.2s 18m - 2.4m x1.5 1428 aoe, spacing, wavewipe nồi thuốc nổ ném bằng ống. đạn cực ít — mỗi phát phải đáng."><td>Nồi Đất</td><td>rw_launcher_noidat</td><td>launcher</td><td>T4</td><td>depth4</td><td>2855</td><td>50</td><td>1</td><td>4</td><td>24</td><td>3.2s</td><td>18m</td><td>-</td><td>2.4m</td><td>x1.5</td><td>1428</td><td>aoe, spacing, wavewipe</td><td>Nồi thuốc nổ ném bằng ống. Đạn cực ít — mỗi phát phải đáng.</td></tr>
+<tr data-hay="mũi kim rw_smg_muikim smg t4 depth4 149 1100 1 40 280 2.0s 18m - 0.1m x2.2 1425 sustain, crit nghìn mốt phát một phút. băng đạn bay hơi trước khi ngươi kịp nghĩ."><td>Mũi Kim</td><td>rw_smg_muikim</td><td>smg</td><td>T4</td><td>depth4</td><td>149</td><td>1100</td><td>1</td><td>40</td><td>280</td><td>2.0s</td><td>18m</td><td>-</td><td>0.1m</td><td>x2.2</td><td>1425</td><td>sustain, crit</td><td>Nghìn mốt phát một phút. Băng đạn bay hơi trước khi ngươi kịp nghĩ.</td></tr>
+<tr data-hay="đinh sắt rw_sniper_dinhsat sniper t4 boss3 2884 40 1 5 35 2.6s 22m 8 1.4m x4.0 1428 pierce, precision, boss xuyên tám con một phát và ghim con cuối vào tường."><td>Đinh Sắt</td><td>rw_sniper_dinhsat</td><td>sniper</td><td>T4</td><td>boss3</td><td>2884</td><td>40</td><td>1</td><td>5</td><td>35</td><td>2.6s</td><td>22m</td><td>8</td><td>1.4m</td><td>x4.0</td><td>1428</td><td>pierce, precision, boss</td><td>Xuyên tám con một phát và ghim con cuối vào tường.</td></tr>
+<tr data-hay="ruột đất rw_acid_ruotdat acid t5 depth5 563 480 1 70 420 3.0s 9m - 0.05m x1.0 3354 dot, areadenial, armorbreak axit ăn qua giáp. goblin khiên không còn là vấn đề."><td>Ruột Đất</td><td>rw_acid_ruotdat</td><td>acid</td><td>T5</td><td>depth5</td><td>563</td><td>480</td><td>1</td><td>70</td><td>420</td><td>3.0s</td><td>9m</td><td>-</td><td>0.05m</td><td>x1.0</td><td>3354</td><td>dot, areadenial, armorbreak</td><td>Axit ăn qua giáp. Goblin Khiên không còn là vấn đề.</td></tr>
+<tr data-hay="ống sấm rw_launcher_ongsam launcher t5 boss4 4777 70 1 6 36 3.4s 20m - 2.8m x1.5 3355 aoe, spacing, wavewipe bắn ra tiếng sấm. xác bay hết về phía dải xa."><td>Ống Sấm</td><td>rw_launcher_ongsam</td><td>launcher</td><td>T5</td><td>boss4</td><td>4777</td><td>70</td><td>1</td><td>6</td><td>36</td><td>3.4s</td><td>20m</td><td>-</td><td>2.8m</td><td>x1.5</td><td>3355</td><td>aoe, spacing, wavewipe</td><td>Bắn ra tiếng sấm. Xác bay hết về phía Dải Xa.</td></tr>
+<tr data-hay="hàm tối rw_shotgun_hamtoi shotgun t5 depth5 288 200 7 10 70 3.0s 13m - 1.5m x2.0 3360 spacing, crowd, auto shotgun tự động. giữ ngón và cả dải cận chiến biến thành sương."><td>Hàm Tối</td><td>rw_shotgun_hamtoi</td><td>shotgun</td><td>T5</td><td>depth5</td><td>288</td><td>200</td><td>7</td><td>10</td><td>70</td><td>3.0s</td><td>13m</td><td>-</td><td>1.5m</td><td>x2.0</td><td>3360</td><td>spacing, crowd, auto</td><td>Shotgun tự động. Giữ ngón và cả dải Cận chiến biến thành sương.</td></tr>
+<tr data-hay="miệng mỏ rw_deeptech_miengmo deeptech t6 depth7 558 120 12 8 56 2.8s 15m - 2.2m x2.0 7878 gold, spacing, crowd nạp bằng vàng thay vì đạn. bắn ra mười hai mảnh quặng nóng đỏ."><td>Miệng Mỏ</td><td>rw_deeptech_miengmo</td><td>deeptech</td><td>T6</td><td>depth7</td><td>558</td><td>120</td><td>12</td><td>8</td><td>56</td><td>2.8s</td><td>15m</td><td>-</td><td>2.2m</td><td>x2.0</td><td>7878</td><td>gold, spacing, crowd</td><td>Nạp bằng vàng thay vì đạn. Bắn ra mười hai mảnh quặng nóng đỏ.</td></tr>
+<tr data-hay="lõi nổ rw_deeptech_loino deeptech t6 boss5 3285 240 1 12 84 2.0s 20m - 1.2m x2.5 7884 depth, scaling mỗi depth xuống sâu cho khẩu này +9% damage. càng sâu càng dữ."><td>Lõi Nổ</td><td>rw_deeptech_loino</td><td>deeptech</td><td>T6</td><td>boss5</td><td>3285</td><td>240</td><td>1</td><td>12</td><td>84</td><td>2.0s</td><td>20m</td><td>-</td><td>1.2m</td><td>x2.5</td><td>7884</td><td>depth, scaling</td><td>Mỗi Depth xuống sâu cho khẩu này +9% damage. Càng sâu càng dữ.</td></tr>
+<tr data-hay="ruột sắt rw_minigun_ruotsat minigun t6 boss6 574 1400 1 150 900 4.5s 18m - 0.25m x1.8 7878 sustain, holddrag, crowd một trăm năm mươi viên. bốn giây rưỡi reload — và đó là bốn giây rưỡi dùng dao."><td>Ruột Sắt</td><td>rw_minigun_ruotsat</td><td>minigun</td><td>T6</td><td>boss6</td><td>574</td><td>1400</td><td>1</td><td>150</td><td>900</td><td>4.5s</td><td>18m</td><td>-</td><td>0.25m</td><td>x1.8</td><td>7878</td><td>sustain, holddrag, crowd</td><td>Một trăm năm mươi viên. Bốn giây rưỡi reload — và đó là bốn giây rưỡi dùng dao.</td></tr>
+</tbody></table></div>
+
+<h3>melee &middot; 12 dòng</h3>
+<div class="tw" data-table="melee"><table>
+<thead><tr><th>Tên</th><th>ID</th><th>Kiểu</th><th>Tier</th><th>Mở ở</th><th>Damage</th><th>Stamina</th><th>Swing</th><th>Arc</th><th>Reach</th><th>Mục tiêu</th><th>Xác bay</th><th>Knockback</th><th>Crit</th><th>DPS bền</th><th>Tag</th><th>Mô tả</th></tr></thead><tbody>
+<tr data-hay="dao găm mw_dagger_daogam dagger t1 start 79 12 0.30s 60° 2.2m 2 3.0m 0.5m x2.5 160 cheap, scavenge, starter rẻ stamina nhất. máy nạp đạn tốt nhất trong game: chém nhiều, đạn nhiều."><td>Dao Găm</td><td>mw_dagger_daogam</td><td>dagger</td><td>T1</td><td>start</td><td>79</td><td>12</td><td>0.30s</td><td>60°</td><td>2.2m</td><td>2</td><td>3.0m</td><td>0.5m</td><td>x2.5</td><td>160</td><td>cheap, scavenge, starter</td><td>Rẻ stamina nhất. Máy nạp đạn tốt nhất trong game: chém nhiều, đạn nhiều.</td></tr>
+<tr data-hay="rựa rừng mw_machete_ruarung machete t1 depth1 94 18 0.38s 90° 2.5m 3 4.0m 0.8m x2.2 160 allround, perfectslash ba con một nhát. cửa vào của chém hoàn hảo."><td>Rựa Rừng</td><td>mw_machete_ruarung</td><td>machete</td><td>T1</td><td>depth1</td><td>94</td><td>18</td><td>0.38s</td><td>90°</td><td>2.5m</td><td>3</td><td>4.0m</td><td>0.8m</td><td>x2.2</td><td>160</td><td>allround, perfectslash</td><td>Ba con một nhát. Cửa vào của Chém Hoàn Hảo.</td></tr>
+<tr data-hay="búa đá mw_hammer_buada hammer t2 depth2 355 23 0.55s 70° 2.3m 2 7.0m 2.5m x1.8 375 shieldbreak, knockback bỏ qua khiên. goblin khiên tồn tại để cái búa này có việc làm."><td>Búa Đá</td><td>mw_hammer_buada</td><td>hammer</td><td>T2</td><td>depth2</td><td>355</td><td>23</td><td>0.55s</td><td>70°</td><td>2.3m</td><td>2</td><td>7.0m</td><td>2.5m</td><td>x1.8</td><td>375</td><td>shieldbreak, knockback</td><td>Bỏ qua khiên. Goblin Khiên tồn tại để cái búa này có việc làm.</td></tr>
+<tr data-hay="giáo tre mw_spear_giaotre spear t2 depth2 196 16 0.40s 40° 3.4m 3 3.5m 1.0m x2.6 375 reach, safe, pierce tầm xa nhất trong các vũ khí cận chiến. chém mà không phải vào hẳn dải cận chiến."><td>Giáo Tre</td><td>mw_spear_giaotre</td><td>spear</td><td>T2</td><td>depth2</td><td>196</td><td>16</td><td>0.40s</td><td>40°</td><td>3.4m</td><td>3</td><td>3.5m</td><td>1.0m</td><td>x2.6</td><td>375</td><td>reach, safe, pierce</td><td>Tầm xa nhất trong các vũ khí cận chiến. Chém mà không phải vào hẳn dải Cận chiến.</td></tr>
+<tr data-hay="đại đao mw_greatsword_daidao greatsword t3 depth3 427 24 0.62s 150° 3.0m 6 8.0m 1.6m x2.0 881 crowd, perfectslash, wavewipe một nhát quẹt, sáu goblin đứt đôi, xác bay theo hướng ngón tay. đây là cảnh trong trailer."><td>Đại Đao</td><td>mw_greatsword_daidao</td><td>greatsword</td><td>T3</td><td>depth3</td><td>427</td><td>24</td><td>0.62s</td><td>150°</td><td>3.0m</td><td>6</td><td>8.0m</td><td>1.6m</td><td>x2.0</td><td>881</td><td>crowd, perfectslash, wavewipe</td><td>Một nhát quẹt, sáu goblin đứt đôi, xác bay theo hướng ngón tay. Đây là cảnh trong trailer.</td></tr>
+<tr data-hay="song đao mw_twinblade_songdao twinblade t3 boss2 326 9 0.22s 55° 2.1m 2 2.5m 0.4m x2.4 880 combo, cheap, scavenge lên bậc combo nhanh gấp đôi. nhịp tay quyết định damage."><td>Song Đao</td><td>mw_twinblade_songdao</td><td>twinblade</td><td>T3</td><td>boss2</td><td>326</td><td>9</td><td>0.22s</td><td>55°</td><td>2.1m</td><td>2</td><td>2.5m</td><td>0.4m</td><td>x2.4</td><td>880</td><td>combo, cheap, scavenge</td><td>Lên bậc combo nhanh gấp đôi. Nhịp tay quyết định damage.</td></tr>
+<tr data-hay="phủ nguyệt mw_axe_phunguyet axe t4 depth4 1346 24 0.50s 110° 2.7m 4 6.0m 1.8m x2.2 2069 allround, knockback, crowd lưỡi hình bán nguyệt. cân bằng giữa quét và đẩy."><td>Phủ Nguyệt</td><td>mw_axe_phunguyet</td><td>axe</td><td>T4</td><td>depth4</td><td>1346</td><td>24</td><td>0.50s</td><td>110°</td><td>2.7m</td><td>4</td><td>6.0m</td><td>1.8m</td><td>x2.2</td><td>2069</td><td>allround, knockback, crowd</td><td>Lưỡi hình bán nguyệt. Cân bằng giữa quét và đẩy.</td></tr>
+<tr data-hay="cưa máy mw_chainsaw_cuamay chainsaw t4 depth4 1488 22 0.15s 45° 2.0m 3 1.5m 0.3m x1.5 2070 hold, sustain, gore không quẹt — giữ. tiêu stamina theo giây, cắt liên tục, máu ngập màn hình."><td>Cưa Máy</td><td>mw_chainsaw_cuamay</td><td>chainsaw</td><td>T4</td><td>depth4</td><td>1488</td><td>22</td><td>0.15s</td><td>45°</td><td>2.0m</td><td>3</td><td>1.5m</td><td>0.3m</td><td>x1.5</td><td>2070</td><td>hold, sustain, gore</td><td>Không quẹt — giữ. Tiêu stamina theo giây, cắt liên tục, máu ngập màn hình.</td></tr>
+<tr data-hay="chuỳ trời mw_hammer_chuytroi hammer t5 boss4 3974 25 0.70s 80° 2.6m 3 11.0m 3.2m x1.8 4864 knockback, shieldbreak, burst knockback mạnh nhất game. xác bay mười một mét và kéo cả hàng sau theo."><td>Chuỳ Trời</td><td>mw_hammer_chuytroi</td><td>hammer</td><td>T5</td><td>boss4</td><td>3974</td><td>25</td><td>0.70s</td><td>80°</td><td>2.6m</td><td>3</td><td>11.0m</td><td>3.2m</td><td>x1.8</td><td>4864</td><td>knockback, shieldbreak, burst</td><td>Knockback mạnh nhất game. Xác bay mười một mét và kéo cả hàng sau theo.</td></tr>
+<tr data-hay="lưỡi liềm mw_scythe_luoiliem scythe t5 depth5 2179 25 0.55s 170° 3.2m 7 5.0m 1.2m x2.4 4864 crowd, perfectslash, wavewipe gần như một vòng tròn. chém hoàn hảo gần như mọi nhát."><td>Lưỡi Liềm</td><td>mw_scythe_luoiliem</td><td>scythe</td><td>T5</td><td>depth5</td><td>2179</td><td>25</td><td>0.55s</td><td>170°</td><td>3.2m</td><td>7</td><td>5.0m</td><td>1.2m</td><td>x2.4</td><td>4864</td><td>crowd, perfectslash, wavewipe</td><td>Gần như một vòng tròn. Chém Hoàn Hảo gần như mọi nhát.</td></tr>
+<tr data-hay="lưỡi lõi mw_deeptech_luoiloi deeptech t6 boss5 6196 20 0.35s 100° 2.8m 4 6.0m 1.4m x2.6 11432 depth, stamina, scaling từ depth 5 trở xuống, mỗi mạng chém hồi 6 stamina. càng sâu càng bền."><td>Lưỡi Lõi</td><td>mw_deeptech_luoiloi</td><td>deeptech</td><td>T6</td><td>boss5</td><td>6196</td><td>20</td><td>0.35s</td><td>100°</td><td>2.8m</td><td>4</td><td>6.0m</td><td>1.4m</td><td>x2.6</td><td>11432</td><td>depth, stamina, scaling</td><td>Từ Depth 5 trở xuống, mỗi mạng chém hồi 6 stamina. Càng sâu càng bền.</td></tr>
+<tr data-hay="xẻ long mw_greatsword_xelong greatsword t6 depth7 4602 25 0.68s 160° 3.3m 8 12.0m 2.0m x2.2 11431 crowd, perfectslash, wavewipe, endgame tám con một nhát. hầm không đủ rộng cho đường quẹt của nó."><td>Xẻ Long</td><td>mw_greatsword_xelong</td><td>greatsword</td><td>T6</td><td>depth7</td><td>4602</td><td>25</td><td>0.68s</td><td>160°</td><td>3.3m</td><td>8</td><td>12.0m</td><td>2.0m</td><td>x2.2</td><td>11431</td><td>crowd, perfectslash, wavewipe, endgame</td><td>Tám con một nhát. Hầm không đủ rộng cho đường quẹt của nó.</td></tr>
+</tbody></table></div>
+
+</section><footer><p><a href="GDD.html">&larr; GDD</a></p></footer></main></div>
+<script>
+(function(){
+  var inp=document.getElementById('q');if(!inp)return;
+  var out=document.getElementById('qc');
+  function run(){
+    var v=inp.value.trim().toLowerCase(),shown=0,total=0;
+    document.querySelectorAll('tbody tr[data-hay]').forEach(function(tr){
+      total++;var hit=!v||tr.getAttribute('data-hay').indexOf(v)>-1;
+      tr.style.display=hit?'':'none';if(hit)shown++;
+    });
+    if(out)out.textContent=shown+' / '+total;
+  }
+  inp.addEventListener('input',run);run();
+})();
+</script>
+
+</body>
+</html>

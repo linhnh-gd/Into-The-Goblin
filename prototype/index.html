@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#0B0D10" />
+<title>Into the Goblin — Prototype</title>
+<meta name="description" content="Prototype three.js cho Into the Goblin: FPS portrait, tap de ban, quet de chem." />
+<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="css/style.css" />
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js"
+  }
+}
+</script>
+</head>
+<body>
+
+<div id="app">
+  <canvas id="view"></canvas>
+
+  <!-- ============ HUD (portrait, xem docs/14) ============ -->
+  <div id="hud" class="hidden">
+    <div class="hud-top">
+      <div class="chip" id="luckChip"><span class="lbl">LỘC</span><b id="luckVal">0</b></div>
+      <div class="chip" id="posChip"><b id="posVal">D1-R1</b></div>
+      <div class="hp"><i id="hpFill"></i><span id="hpTxt">100</span></div>
+      <button id="btnPause" class="icon" aria-label="Tạm dừng">II</button>
+    </div>
+
+    <div id="mistVignette"></div>
+    <div id="crosshair"><i></i></div>
+    <div id="banner"></div>
+    <div id="comboTag"></div>
+
+    <div class="hud-bot">
+      <div id="staminaWrap"><i id="staminaFill"></i></div>
+      <div class="row">
+        <div class="gold"><span class="coin">◆</span><b id="goldVal">0</b></div>
+        <div class="ammo">
+          <span id="magPips" aria-hidden="true"></span>
+          <b id="ammoVal">7 / 63</b>
+        </div>
+      </div>
+      <div class="row btns">
+        <button id="btnReload" class="act">NẠP<i id="reloadBar"><u id="reloadPerfect"></u><s id="reloadFill"></s></i></button>
+      </div>
+    </div>
+
+    <div id="dbg" class="hidden"></div>
+  </div>
+
+  <!-- ============ Overlays ============ -->
+  <div id="screen" class="screen">
+    <div class="sheet" id="sheetTitle">
+      <p class="eyebrow">Prototype · Sprint 0/1 · three.js</p>
+      <h1>INTO THE <em>GOBLIN</em></h1>
+      <p class="tag">Xuống sâu nữa. Vàng ở dưới đó.</p>
+      <ul class="how">
+        <li><b>CHẠM</b> vào quái để bắn · <b>GIỮ</b> để bắn liên tục</li>
+        <li><b>QUẸT NGANG</b> để chém · quẹt dài hơn nửa màn hình = chém nặng</li>
+        <li><b>QUẸT DỌC XUỐNG</b> = bước lùi · <b>QUẸT DỌC LÊN</b> = xốc tới</li>
+        <li>Hết đạn thì chỉ còn dao. <b>6 mạng chém = 1 băng đạn.</b></li>
+      </ul>
+      <button class="cta" id="btnStart" disabled>XUỐNG HẦM</button>
+      <div class="opts">
+        <label><input type="checkbox" id="optTwoZone" /> Chế độ Hai Vùng (nửa trên bắn / nửa dưới chém)</label>
+        <label><input type="checkbox" id="optDbg" /> Hiện đo input (Sprint 0)</label>
+      </div>
+      <p class="foot" id="loadNote">Đang tải dữ liệu cân bằng từ <code>data/*.json</code>…</p>
+    </div>
+
+    <div class="sheet hidden" id="sheetGate">
+      <p class="eyebrow" id="gateEyebrow">CỔNG · CHỌN THẺ</p>
+      <div id="cardRow" class="cards"></div>
+      <div class="gateStats"><span>LỘC <b id="gateLuck">0</b></span><span>VÀNG <b id="gateGold">0</b></span></div>
+      <p class="eyebrow">NGÃ BA HẦM · CHỌN CỬA</p>
+      <div id="doorRow" class="doors"></div>
+    </div>
+
+    <div class="sheet hidden" id="sheetEnd">
+      <p class="eyebrow" id="endEyebrow">HẾT RUN</p>
+      <h2 id="endTitle">Ngươi chết ở phòng 7</h2>
+      <div id="endStats" class="stats"></div>
+      <p class="story" id="endStory"></p>
+      <button class="cta" id="btnAgain">XUỐNG LẠI</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Game Feel &amp; Điều khiển | Into the Goblin</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600&family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap");
+:root{
+  --ground:#0B0D10; --surface:#141821; --surface2:#1B212C; --line:#262E3B;
+  --ink:#E7E9ED; --muted:#8B93A2;
+  --gold:#FFC53D; --gold-deep:#FF8A00; --bell:#B14CFF; --danger:#FF4438; --ok:#3ED598;
+  --shadow:0 1px 0 rgba(255,255,255,.03), 0 12px 32px rgba(0,0,0,.45);
+  --rail:250px;
+  --f-disp:"Anton",Impact,"Arial Narrow Bold",sans-serif;
+  --f-lab:"Oswald","Arial Narrow",sans-serif;
+  --f-body:"Be Vietnam Pro",-apple-system,Segoe UI,Roboto,sans-serif;
+  --f-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+:root:not([data-theme="light"]){ color-scheme:dark; }
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --ground:#ECEEF2; --surface:#FFFFFF; --surface2:#F5F6F9; --line:#D8DCE4;
+    --ink:#12161C; --muted:#5A6373;
+    --gold:#9A6200; --gold-deep:#C07800; --bell:#7A21C7; --danger:#C42B20; --ok:#0E7C55;
+    --shadow:0 1px 0 rgba(255,255,255,.6), 0 10px 26px rgba(16,22,32,.10);
+    color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --ground:#ECEEF2; --surface:#FFFFFF; --surface2:#F5F6F9; --line:#D8DCE4;
+  --ink:#12161C; --muted:#5A6373;
+  --gold:#9A6200; --gold-deep:#C07800; --bell:#7A21C7; --danger:#C42B20; --ok:#0E7C55;
+  --shadow:0 1px 0 rgba(255,255,255,.6), 0 10px 26px rgba(16,22,32,.10);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--f-body);font-weight:400;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--gold);text-decoration:none;border-bottom:1px solid color-mix(in srgb, var(--gold) 35%, transparent)}
+a:hover{color:var(--gold-deep)}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--bell);outline-offset:2px}
+.wrap{display:grid;grid-template-columns:var(--rail) minmax(0,1fr);gap:0;min-height:100vh}
+nav.rail{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:26px 18px 40px;border-right:1px solid var(--line);background:var(--surface)}
+nav.rail .brand{font-family:var(--f-disp);font-size:23px;letter-spacing:.5px;line-height:1.05;color:var(--ink);margin:0 0 2px}
+nav.rail .brand span{color:var(--gold)}
+nav.rail .tag{font-family:var(--f-lab);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 22px}
+nav.rail h4{font-family:var(--f-lab);font-weight:500;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:20px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+nav.rail ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px}
+nav.rail a{display:flex;gap:9px;padding:5px 8px;border-radius:5px;border:0;color:var(--ink);font-size:13.5px;line-height:1.35}
+nav.rail a:hover{background:var(--surface2);color:var(--gold)}
+nav.rail a .n{font-family:var(--f-mono);font-size:11px;color:var(--muted);padding-top:2px;min-width:20px}
+main{min-width:0;padding:0 clamp(18px,4vw,60px) 90px}
+header.hero{padding:70px 0 34px;border-bottom:1px solid var(--line);margin-bottom:14px}
+header.hero .eyebrow{font-family:var(--f-lab);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--bell);margin:0 0 14px}
+header.hero h1{font-family:var(--f-disp);font-size:clamp(46px,8.4vw,104px);line-height:.92;letter-spacing:-.5px;margin:0;text-wrap:balance}
+header.hero h1 em{font-style:normal;color:var(--gold)}
+header.hero .sub{max-width:62ch;color:var(--muted);font-size:16.5px;margin:16px 0 0}
+header.hero .quote{font-family:var(--f-lab);font-weight:400;font-size:15px;letter-spacing:.06em;color:var(--gold);margin:20px 0 0;padding-left:14px;border-left:3px solid var(--gold)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 0;padding:0;list-style:none}
+.chips li{background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:7px 11px;display:flex;gap:7px;align-items:baseline}
+.chips b{font-family:var(--f-disp);font-size:19px;color:var(--gold);font-variant-numeric:tabular-nums}
+.chips span{font-family:var(--f-lab);font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
+section.doc{padding:44px 0;border-bottom:1px solid var(--line);scroll-margin-top:14px}
+section.doc>h2{font-family:var(--f-disp);font-size:clamp(27px,3.4vw,40px);line-height:1.06;margin:0 0 4px;text-wrap:balance}
+section.doc>.docnum{font-family:var(--f-mono);font-size:12px;color:var(--bell);letter-spacing:.1em;margin:0 0 6px}
+section.doc>h2+.rule{height:2px;background:linear-gradient(90deg,var(--gold),transparent);margin:0 0 22px;max-width:220px}
+.body{max-width:74ch}
+.body.wide{max-width:none}
+h3{font-family:var(--f-lab);font-weight:600;font-size:19px;letter-spacing:.01em;margin:34px 0 10px;color:var(--ink)}
+h4{font-family:var(--f-lab);font-weight:500;font-size:15.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:26px 0 8px}
+h5{font-family:var(--f-lab);font-weight:600;font-size:14px;margin:20px 0 6px}
+p{margin:0 0 13px}
+ul,ol{margin:0 0 13px;padding-left:22px}
+li{margin:0 0 5px}
+li>.cont{display:block;color:var(--muted)}
+strong{font-weight:700}
+code{font-family:var(--f-mono);font-size:.87em;background:var(--surface2);border:1px solid var(--line);border-radius:3px;padding:1px 5px}
+pre.ascii{font-family:var(--f-mono);font-size:12.2px;line-height:1.5;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--bell);border-radius:4px;padding:16px 18px;overflow-x:auto;margin:0 0 18px}
+pre.ascii code{background:none;border:0;padding:0;font-size:inherit}
+blockquote{margin:0 0 18px;padding:14px 18px;background:var(--surface);border-left:3px solid var(--gold);border-radius:0 4px 4px 0;color:var(--ink)}
+blockquote p:last-child{margin:0}
+hr{border:0;border-top:1px solid var(--line);margin:28px 0}
+.tw{overflow-x:auto;margin:0 0 20px;border:1px solid var(--line);border-radius:5px;background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13.4px}
+thead th{position:sticky;top:0;background:var(--surface2);font-family:var(--f-lab);font-weight:500;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);white-space:nowrap}
+tbody td{padding:8px 11px;border-bottom:1px solid var(--line);vertical-align:top;font-variant-numeric:tabular-nums}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--surface2)}
+tbody td:first-child{font-weight:600;white-space:nowrap}
+.filter{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px}
+.filter input{flex:1 1 240px;min-width:180px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:9px 12px;font-family:var(--f-body);font-size:14px}
+.filter .count{font-family:var(--f-lab);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.ladder{display:flex;flex-direction:column;gap:3px;margin:0 0 12px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:5px}
+.rung{display:grid;grid-template-columns:38px 1fr 122px;gap:10px;align-items:center}
+.rung .g{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+.rung .bars{display:flex;flex-direction:column;gap:2px;min-width:0}
+.rung .bar{display:block;height:7px;border-radius:1px;min-width:2px}
+.bar.gold{background:linear-gradient(90deg,var(--gold),var(--gold-deep))}
+.bar.bell{background:var(--bell);opacity:.75}
+.rung .mult{font-family:var(--f-mono);font-size:11.5px;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
+.legend{font-size:12.5px;color:var(--muted)}
+.legend .sw{display:inline-block;width:22px;height:7px;border-radius:1px;vertical-align:middle}
+.legend .sw.gold{background:var(--gold)} .legend .sw.bell{background:var(--bell)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:12px;margin:8px 0 0;padding:0;list-style:none}
+.cards li{background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:15px 16px}
+.cards a{border:0;font-family:var(--f-lab);font-weight:600;font-size:15px;letter-spacing:.02em}
+.cards p{margin:5px 0 0;font-size:12.8px;color:var(--muted)}
+.stat{display:flex;gap:26px;flex-wrap:wrap;margin:0 0 20px;padding:16px 18px;background:var(--surface);border:1px solid var(--line);border-radius:5px}
+.stat div{display:flex;flex-direction:column}
+.stat b{font-family:var(--f-disp);font-size:26px;line-height:1;font-variant-numeric:tabular-nums}
+.stat b.ok{color:var(--ok)} .stat b.warn{color:var(--gold)} .stat b.bad{color:var(--danger)}
+.stat span{font-family:var(--f-lab);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+footer{padding:34px 0 0;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);margin-top:26px}
+.top{position:fixed;right:16px;bottom:16px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:8px 12px;font-family:var(--f-lab);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr}
+  nav.rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  main{padding:0 18px 70px}
+  header.hero{padding:34px 0 24px}
+  .rung{grid-template-columns:32px 1fr 96px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="rail"><p class="brand">INTO THE<br /><span>GOBLIN</span></p><p class="tag">Xuống sâu nữa. Vàng ở dưới đó.</p>
+<h4>Thiết kế</h4><ol>
+<li><a href="GDD.html#doc-00"><span class="n">00</span><span>Research &amp; Benchmark</span></a></li>
+<li><a href="GDD.html#doc-01"><span class="n">01</span><span>Overview</span></a></li>
+<li><a href="GDD.html#doc-02"><span class="n">02</span><span>Core Loop</span></a></li>
+<li><a href="GDD.html#doc-03"><span class="n">03</span><span>Controls &amp; Gesture Disambiguation</span></a></li>
+<li><a href="GDD.html#doc-04"><span class="n">04</span><span>Combat: Vũ khí tầm xa</span></a></li>
+<li><a href="GDD.html#doc-05"><span class="n">05</span><span>Combat: Vũ khí cận chiến</span></a></li>
+<li><a href="GDD.html#doc-06"><span class="n">06</span><span>Dải cự ly, Knockback = phòng thủ, và Sương Đen</span></a></li>
+<li><a href="GDD.html#doc-07"><span class="n">07</span><span>Wave Director &amp; Room Graph</span></a></li>
+<li><a href="GDD.html#doc-08"><span class="n">08</span><span>NGÃ BA HẦM &amp; NHỊP LEO THANG</span></a></li>
+<li><a href="GDD.html#doc-09"><span class="n">09</span><span>Quái &amp; Boss</span></a></li>
+<li><a href="GDD.html#doc-10"><span class="n">10</span><span>Progression: trong run &amp; meta</span></a></li>
+<li><a href="GDD.html#doc-11"><span class="n">11</span><span>Economy</span></a></li>
+<li><a href="GDD.html#doc-12"><span class="n">12</span><span>Monetization &amp; Retention</span></a></li>
+<li><a href="GDD.html#doc-13"><span class="n">13</span><span>Game Feel &amp; Juice</span></a></li>
+<li><a href="GDD.html#doc-14"><span class="n">14</span><span>UI / UX (portrait, một tay)</span></a></li>
+<li><a href="GDD.html#doc-15"><span class="n">15</span><span>Art Direction &amp; Audio</span></a></li>
+<li><a href="GDD.html#doc-16"><span class="n">16</span><span>Data Schema &amp; Balancing (doc gốc cho MỌI con số)</span></a></li>
+<li><a href="GDD.html#doc-17"><span class="n">17</span><span>Production Roadmap, Playtest &amp; Risk</span></a></li>
+<li><a href="GDD.html#doc-18"><span class="n">18</span><span>Prototype three.js (playable)</span></a></li>
+</ol>
+<h4>Dữ liệu</h4><ol>
+<li><a href="weapons.html"><span class="n">&#9679;</span><span>Vũ khí</span></a></li>
+<li><a href="enemies.html"><span class="n">&#9679;</span><span>Quái &amp; Boss</span></a></li>
+<li><a href="content.html"><span class="n">&#9679;</span><span>Hầm: Depth · Phòng · Wave</span></a></li>
+<li><a href="meta.html"><span class="n">&#9679;</span><span>Thẻ · Bảo vật · Talent · Trại Mỏ</span></a></li>
+<li><a href="economy.html"><span class="n">&#9679;</span><span>Kinh tế &amp; Kiếm tiền</span></a></li>
+<li><a href="feel.html"><span class="n">&#9679;</span><span>Game Feel &amp; Điều khiển</span></a></li>
+</ol>
+<h4>Kiểm tra</h4><ol>
+<li><a href="audit_report.md"><span class="n">&#9679;</span><span>audit_report.md</span></a></li>
+<li><a href="balance_report.md"><span class="n">&#9679;</span><span>balance_report.md</span></a></li>
+</ol></nav>
+
+<main><header class="hero"><p class="eyebrow"><a href="GDD.html">INTO THE GOBLIN</a> &middot; Dữ liệu</p>
+<h1>Game Feel &amp; Điều khiển</h1><p class="sub">data/gamefeel.json + controls.json &mdash; Trang này do build_pages.ps1 sinh ra từ data/*.json và docs/*.md — KHÔNG sửa tay.</p></header>
+<section class="doc"><div class="filter"><input id="q" type="search" placeholder="Lọc theo tên, id, tag..." /><span class="count">Đang hiện <b id="qc"></b> dòng</span></div>
+<h3>gestures &middot; 10 dòng</h3>
+<div class="tw" data-table="gestures"><table>
+<thead><tr><th>Gesture</th><th>ID</th><th>Điều kiện</th><th>Hành động</th><th>Vũ khí</th></tr></thead><tbody>
+<tr data-hay="tap gs_tap nhấc ngón &lt; 180ms và di chuyển &lt; 0.05s 1 phát bắn nhắm vào điểm tap ranged"><td>Tap</td><td>gs_tap</td><td>nhấc ngón &lt; 180ms VÀ di chuyển &lt; 0.05S</td><td>1 phát bắn nhắm vào điểm tap</td><td>ranged</td></tr>
+<tr data-hay="hold gs_hold giữ &gt;= 180ms, tốc độ &lt; 900 px/s bắn liên tục vào điểm đang giữ (theo rpm) ranged"><td>Hold</td><td>gs_hold</td><td>giữ &gt;= 180ms, tốc độ &lt; 900 px/s</td><td>Bắn liên tục vào điểm đang giữ (theo RPM)</td><td>ranged</td></tr>
+<tr data-hay="hold &amp; drag gs_holddrag đã ở hold rồi mới di chuyển, tốc độ &lt; 900 px/s bắn liên tục, tâm ngắm đi theo ngón ranged"><td>Hold &amp; Drag</td><td>gs_holddrag</td><td>đã ở Hold rồi mới di chuyển, tốc độ &lt; 900 px/s</td><td>Bắn liên tục, tâm ngắm đi theo ngón</td><td>ranged</td></tr>
+<tr data-hay="slide nhẹ gs_slide_light tốc độ đỉnh &gt;= 900 px/s trong &lt;=250ms đầu, dài 0.12s–0.55s, góc lệch khỏi ngang &lt;= 55° chém nhẹ melee"><td>Slide nhẹ</td><td>gs_slide_light</td><td>tốc độ đỉnh &gt;= 900 px/s trong &lt;=250ms đầu, dài 0.12S–0.55S, góc lệch khỏi ngang &lt;= 55°</td><td>Chém nhẹ</td><td>melee</td></tr>
+<tr data-hay="slide nặng gs_slide_heavy như slide nhẹ nhưng dài &gt; 0.55s chém nặng: 2x stamina, 2.0x damage, 2.2x knockback, arc +30° melee"><td>Slide nặng</td><td>gs_slide_heavy</td><td>như slide nhẹ nhưng dài &gt; 0.55S</td><td>Chém nặng: 2x stamina, 2.0x damage, 2.2x knockback, arc +30°</td><td>melee</td></tr>
+<tr data-hay="slide dọc xuống gs_slide_down &gt;= 900 px/s, góc lệch khỏi dọc &lt;= 25°, hướng xuống bước lùi: lùi 1.2m, 0.15s bất tử, cooldown 2.5s none"><td>Slide dọc xuống</td><td>gs_slide_down</td><td>&gt;= 900 px/s, góc lệch khỏi dọc &lt;= 25°, hướng xuống</td><td>Bước Lùi: lùi 1.2m, 0.15s bất tử, cooldown 2.5s</td><td>none</td></tr>
+<tr data-hay="slide dọc lên gs_slide_up như trên, hướng lên xốc tới: tiến 2.0m, đẩy văng quái trên đường, cooldown 4s none"><td>Slide dọc lên</td><td>gs_slide_up</td><td>như trên, hướng lên</td><td>Xốc Tới: tiến 2.0m, đẩy văng quái trên đường, cooldown 4s</td><td>none</td></tr>
+<tr data-hay="two-finger tap gs_twofinger 2 ngón chạm trong 120ms kích bảo vật / ultimate none"><td>Two-finger tap</td><td>gs_twofinger</td><td>2 ngón chạm trong 120ms</td><td>Kích Bảo Vật / Ultimate</td><td>none</td></tr>
+<tr data-hay="nút reload gs_reload tap nút góc phải-dưới reload thủ công / bắt cửa sổ nạp hoàn hảo ranged"><td>Nút Reload</td><td>gs_reload</td><td>tap nút góc phải-dưới</td><td>Reload thủ công / bắt cửa sổ Nạp Hoàn Hảo</td><td>ranged</td></tr>
+<tr data-hay="vùng chết gs_deadzone slide có góc lệch khỏi ngang trong khoảng 55°–65° bỏ qua hoàn toàn + rung 8ms. thà mất input còn hơn làm sai input none"><td>VÙNG CHẾT</td><td>gs_deadzone</td><td>slide có góc lệch khỏi ngang trong khoảng 55°–65°</td><td>BỎ QUA HOÀN TOÀN + rung 8ms. Thà mất input còn hơn làm sai input</td><td>none</td></tr>
+</tbody></table></div>
+
+<h3>ctrlparams &middot; 12 dòng</h3>
+<div class="tw" data-table="ctrlparams"><table>
+<thead><tr><th>Tham số</th><th>Giá trị</th><th>Đơn vị</th><th>Ghi chú</th></tr></thead><tbody>
+<tr data-hay="tapmaxduration 180 ms tăng nếu tester 'muốn bắn mà ra dao'"><td>tapMaxDuration</td><td>180</td><td>ms</td><td>Tăng nếu tester 'muốn bắn mà ra dao'</td></tr>
+<tr data-hay="tapmaxtravel 0.05 s "><td>tapMaxTravel</td><td>0.05</td><td>S</td><td></td></tr>
+<tr data-hay="slidevelocitythreshold 900 px/s so quan trong nhat cua game. test tren may 60hz va 120hz"><td>slideVelocityThreshold</td><td>900</td><td>px/s</td><td>SO QUAN TRONG NHAT CUA GAME. Test tren may 60Hz va 120Hz</td></tr>
+<tr data-hay="slidedetectwindow 250 ms "><td>slideDetectWindow</td><td>250</td><td>ms</td><td></td></tr>
+<tr data-hay="slideminlength 0.12 s dưới ngưỡng này coi là tap"><td>slideMinLength</td><td>0.12</td><td>S</td><td>Dưới ngưỡng này coi là tap</td></tr>
+<tr data-hay="heavyslidelength 0.55 s cho phép người chơi tune 0.40–0.70"><td>heavySlideLength</td><td>0.55</td><td>S</td><td>Cho phép người chơi tune 0.40–0.70</td></tr>
+<tr data-hay="meleeanglemax 55 deg lệch khỏi trục ngang"><td>meleeAngleMax</td><td>55</td><td>deg</td><td>lệch khỏi trục ngang</td></tr>
+<tr data-hay="moveanglemin 65 deg lệch khỏi trục ngang"><td>moveAngleMin</td><td>65</td><td>deg</td><td>lệch khỏi trục ngang</td></tr>
+<tr data-hay="dodgecooldown 2.5 s "><td>dodgeCooldown</td><td>2.5</td><td>s</td><td></td></tr>
+<tr data-hay="dashcooldown 4.0 s "><td>dashCooldown</td><td>4.0</td><td>s</td><td></td></tr>
+<tr data-hay="camerapitchdown 8 deg để dải cận chiến rơi vào 45–75% chiều cao, không bị ngón tay che"><td>cameraPitchDown</td><td>8</td><td>deg</td><td>Để dải Cận chiến rơi vào 45–75% chiều cao, không bị ngón tay che</td></tr>
+<tr data-hay="crosshairscreenheight 0.62 tỉ lệ thấp hơn giữa vì ngón tay đến từ dưới"><td>crosshairScreenHeight</td><td>0.62</td><td>tỉ lệ</td><td>Thấp hơn giữa vì ngón tay đến từ dưới</td></tr>
+</tbody></table></div>
+
+<h3>hitstop &middot; 9 dòng</h3>
+<div class="tw" data-table="hitstop"><table>
+<thead><tr><th>Sự kiện</th><th>Frame</th><th>Timescale</th></tr></thead><tbody>
+<tr data-hay="đạn trúng trash 2 0.0"><td>Đạn trúng trash</td><td>2</td><td>0.0</td></tr>
+<tr data-hay="đạn headshot 4 0.0"><td>Đạn headshot</td><td>4</td><td>0.0</td></tr>
+<tr data-hay="shotgun trúng &gt;=3 con 5 0.0"><td>Shotgun trúng &gt;=3 con</td><td>5</td><td>0.0</td></tr>
+<tr data-hay="chém nhẹ trúng 3 0.05"><td>Chém nhẹ trúng</td><td>3</td><td>0.05</td></tr>
+<tr data-hay="chém nặng trúng 5 0.0"><td>Chém nặng trúng</td><td>5</td><td>0.0</td></tr>
+<tr data-hay="chém hoàn hảo 7 0.35"><td>CHÉM HOÀN HẢO</td><td>7</td><td>0.35</td></tr>
+<tr data-hay="kill con cuối của wave - 0.4 (0.35s)"><td>Kill con cuối của wave</td><td>-</td><td>0.4 (0.35s)</td></tr>
+<tr data-hay="người chơi bị trúng 3 0.0"><td>Người chơi bị trúng</td><td>3</td><td>0.0</td></tr>
+<tr data-hay="boss vào phase mới 12 0.0"><td>Boss vào phase mới</td><td>12</td><td>0.0</td></tr>
+</tbody></table></div>
+
+<h3>shake &middot; 9 dòng</h3>
+<div class="tw" data-table="shake"><table>
+<thead><tr><th>Sự kiện</th><th>Biên độ (px)</th><th>Thời gian</th><th>Hướng</th></tr></thead><tbody>
+<tr data-hay="bắn súng lục 3 0.06s dọc"><td>Bắn súng lục</td><td>3</td><td>0.06s</td><td>dọc</td></tr>
+<tr data-hay="bắn shotgun 14 0.16s dọc + xoay 1.2°"><td>Bắn shotgun</td><td>14</td><td>0.16s</td><td>dọc + xoay 1.2°</td></tr>
+<tr data-hay="bắn liên thanh (mỗi phát) 2 0.04s ngẫu nhiên nhỏ, cộng dồn cap 9px"><td>Bắn liên thanh (mỗi phát)</td><td>2</td><td>0.04s</td><td>ngẫu nhiên nhỏ, cộng dồn cap 9px</td></tr>
+<tr data-hay="chém nhẹ 5 0.08s theo vector slide"><td>Chém nhẹ</td><td>5</td><td>0.08s</td><td>theo vector slide</td></tr>
+<tr data-hay="chém nặng 16 0.18s theo vector slide"><td>Chém nặng</td><td>16</td><td>0.18s</td><td>theo vector slide</td></tr>
+<tr data-hay="chém hoàn hảo 20 0.22s theo vector slide + flash trắng 1 frame"><td>CHÉM HOÀN HẢO</td><td>20</td><td>0.22s</td><td>theo vector slide + flash trắng 1 frame</td></tr>
+<tr data-hay="người chơi bị trúng 12 0.20s từ hướng bị đánh"><td>Người chơi bị trúng</td><td>12</td><td>0.20s</td><td>từ hướng bị đánh</td></tr>
+<tr data-hay="boss đập đất 26 0.35s dọc"><td>Boss đập đất</td><td>26</td><td>0.35s</td><td>dọc</td></tr>
+<tr data-hay="mở cửa ở ngã ba hầm 10 0.45s dọc, một nhịp nặng"><td>Mở cửa ở Ngã Ba Hầm</td><td>10</td><td>0.45s</td><td>dọc, một nhịp nặng</td></tr>
+</tbody></table></div>
+
+<h3>death &middot; 7 dòng</h3>
+<div class="tw" data-table="death"><table>
+<thead><tr><th>Kiểu kill</th><th>Xác</th><th>Hạt</th><th>Đồng vàng</th></tr></thead><tbody>
+<tr data-hay="đạn thường bay ngược về sau theo vector đạn, ragdoll 1.2s 12 3–6"><td>Đạn thường</td><td>Bay ngược về sau theo vector đạn, ragdoll 1.2s</td><td>12</td><td>3–6</td></tr>
+<tr data-hay="headshot đầu nổ, thân quỳ rồi ngã 20 5–8"><td>Headshot</td><td>Đầu nổ, thân quỳ rồi ngã</td><td>20</td><td>5–8</td></tr>
+<tr data-hay="shotgun gần bay 3–4m, đập tường bật lại (truyền 25% lực) 26 6–10"><td>Shotgun gần</td><td>Bay 3–4m, đập tường bật lại (truyền 25% lực)</td><td>26</td><td>6–10</td></tr>
+<tr data-hay="chém nhẹ đứt đôi theo đúng đường quẹt, 2 nửa bay theo vector slide 18 4–7"><td>Chém nhẹ</td><td>Đứt đôi theo ĐÚNG đường quẹt, 2 nửa bay theo vector slide</td><td>18</td><td>4–7</td></tr>
+<tr data-hay="chém nặng bay 6–8m theo vector slide, xoay 30 8–14"><td>Chém nặng</td><td>Bay 6–8m theo vector slide, xoay</td><td>30</td><td>8–14</td></tr>
+<tr data-hay="nổ (exploder / aoe) bay tứ tán 40 6–12"><td>Nổ (exploder / AoE)</td><td>Bay tứ tán</td><td>40</td><td>6–12</td></tr>
+<tr data-hay="cột vàng (depth 3+, 4% + 0.4%/lộc) xác tan thành vàng cột sáng 3m x25"><td>Cột vàng (Depth 3+, 4% + 0.4%/Lộc)</td><td>Xác tan thành vàng</td><td>cột sáng 3m</td><td>x25</td></tr>
+</tbody></table></div>
+
+<h3>audio &middot; 8 dòng</h3>
+<div class="tw" data-table="audio"><table>
+<thead><tr><th>Ưu tiên</th><th>Âm</th><th>Ghi chú</th></tr></thead><tbody>
+<tr data-hay="1 coin chime ladder vũ khí gây nghiện số 1. duck toàn mix 60% khi chém hoàn hảo"><td>1</td><td>Coin chime ladder</td><td>Vũ khí gây nghiện số 1. Duck toàn mix 60% khi Chém Hoàn Hảo</td></tr>
+<tr data-hay="2 impact cận chiến 4 layer: lưỡi cắt thịt + xương gãy + vải xé + đuôi vang. 4 biến thể chống lặp"><td>2</td><td>Impact cận chiến</td><td>4 layer: lưỡi cắt thịt + xương gãy + vải xé + đuôi vang. 4 biến thể chống lặp</td></tr>
+<tr data-hay="3 súng 3 layer: cơ khí + nổ + reverb theo kích thước phòng"><td>3</td><td>Súng</td><td>3 layer: cơ khí + nổ + reverb theo kích thước phòng</td></tr>
+<tr data-hay="4 tiếng quái spawn mỗi loại một âm riêng — nghe là biết, không cần nhìn"><td>4</td><td>Tiếng quái spawn</td><td>Mỗi loại một âm riêng — nghe là biết, không cần nhìn</td></tr>
+<tr data-hay="5 đèn &amp; hầm đèn dầu cháy xì xì; mỗi depth hạ pitch tiếng nền nửa cung -&gt; depth 7 là tiếng gầm dưới đất"><td>5</td><td>Đèn &amp; hầm</td><td>Đèn dầu cháy xì xì; mỗi Depth hạ pitch tiếng nền nửa cung -&gt; Depth 7 là tiếng gầm dưới đất</td></tr>
+<tr data-hay="6 nhịp tim người chơi vào khi hp &lt; 30%, tempo theo mức máu"><td>6</td><td>Nhịp tim người chơi</td><td>Vào khi HP &lt; 30%, tempo theo mức máu</td></tr>
+<tr data-hay="7 nhạc nền layer động trống từ depth 3, dây từ depth 5, hợp xướng từ depth 7; thêm 1 layer nữa khi số quái sống &gt; 60. chuyển layer khớp nhịp"><td>7</td><td>Nhạc nền layer động</td><td>trống từ Depth 3, dây từ Depth 5, hợp xướng từ Depth 7; thêm 1 layer nữa khi số quái sống &gt; 60. Chuyển layer khớp nhịp</td></tr>
+<tr data-hay="8 tiếng lao xao đám đông phát trước khi quái xuất hiện, âm lượng tỉ lệ số quái sắp tới — nghe là biết wave to cỡ nào"><td>8</td><td>Tiếng lao xao đám đông</td><td>Phát TRƯỚC khi quái xuất hiện, âm lượng tỉ lệ số quái sắp tới — nghe là biết wave to cỡ nào</td></tr>
+</tbody></table></div>
+
+<h3>haptics &middot; 9 dòng</h3>
+<div class="tw" data-table="haptics"><table>
+<thead><tr><th>Sự kiện</th><th>Kiểu rung</th></tr></thead><tbody>
+<tr data-hay="bắn 1 phát light impact"><td>Bắn 1 phát</td><td>light impact</td></tr>
+<tr data-hay="shotgun heavy impact"><td>Shotgun</td><td>heavy impact</td></tr>
+<tr data-hay="chém trúng medium impact"><td>Chém trúng</td><td>medium impact</td></tr>
+<tr data-hay="chém hoàn hảo success (2 nhịp)"><td>Chém Hoàn Hảo</td><td>success (2 nhịp)</td></tr>
+<tr data-hay="nạp hoàn hảo selection click giòn"><td>Nạp Hoàn Hảo</td><td>selection click giòn</td></tr>
+<tr data-hay="nạp trượt (kẹt đạn) error"><td>Nạp trượt (kẹt đạn)</td><td>error</td></tr>
+<tr data-hay="bị trúng heavy + 40ms"><td>Bị trúng</td><td>heavy + 40ms</td></tr>
+<tr data-hay="mở cửa ở ngã ba rung 0.35s một nhịp nặng"><td>Mở cửa ở Ngã Ba</td><td>rung 0.35s một nhịp nặng</td></tr>
+<tr data-hay="input bị huỷ (dead zone 55–65°) 8ms rất nhẹ — báo máy nhận nhưng bỏ"><td>Input bị huỷ (dead zone 55–65°)</td><td>8ms rất nhẹ — báo máy nhận nhưng bỏ</td></tr>
+</tbody></table></div>
+
+</section><footer><p><a href="GDD.html">&larr; GDD</a></p></footer></main></div>
+<script>
+(function(){
+  var inp=document.getElementById('q');if(!inp)return;
+  var out=document.getElementById('qc');
+  function run(){
+    var v=inp.value.trim().toLowerCase(),shown=0,total=0;
+    document.querySelectorAll('tbody tr[data-hay]').forEach(function(tr){
+      total++;var hit=!v||tr.getAttribute('data-hay').indexOf(v)>-1;
+      tr.style.display=hit?'':'none';if(hit)shown++;
+    });
+    if(out)out.textContent=shown+' / '+total;
+  }
+  inp.addEventListener('input',run);run();
+})();
+</script>
+
+</body>
+</html>

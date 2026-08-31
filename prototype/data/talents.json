@@ -1,0 +1,159 @@
+{
+  "_comment": "24 talent x 5 bac. Gate audit: powerDelta >= 0.02 (khong talent rac), cost tang don dieu, powerDelta_n >= 0.5*powerDelta_(n-1). Cong thuc docs/16 muc 4.7. Nhanh Den thay cho nhanh Chuong cu (bo co che Guns n Goblins).",
+  "costFormula": "talentCost(n) = baseCost * (powerDelta_n / powerDelta_1)^1.15 * 1.55^(n-1)",
+  "branches": [
+    { "id": "nong", "name": "Nòng", "theme": "Đạn, băng đạn, reload — người chơi thích tap chính xác" },
+    { "id": "luoi", "name": "Lưỡi", "theme": "Stamina, arc, combo — người chơi thích quẹt" },
+    { "id": "da", "name": "Da", "theme": "HP, giáp, hồi sinh — trụ lâu hơn để xuống sâu hơn" },
+    { "id": "den", "name": "Đèn", "theme": "Kinh tế, Lộc và tầm nhìn — hệ giúp đi được sâu hơn" }
+  ],
+  "talents": [
+    { "id": "tl_nong_odanto", "name": "Ổ Đạn To", "branch": "nong", "ranks": [
+      { "rank": 1, "cost": 500, "currency": "gold", "powerDelta": 0.04, "effect": "Băng đạn +1" },
+      { "rank": 2, "cost": 775, "currency": "gold", "powerDelta": 0.04, "effect": "Băng đạn +2" },
+      { "rank": 3, "cost": 1201, "currency": "gold", "powerDelta": 0.04, "effect": "Băng đạn +3" },
+      { "rank": 4, "cost": 1862, "currency": "gold", "powerDelta": 0.035, "effect": "Băng đạn +4" },
+      { "rank": 5, "cost": 40, "currency": "shards", "powerDelta": 0.035, "effect": "Băng đạn +6" } ] },
+    { "id": "tl_nong_khodutru", "name": "Kho Dự Trữ", "branch": "nong", "ranks": [
+      { "rank": 1, "cost": 500, "currency": "gold", "powerDelta": 0.03, "effect": "Đạn dự trữ +15%" },
+      { "rank": 2, "cost": 775, "currency": "gold", "powerDelta": 0.03, "effect": "Đạn dự trữ +30%" },
+      { "rank": 3, "cost": 1201, "currency": "gold", "powerDelta": 0.03, "effect": "Đạn dự trữ +45%" },
+      { "rank": 4, "cost": 1862, "currency": "gold", "powerDelta": 0.025, "effect": "Đạn dự trữ +60%" },
+      { "rank": 5, "cost": 40, "currency": "shards", "powerDelta": 0.025, "effect": "Đạn dự trữ +80%" } ] },
+    { "id": "tl_nong_taythep", "name": "Tay Thép", "branch": "nong", "ranks": [
+      { "rank": 1, "cost": 600, "currency": "gold", "powerDelta": 0.035, "effect": "Reload -6%" },
+      { "rank": 2, "cost": 930, "currency": "gold", "powerDelta": 0.035, "effect": "Reload -12%" },
+      { "rank": 3, "cost": 1441, "currency": "gold", "powerDelta": 0.03, "effect": "Reload -18%" },
+      { "rank": 4, "cost": 2234, "currency": "gold", "powerDelta": 0.03, "effect": "Reload -24%" },
+      { "rank": 5, "cost": 48, "currency": "shards", "powerDelta": 0.03, "effect": "Reload -30%" } ] },
+    { "id": "tl_nong_covang", "name": "Cò Vàng", "branch": "nong", "ranks": [
+      { "rank": 1, "cost": 800, "currency": "gold", "powerDelta": 0.04, "effect": "Cửa sổ Nạp Hoàn Hảo +15%" },
+      { "rank": 2, "cost": 1240, "currency": "gold", "powerDelta": 0.04, "effect": "Cửa sổ +30%" },
+      { "rank": 3, "cost": 1922, "currency": "gold", "powerDelta": 0.04, "effect": "Cửa sổ +50%, buff damage +18%" },
+      { "rank": 4, "cost": 2979, "currency": "gold", "powerDelta": 0.035, "effect": "Cửa sổ +70%, buff +22%" },
+      { "rank": 5, "cost": 60, "currency": "shards", "powerDelta": 0.035, "effect": "Nạp trượt không còn bị phạt 1.30x" } ] },
+    { "id": "tl_nong_chuoiban", "name": "Chuỗi Bắn", "branch": "nong", "ranks": [
+      { "rank": 1, "cost": 700, "currency": "gold", "powerDelta": 0.03, "effect": "Chuỗi Bắn cộng thêm +6%" },
+      { "rank": 2, "cost": 1085, "currency": "gold", "powerDelta": 0.03, "effect": "+12%" },
+      { "rank": 3, "cost": 1682, "currency": "gold", "powerDelta": 0.03, "effect": "+18%" },
+      { "rank": 4, "cost": 2607, "currency": "gold", "powerDelta": 0.025, "effect": "+24%" },
+      { "rank": 5, "cost": 52, "currency": "shards", "powerDelta": 0.025, "effect": "Bắn trượt chỉ giảm 1 bậc thay vì reset" } ] },
+    { "id": "tl_nong_xuyenthau", "name": "Xuyên Thấu", "branch": "nong", "ranks": [
+      { "rank": 1, "cost": 900, "currency": "gold", "powerDelta": 0.045, "effect": "Đạn xuyên thêm 1 mục tiêu" },
+      { "rank": 2, "cost": 1395, "currency": "gold", "powerDelta": 0.04, "effect": "Xuyên +2" },
+      { "rank": 3, "cost": 2162, "currency": "gold", "powerDelta": 0.04, "effect": "Xuyên +3, damage sau xuyên chỉ giảm 15%" },
+      { "rank": 4, "cost": 3352, "currency": "gold", "powerDelta": 0.035, "effect": "Xuyên +4" },
+      { "rank": 5, "cost": 70, "currency": "shards", "powerDelta": 0.035, "effect": "Đạn bỏ qua khiên của Goblin Khiên" } ] },
+
+    { "id": "tl_luoi_hoisau", "name": "Hơi Sâu", "branch": "luoi", "ranks": [
+      { "rank": 1, "cost": 500, "currency": "gold", "powerDelta": 0.04, "effect": "Stamina tối đa +12" },
+      { "rank": 2, "cost": 775, "currency": "gold", "powerDelta": 0.04, "effect": "+25" },
+      { "rank": 3, "cost": 1201, "currency": "gold", "powerDelta": 0.04, "effect": "+40" },
+      { "rank": 4, "cost": 1862, "currency": "gold", "powerDelta": 0.035, "effect": "+55" },
+      { "rank": 5, "cost": 40, "currency": "shards", "powerDelta": 0.035, "effect": "+75" } ] },
+    { "id": "tl_luoi_hoinhanh", "name": "Hồi Nhanh", "branch": "luoi", "ranks": [
+      { "rank": 1, "cost": 600, "currency": "gold", "powerDelta": 0.04, "effect": "Hồi stamina +2/s" },
+      { "rank": 2, "cost": 930, "currency": "gold", "powerDelta": 0.04, "effect": "+4/s" },
+      { "rank": 3, "cost": 1441, "currency": "gold", "powerDelta": 0.04, "effect": "+6/s, delay 0.6s -> 0.45s" },
+      { "rank": 4, "cost": 2234, "currency": "gold", "powerDelta": 0.035, "effect": "+8/s" },
+      { "rank": 5, "cost": 48, "currency": "shards", "powerDelta": 0.035, "effect": "+10/s, delay 0.3s" } ] },
+    { "id": "tl_luoi_arcrong", "name": "Đường Quẹt Rộng", "branch": "luoi", "ranks": [
+      { "rank": 1, "cost": 700, "currency": "gold", "powerDelta": 0.045, "effect": "Arc +8°" },
+      { "rank": 2, "cost": 1085, "currency": "gold", "powerDelta": 0.04, "effect": "Arc +16°" },
+      { "rank": 3, "cost": 1682, "currency": "gold", "powerDelta": 0.04, "effect": "Arc +24°, reach +0.2m" },
+      { "rank": 4, "cost": 2607, "currency": "gold", "powerDelta": 0.035, "effect": "Arc +32°" },
+      { "rank": 5, "cost": 52, "currency": "shards", "powerDelta": 0.035, "effect": "Arc +40°, +1 mục tiêu" } ] },
+    { "id": "tl_luoi_hoanhao", "name": "Mắt Đồ Tể", "branch": "luoi", "ranks": [
+      { "rank": 1, "cost": 900, "currency": "gold", "powerDelta": 0.05, "effect": "Chém Hoàn Hảo hồi 14 stamina (từ 12)" },
+      { "rank": 2, "cost": 1395, "currency": "gold", "powerDelta": 0.045, "effect": "Hồi 17" },
+      { "rank": 3, "cost": 2162, "currency": "gold", "powerDelta": 0.045, "effect": "Hồi 20, Cướp Đạn tính x3" },
+      { "rank": 4, "cost": 3352, "currency": "gold", "powerDelta": 0.04, "effect": "Hồi 24" },
+      { "rank": 5, "cost": 75, "currency": "shards", "powerDelta": 0.04, "effect": "Chém Hoàn Hảo chỉ cần 2 kẻ địch" } ] },
+    { "id": "tl_luoi_combo", "name": "Nhịp Tay", "branch": "luoi", "ranks": [
+      { "rank": 1, "cost": 650, "currency": "gold", "powerDelta": 0.035, "effect": "Cửa sổ combo 1.2s -> 1.35s" },
+      { "rank": 2, "cost": 1008, "currency": "gold", "powerDelta": 0.035, "effect": "-> 1.5s" },
+      { "rank": 3, "cost": 1562, "currency": "gold", "powerDelta": 0.035, "effect": "-> 1.65s, bậc 5 cho x2.0 thay vì x1.8" },
+      { "rank": 4, "cost": 2421, "currency": "gold", "powerDelta": 0.03, "effect": "-> 1.8s" },
+      { "rank": 5, "cost": 55, "currency": "shards", "powerDelta": 0.03, "effect": "Bị trúng đòn không reset combo nữa" } ] },
+    { "id": "tl_luoi_cuopdan", "name": "Bàn Tay Cướp", "branch": "luoi", "ranks": [
+      { "rank": 1, "cost": 800, "currency": "gold", "powerDelta": 0.045, "effect": "Cướp Đạn cần 5.5 mạng" },
+      { "rank": 2, "cost": 1240, "currency": "gold", "powerDelta": 0.04, "effect": "5 mạng" },
+      { "rank": 3, "cost": 1922, "currency": "gold", "powerDelta": 0.04, "effect": "4.5 mạng" },
+      { "rank": 4, "cost": 2979, "currency": "gold", "powerDelta": 0.04, "effect": "4 mạng" },
+      { "rank": 5, "cost": 80, "currency": "shards", "powerDelta": 0.04, "effect": "3 mạng, và mỗi băng cướp được +10% damage" } ] },
+
+    { "id": "tl_da_thitday", "name": "Thịt Dày", "branch": "da", "ranks": [
+      { "rank": 1, "cost": 500, "currency": "gold", "powerDelta": 0.04, "effect": "HP tối đa +15" },
+      { "rank": 2, "cost": 775, "currency": "gold", "powerDelta": 0.04, "effect": "+32" },
+      { "rank": 3, "cost": 1201, "currency": "gold", "powerDelta": 0.04, "effect": "+50" },
+      { "rank": 4, "cost": 1862, "currency": "gold", "powerDelta": 0.035, "effect": "+70" },
+      { "rank": 5, "cost": 45, "currency": "shards", "powerDelta": 0.035, "effect": "+95" } ] },
+    { "id": "tl_da_giapmong", "name": "Giáp Mỏng", "branch": "da", "ranks": [
+      { "rank": 1, "cost": 700, "currency": "gold", "powerDelta": 0.04, "effect": "Giảm 4% damage nhận" },
+      { "rank": 2, "cost": 1085, "currency": "gold", "powerDelta": 0.04, "effect": "8%" },
+      { "rank": 3, "cost": 1682, "currency": "gold", "powerDelta": 0.04, "effect": "13%" },
+      { "rank": 4, "cost": 2607, "currency": "gold", "powerDelta": 0.035, "effect": "18%" },
+      { "rank": 5, "cost": 60, "currency": "shards", "powerDelta": 0.035, "effect": "24%" } ] },
+    { "id": "tl_da_chandai", "name": "Chân Nhẹ", "branch": "da", "ranks": [
+      { "rank": 1, "cost": 600, "currency": "gold", "powerDelta": 0.035, "effect": "Bước Lùi cooldown -8%" },
+      { "rank": 2, "cost": 930, "currency": "gold", "powerDelta": 0.035, "effect": "-16%" },
+      { "rank": 3, "cost": 1441, "currency": "gold", "powerDelta": 0.035, "effect": "-24%, bất tử 0.15s -> 0.2s" },
+      { "rank": 4, "cost": 2234, "currency": "gold", "powerDelta": 0.03, "effect": "-32%" },
+      { "rank": 5, "cost": 50, "currency": "shards", "powerDelta": 0.03, "effect": "-40%, Xốc Tới cũng giảm 30%" } ] },
+    { "id": "tl_da_maulanh", "name": "Máu Lạnh", "branch": "da", "ranks": [
+      { "rank": 1, "cost": 850, "currency": "gold", "powerDelta": 0.04, "effect": "Dưới 30% HP: giảm thêm 8% damage" },
+      { "rank": 2, "cost": 1318, "currency": "gold", "powerDelta": 0.04, "effect": "16%" },
+      { "rank": 3, "cost": 2042, "currency": "gold", "powerDelta": 0.04, "effect": "24%" },
+      { "rank": 4, "cost": 3165, "currency": "gold", "powerDelta": 0.035, "effect": "32%" },
+      { "rank": 5, "cost": 70, "currency": "shards", "powerDelta": 0.035, "effect": "40% + hồi 1 HP/s khi dưới 30%" } ] },
+    { "id": "tl_da_hoisinh", "name": "Tim Dự Phòng", "branch": "da", "ranks": [
+      { "rank": 1, "cost": 2000, "currency": "gold", "powerDelta": 0.06, "effect": "1 lần/run: sống lại 25% HP (không cần ad)" },
+      { "rank": 2, "cost": 3100, "currency": "gold", "powerDelta": 0.05, "effect": "Sống lại 40% HP" },
+      { "rank": 3, "cost": 4805, "currency": "gold", "powerDelta": 0.05, "effect": "Sống lại 55% HP + 2s bất tử" },
+      { "rank": 4, "cost": 120, "currency": "shards", "powerDelta": 0.045, "effect": "Sống lại 70% HP" },
+      { "rank": 5, "cost": 200, "currency": "shards", "powerDelta": 0.045, "effect": "2 lần/run" } ] },
+    { "id": "tl_da_hutmau", "name": "Hút Máu", "branch": "da", "ranks": [
+      { "rank": 1, "cost": 900, "currency": "gold", "powerDelta": 0.035, "effect": "Mỗi mạng cận chiến hồi 0.5 HP" },
+      { "rank": 2, "cost": 1395, "currency": "gold", "powerDelta": 0.035, "effect": "1 HP" },
+      { "rank": 3, "cost": 2162, "currency": "gold", "powerDelta": 0.035, "effect": "1.5 HP" },
+      { "rank": 4, "cost": 3352, "currency": "gold", "powerDelta": 0.03, "effect": "2 HP" },
+      { "rank": 5, "cost": 65, "currency": "shards", "powerDelta": 0.03, "effect": "3 HP, và Chém Hoàn Hảo hồi 10 HP" } ] },
+
+    { "id": "tl_den_locsan", "name": "Lộc Sẵn", "branch": "den", "ranks": [
+      { "rank": 1, "cost": 3000, "currency": "gold", "powerDelta": 0.05, "effect": "Bắt đầu run với +2 Lộc" },
+      { "rank": 2, "cost": 4650, "currency": "gold", "powerDelta": 0.05, "effect": "+4 Lộc" },
+      { "rank": 3, "cost": 150, "currency": "shards", "powerDelta": 0.05, "effect": "+6 Lộc" },
+      { "rank": 4, "cost": 240, "currency": "shards", "powerDelta": 0.045, "effect": "+8 Lộc" },
+      { "rank": 5, "cost": 400, "currency": "shards", "powerDelta": 0.045, "effect": "+10 Lộc, và Lộc tối đa 20 -> 24" } ] },
+    { "id": "tl_den_tuivang", "name": "Túi Vàng", "branch": "den", "ranks": [
+      { "rank": 1, "cost": 700, "currency": "gold", "powerDelta": 0.03, "effect": "Vàng +6%" },
+      { "rank": 2, "cost": 1085, "currency": "gold", "powerDelta": 0.03, "effect": "+13%" },
+      { "rank": 3, "cost": 1682, "currency": "gold", "powerDelta": 0.03, "effect": "+21%" },
+      { "rank": 4, "cost": 2607, "currency": "gold", "powerDelta": 0.025, "effect": "+30%" },
+      { "rank": 5, "cost": 60, "currency": "shards", "powerDelta": 0.025, "effect": "+40%" } ] },
+    { "id": "tl_den_gamieu", "name": "Giá Miếu", "branch": "den", "ranks": [
+      { "rank": 1, "cost": 800, "currency": "gold", "powerDelta": 0.025, "effect": "Giá đổi Lộc ở Miếu Mỏ và giá Cột Chống Hầm -10%" },
+      { "rank": 2, "cost": 1240, "currency": "gold", "powerDelta": 0.025, "effect": "-20%" },
+      { "rank": 3, "cost": 1922, "currency": "gold", "powerDelta": 0.025, "effect": "-30%" },
+      { "rank": 4, "cost": 2979, "currency": "gold", "powerDelta": 0.02, "effect": "-40%" },
+      { "rank": 5, "cost": 55, "currency": "shards", "powerDelta": 0.02, "effect": "-55%, và Miếu Mỏ luôn hiện cả 3 tuỳ chọn" } ] },
+    { "id": "tl_den_thebac", "name": "Thẻ Bậc", "branch": "den", "ranks": [
+      { "rank": 1, "cost": 1200, "currency": "gold", "powerDelta": 0.045, "effect": "Rarity thẻ +4% (tương đương +1.5 Lộc)" },
+      { "rank": 2, "cost": 1860, "currency": "gold", "powerDelta": 0.04, "effect": "+8%" },
+      { "rank": 3, "cost": 2883, "currency": "gold", "powerDelta": 0.04, "effect": "+13%" },
+      { "rank": 4, "cost": 90, "currency": "shards", "powerDelta": 0.04, "effect": "+18%" },
+      { "rank": 5, "cost": 160, "currency": "shards", "powerDelta": 0.04, "effect": "+24%, và reroll miễn phí 2 lần/Depth" } ] },
+    { "id": "tl_den_bandoham", "name": "Bản Đồ Hầm", "branch": "den", "ranks": [
+      { "rank": 1, "cost": 1000, "currency": "gold", "powerDelta": 0.03, "effect": "Biển báo ở Ngã Ba hiện thêm số quái dự kiến của mỗi cửa" },
+      { "rank": 2, "cost": 1550, "currency": "gold", "powerDelta": 0.03, "effect": "Biển báo hiện cả loại quái mới sẽ gặp" },
+      { "rank": 3, "cost": 2403, "currency": "gold", "powerDelta": 0.03, "effect": "Thấy trước cả Cổng kế tiếp (2 tầng ngã ba)" },
+      { "rank": 4, "cost": 3724, "currency": "gold", "powerDelta": 0.025, "effect": "Thấy wave template của cả hai cửa" },
+      { "rank": 5, "cost": 85, "currency": "shards", "powerDelta": 0.025, "effect": "Thấy toàn bộ sơ đồ Depth; Ngã Ba cho 3 cửa thay vì 2" } ] },
+    { "id": "tl_den_vangno", "name": "Vàng Nổ", "branch": "den", "ranks": [
+      { "rank": 1, "cost": 1500, "currency": "gold", "powerDelta": 0.03, "effect": "Tỉ lệ cột vàng 4% -> 6%" },
+      { "rank": 2, "cost": 2325, "currency": "gold", "powerDelta": 0.03, "effect": "-> 8%" },
+      { "rank": 3, "cost": 3604, "currency": "gold", "powerDelta": 0.03, "effect": "-> 10%, cột vàng mở từ Depth 2" },
+      { "rank": 4, "cost": 100, "currency": "shards", "powerDelta": 0.025, "effect": "-> 12%" },
+      { "rank": 5, "cost": 180, "currency": "shards", "powerDelta": 0.025, "effect": "-> 15%, cột vàng mở từ Depth 1" } ] }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "_comment": "Tune juice o day, KHONG hardcode trong code. Luat: hitstop + shake + particle phai trigger CUNG 1 FRAME.",
+  "globalRules": {
+    "shakeDecayPerFrame": 0.86,
+    "shakeReturnMaxSec": 0.35,
+    "shakeTotalAmplitudeCapPx": 26,
+    "particleCap": 2200,
+    "goldPhysicsCap": 400,
+    "ragdollCap": 12,
+    "damageNumberCap": 14,
+    "slowMoCooldownSec": 1.5,
+    "referenceScreenWidthPx": 1080,
+    "targetInputToBulletFrames": 3
+  },
+  "hitstop": [
+    { "event": "Đạn trúng trash", "frames": 2, "timescale": 0.0 },
+    { "event": "Đạn headshot", "frames": 4, "timescale": 0.0 },
+    { "event": "Shotgun trúng >=3 con", "frames": 5, "timescale": 0.0 },
+    { "event": "Chém nhẹ trúng", "frames": 3, "timescale": 0.05 },
+    { "event": "Chém nặng trúng", "frames": 5, "timescale": 0.0 },
+    { "event": "CHÉM HOÀN HẢO", "frames": 7, "timescale": 0.35 },
+    { "event": "Kill con cuối của wave", "frames": 0, "timescale": 0.4, "durationSec": 0.35 },
+    { "event": "Người chơi bị trúng", "frames": 3, "timescale": 0.0 },
+    { "event": "Boss vào phase mới", "frames": 12, "timescale": 0.0 }
+  ],
+  "shake": [
+    { "event": "Bắn súng lục", "amplitudePx": 3, "durationSec": 0.06, "axis": "dọc" },
+    { "event": "Bắn shotgun", "amplitudePx": 14, "durationSec": 0.16, "axis": "dọc + xoay 1.2°" },
+    { "event": "Bắn liên thanh (mỗi phát)", "amplitudePx": 2, "durationSec": 0.04, "axis": "ngẫu nhiên nhỏ, cộng dồn cap 9px" },
+    { "event": "Chém nhẹ", "amplitudePx": 5, "durationSec": 0.08, "axis": "theo vector slide" },
+    { "event": "Chém nặng", "amplitudePx": 16, "durationSec": 0.18, "axis": "theo vector slide" },
+    { "event": "CHÉM HOÀN HẢO", "amplitudePx": 20, "durationSec": 0.22, "axis": "theo vector slide + flash trắng 1 frame" },
+    { "event": "Người chơi bị trúng", "amplitudePx": 12, "durationSec": 0.20, "axis": "từ hướng bị đánh" },
+    { "event": "Boss đập đất", "amplitudePx": 26, "durationSec": 0.35, "axis": "dọc" },
+    { "event": "Mở cửa ở Ngã Ba Hầm", "amplitudePx": 10, "durationSec": 0.45, "axis": "dọc, một nhịp nặng" }
+  ],
+  "death": [
+    { "killType": "Đạn thường", "corpse": "Bay ngược về sau theo vector đạn, ragdoll 1.2s", "particles": 12, "goldCoins": "3–6" },
+    { "killType": "Headshot", "corpse": "Đầu nổ, thân quỳ rồi ngã", "particles": 20, "goldCoins": "5–8" },
+    { "killType": "Shotgun gần", "corpse": "Bay 3–4m, đập tường bật lại (truyền 25% lực)", "particles": 26, "goldCoins": "6–10" },
+    { "killType": "Chém nhẹ", "corpse": "Đứt đôi theo ĐÚNG đường quẹt, 2 nửa bay theo vector slide", "particles": 18, "goldCoins": "4–7" },
+    { "killType": "Chém nặng", "corpse": "Bay 6–8m theo vector slide, xoay", "particles": 30, "goldCoins": "8–14" },
+    { "killType": "Nổ (exploder / AoE)", "corpse": "Bay tứ tán", "particles": 40, "goldCoins": "6–12" },
+    { "killType": "Cột vàng (Depth 3+, 4% + 0.4%/Lộc)", "corpse": "Xác tan thành vàng", "particles": "cột sáng 3m", "goldCoins": "x25" }
+  ],
+  "gold": {
+    "burstPerKill": "3–14 đồng tuỳ hạng quái — luôn là CHÙM, không bao giờ 1 cục",
+    "physics": "bay theo lực chết, nảy 2 lần, nằm sàn 0.35s",
+    "magnetDelaySec": 0.35,
+    "magnetFlightSec": 0.5,
+    "magnetRadiusM": 6,
+    "magnetRadiusComboMult": 2.0,
+    "magnetRadiusRoomClearMult": 3.0,
+    "coinChimeLadder": "mỗi đồng liên tiếp trong 1.5s tăng NỬA CUNG, cap 2 quãng tám, reset sau 1.5s",
+    "counterAnimation": "giật nảy scale 1.15 -> 1.0 trong 0.12s mỗi lần tăng. KHONG tween muot",
+    "goldPillarChance": 0.04,
+    "goldPillarMinDepth": 3,
+    "goldPillarChancePerLuck": 0.004
+  },
+  "audio": [
+    { "priority": 1, "sound": "Coin chime ladder", "note": "Vũ khí gây nghiện số 1. Duck toàn mix 60% khi Chém Hoàn Hảo" },
+    { "priority": 2, "sound": "Impact cận chiến", "note": "4 layer: lưỡi cắt thịt + xương gãy + vải xé + đuôi vang. 4 biến thể chống lặp" },
+    { "priority": 3, "sound": "Súng", "note": "3 layer: cơ khí + nổ + reverb theo kích thước phòng" },
+    { "priority": 4, "sound": "Tiếng quái spawn", "note": "Mỗi loại một âm riêng — nghe là biết, không cần nhìn" },
+    { "priority": 5, "sound": "Đèn & hầm", "note": "Đèn dầu cháy xì xì; mỗi Depth hạ pitch tiếng nền nửa cung -> Depth 7 là tiếng gầm dưới đất" },
+    { "priority": 6, "sound": "Nhịp tim người chơi", "note": "Vào khi HP < 30%, tempo theo mức máu" },
+    { "priority": 7, "sound": "Nhạc nền layer động", "note": "trống từ Depth 3, dây từ Depth 5, hợp xướng từ Depth 7; thêm 1 layer nữa khi số quái sống > 60. Chuyển layer khớp nhịp" },
+    { "priority": 8, "sound": "Tiếng lao xao đám đông", "note": "Phát TRƯỚC khi quái xuất hiện, âm lượng tỉ lệ số quái sắp tới — nghe là biết wave to cỡ nào" }
+  ],
+  "haptics": [
+    { "event": "Bắn 1 phát", "pattern": "light impact" },
+    { "event": "Shotgun", "pattern": "heavy impact" },
+    { "event": "Chém trúng", "pattern": "medium impact" },
+    { "event": "Chém Hoàn Hảo", "pattern": "success (2 nhịp)" },
+    { "event": "Nạp Hoàn Hảo", "pattern": "selection click giòn" },
+    { "event": "Nạp trượt (kẹt đạn)", "pattern": "error" },
+    { "event": "Bị trúng", "pattern": "heavy + 40ms" },
+    { "event": "Mở cửa ở Ngã Ba", "pattern": "rung 0.35s một nhịp nặng" },
+    { "event": "Input bị huỷ (dead zone 55–65°)", "pattern": "8ms rất nhẹ — báo máy nhận nhưng bỏ" }
+  ],
+  "antiPatterns": [
+    { "trap": "Rung quá nhiều / quá lâu", "rule": "Cap tổng 26px, decay 0.86/frame, về gốc <=0.35s" },
+    { "trap": "Hạt che kín màn hình", "rule": "Cap 2200 hạt; hạt máu không vẽ ở nửa trên màn hình quá 0.2s" },
+    { "trap": "Slow-mo quá thường xuyên", "rule": "Chỉ Chém Hoàn Hảo và wave-clear; cooldown 1.5s" },
+    { "trap": "Bức tường số damage", "rule": "Cộng dồn số cùng mục tiêu trong 0.3s; cap 14 số" },
+    { "trap": "Vàng nhiều tới tụt frame", "rule": "Cap 400 đồng vật lý; vượt thì gộp thành cục lớn" },
+    { "trap": "Juice không nhất quán", "rule": "Mọi tham số ở file này, một người duyệt" }
+  ]
+}

@@ -1,0 +1,201 @@
+{
+  "_comment": "Director tieu het TP_budget(R,G) theo composition. weight = ti le TP phan bo cho loai do.",
+  "directorRules": {
+    "tpFormula": "round((14 + 4.2*R) * (1 + 0.18*(w-1)) * roomTypeMult)  -- w = wave trong phong. KHONG co dial nguoi choi.",
+    "roomTypeMult": { "combat": 1.00, "elite": 1.40, "gauntlet": 2.20, "boss": 1.60 },
+    "waveDelayAfterClearSec": [1.5, 2.0],
+    "firstWaveDelaySec": 0.4,
+    "roomClearSlowMo": { "durationSec": 0.35, "timescale": 0.4 },
+    "hardCaps": {
+      "maxFullAiAgents": 40,
+      "maxTotalAlive": 240,
+      "maxSimultaneousShooters": 3,
+      "maxExploderInMeleeBand": 2,
+      "maxEliteOutsideEliteRoom": 1,
+      "maxDistinctTypesPerWave": 4,
+      "newEnemyTypesPerRoom": 1
+    },
+    "blackMist": {
+      "triggerSec": 35, "triggerSecDeep": 28, "deepRoomThreshold": 8,
+      "vignetteStepPercent": 6, "vignetteStepSec": 5,
+      "spawnEnemy": "en_special_bongham", "spawnIntervalSec": 4,
+      "exemptRooms": ["boss", "shop", "shrine"]
+    },
+    "tpSpikeLimit": 1.8,
+    "spawnPatterns": {
+      "front_stream": "Tới đều từ chính giữa dải Xa",
+      "pincer": "Hai bên hành lang, lệch nhau 0.8s",
+      "rush_line": "Một hàng ngang, cùng lúc, tốc độ cao",
+      "back_ambush": "Trồi lên từ sàn phía sau người chơi",
+      "ceiling_drop": "Thả từ trần xuống dải Giữa",
+      "far_static": "Đứng yên ở dải Xa, không tiến",
+      "flood": "Spawn liên tục 60+ con trong 6 giây"
+    }
+  },
+  "waveTemplates": [
+    {
+      "id": "wv_dongchay", "name": "Dòng Chảy", "intent": "Warm-up, dạy nhắm", "teaches": "tap / hold",
+      "tpMult": 0.85, "minDepth": 1, "spawnPattern": "front_stream",
+      "composition": [ { "enemy": "en_trash_goblincui", "weight": 1.0 } ]
+    },
+    {
+      "id": "wv_vaykep", "name": "Vây Kép", "intent": "Chia chú ý hai bên", "teaches": "chọn mục tiêu",
+      "tpMult": 1.0, "minDepth": 1, "spawnPattern": "pincer",
+      "composition": [
+        { "enemy": "en_trash_goblincui", "weight": 0.7 },
+        { "enemy": "en_trash_goblinchay", "weight": 0.3 }
+      ]
+    },
+    {
+      "id": "wv_baychay", "name": "Bầy Chạy", "intent": "Ép dùng cận chiến", "teaches": "chém quét, không kịp nhắm",
+      "tpMult": 1.05, "minDepth": 1, "spawnPattern": "rush_line",
+      "composition": [
+        { "enemy": "en_trash_goblinchay", "weight": 0.75 },
+        { "enemy": "en_trash_goblinbay", "weight": 0.25 }
+      ]
+    },
+    {
+      "id": "wv_thuytrieu", "name": "Thuỷ Triều", "intent": "Fantasy massive wave (Guns n Goblins)", "teaches": "Chém Hoàn Hảo",
+      "tpMult": 1.35, "minDepth": 1, "spawnPattern": "flood",
+      "composition": [
+        { "enemy": "en_trash_goblinbay", "weight": 0.7 },
+        { "enemy": "en_trash_goblincui", "weight": 0.3 }
+      ]
+    },
+    {
+      "id": "wv_muada", "name": "Mưa Đá", "intent": "Chống rùa, ép tiến lên", "teaches": "không được đứng một chỗ",
+      "tpMult": 1.0, "minDepth": 2, "spawnPattern": "far_static",
+      "composition": [
+        { "enemy": "en_ranged_nemda", "weight": 0.7 },
+        { "enemy": "en_trash_goblincui", "weight": 0.3 }
+      ]
+    },
+    {
+      "id": "wv_bomsong", "name": "Bom Sống", "intent": "Ép dãn cách", "teaches": "knockback là phòng thủ",
+      "tpMult": 1.0, "minDepth": 2, "spawnPattern": "front_stream",
+      "composition": [
+        { "enemy": "en_special_thuocno", "weight": 0.45 },
+        { "enemy": "en_trash_goblincui", "weight": 0.4 },
+        { "enemy": "en_trash_goblinchay", "weight": 0.15 }
+      ]
+    },
+    {
+      "id": "wv_tuongkhien", "name": "Tường Khiên", "intent": "Chống spam bắn thẳng", "teaches": "búa / chém nặng / đánh sau lưng",
+      "tpMult": 1.1, "minDepth": 3, "spawnPattern": "front_stream",
+      "composition": [
+        { "enemy": "en_special_khien", "weight": 0.5 },
+        { "enemy": "en_trash_goblincui", "weight": 0.3 },
+        { "enemy": "en_ranged_nemda", "weight": 0.2 }
+      ]
+    },
+    {
+      "id": "wv_nangdo", "name": "Nặng Đô", "intent": "Kiểm tra kite", "teaches": "kbResist cao thì phải né",
+      "tpMult": 1.15, "minDepth": 3, "spawnPattern": "front_stream",
+      "composition": [
+        { "enemy": "en_heavy_ogreham", "weight": 0.55 },
+        { "enemy": "en_trash_goblincui", "weight": 0.3 },
+        { "enemy": "en_special_khien", "weight": 0.15 }
+      ]
+    },
+    {
+      "id": "wv_troitroi", "name": "Trời Trời", "intent": "Dạy trục dọc", "teaches": "chém chéo lên, bắn mục tiêu bay",
+      "tpMult": 1.0, "minDepth": 4, "spawnPattern": "ceiling_drop",
+      "composition": [
+        { "enemy": "en_special_doiham", "weight": 0.7 },
+        { "enemy": "en_trash_goblinchay", "weight": 0.3 }
+      ]
+    },
+    {
+      "id": "wv_saulung", "name": "Sau Lưng", "intent": "Dạy phía sau tồn tại", "teaches": "Bước Lùi + quay chém",
+      "tpMult": 1.05, "minDepth": 4, "spawnPattern": "back_ambush",
+      "composition": [
+        { "enemy": "en_special_daoham", "weight": 0.6 },
+        { "enemy": "en_trash_goblincui", "weight": 0.4 }
+      ]
+    },
+    {
+      "id": "wv_dandau", "name": "Dẫn Đầu", "intent": "Dạy ưu tiên mục tiêu", "teaches": "giết support trước",
+      "tpMult": 1.1, "minDepth": 5, "spawnPattern": "front_stream",
+      "composition": [
+        { "enemy": "en_support_trong", "weight": 0.25 },
+        { "enemy": "en_support_phapsuxanh", "weight": 0.25 },
+        { "enemy": "en_trash_goblinchay", "weight": 0.3 },
+        { "enemy": "en_trash_goblincui", "weight": 0.2 }
+      ]
+    },
+    {
+      "id": "wv_honchien", "name": "Hỗn Chiến", "intent": "Đỉnh áp lực của phòng", "teaches": "tổng hợp",
+      "tpMult": 1.30, "minDepth": 5, "spawnPattern": "pincer",
+      "composition": [
+        { "enemy": "en_trash_goblinchay", "weight": 0.3 },
+        { "enemy": "en_special_khien", "weight": 0.2 },
+        { "enemy": "en_special_thuocno", "weight": 0.2 },
+        { "enemy": "en_ranged_nemda", "weight": 0.3 }
+      ]
+    },
+    {
+      "id": "wv_dadatan", "name": "Đá Đạp Tan", "intent": "Hành lang bị charge", "teaches": "nhường đường",
+      "tpMult": 1.2, "minDepth": 6, "spawnPattern": "rush_line",
+      "composition": [
+        { "enemy": "en_heavy_daubo", "weight": 0.4 },
+        { "enemy": "en_heavy_goblinbeo", "weight": 0.3 },
+        { "enemy": "en_ranged_no", "weight": 0.3 }
+      ]
+    },
+    {
+      "id": "wv_hamlua", "name": "Hầm Lửa", "intent": "Kiểm soát vùng", "teaches": "sàn cũng nguy hiểm",
+      "tpMult": 1.15, "minDepth": 7, "spawnPattern": "front_stream",
+      "composition": [
+        { "enemy": "en_special_goblinlua", "weight": 0.5 },
+        { "enemy": "en_support_thaymo", "weight": 0.2 },
+        { "enemy": "en_trash_goblinchay", "weight": 0.3 }
+      ]
+    },
+    {
+      "id": "wv_kythitotnghiep", "name": "Kỳ Thi Tốt Nghiệp", "intent": "Depth 7, trộn tất cả", "teaches": "mọi thứ cùng lúc",
+      "tpMult": 1.40, "minDepth": 7, "spawnPattern": "pincer",
+      "composition": [
+        { "enemy": "en_heavy_quyham", "weight": 0.3 },
+        { "enemy": "en_support_thaymo", "weight": 0.2 },
+        { "enemy": "en_ranged_no", "weight": 0.2 },
+        { "enemy": "en_special_goblinlua", "weight": 0.3 }
+      ]
+    },
+    {
+      "id": "wv_sanelite", "name": "Săn Elite", "intent": "Phòng Elite", "teaches": "burst damage",
+      "tpMult": 1.40, "minDepth": 2, "spawnPattern": "front_stream",
+      "composition": [
+        { "enemy": "en_elite_tuonggoblin", "weight": 0.5 },
+        { "enemy": "en_trash_goblinchay", "weight": 0.25 },
+        { "enemy": "en_trash_goblincui", "weight": 0.25 }
+      ]
+    },
+    {
+      "id": "wv_dote", "name": "Lò Mổ", "intent": "Phòng Elite cận chiến", "teaches": "giữ khoảng cách với elite",
+      "tpMult": 1.40, "minDepth": 4, "spawnPattern": "front_stream",
+      "composition": [
+        { "enemy": "en_elite_dote", "weight": 0.6 },
+        { "enemy": "en_trash_goblinchay", "weight": 0.4 }
+      ]
+    },
+    {
+      "id": "wv_omvang", "name": "Ổ Vàng", "intent": "Phòng Elite: giành lại vàng", "teaches": "chọn giữa rượt elite và giữ hàng",
+      "tpMult": 1.40, "minDepth": 5, "spawnPattern": "front_stream",
+      "composition": [
+        { "enemy": "en_elite_omvang", "weight": 0.55 },
+        { "enemy": "en_support_phapsuxanh", "weight": 0.2 },
+        { "enemy": "en_trash_goblinbay", "weight": 0.25 }
+      ]
+    },
+    {
+      "id": "wv_gauntlet", "name": "Lò Vàng", "intent": "Gauntlet 60s vô hạn", "teaches": "push-your-luck trong combat",
+      "tpMult": 2.20, "minDepth": 2, "spawnPattern": "flood",
+      "composition": [
+        { "enemy": "en_trash_goblinbay", "weight": 0.45 },
+        { "enemy": "en_trash_goblinchay", "weight": 0.3 },
+        { "enemy": "en_trash_goblincui", "weight": 0.15 },
+        { "enemy": "en_special_thuocno", "weight": 0.1 }
+      ]
+    }
+  ]
+}
