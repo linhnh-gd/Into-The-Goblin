@@ -20,7 +20,7 @@ export const GESTURE = {
   CANCELLED: 'cancelled',
 };
 
-const ST = { IDLE: 0, PENDING: 1, SLIDE: 2, HOLD_FIRE: 3, CONSUMED: 4 };
+const ST = { IDLE: 0, PENDING: 1, SLIDE: 2, HOLD_FIRE: 3, CONSUMED: 4, SLIDE_CONT: 5 };
 
 export class InputRouter {
   /**
@@ -43,6 +43,7 @@ export class InputRouter {
       meleeAngleMax: c.meleeAngleMax,
       moveAngleMin: c.moveAngleMin,
       slideResolveMax: 400,
+      slideMinSegPx: GD.feel.melee.slideMinSegPx,
     };
 
     this.state = ST.IDLE;
@@ -111,7 +112,25 @@ export class InputRouter {
       return;
     }
     if (this.state === ST.SLIDE) {
-      if (elapsed >= this.P.slideResolveMax) this._resolveSlide();
+      // phan giai huong som nhat co the: du dai la quyet dinh luon, khong doi het 400ms
+      const tdx = x - this.p0.x, tdy = y - this.p0.y;
+      if (Math.hypot(tdx, tdy) / this.screenW >= this.P.slideMinLen ||
+          elapsed >= this.P.slideResolveMax) this._resolveSlide();
+      return;
+    }
+    if (this.state === ST.SLIDE_CONT) {
+      // moi doan >= slideMinSegPx la MOT nhat nua (chem hoa qua)
+      const sx = x - this.seg.x, sy = y - this.seg.y;
+      const segLen = Math.hypot(sx, sy);
+      if (segLen >= this.P.slideMinSegPx) {
+        const total = Math.hypot(x - this.p0.x, y - this.p0.y) / this.screenW;
+        this.h.onSlideMove?.({
+          dx: sx, dy: sy, lenPx: segLen, len: total,
+          heavy: total > this.P.heavyLen, from: { ...this.seg }, to: { x, y },
+        });
+        this.seg = { x, y };
+      }
+      return;
     }
   }
 
@@ -135,8 +154,11 @@ export class InputRouter {
       }
     } else if (this.state === ST.HOLD_FIRE) {
       this.h.onHoldEnd?.();
+    } else if (this.state === ST.SLIDE_CONT) {
+      this.h.onSlideEnd?.();
     } else if (this.state === ST.SLIDE) {
       this._resolveSlide();
+      if (this.state === ST.SLIDE_CONT) this.h.onSlideEnd?.();
     }
     this.state = ST.IDLE;
     this.id = null;
@@ -152,8 +174,8 @@ export class InputRouter {
     return y > this.el.clientHeight * 0.5;
   }
 
+  /** Phan giai HUONG cua mot lan quet. Neu la chem thi KHOA sang che do chem lien tuc. */
   _resolveSlide() {
-    this.state = ST.CONSUMED;
     const dx = this.p.x - this.p0.x;
     const dy = this.p.y - this.p0.y;
     const lenPx = Math.hypot(dx, dy);
@@ -166,17 +188,25 @@ export class InputRouter {
     this.stats.lastVel = Math.round(this.peakVel);
 
     if (len < this.P.slideMinLen) {              // qua ngan -> coi la tap (docs/03)
+      this.state = ST.CONSUMED;
       this._emit(GESTURE.TAP);
       this.h.onTap?.(this.p0.x, this.p0.y);
       return;
     }
 
     if (this.twoZone || devH <= this.P.meleeAngleMax) {
+      /* CHEM LIEN TUC (kieu chem hoa qua): khong ket thuc sau mot nhat. Giu ngon tay
+         va re tiep thi moi doan duong tren man hinh la mot nhat nua, va stamina bi
+         drain lien tuc. Nha tay moi ket thuc. */
+      this.state = ST.SLIDE_CONT;
+      this.seg = { ...this.p };
       const heavy = len > this.P.heavyLen;
       this._emit(heavy ? GESTURE.SLIDE_HEAVY : GESTURE.SLIDE_LIGHT);
+      this.h.onSlideStart?.();
       this.h.onMelee?.({ dx, dy, len, heavy, from: { ...this.p0 }, to: { ...this.p } });
       return;
     }
+    this.state = ST.CONSUMED;
     if (devH >= this.P.moveAngleMin) {
       const down = dy > 0;                        // y tang xuong duoi
       this._emit(down ? GESTURE.DODGE_BACK : GESTURE.DASH_FWD);
@@ -205,6 +235,7 @@ export class InputRouter {
   }
 
   isHolding() { return this.state === ST.HOLD_FIRE; }
+  isSlicing() { return this.state === ST.SLIDE_CONT; }
   holdPoint() { return this.p; }
 
   dispose() {

@@ -111,6 +111,51 @@ cuối chết" và game hay hẳn lên) rồi siết lại cho nhịp mobile. Đ
 Không có hai phòng đông liền nhau ở Depth 1–2 (dạy trước, ép sau). Từ Depth 3 cho phép 2 phòng đông liền
 nhau nếu `G ≥ 3` (người chơi đã tự xin).
 
+
+## 3.5. Mô hình QUÃNG ĐƯỜNG (thay cho "diệt hết mới qua")
+
+Phòng **không** kết thúc khi diệt hết quái. Phòng kết thúc khi người chơi **chạy hết `run.roomDistanceM` mét**.
+Đây là mô hình của *Into the Dead*: nhân vật tự tiến lên liên tục, quái ra dọc đường, và **không cần giết hết**.
+
+| Số (ở `data/gamefeel.json` khối `run`) | Giá trị | Ý nghĩa |
+|---|---|---|
+| `speedMps` | 2.4 | Người chơi tự chạy, không có nút di chuyển |
+| `roomDistanceM` | 90 | Một phòng = 90m ≈ **37.5s** |
+| `waveSegmentM` | 30 | 90 / 30 = **3 wave**, mỗi wave một đoạn đường |
+| `densityRampEnd` | 1.35 | Số mũ đường cong ra quái trong một đoạn: cuối đoạn đông hơn đầu đoạn |
+| `contactM` | 1.0 | Quái tới đây thì **va vào người chơi** |
+| `tapNearM` | 2.4 | Khoảng gần nhất mà quái còn **tap được** (xem mục dưới) |
+
+**Wave sau dồn dập hơn mà không cần dial:** số wave suy ra từ quãng đường, và `tpBudget(R, w)` đã tăng theo `w`
+(`×1.18` mỗi wave). Nên một phòng 90m tự động là ba đợt tăng dần — không có tham số "độ khó" nào phải tinh chỉnh tay.
+
+**Quái không giết kịp thì VA vào người chơi:** gây damage **một lần** rồi **biến mất**, và **không rơi vàng**
+(người chơi không giết nó). Đây là áp lực thay thế cho "diệt hết": bỏ qua quái thì mất máu, không phải mất thời gian.
+
+> **Sương Đen mất lý do tồn tại ở phòng thường.** Nó được thiết kế để chống cắm phòng (`08`). Trong mô hình
+> quãng đường người chơi **không thể** cắm phòng — luôn bị đẩy về phía trước. Áp lực chống thụ động giờ là
+> chính đám quái tích tụ. Sương Đen chỉ còn hiệu lực ở phòng **boss** (nơi người chơi đứng lại). Số liệu vẫn
+> giữ trong `waves.json` để dùng cho boss.
+
+### Vì sao `tapNearM` phải tồn tại
+
+Camera cao 1.62m, fov dọc 72°, chúi xuống 8°. Chiếu phối cảnh cho ra: điểm tap của quái (ở `0.62 × scale`)
+nằm ở **92.7% chiều cao màn hình** khi quái ở 1.2m — tức **dưới cả nút NẠP**, không thể bấm.
+
+`audit_gdd.ps1` tự tính con số này từ `data` và **FAIL** nếu nó ra ngoài dải 45–75% ở `camera.meleeBandScreenPct`:
+
+| Khoảng | Vị trí trên màn hình (con nhỏ nhất, scale 0.74) |
+|---|---|
+| 1.2m (giá trị cũ, gây lỗi) | **100.1%** — ngoài khung hoàn toàn |
+| **2.4m** (`tapNearM` hiện tại) | **72.1%** — trong dải |
+| 8.5m (`rangedStandoffM`) | 48.7% |
+
+Từ đó suy ra hai ràng buộc cứng, cả hai đều có gate:
+1. **Vũ khí cận chiến phải với xa hơn `tapNearM`** — nếu không thì dao vô dụng đúng ở khoảng mà súng đã
+   không bắn được nữa. Yêu cầu `reachM ≥ tapNearM + 0.4`; mọi vũ khí cận chiến đã được cộng **+0.8m**.
+2. **Quái đứng lại để đánh phải đứng ở ≥ `tapNearM`** — quái ranged không có trường tầm bắn trong data nên
+   trước đây dùng `ATTACK_RANGE = 1.2m`, tức "quái ném đá" đi tới sát mặt mới ném. Giờ có `rangedStandoffM = 8.5`.
+
 ## 4. Wave archetype (template composition)
 
 | Archetype | Ý đồ | Thành phần | Dạy cái gì |

@@ -3,6 +3,7 @@
    quai o dai Xa chi thay bong + mat do (suong mu che LOD). */
 
 import * as THREE from 'three';
+import { GD } from './data.js';
 
 export const ROOM_SPACING = 22;   // m giua 2 diem dung
 export const HALL_W = 9;          // chieu rong hanh lang
@@ -25,10 +26,13 @@ export class World {
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.FogExp2(0x0b0d10, 0.055);
 
-    this.camera = new THREE.PerspectiveCamera(72, 1, 0.1, 90);
-    this.camera.position.set(0, 1.62, 0);
-    // camera chui xuong 8 do -> dai Can chien roi vao 45-75% chieu cao man hinh (docs/03 muc 5)
-    this.camPitch = THREE.MathUtils.degToRad(-8);
+    // Hinh hoc khung nhin lay tu data/gamefeel.json khoi "camera": audit TU TINH tu day
+    // xem quai o tapNearM roi vao bao nhieu %% chieu cao man hinh (hop dong docs/03 muc 5).
+    const CAM = GD.feel.camera;
+    this.CAM = CAM;
+    this.camera = new THREE.PerspectiveCamera(CAM.fovDegVertical, 1, 0.1, 90);
+    this.camera.position.set(0, CAM.heightM, 0);
+    this.camPitch = THREE.MathUtils.degToRad(-CAM.pitchDegDown);
 
     // three r155+ dung don vi vat ly: PointLight intensity la candela va giam theo 1/d^decay.
     // Gia tri 1.35 nhu ban dau cho ra hanh lang DEN THUI -- phai la hang chuc.
@@ -37,12 +41,18 @@ export class World {
     this.torch.position.set(0, 1.9, 0.4);
     this.scene.add(this.torch);
 
+    this.scene.add(this.camera);   // bat buoc: con cua camera (model sung) moi duoc render
     this._buildTunnel();
     this.setDepth(1);
   }
 
   _buildTunnel() {
     const LEN = 420;
+    // Hanh lang TAI SU DUNG: nguoi choi chay lien tuc nen z tang khong gioi han.
+    // Truoc day standZ(20) = -440 da nam NGOAI san dai 420m -> roi ra ngoai the gioi.
+    const g = (this.tunnelGroup = new THREE.Group());
+    this.scene.add(g);
+    this.RIB_STEP = 5.5;
     const mkMat = (c) => new THREE.MeshLambertMaterial({ color: c });
     this.matWall = mkMat(0x2b3038);
     this.matFloor = mkMat(0x1a1e24);
@@ -50,18 +60,18 @@ export class World {
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(HALL_W, LEN), this.matFloor);
     floor.rotation.x = -Math.PI / 2;
     floor.position.set(0, 0, -LEN / 2 + 20);
-    this.scene.add(floor);
+    g.add(floor);
 
     const ceil = new THREE.Mesh(new THREE.PlaneGeometry(HALL_W, LEN), this.matWall);
     ceil.rotation.x = Math.PI / 2;
     ceil.position.set(0, HALL_H, -LEN / 2 + 20);
-    this.scene.add(ceil);
+    g.add(ceil);
 
     for (const sx of [-1, 1]) {
       const w = new THREE.Mesh(new THREE.PlaneGeometry(LEN, HALL_H), this.matWall);
       w.rotation.y = sx > 0 ? -Math.PI / 2 : Math.PI / 2;
       w.position.set((sx * HALL_W) / 2, HALL_H / 2, -LEN / 2 + 20);
-      this.scene.add(w);
+      g.add(w);
     }
 
     // Vong chong ham moi 5.5m: cho cam giac DI CHUYEN doc theo truc Z.
@@ -86,7 +96,7 @@ export class World {
     }
     this.ribs.count = k;
     this.ribs.instanceMatrix.needsUpdate = true;
-    this.scene.add(this.ribs);
+    g.add(this.ribs);
   }
 
   setDepth(d) {
@@ -113,9 +123,13 @@ export class World {
 
   /** Cap nhat camera: vi tri + lac lu khi di + rung. */
   update(playerZ, bob, shake) {
+    // treadmill: keo ca hanh lang theo nguoi choi; ribs dich theo boi so RIB_STEP
+    // nen chung dung YEN trong the gioi -> van thay minh dang di chuyen.
+    this.tunnelGroup.position.z = playerZ;
+    this.ribs.position.z = -playerZ + Math.round(playerZ / this.RIB_STEP) * this.RIB_STEP;
     const c = this.camera;
     c.position.z = playerZ;
-    c.position.y = 1.62 + bob;
+    c.position.y = this.CAM.heightM + bob;
     c.rotation.set(this.camPitch + shake.y * 0.0016, shake.x * 0.0012, shake.roll || 0);
     this.torch.position.set(shake.x * 0.004, 1.9, playerZ + 0.4);
   }

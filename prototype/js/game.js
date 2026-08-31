@@ -8,6 +8,7 @@ import { EnemyPool, MELEE_BAND } from './enemies.js';
 import { Director } from './director.js';
 import { Juice } from './juice.js';
 import { World, ROOM_SPACING, HALL_W } from './world.js';
+import { GunModel } from './gun.js';
 import { InputRouter, GESTURE } from './input.js';
 
 /* Chi dua vao pool nhung the DA CAI DAT hieu ung that trong prototype.
@@ -34,16 +35,24 @@ export class Game {
     this.renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
 
     this.world = new World(this.renderer);
+    this.gun = new GunModel(this.world.camera);
+    this.gunWanted = false;
+    this.gunTimer = 0;
+    this.slicing = false;
     this.pool = new EnemyPool(this.world.scene);
     this.juice = new Juice(this.world.scene, this.world.camera, hudEl, audio);
     this.director = new Director(this.pool, this.juice, audio);
 
     this.input = new InputRouter(canvas, {
-      onTap: (x, y) => this.shootAt(x, y, true),
-      onHoldStart: (x, y) => { this.holdPt = { x, y }; },
-      onHoldMove: (x, y) => { this.holdPt = { x, y }; },
-      onHoldEnd: () => { this.holdPt = null; },
+      onTap: (x, y) => { if (this.gunUp()) { this.shootAt(x, y, true); this.gunRelease(); } },
+      onHoldStart: (x, y) => { if (this.gunUp()) this.holdPt = { x, y }; },
+      onHoldMove: (x, y) => { if (this.holdPt) this.holdPt = { x, y }; },
+      onHoldEnd: () => { this.holdPt = null; this.gunRelease(); },
       onMelee: (s) => this.slash(s),
+      // CHEM LIEN TUC: moi doan quet la mot nhat nua, giu ngon tay thi drain stamina
+      onSlideStart: () => { this.slicing = true; this.holdPt = null; this.gunRelease(); },
+      onSlideMove: (s) => this.sliceTick(s),
+      onSlideEnd: () => { this.slicing = false; },
       onMove: (dir) => this.dodge(dir),
       onCancelled: () => { if (navigator.vibrate) navigator.vibrate(8); },
     });
@@ -198,13 +207,18 @@ export class Game {
   /* ============================= BAN =============================== */
   shootAt(sx, sy, single) {
     if (!this.running || this.advancing) return;
-    if (this.reloading) { this.tryPerfectReload(); return; }
+    /* Con dan -> tap HUY reload va ban tiep. Het sach dan -> KHONG huy duoc. */
+    if (this.reloading) {
+      if (this.mag > 0) this.cancelReload();
+      else return;
+    }
     if (this.mag <= 0) { this.startReload(); return; }
     if (this.fireCd > 0) return;
 
     const rw = this.rw;
     this.fireCd = 60 / rw.rpm;
     this.mag--;
+    this.gun.flash();
     this.audio.shot(rw.pellets > 1);
     const fk = GD.feel.shake.find((s) => s.event.includes('súng lục')) || { amplitudePx: 3 };
     this.juice.addShake(rw.pellets > 1 ? 14 : fk.amplitudePx, 0, 1);
@@ -377,6 +391,86 @@ export class Game {
   }
 
   /* ============================ RELOAD ============================ */
+
+  /* ================= SUNG: rut ra / cat di / huy reload =================
+     Luat (yeu cau nguoi choi):
+       tap hoac hold  -> RUT sung ra ban; giu tiep thi ban lien tuc
+       nha tay        -> CAT sung di roi RELOAD
+       con dan        -> tap tiep HUY reload va ban ngay
+       het sach dan   -> KHONG huy duoc, phai doi reload xong
+     gunHoldSec: sung o ngoai them mot nhip sau phat cuoi, neu khong thi mot cai tap
+     chi thay sung nhap nhay 0.1s -- doc khong ra trang thai. */
+
+  /** @returns {boolean} co ban duoc khong */
+  gunUp() {
+    if (!this.running) return false;
+    if (this.reloading) {
+      if (this.mag > 0) this.cancelReload();      // con dan -> huy reload, ban tiep
+      else { this.ui.flashStamina(); return false; }   // het sach -> phai doi
+    }
+    this.slicing = false;
+    this.gunWanted = true;
+    this.gunTimer = GD.feel.gun.gunHoldSec;
+    this.gun.setOut(true);
+    return true;
+  }
+
+  /** Nha tay: bat dau dem nguoc roi cat sung + reload. */
+  gunRelease() { this.gunWanted = false; }
+
+  _holsterAndReload() {
+    this.gun.setOut(false);
+    this.startReload();
+  }
+
+  cancelReload() {
+    if (!this.reloading) return;
+    this.reloading = false;
+    this.reloadT = 0;
+    this.reloadTapped = false;
+    this.ui.reloadEnd();
+    this.audio.reloadClick(false);
+  }
+
+  /* ================= CHEM LIEN TUC (kieu chem hoa qua) =================
+     Nhat DAU TIEN di qua slash() nguyen gia. Cac doan quet tiep theo goi vao day:
+     dmg thap hon (slideTickDamageMult) va MOI CON chi an duoc mot lan moi
+     slideHitCooldownSec -- neu khong thi rung ngon tay tai cho la dmg vo han. */
+  sliceTick(s) {
+    if (!this.running || !this.slicing) return;
+    const M = GD.feel.melee;
+    const mw = this.mw;
+    if (this.stam <= 0) { this.ui.flashStamina(); return; }
+
+    const nx = s.dx / (Math.hypot(s.dx, s.dy) || 1);
+    const ny = -s.dy / (Math.hypot(s.dx, s.dy) || 1);
+    const dirX = nx * 0.92;
+    const dirZ = -(0.42 + Math.abs(ny) * 0.32);
+    const reach = mw.reachM + this.mods.reachAdd;
+    const arc = Math.min(200, mw.arcDeg + this.mods.arcAdd);
+    const maxT = mw.targets;
+
+    const hits = this.pool.queryArc(0, this.playerZ, dirX, dirZ, reach, arc, maxT)
+      .filter((e) => (e.sliceCd || 0) <= 0);
+    this.juice.addShake(4, nx, ny);
+    if (!hits.length) return;
+
+    let dmg = Math.round(mw.dmg * this.mods.meleeDmg * this.dmgBuff * this.comboMult * M.slideTickDamageMult);
+    let killed = 0;
+    for (const e of hits) {
+      e.sliceCd = M.slideHitCooldownSec;
+      const crit = Math.random() < this.mods.crit;
+      const d = crit ? Math.round(dmg * this.mods.critMult) : dmg;
+      if (this.hitEnemy(e, d, {
+        kx: nx, kz: dirZ * 0.6 + (ny < 0 ? 0.25 : -0.25),
+        kbForce: mw.knockback * this.mods.kb * 0.7,
+        source: 'melee', archetype: mw.archetype, heavy: false, weakPoint: false, crit,
+      })) killed++;
+    }
+    this.juice.addHitstop(2);
+    this.audio.hitFlesh();
+    if (killed) { this.combo = Math.min(5, this.combo + 1); this.comboT = 1.2; this.ui.combo(this.combo); }
+  }
   startReload() {
     if (this.reloading || this.mag >= this.magMax || this.reserve <= 0) return;
     this.reloading = true;
@@ -415,7 +509,9 @@ export class Game {
       if (this.dodgeCd > 0) return;
       this.dodgeCd = c.dodgeCooldown * this.mods.dodgeCdMult;
       this.iframe = 0.15;
-      this.playerZ += 1.2;
+      // Buoc Lui lay tu data: hop dong voi aoeRadius cua Ogre (docs/09 muc 2b).
+      // Chay tien 2.4 m/s x telegraph 0.6s = 1.44m bi an mat, nen 1.2m KHONG con ne duoc.
+      this.playerZ += GD.feel.run.dodgeBackM;
       this.juice.addShake(6, 0, -1);
     } else {
       if (this.dashCd > 0) return;
@@ -457,16 +553,36 @@ export class Game {
       // giu de ban lien tuc
       if (this.holdPt && !this.reloading && this.mag > 0) this.shootAt(this.holdPt.x, this.holdPt.y, false);
 
-      // di chuyen sang phong sau
-      if (this.advancing) {
-        this.advancing.t += dt;
-        const k = Math.min(1, this.advancing.t / this.advancing.dur);
-        this.playerZ = this.advancing.from + (this.advancing.to - this.advancing.from) * (k * k * (3 - 2 * k));
+
+      /* CHAY LIEN TUC ve phia truoc (mo hinh Into the Dead).
+         Quai KHONG chan duong: con nao toi duoc thi gay dmg roi bi don sang ben ra sau.
+         Phong ket thuc khi da chay het run.roomDistanceM, khong phai khi diet het quai. */
+      if (this.director.isCombatRoom && this.director.phase !== 'cleared') {
+        this.playerZ -= GD.feel.run.speedMps * dt;
         this.bobT += dt * 9;
         this.bob = Math.sin(this.bobT) * 0.045;
-        if (k >= 1) { this.advancing = null; this.bob = 0; this._enterRoom(); }
       } else {
         this.bob *= 0.9;
+      }
+
+      /* ---- SUNG: rut ra / cat di ----
+         Con giu tay (hoac vua ban) -> sung o ngoai. Het gunHoldSec ma khong co input
+         -> cat sung roi RELOAD. Day la vong "ban -> cat -> nap" ma nguoi choi yeu cau. */
+      if (this.gunWanted || this.holdPt) {
+        this.gunTimer = GD.feel.gun.gunHoldSec;
+        this.gun.setOut(true);
+      } else if (this.gunTimer > 0) {
+        this.gunTimer -= dt;
+        if (this.gunTimer <= 0) this._holsterAndReload();
+      }
+      this.gun.update(dt);
+
+      /* ---- CHEM LIEN TUC: giu ngon tay thi drain stamina ---- */
+      if (this.slicing) {
+        this.stam = Math.max(0, this.stam - GD.feel.melee.slideStaminaPerSec * dt);
+        this.staminaIdle = 0;
+        this.ui.showStamina();
+        if (this.stam <= 0) this.ui.flashStamina();
       }
 
       // quai + hieu ung hanh vi rieng (vong canh bao AoE, tieng ho khien)
@@ -486,6 +602,14 @@ export class Game {
           }
         },
         onShieldOpen: (e) => this.audio.reloadClick(true),
+        // quai va vao nguoi choi roi bien mat: rung nhe + xac bay nguoc lai
+        onContact: (e) => {
+          this.juice.addShake(13, e.x > 0 ? 7 : -7, 0.6);
+          this.juice.addHitstop(3);
+          this.juice.addCorpse({ x: e.x, z: e.z, scale: e.scale, color: e.color,
+            lx: e.x > 0 ? 3.2 : -3.2, lz: 2.6 });
+          this.audio.shot(false);
+        },
       });
       /* TRAN DPS O DAI CAN CHIEN (docs/16 muc 5):
          <= min(0.55, 0.28 + 0.0045*(R-1)) * hpBase moi giay.
@@ -564,13 +688,14 @@ export class Game {
     const r = this.director.advance(door);
     if (r.newDepth) this.world.setDepth(r.newDepth);
     this.walked++;
-    this.advancing = { t: 0, dur: 1.7, from: this.playerZ, to: this.world.standZ(this.walked) };
+    // Khong con tween 1.7s "di sang phong sau": quang duong DA la gameplay.
     this.pool.clear();
     this.ui.closeGate();
+    this._enterRoom();
   }
 
   _enterRoom() {
-    this.playerZ = this.world.standZ(this.walked);
+    // playerZ chay lien tuc, khong reset -- hanh lang tu tai su dung (world.js)
     this.roomNoHit = true;
     this.director.beginRoom();
     const d = this.director;

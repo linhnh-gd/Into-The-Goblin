@@ -34,6 +34,15 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 
 | Hệ | Trạng thái |
 |---|---|
+| **Mô hình quãng đường**: chạy hết 90m là xong phòng, quái ra liên tục, không cần giết hết | **Có** — `07` mục 3.5 |
+| Nhân vật **tự chạy tiến** 2.4 m/s, hành lang tự tái sử dụng (chạy vô hạn) | **Có** |
+| Thanh **MÉT** + thanh tiến độ dưới màn hình | **Có** |
+| Số wave = quãng đường / 30m, `tpBudget(R,w)` tăng theo w → **wave sau dồn dập hơn** | **Có** |
+| Quái tới được người chơi thì **gây dmg 1 lần rồi biến mất**, không rơi vàng | **Có** — `09` mục 2c |
+| Quái `ranged` + Ogre **cắm chân** ở khoảng còn tap được; loại khác **xông tới** | **Có** |
+| **Súng rút ra / cất đi**: tap-hold rút súng bắn, nhả tay cất + reload | **Có** — có model súng, nhảy lửa đầu nòng |
+| Huỷ reload khi **còn đạn**; **không** huỷ được khi hết sạch đạn | **Có** — `03` mục 2b |
+| **Chém liên tục** kiểu chém hoa quả, giữ ngón tay drain stamina | **Có** — cooldown/con chặn rung ngón tay |
 | Tap bắn · Hold bắn liên tục · Quẹt ngang chém (nhẹ/nặng theo độ dài) · Quẹt dọc né/xốc | **Có**, đúng ngưỡng ở `controls.json` |
 | Vùng chết 55–65° + bộ đếm input huỷ | **Có** — hiện trên overlay "Hiện đo input" |
 | Chế độ Hai Vùng (fallback rủi ro R1) | **Có**, bật ở màn hình đầu |
@@ -43,7 +52,7 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 | Chém Hoàn Hảo (≥3 con/nhát) + combo 5 bậc | **Có** |
 | Knockback + xác bay **theo đúng vector quẹt** + domino | **Có** |
 | Wave director theo `TP_budget(R,w)` + `countPerTP` | **Có** |
-| Sương Đen (35s / 28s từ phòng 8) + Bóng Hầm không giết được | **Có** |
+| Sương Đen | **Chỉ còn ở phòng boss** — mô hình quãng đường làm nó mất lý do tồn tại, xem `07` mục 3.5 |
 | **Ngã Ba Hầm**: 2 cửa, biển báo, số quái dự kiến, 4 ràng buộc ẩn | **Có** |
 | 3 thẻ nâng cấp, rarity theo **Lộc** | **Có** — 24 thẻ đã cài hiệu ứng thật |
 | Lộc: Elite +2, phòng không mất máu +1, mỗi 10 Chém Hoàn Hảo +1 | **Có** |
@@ -67,7 +76,7 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 
 ## 4. Prototype đã sửa GDD ở đâu
 
-Đây là phần quan trọng nhất của doc này: **prototype tìm ra 8 lỗi mà đọc doc không thấy.**
+Đây là phần quan trọng nhất của doc này: **prototype tìm ra 13 lỗi mà đọc doc không thấy.**
 
 | # | Phát hiện | Sửa |
 |---|---|---|
@@ -79,23 +88,48 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 | 6 | Telegraph đỏ cộng dồn → **cả đám đỏ vĩnh viễn**, mất hoàn toàn tín hiệu "con này sắp đánh" | Telegraph lấy từ cooldown đòn: chỉ đỏ trong 0.4s trước khi vung |
 | 7 | Counter **"đánh sau lưng Goblin Khiên"** là counter giấy: trong hành lang mà quái luôn tự hướng về người chơi thì "sau lưng" không bao giờ tồn tại | Cho quái một **tốc độ quay có giới hạn** (`turnRateDeg`, Khiên = 92°/s). Xốc Tới giờ thật sự vòng được ra sau. Đã ghi vào `09` mục 2b |
 | 8 | Bước Lùi **huỷ** đòn AoE của Ogre thay vì **né** nó — vì lùi ra khỏi `attackRange` là ogre thoát trạng thái đánh. Mất hẳn cảm giác "vừa né được", tức mất lý do tồn tại của đòn AoE | Đòn AoE phải **COMMIT**: đã vào telegraph là vung, dù người chơi đã lùi. Né = ra khỏi `aoeRadius`. Đã ghi vào `09` mục 2b |
+| 9 | **Quái tụt xuống dưới đáy màn hình, không tấn công được.** Mọi con dừng ở `atkRange = 1.2m`; chiếu phối cảnh cho thấy điểm tap của chúng nằm ở **92.7%** chiều cao màn hình — dưới cả nút NẠP. Doc chỉ ghi "dải Cận chiến rơi vào 45–75% màn hình" mà **chưa bao giờ kiểm** | Thêm `run.tapNearM = 2.4m` (→ 72.1%), và audit **tự tính** vị trí trên màn hình từ `camera` + `scale` trong data, FAIL nếu ra ngoài 45–75%. Con số cũ 1.2m giờ báo **100.1%** — ngoài khung hoàn toàn |
+| 10 | **Vũ khí cận chiến với ngắn hơn khoảng quái đứng** → dao vô dụng đúng ở khoảng mà súng đã không bắn được nữa. Và quái `role: ranged` **không có trường tầm bắn** trong data nên dùng `ATTACK_RANGE = 1.2m`: "quái ném đá" đi tới sát mặt mới ném | Mọi `reachM` +0.8m (ngắn nhất 2.0 → **2.8m**); thêm `rangedStandoffM = 8.5m`. Gate: `reachM ≥ tapNearM + 0.4` |
+| 11 | **Ogre không bao giờ kịp đập.** Người chơi tự chạy 2.4 m/s nên cửa sổ từ lúc vào tầm (2.6m) tới lúc va phải (1.0m) chỉ **0.67s**, mà telegraph đã 0.6s và `atk` khởi tạo ngẫu nhiên 1.3–2.6s | `attackRangeM` 2.6 → **3.4m** (cửa sổ 1.0s) và quái bắt đầu telegraph **ngay khi vào tầm**. Gate: cửa sổ ≥ `telegraphSec + 0.25` |
+| 12 | **Bước Lùi 1.2m không còn né được đòn AoE.** Chạy tiến ăn mất `2.4 × 0.6 = 1.44m` trong lúc telegraph, nên điểm giáng đòn là 1.96m và lùi 1.2m chỉ ra 2.36m < `aoeRadius` 2.5m | `dodgeBackM = 1.8m`. Hợp đồng viết lại theo **điểm giáng đòn thật**, không theo `attackRange`. Cả 2 chiều đều có gate |
+| 13 | `walked` không bao giờ reset nên `standZ(20) = -440` nằm **ngoài** sàn dài 420m — sau ~19 phòng người chơi rơi ra khỏi thế giới. Chạy liên tục chạm giới hạn này nhanh hơn nhiều | Hành lang **tự tái sử dụng**: kéo cả nhóm mesh theo người chơi, vòng chống hầm dịch theo bội số 5.5m nên trông như đứng yên |
 
 Ngoài ra prototype xác nhận **công thức số quái phải tính theo `composition`**, không phải `tpCost` trung bình
 toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 lần. Đã ghi vào `16` mục 4.4.
 
-### Kiểm chứng hai hành vi mới (test tiền định, `ITG.run` bước dt cố định)
+### Kiểm chứng mô hình quãng đường (test tiền định, `ITG.run` bước dt cố định)
 
 | Tình huống | Kết quả | Đúng docs? |
 |---|---|---|
-| Bắn Khiên từ chính diện, khiên giương | 100 → **30** damage (×0.3), số hiện màu xám | ✓ `09` |
-| Bắn đúng lúc **hở khiên** | 100 → **100** | ✓ |
-| Bắn bằng **axit** (bypass) | 100 → **100** | ✓ |
-| Bắn **từ sau lưng** (face quay ngược) | 100 → **100** + cờ `flanked` | ✓ |
-| **Chém nặng** / **búa** | 100 → **100**, và kbResist rơi 0.55 → 0.05 | ✓ |
-| Bắn Ogre vào thân | 100 → **100** | ✓ |
-| Bắn Ogre vào **bụng** (tap nửa dưới) | 100 → **200** (×2.0) | ✓ |
-| Ogre đập, **không né** | mất 67.5 HP, vòng đỏ đã hiện trước 0.6s | ✓ |
-| Ogre đập, **Bước Lùi giữa telegraph** (2.4m → 3.6m) | **0 HP**, banner "NÉ ĐƯỢC" | ✓ |
+| Chạy hết một phòng | **90m / 39.9s**, đủ 3 wave | ✓ `07` mục 3.5 |
+| Tốc độ chạy thực đo | 23.7m trong 10s = **2.37 m/s** | ✓ `speedMps` 2.4 |
+| Mật độ quái đỉnh trong phòng | 11 con ở giây 10 → **55 con** cuối phòng | ✓ crescendo |
+| Quái nằm trong vùng **không tap được** (< 2.4m) | **8.7%** số quái phía trước, tại một thời điểm | — |
+| Thời gian **lâu nhất** một con ở trong vùng đó | **0.68s** — đi ngang qua, không đậu lại | ✓ (trước đây là vĩnh viễn) |
+| Va vào người chơi | mất máu **1 lần**, con quái **biến mất**, **vàng +0** | ✓ `09` mục 2c |
+| Vị trí quái trên màn hình ở `tapNearM` | **72.1%** (con nhỏ nhất, scale 0.74) | ✓ dải 45–75% |
+| Quái ranged ở `rangedStandoffM` 8.5m | **48.7%** | ✓ |
+
+### Kiểm chứng súng và chém liên tục
+
+| Tình huống | Kết quả | Đúng yêu cầu? |
+|---|---|---|
+| Tap | rút súng (t=0.48, hiện) → bắn (mag 7→6) → hết `gunHoldSec` → cất + reload | ✓ |
+| Đang reload, **còn đạn**, tap | **huỷ reload** và bắn ngay (mag 4→3) | ✓ |
+| Đang reload, **hết sạch đạn**, tap | `gunUp()` trả về **false**, reload vẫn chạy, mag vẫn 0 | ✓ |
+| Sau khi reload xong (100 frame) | bắn được, mag = 7 | ✓ |
+| Chém liên tục: 12 đoạn quẹt **cùng 1 frame** | **1** lần ăn damage | ✓ `slideHitCooldownSec` chặn rung ngón tay |
+| 8 đoạn cách 0.27s (> cooldown) | **8** lần | ✓ |
+| 8 đoạn cách 0.05s (< cooldown) | **2** lần | ✓ |
+| Giữ ngón tay 1 giây | stamina 100 → **66** | ✓ `slideStaminaPerSec` 34 |
+
+### Kiểm chứng hai hành vi quái riêng (từ lượt trước, vẫn đúng)
+
+| Tình huống | Kết quả |
+|---|---|
+| Bắn Khiên chính diện lúc giương khiên | 100 → **30** (×0.3) |
+| Bắn đúng lúc hở khiên / axit / búa / chém nặng / sau lưng | 100 → **100** |
+| Bắn bụng Ogre | 100 → **200** (×2.0) |
 
 ## 5. Số đo từ lần chạy tự động
 

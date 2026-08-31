@@ -11,6 +11,7 @@ export class UI {
       hud: $('hud'), screen: $('screen'),
       sheetTitle: $('sheetTitle'), sheetGate: $('sheetGate'), sheetEnd: $('sheetEnd'),
       luckVal: $('luckVal'), luckChip: $('luckChip'), posVal: $('posVal'),
+      distVal: $('distVal'), distFill: $('distFill'),
       hpFill: $('hpFill'), hpTxt: $('hpTxt'),
       stamWrap: $('staminaWrap'), stamFill: $('staminaFill'),
       goldVal: $('goldVal'), gold: document.querySelector('.gold'),
@@ -90,6 +91,11 @@ export class UI {
     e.hpTxt.textContent = Math.ceil(g.hp);
     e.posVal.textContent = `D${g.director.depth}-R${g.director.room}`;
     e.luckVal.textContent = g.luck;
+    // quang duong da chay trong phong (mo hinh chay X met)
+    const dRun = Math.floor(g.director.distRun || 0);
+    const dTot = Math.round(g.director.roomDist || 0);
+    e.distVal.textContent = dTot ? dRun + '/' + dTot : '--';
+    e.distFill.style.width = dTot ? Math.min(100, (dRun / dTot) * 100) + '%' : '0%';
     e.ammoVal.textContent = `${g.mag} / ${g.reserve}`;
     e.stamFill.style.width = `${(g.stam / g.stamMax) * 100}%`;
     e.stamWrap.classList.toggle('low', g.stam < g.stamMax * 0.5);

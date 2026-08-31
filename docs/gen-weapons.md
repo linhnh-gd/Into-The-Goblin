@@ -29,16 +29,16 @@
 
 | Tên | ID | Kiểu | Tier | Mở ở | Damage | Stamina | Swing | Arc | Reach | Mục tiêu | Xác bay | Knockback | Crit | DPS bền | Tag | Mô tả |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Dao Găm | mw_dagger_daogam | dagger | T1 | start | 79 | 12 | 0.30s | 60° | 2.2m | 2 | 3.0m | 0.5m | x2.5 | 160 | cheap, scavenge, starter | Rẻ stamina nhất. Máy nạp đạn tốt nhất trong game: chém nhiều, đạn nhiều. |
-| Rựa Rừng | mw_machete_ruarung | machete | T1 | depth1 | 94 | 18 | 0.38s | 90° | 2.5m | 3 | 4.0m | 0.8m | x2.2 | 160 | allround, perfectslash | Ba con một nhát. Cửa vào của Chém Hoàn Hảo. |
-| Búa Đá | mw_hammer_buada | hammer | T2 | depth2 | 355 | 23 | 0.55s | 70° | 2.3m | 2 | 7.0m | 2.5m | x1.8 | 375 | shieldbreak, knockback | Bỏ qua khiên. Goblin Khiên tồn tại để cái búa này có việc làm. |
-| Giáo Tre | mw_spear_giaotre | spear | T2 | depth2 | 196 | 16 | 0.40s | 40° | 3.4m | 3 | 3.5m | 1.0m | x2.6 | 375 | reach, safe, pierce | Tầm xa nhất trong các vũ khí cận chiến. Chém mà không phải vào hẳn dải Cận chiến. |
-| Đại Đao | mw_greatsword_daidao | greatsword | T3 | depth3 | 427 | 24 | 0.62s | 150° | 3.0m | 6 | 8.0m | 1.6m | x2.0 | 881 | crowd, perfectslash, wavewipe | Một nhát quẹt, sáu goblin đứt đôi, xác bay theo hướng ngón tay. Đây là cảnh trong trailer. |
-| Song Đao | mw_twinblade_songdao | twinblade | T3 | boss2 | 326 | 9 | 0.22s | 55° | 2.1m | 2 | 2.5m | 0.4m | x2.4 | 880 | combo, cheap, scavenge | Lên bậc combo nhanh gấp đôi. Nhịp tay quyết định damage. |
-| Phủ Nguyệt | mw_axe_phunguyet | axe | T4 | depth4 | 1346 | 24 | 0.50s | 110° | 2.7m | 4 | 6.0m | 1.8m | x2.2 | 2069 | allround, knockback, crowd | Lưỡi hình bán nguyệt. Cân bằng giữa quét và đẩy. |
-| Cưa Máy | mw_chainsaw_cuamay | chainsaw | T4 | depth4 | 1488 | 22 | 0.15s | 45° | 2.0m | 3 | 1.5m | 0.3m | x1.5 | 2070 | hold, sustain, gore | Không quẹt — giữ. Tiêu stamina theo giây, cắt liên tục, máu ngập màn hình. |
-| Chuỳ Trời | mw_hammer_chuytroi | hammer | T5 | boss4 | 3974 | 25 | 0.70s | 80° | 2.6m | 3 | 11.0m | 3.2m | x1.8 | 4864 | knockback, shieldbreak, burst | Knockback mạnh nhất game. Xác bay mười một mét và kéo cả hàng sau theo. |
-| Lưỡi Liềm | mw_scythe_luoiliem | scythe | T5 | depth5 | 2179 | 25 | 0.55s | 170° | 3.2m | 7 | 5.0m | 1.2m | x2.4 | 4864 | crowd, perfectslash, wavewipe | Gần như một vòng tròn. Chém Hoàn Hảo gần như mọi nhát. |
-| Lưỡi Lõi | mw_deeptech_luoiloi | deeptech | T6 | boss5 | 6196 | 20 | 0.35s | 100° | 2.8m | 4 | 6.0m | 1.4m | x2.6 | 11432 | depth, stamina, scaling | Từ Depth 5 trở xuống, mỗi mạng chém hồi 6 stamina. Càng sâu càng bền. |
-| Xẻ Long | mw_greatsword_xelong | greatsword | T6 | depth7 | 4602 | 25 | 0.68s | 160° | 3.3m | 8 | 12.0m | 2.0m | x2.2 | 11431 | crowd, perfectslash, wavewipe, endgame | Tám con một nhát. Hầm không đủ rộng cho đường quẹt của nó. |
+| Dao Găm | mw_dagger_daogam | dagger | T1 | start | 79 | 12 | 0.30s | 60° | 3.00m | 2 | 3.0m | 0.5m | x2.5 | 160 | cheap, scavenge, starter | Rẻ stamina nhất. Máy nạp đạn tốt nhất trong game: chém nhiều, đạn nhiều. |
+| Rựa Rừng | mw_machete_ruarung | machete | T1 | depth1 | 94 | 18 | 0.38s | 90° | 3.30m | 3 | 4.0m | 0.8m | x2.2 | 160 | allround, perfectslash | Ba con một nhát. Cửa vào của Chém Hoàn Hảo. |
+| Búa Đá | mw_hammer_buada | hammer | T2 | depth2 | 355 | 23 | 0.55s | 70° | 3.10m | 2 | 7.0m | 2.5m | x1.8 | 375 | shieldbreak, knockback | Bỏ qua khiên. Goblin Khiên tồn tại để cái búa này có việc làm. |
+| Giáo Tre | mw_spear_giaotre | spear | T2 | depth2 | 196 | 16 | 0.40s | 40° | 4.20m | 3 | 3.5m | 1.0m | x2.6 | 375 | reach, safe, pierce | Tầm xa nhất trong các vũ khí cận chiến. Chém mà không phải vào hẳn dải Cận chiến. |
+| Đại Đao | mw_greatsword_daidao | greatsword | T3 | depth3 | 427 | 24 | 0.62s | 150° | 3.80m | 6 | 8.0m | 1.6m | x2.0 | 881 | crowd, perfectslash, wavewipe | Một nhát quẹt, sáu goblin đứt đôi, xác bay theo hướng ngón tay. Đây là cảnh trong trailer. |
+| Song Đao | mw_twinblade_songdao | twinblade | T3 | boss2 | 326 | 9 | 0.22s | 55° | 2.90m | 2 | 2.5m | 0.4m | x2.4 | 880 | combo, cheap, scavenge | Lên bậc combo nhanh gấp đôi. Nhịp tay quyết định damage. |
+| Phủ Nguyệt | mw_axe_phunguyet | axe | T4 | depth4 | 1346 | 24 | 0.50s | 110° | 3.50m | 4 | 6.0m | 1.8m | x2.2 | 2069 | allround, knockback, crowd | Lưỡi hình bán nguyệt. Cân bằng giữa quét và đẩy. |
+| Cưa Máy | mw_chainsaw_cuamay | chainsaw | T4 | depth4 | 1488 | 22 | 0.15s | 45° | 2.80m | 3 | 1.5m | 0.3m | x1.5 | 2070 | hold, sustain, gore | Không quẹt — giữ. Tiêu stamina theo giây, cắt liên tục, máu ngập màn hình. |
+| Chuỳ Trời | mw_hammer_chuytroi | hammer | T5 | boss4 | 3974 | 25 | 0.70s | 80° | 3.40m | 3 | 11.0m | 3.2m | x1.8 | 4864 | knockback, shieldbreak, burst | Knockback mạnh nhất game. Xác bay mười một mét và kéo cả hàng sau theo. |
+| Lưỡi Liềm | mw_scythe_luoiliem | scythe | T5 | depth5 | 2179 | 25 | 0.55s | 170° | 4.00m | 7 | 5.0m | 1.2m | x2.4 | 4864 | crowd, perfectslash, wavewipe | Gần như một vòng tròn. Chém Hoàn Hảo gần như mọi nhát. |
+| Lưỡi Lõi | mw_deeptech_luoiloi | deeptech | T6 | boss5 | 6196 | 20 | 0.35s | 100° | 3.60m | 4 | 6.0m | 1.4m | x2.6 | 11432 | depth, stamina, scaling | Từ Depth 5 trở xuống, mỗi mạng chém hồi 6 stamina. Càng sâu càng bền. |
+| Xẻ Long | mw_greatsword_xelong | greatsword | T6 | depth7 | 4602 | 25 | 0.68s | 160° | 4.10m | 8 | 12.0m | 2.0m | x2.2 | 11431 | crowd, perfectslash, wavewipe, endgame | Tám con một nhát. Hầm không đủ rộng cho đường quẹt của nó. |
 

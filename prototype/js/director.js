@@ -51,19 +51,29 @@ export class Director {
     return s;
   }
 
-  /* ---------------- bat dau 1 phong ---------------- */
+  /* ---------------- bat dau 1 phong ----------------
+     MO HINH QUANG DUONG (docs/07 muc 3.5): phong khong con "diet het moi qua" ma la
+     CHAY HET roomDistanceM. Quai ra lien tuc doc duong, khong giet het cung khong sao.
+     So wave = quang duong / waveSegmentM, va tpBudget(R, w) tang theo w
+     -> wave sau tu dong dong hon, khong can dial. */
   beginRoom() {
     this.waveIdx = 0;
     this.roomTime = 0;
     this.mistOn = false;
     this.mistLevel = 0;
     this.mistTimer = 0;
+    const RN = GD.feel.run;
+    this.roomDist = RN.roomDistanceM;
+    this.waveSegM = RN.waveSegmentM;
+    this.roomStartZ = null;      // gan o lan update dau tien
+    this.distRun = 0;
     const note = this.layout.note || '';
-    this.wavesInRoom = this.isCombatRoom
-      ? (note.includes('3 wave') ? 3 : note.includes('2 wave') ? 2 : this.roomType === 'elite' ? 1 : 1)
-      : 0;
-    if (this.roomType === 'boss') this.wavesInRoom = 1;
-    if (!this.isCombatRoom) { this.phase = 'cleared'; return; }
+    if (!this.isCombatRoom) { this.wavesInRoom = 0; this.phase = 'cleared'; return; }
+    // elite/boss: MOT wave lon trai dai ca quang duong. Con lai: chia theo doan.
+    this.wavesInRoom = (this.roomType === 'elite' || this.roomType === 'boss')
+      ? 1
+      : Math.max(1, Math.round(this.roomDist / this.waveSegM));
+    if (note.includes('3 wave')) this.wavesInRoom = Math.max(3, this.wavesInRoom);
     this.nextWave();
   }
 
@@ -110,9 +120,10 @@ export class Director {
     }
 
     this.waveTargetCount = this.spawnQueue.length;
+    this.waveQueueTotal = this.spawnQueue.length;
+    this.waveStartDist = this.distRun;
     this.spawnPattern = tpl.spawnPattern;
     this.spawnRnd = rnd;
-    this.spawnTimer = GD.waves.directorRules.firstWaveDelaySec;
     this.phase = 'spawning';
     this.audio?.crowd(this.waveTargetCount);
     return { name: tpl.name, count: this.waveTargetCount, wave: w, of: this.wavesInRoom };
@@ -121,51 +132,53 @@ export class Director {
   /* ---------------- update ---------------- */
   update(dt, px, pz, onMistHit) {
     this.roomTime += dt;
+    if (this.roomStartZ === null) this.roomStartZ = pz;
+    // huong tien la -z, nen quang duong da chay = roomStartZ - pz
+    this.distRun = Math.max(0, (this.roomStartZ ?? pz) - pz);
 
-    if (this.phase === 'spawning') {
-      this.spawnTimer -= dt;
-      const perTick = this.spawnPattern === 'flood' ? 7 : 2;
-      const gap = this.spawnPattern === 'flood' ? 0.085 : 0.16;
-      while (this.spawnTimer <= 0 && this.spawnQueue.length) {
-        for (let i = 0; i < perTick && this.spawnQueue.length; i++) {
-          if (this.pool.aliveCount >= HARD().maxTotalAlive) break;
-          this._spawnOne(this.spawnQueue.shift(), px, pz);
-        }
-        this.spawnTimer += gap;
+    if (this.phase === 'spawning' || this.phase === 'fighting') {
+      /* Ra quai theo QUANG DUONG, khong theo dong ho: chay nhanh thi gap quai som.
+         Luy thua densityRampEnd > 1 -> cuoi doan dong hon dau doan (crescendo). */
+      const seg = Math.max(0.001, this.waveSegM);
+      const f = Math.min(1, Math.max(0, (this.distRun - this.waveStartDist) / seg));
+      const want = Math.ceil(this.waveQueueTotal * Math.pow(f, GD.feel.run.densityRampEnd));
+      const spawned = this.waveQueueTotal - this.spawnQueue.length;
+      let budget = Math.max(0, want - spawned);
+      while (budget-- > 0 && this.spawnQueue.length) {
+        if (this.pool.aliveCount >= HARD().maxTotalAlive) break;
+        this._spawnOne(this.spawnQueue.shift(), px, pz);
       }
-      if (!this.spawnQueue.length) this.phase = 'fighting';
+      this.phase = this.spawnQueue.length ? 'spawning' : 'fighting';
+
+      // HET QUANG DUONG = xong phong. KHONG con doi "diet het".
+      if (this.distRun >= this.roomDist) {
+        this.phase = 'cleared';
+        this.mistOn = false;
+        return { cleared: true, dist: this.distRun };
+      }
+      // sang doan sau
+      if (f >= 1 && this.waveIdx < this.wavesInRoom) {
+        return { newWave: this.nextWave() };
+      }
     }
 
-    if (this.phase === 'fighting') {
-      if (this.pool.aliveCount === 0) {
-        if (this.waveIdx < this.wavesInRoom) {
-          this.phase = 'delay';
-          const [a, b] = GD.waves.directorRules.waveDelayAfterClearSec;
-          this.waveDelay = a + Math.random() * (b - a);
-        } else {
-          this.phase = 'cleared';
-          this.mistOn = false;
-          return { cleared: true };
+    /* ---- Suong Den ----
+       Trong mo hinh quang duong nguoi choi KHONG THE cam phong, nen Suong Den mat ly do
+       ton tai o phong thuong (xem docs/08 muc 4). Chi con hieu luc o phong tinh (boss). */
+    const mistRooms = ['boss'];
+    if (mistRooms.includes(this.roomType)) {
+      if (this.phase !== 'cleared' && this.mistDelay > 0) this.mistDelay -= dt;
+      const trigger = this.mistTriggerSec + Math.max(0, this.mistDelay || 0);
+      if (this.phase !== 'cleared' && this.roomTime > trigger) {
+        if (!this.mistOn) { this.mistOn = true; this.audio?.mist(); }
+        const bm = GD.waves.directorRules.blackMist;
+        this.mistLevel = Math.min(1, (this.roomTime - trigger) / (bm.vignetteStepSec * 12));
+        this.mistTimer -= dt;
+        if (this.mistTimer <= 0) {
+          this.mistTimer = bm.spawnIntervalSec;
+          const e = this.pool.spawn(bm.spawnEnemy, (Math.random() - 0.5) * (HALL_W - 2), pz + 6, this.R, 1);
+          if (e) { e.z = pz + 7; onMistHit?.(); }
         }
-      }
-    } else if (this.phase === 'delay') {
-      this.waveDelay -= dt;
-      if (this.waveDelay <= 0) return { newWave: this.nextWave() };
-    }
-
-    /* ---- Suong Den ---- */
-    if (this.phase !== 'cleared' && this.mistDelay > 0) this.mistDelay -= dt;
-    const trigger = this.mistTriggerSec + Math.max(0, this.mistDelay || 0);
-    const exempt = GD.waves.directorRules.blackMist.exemptRooms.includes(this.roomType);
-    if (!exempt && this.phase !== 'cleared' && this.roomTime > trigger) {
-      if (!this.mistOn) { this.mistOn = true; this.audio?.mist(); }
-      const bm = GD.waves.directorRules.blackMist;
-      this.mistLevel = Math.min(1, (this.roomTime - trigger) / (bm.vignetteStepSec * 12));
-      this.mistTimer -= dt;
-      if (this.mistTimer <= 0) {
-        this.mistTimer = bm.spawnIntervalSec;
-        const e = this.pool.spawn(bm.spawnEnemy, (Math.random() - 0.5) * (HALL_W - 2), pz + 6, this.R, 1);
-        if (e) { e.z = pz + 7; onMistHit?.(); }
       }
     }
     return null;

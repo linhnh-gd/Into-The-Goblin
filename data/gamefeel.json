@@ -1,4 +1,44 @@
 {
+  "camera": {
+    "_comment": "Hinh hoc khung nhin. Audit TU TINH vi tri quai tren man hinh tu day -> khong duoc hardcode trong world.js.",
+    "fovDegVertical": 72,
+    "heightM": 1.62,
+    "pitchDegDown": 8,
+    "tapAnchorFrac": 0.62,
+    "meleeBandScreenPct": [45, 75]
+  },
+  "melee": {
+    "_comment": "Chem lien tuc kieu chem hoa qua: giu ngon tay va re thi chem mai, drain stamina.",
+    "slideStaminaPerSec": 34,
+    "slideHitCooldownSec": 0.22,
+    "slideTickDamageMult": 0.62,
+    "slideMinSegPx": 14
+  },
+  "gun": {
+    "_comment": "Sung rut ra khi tap/hold, cat di khi nha tay roi reload.",
+    "drawSec": 0.14,
+    "holsterSec": 0.18,
+    "gunHoldSec": 0.30,
+    "restY": -0.30,
+    "holsterDropY": -0.46,
+    "offsetX": 0.26,
+    "offsetZ": -0.42
+  },
+  "run": {
+    "_comment": "Mo hinh Into the Dead: chay het roomDistanceM la xong phong. Quai KHONG chan duong -- con nao toi duoc nguoi choi thi gay dmg MOT lan roi bien mat (khong roi vang: nguoi choi khong giet no).",
+    "speedMps": 2.4,
+    "roomDistanceM": 90,
+    "waveSegmentM": 30,
+    "tapNearM": 2.4,
+    "rangedStandoffM": 8.5,
+    "tapFarM": 14.0,
+    "minReactionSec": 1.2,
+    "meleeReachMarginM": 0.4,
+    "contactM": 1.0,
+    "dodgeBackM": 1.8,
+    "despawnBehindM": 14,
+    "densityRampEnd": 1.35
+  },
   "_comment": "Tune juice o day, KHONG hardcode trong code. Luat: hitstop + shake + particle phai trigger CUNG 1 FRAME.",
   "globalRules": {
     "shakeDecayPerFrame": 0.86,

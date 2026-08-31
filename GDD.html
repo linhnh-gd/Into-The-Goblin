@@ -585,6 +585,36 @@ HOLD_FIRE
 <p><strong>Nguyên tắc khoá (latching):</strong> một lần chạm chỉ được là <strong>một</strong> loại hành động. Đã vào <code>HOLD_FIRE</code> thì quẹt nhanh cũng không ra dao; đã vào <code>SLIDE</code> thì giữ lại cũng không ra súng. Không có chuyển tiếp giữa hai nhánh — đây chính là cái làm nó &quot;rõ ràng&quot; như docs yêu cầu.</p>
 <p><strong>Đa điểm chạm:</strong> chỉ ngón <strong>đầu tiên</strong> điều khiển combat. Ngón thứ 2 chỉ dùng cho two-finger tap (Ultimate) và bị bỏ qua trong mọi trường hợp khác.</p>
 <hr />
+<h3>2b. Súng rút/cất và chém liên tục (bản cài đặt hiện tại)</h3>
+<p>Hai gesture chính được viết lại để <strong>trạng thái nhìn thấy được trên màn hình</strong>, không phải đọc HUD.</p>
+<h4>Súng: rút ra khi bấm, cất đi khi nhả</h4>
+<div class="tw"><table>
+<thead><tr><th>Hành động</th><th>Kết quả</th></tr></thead><tbody>
+<tr><td><strong>Tap</strong> hoặc <strong>giữ</strong></td><td><strong>Rút model súng ra</strong> (<code>gun.drawSec</code> 0.14s) và bắn</td></tr>
+<tr><td>Tiếp tục giữ</td><td>Bắn liên tục, rê ngón thì tâm ngắm đi theo</td></tr>
+<tr><td><strong>Nhả tay</strong></td><td><strong>Cất súng đi</strong> rồi <strong>reload</strong></td></tr>
+<tr><td>Đang reload mà <strong>còn đạn</strong> → tap</td><td><strong>Huỷ reload</strong>, bắn ngay</td></tr>
+<tr><td>Đang reload mà <strong>hết sạch đạn</strong> → tap</td><td><strong>Không huỷ được</strong>, phải đợi reload xong</td></tr>
+</tbody></table></div>
+<p><code>gun.gunHoldSec</code> (0.30s): súng ở ngoài thêm một nhịp sau phát cuối. Không có nó thì một cái tap chỉ thấy súng nhấp nháy ~0.1s — người chơi không đọc ra được trạng thái. Audit gate: <code>gunHoldSec ≥ drawSec</code>.</p>
+<p><strong>Luật &quot;hết sạch đạn thì không huỷ được reload&quot; là cái tạo ra quyết định.</strong> Nếu huỷ được mọi lúc thì reload không có rủi ro và người chơi sẽ luôn bắn tới viên cuối. Vì không huỷ được, bắn hết băng là <strong>tự khoá mình</strong> đúng lúc đám quái đang tới — nên phải chủ động nhả tay nạp sớm. Đây là nguồn căng thẳng chính của súng.</p>
+<h4>Cận chiến: chém liên tục kiểu chém hoa quả</h4>
+<p>Quẹt ngang <strong>không</strong> kết thúc sau một nhát. Giữ ngón tay và rê tiếp thì <strong>mỗi đoạn đường trên màn hình là một nhát nữa</strong>, cho tới khi nhả tay.</p>
+<div class="tw"><table>
+<thead><tr><th>Số (<code>data/gamefeel.json</code> khối <code>melee</code>)</th><th>Giá trị</th><th>Việc</th></tr></thead><tbody>
+<tr><td><code>slideMinSegPx</code></td><td>14</td><td>Đoạn ngắn hơn thế không tính là nhát mới</td></tr>
+<tr><td><code>slideHitCooldownSec</code></td><td>0.22</td><td><strong>Mỗi con</strong> chỉ ăn damage 1 lần trong 0.22s</td></tr>
+<tr><td><code>slideTickDamageMult</code></td><td>0.62</td><td>Nhát tiếp theo yếu hơn nhát đầu</td></tr>
+<tr><td><code>slideStaminaPerSec</code></td><td>34</td><td>Giữ liên tục drain stamina → tối đa <strong>2.9s</strong></td></tr>
+</tbody></table></div>
+<p>Hai thứ chặn khai thác, và cả hai đều có gate:</p>
+<ul>
+<li><strong><code>slideHitCooldownSec</code></strong> chặn rung ngón tay tại chỗ. Đo thực tế: 12 đoạn quẹt trong <strong>cùng một frame</strong></li>
+<span class="cont">chỉ ăn <strong>1</strong> lần damage; 8 đoạn cách 0.27s ăn đủ <strong>8</strong>; 8 đoạn cách 0.05s chỉ ăn <strong>2</strong>.</span>
+<li><strong><code>slideStaminaPerSec</code></strong> chặn giữ vô hạn. Gate yêu cầu thời gian giữ tối đa nằm trong 2–5s.</li>
+</ul>
+<p>Nhát <strong>đầu tiên</strong> vẫn đi qua <code>slash()</code> nguyên giá (có chém nặng theo độ dài). Các đoạn sau mới dùng <code>slideTickDamageMult</code> — nên chém liên tục <strong>không thay thế</strong> một nhát chém nặng canh đúng lúc.</p>
+<p><strong>Phân biệt với súng:</strong> hướng của đoạn quẹt đầu tiên quyết định, và <strong>khoá</strong> lại. Quẹt ngang (≤55° khỏi trục ngang) → vào chế độ chém liên tục, súng được cất. Không di chuyển ngón → rút súng. Vùng chết 55–65° vẫn giữ nguyên: thà mất input còn hơn làm sai input.</p>
 <h3>3. Tham số tinh chỉnh (đưa vào <code>data/controls.json</code>, không hardcode)</h3>
 <div class="tw"><table>
 <thead><tr><th>Tham số</th><th>Mặc định</th><th>Ghi chú tune</th></tr></thead><tbody>
@@ -989,6 +1019,36 @@ TP_budget(R, G) = round( (14 + 4.2 * R) * (1 + 0.35 * G) * roomTypeMult )
          ^shop/miếu      ^event   ^shop
 </code></pre>
 <p>Không có hai phòng đông liền nhau ở Depth 1–2 (dạy trước, ép sau). Từ Depth 3 cho phép 2 phòng đông liền nhau nếu <code>G ≥ 3</code> (người chơi đã tự xin).</p>
+<h3>3.5. Mô hình QUÃNG ĐƯỜNG (thay cho &quot;diệt hết mới qua&quot;)</h3>
+<p>Phòng <strong>không</strong> kết thúc khi diệt hết quái. Phòng kết thúc khi người chơi <strong>chạy hết <code>run.roomDistanceM</code> mét</strong>. Đây là mô hình của <em>Into the Dead</em>: nhân vật tự tiến lên liên tục, quái ra dọc đường, và <strong>không cần giết hết</strong>.</p>
+<div class="tw"><table>
+<thead><tr><th>Số (ở <code>data/gamefeel.json</code> khối <code>run</code>)</th><th>Giá trị</th><th>Ý nghĩa</th></tr></thead><tbody>
+<tr><td><code>speedMps</code></td><td>2.4</td><td>Người chơi tự chạy, không có nút di chuyển</td></tr>
+<tr><td><code>roomDistanceM</code></td><td>90</td><td>Một phòng = 90m ≈ <strong>37.5s</strong></td></tr>
+<tr><td><code>waveSegmentM</code></td><td>30</td><td>90 / 30 = <strong>3 wave</strong>, mỗi wave một đoạn đường</td></tr>
+<tr><td><code>densityRampEnd</code></td><td>1.35</td><td>Số mũ đường cong ra quái trong một đoạn: cuối đoạn đông hơn đầu đoạn</td></tr>
+<tr><td><code>contactM</code></td><td>1.0</td><td>Quái tới đây thì <strong>va vào người chơi</strong></td></tr>
+<tr><td><code>tapNearM</code></td><td>2.4</td><td>Khoảng gần nhất mà quái còn <strong>tap được</strong> (xem mục dưới)</td></tr>
+</tbody></table></div>
+<p><strong>Wave sau dồn dập hơn mà không cần dial:</strong> số wave suy ra từ quãng đường, và <code>tpBudget(R, w)</code> đã tăng theo <code>w</code> (<code>×1.18</code> mỗi wave). Nên một phòng 90m tự động là ba đợt tăng dần — không có tham số &quot;độ khó&quot; nào phải tinh chỉnh tay.</p>
+<p><strong>Quái không giết kịp thì VA vào người chơi:</strong> gây damage <strong>một lần</strong> rồi <strong>biến mất</strong>, và <strong>không rơi vàng</strong> (người chơi không giết nó). Đây là áp lực thay thế cho &quot;diệt hết&quot;: bỏ qua quái thì mất máu, không phải mất thời gian.</p>
+<blockquote><strong>Sương Đen mất lý do tồn tại ở phòng thường.</strong> Nó được thiết kế để chống cắm phòng (<code>08</code>). Trong mô hình quãng đường người chơi <strong>không thể</strong> cắm phòng — luôn bị đẩy về phía trước. Áp lực chống thụ động giờ là chính đám quái tích tụ. Sương Đen chỉ còn hiệu lực ở phòng <strong>boss</strong> (nơi người chơi đứng lại). Số liệu vẫn giữ trong <code>waves.json</code> để dùng cho boss.</blockquote>
+<h4>Vì sao <code>tapNearM</code> phải tồn tại</h4>
+<p>Camera cao 1.62m, fov dọc 72°, chúi xuống 8°. Chiếu phối cảnh cho ra: điểm tap của quái (ở <code>0.62 × scale</code>) nằm ở <strong>92.7% chiều cao màn hình</strong> khi quái ở 1.2m — tức <strong>dưới cả nút NẠP</strong>, không thể bấm.</p>
+<p><code>audit_gdd.ps1</code> tự tính con số này từ <code>data</code> và <strong>FAIL</strong> nếu nó ra ngoài dải 45–75% ở <code>camera.meleeBandScreenPct</code>:</p>
+<div class="tw"><table>
+<thead><tr><th>Khoảng</th><th>Vị trí trên màn hình (con nhỏ nhất, scale 0.74)</th></tr></thead><tbody>
+<tr><td>1.2m (giá trị cũ, gây lỗi)</td><td><strong>100.1%</strong> — ngoài khung hoàn toàn</td></tr>
+<tr><td><strong>2.4m</strong> (<code>tapNearM</code> hiện tại)</td><td><strong>72.1%</strong> — trong dải</td></tr>
+<tr><td>8.5m (<code>rangedStandoffM</code>)</td><td>48.7%</td></tr>
+</tbody></table></div>
+<p>Từ đó suy ra hai ràng buộc cứng, cả hai đều có gate:</p>
+<ol>
+<li><strong>Vũ khí cận chiến phải với xa hơn <code>tapNearM</code></strong> — nếu không thì dao vô dụng đúng ở khoảng mà súng đã</li>
+<span class="cont">không bắn được nữa. Yêu cầu <code>reachM ≥ tapNearM + 0.4</code>; mọi vũ khí cận chiến đã được cộng <strong>+0.8m</strong>.</span>
+<li><strong>Quái đứng lại để đánh phải đứng ở ≥ <code>tapNearM</code></strong> — quái ranged không có trường tầm bắn trong data nên</li>
+<span class="cont">trước đây dùng <code>ATTACK_RANGE = 1.2m</code>, tức &quot;quái ném đá&quot; đi tới sát mặt mới ném. Giờ có <code>rangedStandoffM = 8.5</code>.</span>
+</ol>
 <h3>4. Wave archetype (template composition)</h3>
 <div class="tw"><table>
 <thead><tr><th>Archetype</th><th>Ý đồ</th><th>Thành phần</th><th>Dạy cái gì</th></tr></thead><tbody>
@@ -1235,14 +1295,44 @@ w_epic   = 10 + 1.0*L             w_legend =  2 + 0.4*L      (chuẩn hoá về 
 <h4>Ogre Hầm (<code>behavior.kind = &quot;slam&quot;</code>)</h4>
 <div class="tw"><table>
 <thead><tr><th>Tham số</th><th>Giá trị</th><th>Nghĩa</th></tr></thead><tbody>
-<tr><td><code>attackRangeM</code></td><td>2.6</td><td>Bắt đầu vung từ 2.6m — xa hơn quái thường (1.2m)</td></tr>
+<tr><td><code>attackRangeM</code></td><td><strong>3.4</strong></td><td>Bắt đầu vung từ 3.4m. Không phải 2.6m — xem ô dưới bảng</td></tr>
 <tr><td><code>telegraphSec</code></td><td>0.6</td><td><strong>Vòng đỏ hiện trên sàn</strong> suốt 0.6s trước khi đập</td></tr>
 <tr><td><code>aoeRadiusM</code></td><td>2.5</td><td>Chỉ trúng nếu người chơi <strong>còn trong vòng</strong> lúc đập xuống</td></tr>
 <tr><td><code>cooldownSec</code></td><td>2.6</td><td></td></tr>
 <tr><td><code>weakPointMult</code></td><td>2.0</td><td>Tap vào <strong>nửa dưới</strong> hitbox (bụng) = damage ×2</td></tr>
 </tbody></table></div>
+<p><strong>Cửa sổ vung phải đủ dài, nếu không đòn đặc trưng không bao giờ thấy được.</strong> Người chơi tự chạy tiến 2.4 m/s, nên thời gian từ lúc Ogre vào tầm đến lúc bị va phải chỉ là <code>(attackRangeM − contactM) / speedMps</code>. Với <code>attackRangeM = 2.6</code> cửa sổ đó là <strong>0.67s</strong> trong khi telegraph đã 0.6s, và <code>atk</code> khởi tạo ngẫu nhiên 1.3–2.6s — <strong>người chơi chạy qua trước khi Ogre kịp đập</strong>. Hai sửa đổi:</p>
+<ol>
+<li><code>attackRangeM = 3.4</code> → cửa sổ <strong>1.0s</strong>.</li>
+<li>Quái đứng-lại-đánh bắt đầu telegraph <strong>ngay khi vào tầm</strong>, không chờ cooldown ngẫu nhiên.</li>
+</ol>
+<p>Audit gate: <code>(attackRangeM − contactM) / speedMps ≥ telegraphSec + 0.25</code> cho <strong>mọi</strong> quái có telegraph.</p>
 <p><strong>Luật bắt buộc: đòn AoE phải COMMIT.</strong> Khi đã vào telegraph, Ogre vung <strong>dù người chơi đã lùi ra xa</strong>. Nếu không commit thì Bước Lùi <em>huỷ</em> đòn thay vì <em>né</em> đòn, và người chơi mất hẳn cảm giác &quot;vừa né được&quot; — tức là mất luôn lý do tồn tại của đòn AoE. Xem <code>18</code> mục 4.</p>
-<p>Vì <code>aoeRadius</code> (2.5) &lt; <code>attackRange</code> (2.6), và Bước Lùi đi 1.2m, nên <strong>một lần Bước Lùi đúng lúc luôn né được</strong>. Đó là hợp đồng giữa hai con số này — đổi một cái thì phải kiểm cái kia.</p>
+<p>Hợp đồng số, tính theo <strong>điểm giáng đòn thật</strong> chứ không theo <code>attackRange</code>:</p>
+<pre class="ascii"><code>
+impact = max(contactM, attackRangeM - speedMps * telegraphSec) = max(1.0, 3.4 - 1.44) = 1.96m
+
+trung duoc khi dung im   : aoeRadiusM &gt;= impact              -&gt; 2.50 &gt;= 1.96      OK
+ne duoc bang 1 Buoc Lui  : impact + dodgeBackM &gt; aoeRadiusM  -&gt; 1.96 + 1.80 &gt; 2.50 OK
+</code></pre>
+<p><strong>Bước Lùi phải là 1.8m, không phải 1.2m.</strong> Chạy tiến 2.4 m/s trong 0.6s telegraph ăn mất 1.44m, nên lùi 1.2m chỉ đưa người chơi ra 2.36m — <strong>vẫn nằm trong vòng AoE 2.5m</strong>, tức né không thoát. Cả hai bất biến trên đều có gate, nên đổi một con số là biết ngay con nào vỡ.</p>
+<h3>2c. Hai kiểu tiến, và luật &quot;va một lần rồi biến mất&quot;</h3>
+<p>Trong mô hình quãng đường (<code>07</code> mục 3.5) người chơi <strong>luôn</strong> tiến lên, nên mọi con quái rồi cũng bị vượt qua. Chia làm hai kiểu, đọc từ <code>role</code> và <code>behavior</code>:</p>
+<div class="tw"><table>
+<thead><tr><th>Kiểu</th><th>Ai</th><th>Cách tiến</th></tr></thead><tbody>
+<tr><td><strong>Đứng lại</strong> (<code>holds</code>)</td><td><code>role: ranged</code>, và quái có <code>behavior.kind = &quot;slam&quot;</code></td><td>Tiến tới <code>atkRange</code> rồi <strong>cắm chân</strong> đánh từ đó. <code>atkRange</code> luôn ≥ <code>run.tapNearM</code> nên <strong>luôn còn tap được</strong></td></tr>
+<tr><td><strong>Xông tới</strong></td><td>mọi loại còn lại</td><td>Không dừng ở khoảng nào cả, tiến thẳng tới <code>run.contactM</code></td></tr>
+</tbody></table></div>
+<p><strong>Con nào tới được người chơi thì gây damage MỘT lần rồi BIẾN MẤT, và không rơi vàng.</strong></p>
+<p>Ba lý do đây là luật đúng, không phải luật cho tiện:</p>
+<ol>
+<li><strong>Không con nào được chặn đường chạy.</strong> Nếu quái dừng lại húc mãi thì mô hình quãng đường vỡ.</li>
+<li><strong>9/21 loài chạy nhanh hơn người chơi</strong> (Đầu Bò 5.2 m/s vs 2.4). Nếu chúng sống sót sau khi va thì</li>
+<span class="cont">chúng sẽ đuổi lại và đánh từ <strong>phía sau màn hình</strong> — chỗ người chơi không thấy và không thể giết. Không</span>
+<span class="cont">có phản biện nào cho damage kiểu đó.</span>
+<li><strong>Không rơi vàng</strong> giữ nguyên động lực thật sự phải giết quái: bỏ qua thì mất máu <em>và</em> mất vàng.</li>
+</ol>
+<p>Trước đây <strong>mọi</strong> con đều dừng ở <code>atkRange = 1.2m</code> và đứng đó húc. Ở 1.2m điểm tap của quái nằm ở <strong>92.7%</strong> chiều cao màn hình — dưới cả nút NẠP. Đó là lỗi #9 ở <code>18</code> mục 4.</p>
 <h3>3. Affix (chỉ từ Depth 4)</h3>
 <div class="tw"><table>
 <thead><tr><th>Affix</th><th>Hiệu ứng</th><th>Tín hiệu</th></tr></thead><tbody>
@@ -2274,6 +2364,15 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <h3>2. Cái gì đã chạy được</h3>
 <div class="tw"><table>
 <thead><tr><th>Hệ</th><th>Trạng thái</th></tr></thead><tbody>
+<tr><td><strong>Mô hình quãng đường</strong>: chạy hết 90m là xong phòng, quái ra liên tục, không cần giết hết</td><td><strong>Có</strong> — <code>07</code> mục 3.5</td></tr>
+<tr><td>Nhân vật <strong>tự chạy tiến</strong> 2.4 m/s, hành lang tự tái sử dụng (chạy vô hạn)</td><td><strong>Có</strong></td></tr>
+<tr><td>Thanh <strong>MÉT</strong> + thanh tiến độ dưới màn hình</td><td><strong>Có</strong></td></tr>
+<tr><td>Số wave = quãng đường / 30m, <code>tpBudget(R,w)</code> tăng theo w → <strong>wave sau dồn dập hơn</strong></td><td><strong>Có</strong></td></tr>
+<tr><td>Quái tới được người chơi thì <strong>gây dmg 1 lần rồi biến mất</strong>, không rơi vàng</td><td><strong>Có</strong> — <code>09</code> mục 2c</td></tr>
+<tr><td>Quái <code>ranged</code> + Ogre <strong>cắm chân</strong> ở khoảng còn tap được; loại khác <strong>xông tới</strong></td><td><strong>Có</strong></td></tr>
+<tr><td><strong>Súng rút ra / cất đi</strong>: tap-hold rút súng bắn, nhả tay cất + reload</td><td><strong>Có</strong> — có model súng, nhảy lửa đầu nòng</td></tr>
+<tr><td>Huỷ reload khi <strong>còn đạn</strong>; <strong>không</strong> huỷ được khi hết sạch đạn</td><td><strong>Có</strong> — <code>03</code> mục 2b</td></tr>
+<tr><td><strong>Chém liên tục</strong> kiểu chém hoa quả, giữ ngón tay drain stamina</td><td><strong>Có</strong> — cooldown/con chặn rung ngón tay</td></tr>
 <tr><td>Tap bắn · Hold bắn liên tục · Quẹt ngang chém (nhẹ/nặng theo độ dài) · Quẹt dọc né/xốc</td><td><strong>Có</strong>, đúng ngưỡng ở <code>controls.json</code></td></tr>
 <tr><td>Vùng chết 55–65° + bộ đếm input huỷ</td><td><strong>Có</strong> — hiện trên overlay &quot;Hiện đo input&quot;</td></tr>
 <tr><td>Chế độ Hai Vùng (fallback rủi ro R1)</td><td><strong>Có</strong>, bật ở màn hình đầu</td></tr>
@@ -2283,7 +2382,7 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>Chém Hoàn Hảo (≥3 con/nhát) + combo 5 bậc</td><td><strong>Có</strong></td></tr>
 <tr><td>Knockback + xác bay <strong>theo đúng vector quẹt</strong> + domino</td><td><strong>Có</strong></td></tr>
 <tr><td>Wave director theo <code>TP_budget(R,w)</code> + <code>countPerTP</code></td><td><strong>Có</strong></td></tr>
-<tr><td>Sương Đen (35s / 28s từ phòng 8) + Bóng Hầm không giết được</td><td><strong>Có</strong></td></tr>
+<tr><td>Sương Đen</td><td><strong>Chỉ còn ở phòng boss</strong> — mô hình quãng đường làm nó mất lý do tồn tại, xem <code>07</code> mục 3.5</td></tr>
 <tr><td><strong>Ngã Ba Hầm</strong>: 2 cửa, biển báo, số quái dự kiến, 4 ràng buộc ẩn</td><td><strong>Có</strong></td></tr>
 <tr><td>3 thẻ nâng cấp, rarity theo <strong>Lộc</strong></td><td><strong>Có</strong> — 24 thẻ đã cài hiệu ứng thật</td></tr>
 <tr><td>Lộc: Elite +2, phòng không mất máu +1, mỗi 10 Chém Hoàn Hảo +1</td><td><strong>Có</strong></td></tr>
@@ -2306,7 +2405,7 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <span class="cont"><strong>Đã cài: Goblin Khiên + Ogre Hầm</strong> (xem <code>09</code> mục 2b).</span>
 </ul>
 <h3>4. Prototype đã sửa GDD ở đâu</h3>
-<p>Đây là phần quan trọng nhất của doc này: <strong>prototype tìm ra 8 lỗi mà đọc doc không thấy.</strong></p>
+<p>Đây là phần quan trọng nhất của doc này: <strong>prototype tìm ra 13 lỗi mà đọc doc không thấy.</strong></p>
 <div class="tw"><table>
 <thead><tr><th>#</th><th>Phát hiện</th><th>Sửa</th></tr></thead><tbody>
 <tr><td>1</td><td>17 con cùng đi tới <strong>một điểm</strong> → xếp chồng lên nhau, màn hình thành một bức tường capsule, không đọc được gì</td><td>Thêm separation bằng spatial hash. Đây là thứ doc chưa bao giờ nói tới nhưng bắt buộc phải có</td></tr>
@@ -2317,20 +2416,43 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>6</td><td>Telegraph đỏ cộng dồn → <strong>cả đám đỏ vĩnh viễn</strong>, mất hoàn toàn tín hiệu &quot;con này sắp đánh&quot;</td><td>Telegraph lấy từ cooldown đòn: chỉ đỏ trong 0.4s trước khi vung</td></tr>
 <tr><td>7</td><td>Counter <strong>&quot;đánh sau lưng Goblin Khiên&quot;</strong> là counter giấy: trong hành lang mà quái luôn tự hướng về người chơi thì &quot;sau lưng&quot; không bao giờ tồn tại</td><td>Cho quái một <strong>tốc độ quay có giới hạn</strong> (<code>turnRateDeg</code>, Khiên = 92°/s). Xốc Tới giờ thật sự vòng được ra sau. Đã ghi vào <code>09</code> mục 2b</td></tr>
 <tr><td>8</td><td>Bước Lùi <strong>huỷ</strong> đòn AoE của Ogre thay vì <strong>né</strong> nó — vì lùi ra khỏi <code>attackRange</code> là ogre thoát trạng thái đánh. Mất hẳn cảm giác &quot;vừa né được&quot;, tức mất lý do tồn tại của đòn AoE</td><td>Đòn AoE phải <strong>COMMIT</strong>: đã vào telegraph là vung, dù người chơi đã lùi. Né = ra khỏi <code>aoeRadius</code>. Đã ghi vào <code>09</code> mục 2b</td></tr>
+<tr><td>9</td><td><strong>Quái tụt xuống dưới đáy màn hình, không tấn công được.</strong> Mọi con dừng ở <code>atkRange = 1.2m</code>; chiếu phối cảnh cho thấy điểm tap của chúng nằm ở <strong>92.7%</strong> chiều cao màn hình — dưới cả nút NẠP. Doc chỉ ghi &quot;dải Cận chiến rơi vào 45–75% màn hình&quot; mà <strong>chưa bao giờ kiểm</strong></td><td>Thêm <code>run.tapNearM = 2.4m</code> (→ 72.1%), và audit <strong>tự tính</strong> vị trí trên màn hình từ <code>camera</code> + <code>scale</code> trong data, FAIL nếu ra ngoài 45–75%. Con số cũ 1.2m giờ báo <strong>100.1%</strong> — ngoài khung hoàn toàn</td></tr>
+<tr><td>10</td><td><strong>Vũ khí cận chiến với ngắn hơn khoảng quái đứng</strong> → dao vô dụng đúng ở khoảng mà súng đã không bắn được nữa. Và quái <code>role: ranged</code> <strong>không có trường tầm bắn</strong> trong data nên dùng <code>ATTACK_RANGE = 1.2m</code>: &quot;quái ném đá&quot; đi tới sát mặt mới ném</td><td>Mọi <code>reachM</code> +0.8m (ngắn nhất 2.0 → <strong>2.8m</strong>); thêm <code>rangedStandoffM = 8.5m</code>. Gate: <code>reachM ≥ tapNearM + 0.4</code></td></tr>
+<tr><td>11</td><td><strong>Ogre không bao giờ kịp đập.</strong> Người chơi tự chạy 2.4 m/s nên cửa sổ từ lúc vào tầm (2.6m) tới lúc va phải (1.0m) chỉ <strong>0.67s</strong>, mà telegraph đã 0.6s và <code>atk</code> khởi tạo ngẫu nhiên 1.3–2.6s</td><td><code>attackRangeM</code> 2.6 → <strong>3.4m</strong> (cửa sổ 1.0s) và quái bắt đầu telegraph <strong>ngay khi vào tầm</strong>. Gate: cửa sổ ≥ <code>telegraphSec + 0.25</code></td></tr>
+<tr><td>12</td><td><strong>Bước Lùi 1.2m không còn né được đòn AoE.</strong> Chạy tiến ăn mất <code>2.4 × 0.6 = 1.44m</code> trong lúc telegraph, nên điểm giáng đòn là 1.96m và lùi 1.2m chỉ ra 2.36m &lt; <code>aoeRadius</code> 2.5m</td><td><code>dodgeBackM = 1.8m</code>. Hợp đồng viết lại theo <strong>điểm giáng đòn thật</strong>, không theo <code>attackRange</code>. Cả 2 chiều đều có gate</td></tr>
+<tr><td>13</td><td><code>walked</code> không bao giờ reset nên <code>standZ(20) = -440</code> nằm <strong>ngoài</strong> sàn dài 420m — sau ~19 phòng người chơi rơi ra khỏi thế giới. Chạy liên tục chạm giới hạn này nhanh hơn nhiều</td><td>Hành lang <strong>tự tái sử dụng</strong>: kéo cả nhóm mesh theo người chơi, vòng chống hầm dịch theo bội số 5.5m nên trông như đứng yên</td></tr>
 </tbody></table></div>
 <p>Ngoài ra prototype xác nhận <strong>công thức số quái phải tính theo <code>composition</code></strong>, không phải <code>tpCost</code> trung bình toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 lần. Đã ghi vào <code>16</code> mục 4.4.</p>
-<h4>Kiểm chứng hai hành vi mới (test tiền định, <code>ITG.run</code> bước dt cố định)</h4>
+<h4>Kiểm chứng mô hình quãng đường (test tiền định, <code>ITG.run</code> bước dt cố định)</h4>
 <div class="tw"><table>
 <thead><tr><th>Tình huống</th><th>Kết quả</th><th>Đúng docs?</th></tr></thead><tbody>
-<tr><td>Bắn Khiên từ chính diện, khiên giương</td><td>100 → <strong>30</strong> damage (×0.3), số hiện màu xám</td><td>✓ <code>09</code></td></tr>
-<tr><td>Bắn đúng lúc <strong>hở khiên</strong></td><td>100 → <strong>100</strong></td><td>✓</td></tr>
-<tr><td>Bắn bằng <strong>axit</strong> (bypass)</td><td>100 → <strong>100</strong></td><td>✓</td></tr>
-<tr><td>Bắn <strong>từ sau lưng</strong> (face quay ngược)</td><td>100 → <strong>100</strong> + cờ <code>flanked</code></td><td>✓</td></tr>
-<tr><td><strong>Chém nặng</strong> / <strong>búa</strong></td><td>100 → <strong>100</strong>, và kbResist rơi 0.55 → 0.05</td><td>✓</td></tr>
-<tr><td>Bắn Ogre vào thân</td><td>100 → <strong>100</strong></td><td>✓</td></tr>
-<tr><td>Bắn Ogre vào <strong>bụng</strong> (tap nửa dưới)</td><td>100 → <strong>200</strong> (×2.0)</td><td>✓</td></tr>
-<tr><td>Ogre đập, <strong>không né</strong></td><td>mất 67.5 HP, vòng đỏ đã hiện trước 0.6s</td><td>✓</td></tr>
-<tr><td>Ogre đập, <strong>Bước Lùi giữa telegraph</strong> (2.4m → 3.6m)</td><td><strong>0 HP</strong>, banner &quot;NÉ ĐƯỢC&quot;</td><td>✓</td></tr>
+<tr><td>Chạy hết một phòng</td><td><strong>90m / 39.9s</strong>, đủ 3 wave</td><td>✓ <code>07</code> mục 3.5</td></tr>
+<tr><td>Tốc độ chạy thực đo</td><td>23.7m trong 10s = <strong>2.37 m/s</strong></td><td>✓ <code>speedMps</code> 2.4</td></tr>
+<tr><td>Mật độ quái đỉnh trong phòng</td><td>11 con ở giây 10 → <strong>55 con</strong> cuối phòng</td><td>✓ crescendo</td></tr>
+<tr><td>Quái nằm trong vùng <strong>không tap được</strong> (&lt; 2.4m)</td><td><strong>8.7%</strong> số quái phía trước, tại một thời điểm</td><td>—</td></tr>
+<tr><td>Thời gian <strong>lâu nhất</strong> một con ở trong vùng đó</td><td><strong>0.68s</strong> — đi ngang qua, không đậu lại</td><td>✓ (trước đây là vĩnh viễn)</td></tr>
+<tr><td>Va vào người chơi</td><td>mất máu <strong>1 lần</strong>, con quái <strong>biến mất</strong>, <strong>vàng +0</strong></td><td>✓ <code>09</code> mục 2c</td></tr>
+<tr><td>Vị trí quái trên màn hình ở <code>tapNearM</code></td><td><strong>72.1%</strong> (con nhỏ nhất, scale 0.74)</td><td>✓ dải 45–75%</td></tr>
+<tr><td>Quái ranged ở <code>rangedStandoffM</code> 8.5m</td><td><strong>48.7%</strong></td><td>✓</td></tr>
+</tbody></table></div>
+<h4>Kiểm chứng súng và chém liên tục</h4>
+<div class="tw"><table>
+<thead><tr><th>Tình huống</th><th>Kết quả</th><th>Đúng yêu cầu?</th></tr></thead><tbody>
+<tr><td>Tap</td><td>rút súng (t=0.48, hiện) → bắn (mag 7→6) → hết <code>gunHoldSec</code> → cất + reload</td><td>✓</td></tr>
+<tr><td>Đang reload, <strong>còn đạn</strong>, tap</td><td><strong>huỷ reload</strong> và bắn ngay (mag 4→3)</td><td>✓</td></tr>
+<tr><td>Đang reload, <strong>hết sạch đạn</strong>, tap</td><td><code>gunUp()</code> trả về <strong>false</strong>, reload vẫn chạy, mag vẫn 0</td><td>✓</td></tr>
+<tr><td>Sau khi reload xong (100 frame)</td><td>bắn được, mag = 7</td><td>✓</td></tr>
+<tr><td>Chém liên tục: 12 đoạn quẹt <strong>cùng 1 frame</strong></td><td><strong>1</strong> lần ăn damage</td><td>✓ <code>slideHitCooldownSec</code> chặn rung ngón tay</td></tr>
+<tr><td>8 đoạn cách 0.27s (&gt; cooldown)</td><td><strong>8</strong> lần</td><td>✓</td></tr>
+<tr><td>8 đoạn cách 0.05s (&lt; cooldown)</td><td><strong>2</strong> lần</td><td>✓</td></tr>
+<tr><td>Giữ ngón tay 1 giây</td><td>stamina 100 → <strong>66</strong></td><td>✓ <code>slideStaminaPerSec</code> 34</td></tr>
+</tbody></table></div>
+<h4>Kiểm chứng hai hành vi quái riêng (từ lượt trước, vẫn đúng)</h4>
+<div class="tw"><table>
+<thead><tr><th>Tình huống</th><th>Kết quả</th></tr></thead><tbody>
+<tr><td>Bắn Khiên chính diện lúc giương khiên</td><td>100 → <strong>30</strong> (×0.3)</td></tr>
+<tr><td>Bắn đúng lúc hở khiên / axit / búa / chém nặng / sau lưng</td><td>100 → <strong>100</strong></td></tr>
+<tr><td>Bắn bụng Ogre</td><td>100 → <strong>200</strong> (×2.0)</td></tr>
 </tbody></table></div>
 <h3>5. Số đo từ lần chạy tự động</h3>
 <p>Bot tự chơi (tap con xa nhất, quẹt khi có con trong 2.3m, reload khi hết đạn):</p>

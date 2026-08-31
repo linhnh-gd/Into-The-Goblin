@@ -74,6 +74,52 @@ nhánh — đây chính là cái làm nó "rõ ràng" như docs yêu cầu.
 
 ---
 
+
+## 2b. Súng rút/cất và chém liên tục (bản cài đặt hiện tại)
+
+Hai gesture chính được viết lại để **trạng thái nhìn thấy được trên màn hình**, không phải đọc HUD.
+
+### Súng: rút ra khi bấm, cất đi khi nhả
+
+| Hành động | Kết quả |
+|---|---|
+| **Tap** hoặc **giữ** | **Rút model súng ra** (`gun.drawSec` 0.14s) và bắn |
+| Tiếp tục giữ | Bắn liên tục, rê ngón thì tâm ngắm đi theo |
+| **Nhả tay** | **Cất súng đi** rồi **reload** |
+| Đang reload mà **còn đạn** → tap | **Huỷ reload**, bắn ngay |
+| Đang reload mà **hết sạch đạn** → tap | **Không huỷ được**, phải đợi reload xong |
+
+`gun.gunHoldSec` (0.30s): súng ở ngoài thêm một nhịp sau phát cuối. Không có nó thì một cái tap chỉ thấy
+súng nhấp nháy ~0.1s — người chơi không đọc ra được trạng thái. Audit gate: `gunHoldSec ≥ drawSec`.
+
+**Luật "hết sạch đạn thì không huỷ được reload" là cái tạo ra quyết định.** Nếu huỷ được mọi lúc thì reload
+không có rủi ro và người chơi sẽ luôn bắn tới viên cuối. Vì không huỷ được, bắn hết băng là **tự khoá mình**
+đúng lúc đám quái đang tới — nên phải chủ động nhả tay nạp sớm. Đây là nguồn căng thẳng chính của súng.
+
+### Cận chiến: chém liên tục kiểu chém hoa quả
+
+Quẹt ngang **không** kết thúc sau một nhát. Giữ ngón tay và rê tiếp thì **mỗi đoạn đường trên màn hình là
+một nhát nữa**, cho tới khi nhả tay.
+
+| Số (`data/gamefeel.json` khối `melee`) | Giá trị | Việc |
+|---|---|---|
+| `slideMinSegPx` | 14 | Đoạn ngắn hơn thế không tính là nhát mới |
+| `slideHitCooldownSec` | 0.22 | **Mỗi con** chỉ ăn damage 1 lần trong 0.22s |
+| `slideTickDamageMult` | 0.62 | Nhát tiếp theo yếu hơn nhát đầu |
+| `slideStaminaPerSec` | 34 | Giữ liên tục drain stamina → tối đa **2.9s** |
+
+Hai thứ chặn khai thác, và cả hai đều có gate:
+- **`slideHitCooldownSec`** chặn rung ngón tay tại chỗ. Đo thực tế: 12 đoạn quẹt trong **cùng một frame**
+  chỉ ăn **1** lần damage; 8 đoạn cách 0.27s ăn đủ **8**; 8 đoạn cách 0.05s chỉ ăn **2**.
+- **`slideStaminaPerSec`** chặn giữ vô hạn. Gate yêu cầu thời gian giữ tối đa nằm trong 2–5s.
+
+Nhát **đầu tiên** vẫn đi qua `slash()` nguyên giá (có chém nặng theo độ dài). Các đoạn sau mới dùng
+`slideTickDamageMult` — nên chém liên tục **không thay thế** một nhát chém nặng canh đúng lúc.
+
+**Phân biệt với súng:** hướng của đoạn quẹt đầu tiên quyết định, và **khoá** lại. Quẹt ngang (≤55° khỏi trục
+ngang) → vào chế độ chém liên tục, súng được cất. Không di chuyển ngón → rút súng. Vùng chết 55–65° vẫn giữ
+nguyên: thà mất input còn hơn làm sai input.
+
 ## 3. Tham số tinh chỉnh (đưa vào `data/controls.json`, không hardcode)
 
 | Tham số | Mặc định | Ghi chú tune |

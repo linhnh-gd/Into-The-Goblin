@@ -3,42 +3,42 @@
   "scaling": { "hpPerRoom": 1.068, "dmgPerRoom": 1.055, "speedCap": 1.25, "hpPerWave": 0.06 },
   "enemies": [
     {
-      "id": "en_trash_goblincui", "name": "Goblin Cùi", "role": "trash", "introDepth": 1,
+      "id": "en_trash_goblincui", "scale": 1.00, "name": "Goblin Cùi", "role": "trash", "introDepth": 1,
       "hp": 40, "dmg": 6, "speed": 2.2, "kbResist": 0.00, "tpCost": 1.0, "goldDrop": 3,
       "attackType": "melee", "mechanic": "Đi thẳng tới người chơi, vung tay ở 1.2m",
       "counters": "Bất cứ gì. Đây là nền để nổ vàng và nuôi combo.",
       "sfxSpawn": "goblin_grunt_low", "tags": ["fodder", "gold"]
     },
     {
-      "id": "en_trash_goblinchay", "name": "Goblin Chạy", "role": "trash", "introDepth": 1,
+      "id": "en_trash_goblinchay", "scale": 0.86, "name": "Goblin Chạy", "role": "trash", "introDepth": 1,
       "hp": 26, "dmg": 5, "speed": 4.4, "kbResist": 0.10, "tpCost": 1.2, "goldDrop": 4,
       "attackType": "melee", "mechanic": "Chạy rất nhanh, lao thẳng qua dải Giữa không dừng",
       "counters": "Chém quét hoặc shotgun — không kịp nhắm từng con",
       "sfxSpawn": "goblin_screech", "tags": ["rush", "teaches_melee"]
     },
     {
-      "id": "en_trash_goblinbay", "name": "Goblin Bầy", "role": "trash", "introDepth": 1,
+      "id": "en_trash_goblinbay", "scale": 0.74, "name": "Goblin Bầy", "role": "trash", "introDepth": 1,
       "hp": 18, "dmg": 4, "speed": 2.8, "kbResist": 0.00, "tpCost": 0.8, "goldDrop": 2,
       "attackType": "melee", "mechanic": "Luôn spawn theo cụm 8 con, đi sát nhau",
       "counters": "Chém Hoàn Hảo — cụm này tồn tại để bị quẹt một nhát",
       "sfxSpawn": "goblin_swarm_chatter", "tags": ["swarm", "perfectslash"]
     },
     {
-      "id": "en_ranged_nemda", "name": "Goblin Ném Đá", "role": "ranged", "introDepth": 2,
+      "id": "en_ranged_nemda", "scale": 0.95, "name": "Goblin Ném Đá", "role": "ranged", "introDepth": 2,
       "hp": 34, "dmg": 12, "speed": 1.8, "kbResist": 0.15, "tpCost": 2.0, "goldDrop": 6,
       "attackType": "ranged_arc", "mechanic": "Đứng ở dải Xa ném đá theo đường vòng cung, tốc độ 11 m/s",
       "counters": "Phải tiến lên hoặc bắn tỉa — không được rùa tại chỗ",
       "sfxSpawn": "goblin_whistle", "tags": ["antiturtle", "ranged"]
     },
     {
-      "id": "en_special_thuocno", "name": "Goblin Thuốc Nổ", "role": "special", "introDepth": 2,
+      "id": "en_special_thuocno", "scale": 0.92, "name": "Goblin Thuốc Nổ", "role": "special", "introDepth": 2,
       "hp": 30, "dmg": 25, "speed": 3.0, "kbResist": 0.05, "tpCost": 2.2, "goldDrop": 6,
       "attackType": "suicide_aoe", "mechanic": "Lao vào rồi tự nổ bán kính 3m. Bình nổ trên lưng bắn được — nổ sớm gây 25 damage lên đồng bọn",
       "counters": "Knockback hoặc bắn bình nổ khi nó còn ở dải Giữa",
       "sfxSpawn": "fuse_hiss", "tags": ["teaches_knockback", "aoe", "max2melee"]
     },
     {
-      "id": "en_special_khien", "name": "Goblin Khiên", "role": "special", "introDepth": 3,
+      "id": "en_special_khien", "scale": 1.08, "name": "Goblin Khiên", "role": "special", "introDepth": 3,
       "hp": 90, "dmg": 10, "speed": 1.6, "kbResist": 0.55, "tpCost": 3.0, "goldDrop": 7,
       "attackType": "melee", "mechanic": "Khiên chắn chính diện: damage tầm xa x0.3, kbResist 0.55 (sau lưng chỉ 0.05). Vung khiên mỗi 4s, hở 0.8s",
       "counters": "Búa (bỏ qua khiên), chém nặng, axit, hoặc đánh khi nó vung khiên, hoặc Xốc Tới vòng ra sau lưng",
@@ -56,14 +56,14 @@
       }
     },
     {
-      "id": "en_heavy_ogreham", "name": "Ogre Hầm", "role": "heavy", "introDepth": 3,
+      "id": "en_heavy_ogreham", "scale": 1.62, "name": "Ogre Hầm", "role": "heavy", "introDepth": 3,
       "hp": 320, "dmg": 26, "speed": 1.4, "kbResist": 0.85, "tpCost": 6.0, "goldDrop": 20,
       "attackType": "melee_slam", "mechanic": "Gần như không đẩy được. Đập đất gây AoE 2.5m, telegraph 0.6s có vòng cảnh báo trên sàn",
       "counters": "Kite bằng Bước Lùi ra khỏi vòng, bắn yếu điểm ở bụng (x2.0)",
       "sfxSpawn": "ogre_roar", "tags": ["teaches_kbresist", "heavy"],
       "behavior": {
         "kind": "slam",
-        "attackRangeM": 2.6,
+        "attackRangeM": 3.4,
         "telegraphSec": 0.6,
         "aoeRadiusM": 2.5,
         "cooldownSec": 2.6,
@@ -143,14 +143,14 @@
       "sfxSpawn": "demon_growl", "tags": ["heavy", "grab", "endgame"]
     },
     {
-      "id": "en_special_bongham", "name": "Bóng Hầm", "role": "special", "introDepth": 1,
+      "id": "en_special_bongham", "scale": 1.10, "name": "Bóng Hầm", "role": "special", "introDepth": 1,
       "hp": 0, "dmg": 8, "speed": 2.6, "kbResist": 0.30, "tpCost": 0.0, "goldDrop": 0,
       "attackType": "melee_touch", "mechanic": "Sinh ra bởi Sương Đen. KHÔNG GIẾT ĐƯỢC — chỉ knockback được. Chạm gây 8 damage + tối màn 0.3s",
       "counters": "Dọn sạch phòng nhanh hơn. Đây không phải kẻ địch, đây là đồng hồ đếm",
       "sfxSpawn": "mist_whisper", "tags": ["invulnerable", "blackmist", "pressure"]
     },
     {
-      "id": "en_elite_tuonggoblin", "name": "Tướng Goblin", "role": "elite", "introDepth": 2,
+      "id": "en_elite_tuonggoblin", "scale": 1.34, "name": "Tướng Goblin", "role": "elite", "introDepth": 2,
       "hp": 700, "dmg": 30, "speed": 2.2, "kbResist": 0.70, "tpCost": 12.0, "goldDrop": 60,
       "attackType": "melee_combo", "mechanic": "Có 2 affix ngẫu nhiên. Hô hào: mọi trash trong phòng +20% damage. Rơi Chìa Khoá",
       "counters": "Dồn burst damage, dùng relic/ultimate",

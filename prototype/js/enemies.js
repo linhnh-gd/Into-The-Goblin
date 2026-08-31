@@ -34,6 +34,7 @@ const TYPE_LOOK = {
 };
 const DEFAULT_LOOK = { s: 1.0, c: 0x171c24, eye: 0xff3b30 };
 const D2R = Math.PI / 180;
+const RUNCFG = () => GD.feel.run;
 
 function wrapAngle(a) {
   while (a > Math.PI) a -= Math.PI * 2;
@@ -50,6 +51,7 @@ export class EnemyPool {
         alive: false, id: '', role: '', x: 0, z: 0, hp: 0, maxHp: 0, dmg: 0, speed: 0, kbResist: 0,
         vx: 0, vz: 0, scale: 1, color: 0, eye: 0, atk: 0, tele: 0, flash: 0, gold: 0,
         face: 0, turnRate: 6, behav: null, atkRange: ATTACK_RANGE, teleTime: TELEGRAPH,
+        holds: false, acquired: false, sliceCd: 0,
         shieldUp: true, bcycle: 0, invuln: false, ringShown: false, committed: false,
       });
     }
@@ -127,7 +129,7 @@ export class EnemyPool {
     slot.speed = def.speed;
     slot.kbResist = def.kbResist;
     slot.gold = def.goldDrop;
-    slot.scale = look.s;
+    slot.scale = def.scale != null ? def.scale : look.s;
     slot.color = look.c;
     slot.eye = look.eye;
     slot.tele = 0;
@@ -139,7 +141,15 @@ export class EnemyPool {
     slot.behav = b;
     slot.face = 0;                                   // 0 = nhin ve +Z (ve phia nguoi choi)
     slot.turnRate = (b && b.turnRateDeg ? b.turnRateDeg : 360) * D2R;
-    slot.atkRange = b && b.attackRangeM ? b.attackRangeM : ATTACK_RANGE;
+    /* Quai DUNG LAI de danh (ranged + slam) phai dung o khoang con TAP DUOC:
+       clamp len run.tapNearM. Quai ranged khong co truong tam ban trong data nen
+       truoc day dung ATTACK_RANGE 1.2m -- tuc "quai nem da" di tan sat mat moi nem. */
+    slot.holds = def.role === 'ranged' || !!(b && b.kind === 'slam');
+    slot.acquired = false;
+    slot.sliceCd = 0;
+    const rawRange = b && b.attackRangeM ? b.attackRangeM
+      : def.role === 'ranged' ? RUNCFG().rangedStandoffM : ATTACK_RANGE;
+    slot.atkRange = slot.holds ? Math.max(rawRange, RUNCFG().tapNearM) : rawRange;
     slot.teleTime = b && b.telegraphSec ? b.telegraphSec : TELEGRAPH;
     slot.atk = (b && b.cooldownSec ? b.cooldownSec : 1.15) * (0.5 + Math.random() * 0.5);
     slot.bcycle = b && b.kind === 'shield' ? Math.random() * b.cycleSec : 0;
@@ -193,6 +203,7 @@ export class EnemyPool {
    * @returns {number} tong damage giang vao nguoi choi trong frame nay
    */
   update(dt, px, pz, fx) {
+    const RN = GD.feel.run;
     let dmgToPlayer = 0;
     for (const e of this.list) {
       if (!e.alive) continue;
@@ -224,15 +235,50 @@ export class EnemyPool {
       }
 
       /* ---- di chuyen / tan cong ----
-         COMMIT: khi da vao telegraph thi don VAN RA du nguoi choi da lui ra xa.
-         Neu khong commit thi Buoc Lui se HUY don chu khong phai NE don, va
-         nguoi choi mat han cam giac "vua ne duoc" — cai lam don AoE co gia tri. */
-      if (dist > e.atkRange && !e.committed) {
+         HAI KIEU TIEN (docs/09 muc 2c):
+           DUNG LAI (holds): quai ranged va quai co don AoE telegraph (slam). Chung
+             PLANT o atkRange roi danh tu do. atkRange luon >= run.tapNearM.
+           XONG TOI (charger): moi loai con lai, tien den contactM.
+
+         NHUNG DIEU NAY AP CHO CA HAI: nguoi choi luon chay tien, nen moi con roi cung
+         bi vuot qua. Con nao khong bi giet kip thi VA vao nguoi choi, gay dmg mot lan
+         roi BIEN MAT -- khong con nao duoc phep dung lai chan duong chay.
+
+         Truoc day moi con dung o atkRange 1.2m, ma o 1.2m diem tap roi vao 92.7% chieu
+         cao man hinh (duoi nut NAP) -> khong the tan cong. Xem docs/18 muc 4 loi #9.
+
+         COMMIT: quai dang trong telegraph thi KHONG bien mat -- don cua no van ra, dung
+         nhu hop dong o docs/09 muc 2b. Khong co ngoai le nay thi chay tien se HUY don
+         AoE thay vi phai NE no. */
+      const stopAt = e.holds ? e.atkRange : RN.contactM;
+      const behind = e.z - pz;
+
+      if (dist <= RN.contactM && !e.committed) {
+        /* VA VAO NGUOI CHOI: gay dmg MOT lan roi BIEN MAT.
+           Khong roi vang -- nguoi choi khong giet no, chi bi no huc phai. Day cung la
+           ly do khong can co che "don ra sau": 9/21 loai chay nhanh hon nguoi choi
+           (Dau Bo 5.2 m/s vs 2.4) nen neu con song chung se duoi lai va danh tu ngoai
+           man hinh, cho nguoi choi khong the thay va khong the giet. */
+        dmgToPlayer += e.dmg;
+        fx?.onContact?.(e);
+        e.alive = false;
+        continue;
+      } else if (dist > stopAt && !e.committed) {
         e.x += (dx / dist) * e.speed * dt;
         e.z += (dzp / dist) * e.speed * dt;
         e.tele = 0;
         e.ringShown = false;
+      } else if (e.holds && behind > RN.contactM && !e.committed) {
+        /* Quai PLANT da bi vuot qua: khong duoc ban tu phia sau man hinh. Nguoi choi
+           khong the thay va khong the giet no -> danh tu do la khong the phan doi. */
+        e.tele = 0;
+        e.ringShown = false;
       } else {
+        /* Quai PLANT vua vao tam: bat dau telegraph NGAY.
+           Cua so tu luc vao tam den luc bi don chi la (atkRange - contactM)/speed.
+           Neu de atk khoi tao ngau nhien 1.3-2.6s thi nguoi choi chay qua TRUOC khi
+           no kip vung -> don dac trung cua Ogre khong bao gio thay duoc. */
+        if (!e.acquired) { e.acquired = true; e.atk = Math.min(e.atk, e.teleTime); }
         e.atk -= dt;
         e.tele = e.atk <= e.teleTime ? Math.max(0, e.teleTime - e.atk) : 0;
         if (e.tele > 0) e.committed = true;
@@ -249,9 +295,8 @@ export class EnemyPool {
           e.ringShown = false;
           e.committed = false;
           if (e.behav && e.behav.kind === 'slam') {
-            /* AoE chi trung neu nguoi choi CON trong ban kinh luc dap xuong.
-               aoeRadius (2.5) < attackRange (2.6) -> Buoc Lui ra khoi vong la ne duoc.
-               Day chinh la counter "kite bang Buoc Lui" trong docs/09. */
+            /* Hop dong so (docs/09 muc 2b): contactM <= aoeRadius < contactM + dodgeM.
+               Nho vay dung im la AN don, va Buoc Lui dung luc thi LUON ne duoc. */
             const hit = dist <= e.behav.aoeRadiusM;
             if (hit) dmgToPlayer += e.dmg;
             fx?.onSlam?.(e, hit);
@@ -260,6 +305,10 @@ export class EnemyPool {
           }
         }
       }
+
+      // bo con da bi vuot qua qua xa (khong roi vang: nguoi choi khong giet chung)
+      if (behind > RN.despawnBehindM) { e.alive = false; continue; }
+      if (e.sliceCd > 0) e.sliceCd -= dt;
       if (e.flash > 0) e.flash = Math.max(0, e.flash - dt * 6);
     }
     this._separate(dt);

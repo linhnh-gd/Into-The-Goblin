@@ -622,6 +622,123 @@ Assert-True 'CTRL' 'Co gesture cho ca tam xa va can chien, va co vung chet' `
     ($gestureWeapons -ge 3 -and $gestureMelee -ge 2 -and (@($gdCtr.gestures | Where-Object { $_.id -eq 'gs_deadzone' }).Count -eq 1)) `
     ("ranged=$gestureWeapons, melee=$gestureMelee, deadzone=$(@($gdCtr.gestures | Where-Object { $_.id -eq 'gs_deadzone' }).Count)")
 
+# ============================ RUN / CAMERA (mo hinh chay X met) =========================
+# Nhung check nay ton tai vi prototype cho thay quai dung o 1.2m thi diem tap roi vao
+# 92.7% chieu cao man hinh -- tuc nam duoi nut NAP, khong the tan cong (docs/18 loi #9).
+# Cong thuc duoi day la CHIEU PHOI CANH THAT (giong three.js), khong phai xap xi goc.
+function Get-ScreenPct([double]$distM, [double]$anchorY, [double]$camH, [double]$fovDeg, [double]$pitchDeg) {
+    $th = $pitchDeg * [Math]::PI / 180.0
+    $dy = $anchorY - $camH
+    $dz = -$distM
+    $yp = $dy * [Math]::Cos($th) - $dz * [Math]::Sin($th)
+    $zp = $dy * [Math]::Sin($th) + $dz * [Math]::Cos($th)
+    if ($zp -ge 0) { return 999.0 }
+    $ndc = ($yp / (-$zp)) / [Math]::Tan($fovDeg * [Math]::PI / 360.0)
+    return ((1.0 - $ndc) / 2.0) * 100.0
+}
+
+$gdCam = $gdFel.camera
+$gdRun = $gdFel.run
+$bandLo = [double]$gdCam.meleeBandScreenPct[0]
+$bandHi = [double]$gdCam.meleeBandScreenPct[1]
+
+Assert-True 'RUN' 'gamefeel.json co khoi camera + run day du' `
+    ($null -ne $gdCam -and $null -ne $gdRun -and $null -ne $gdRun.tapNearM) `
+    ("camera=$($null -ne $gdCam) run=$($null -ne $gdRun)")
+
+# scale nho nhat = truong hop XAU NHAT (con thap nhat nam thap nhat tren man hinh)
+$scales = @($gdEne.enemies | Where-Object { $null -ne $_.scale } | ForEach-Object { [double]$_.scale })
+if ($scales.Count -eq 0) { $scales = @(1.0) }
+$minScale = ($scales | Measure-Object -Minimum).Minimum
+$anchorMin = [double]$gdCam.tapAnchorFrac * $minScale
+$pctNear = Get-ScreenPct ([double]$gdRun.tapNearM) $anchorMin ([double]$gdCam.heightM) ([double]$gdCam.fovDegVertical) ([double]$gdCam.pitchDegDown)
+Assert-True 'RUN' 'Quai o tapNearM van nam trong dai man hinh cho phep (tap duoc)' `
+    ($pctNear -ge $bandLo -and $pctNear -le $bandHi) `
+    ("con thap nhat (scale $minScale) o {0:N2}m nam o {1:N1}% chieu cao man hinh; cho phep $bandLo-$bandHi%" -f [double]$gdRun.tapNearM, $pctNear)
+
+# quai ranged dung xa hon -> phai KHONG bi tran ra khoi dinh man hinh
+$pctRanged = Get-ScreenPct ([double]$gdRun.rangedStandoffM) ([double]$gdCam.tapAnchorFrac * 0.95) ([double]$gdCam.heightM) ([double]$gdCam.fovDegVertical) ([double]$gdCam.pitchDegDown)
+Assert-True 'RUN' 'Quai ranged o rangedStandoffM van trong dai man hinh' `
+    ($pctRanged -ge $bandLo -and $pctRanged -le $bandHi) `
+    ("o {0:N1}m nam o {1:N1}%; cho phep $bandLo-$bandHi%" -f [double]$gdRun.rangedStandoffM, $pctRanged)
+
+$gdMel = @($gdWpn.weapons | Where-Object { $null -ne $_.reachM })
+
+# CAN CHIEN PHAI VOI XA HON CHO QUAI DUNG: neu khong thi dao vo dung o dung cai
+# khoang ma sung khong con ban duoc (quai da tut xuong duoi day man hinh).
+$needReach = [double]$gdRun.tapNearM + [double]$gdRun.meleeReachMarginM
+$shortMelee = @($gdMel | Where-Object { [double]$_.reachM -lt $needReach } | ForEach-Object { "$($_.id) $($_.reachM)m" })
+Assert-True 'WEAPON' 'Moi vu khi can chien voi xa hon khoang quai dung (tapNearM + margin)' `
+    ($shortMelee.Count -eq 0) `
+    ("can >= {0:N2}m; ngan nhat hien tai = {1:N2}m" -f $needReach, (($gdMel | ForEach-Object { [double]$_.reachM } | Measure-Object -Minimum).Minimum) +
+     $(if ($shortMelee.Count) { ' | VI PHAM: ' + ($shortMelee -join ', ') } else { '' }))
+
+# HOP DONG DON AoE: nguoi choi chay tien nen telegraph AN MAT speed*telegraphSec met.
+# Don giang o impactM, va Buoc Lui phai dua ra NGOAI aoeRadius tu do.
+$badAoe = @()
+foreach ($itS in @($gdEne.enemies | Where-Object { $_.behavior -and $_.behavior.kind -eq 'slam' })) {
+    $bh = $itS.behavior
+    $impact = [Math]::Max([double]$gdRun.contactM, [double]$bh.attackRangeM - [double]$gdRun.speedMps * [double]$bh.telegraphSec)
+    if ([double]$bh.aoeRadiusM -lt $impact) {
+        $badAoe += ("$($itS.id): aoeRadius {0:N2} < impact {1:N2} -> don KHONG BAO GIO trung" -f [double]$bh.aoeRadiusM, $impact)
+    }
+    if (($impact + [double]$gdRun.dodgeBackM) -le [double]$bh.aoeRadiusM) {
+        $badAoe += ("$($itS.id): impact {0:N2} + dodgeBack {1:N2} <= aoeRadius {2:N2} -> NE KHONG THOAT" -f $impact, [double]$gdRun.dodgeBackM, [double]$bh.aoeRadiusM)
+    }
+}
+Assert-True 'ENEMY' 'Don AoE: vua trung duoc khi dung im, vua ne duoc bang 1 Buoc Lui' `
+    ($badAoe.Count -eq 0) `
+    ("impact = max(contactM, attackRange - speed*telegraph)" + $(if ($badAoe.Count) { ' | ' + ($badAoe -join ' ; ') } else { '' }))
+
+# CUA SO TELEGRAPH: quai PLANT phai co du thoi gian vung truoc khi nguoi choi
+# chay den contactM va don no ra sau. Neu khong, don dac trung cua no khong bao gio
+# thay duoc -- prototype cho thay Ogre bi chay qua truoc khi kip dap (docs/18 loi #11).
+$badTele = @()
+foreach ($itT in @($gdEne.enemies | Where-Object { $_.behavior -and $_.behavior.telegraphSec })) {
+    $bt = $itT.behavior
+    $winSec = ([double]$bt.attackRangeM - [double]$gdRun.contactM) / [double]$gdRun.speedMps
+    $needSec = [double]$bt.telegraphSec + 0.25
+    if ($winSec -lt $needSec) {
+        $badTele += ("$($itT.id): cua so {0:N2}s < telegraph {1:N2}s + 0.25 -> khong kip vung; can attackRangeM >= {2:N2}m" -f $winSec, [double]$bt.telegraphSec, ([double]$gdRun.contactM + [double]$gdRun.speedMps * $needSec))
+    }
+}
+Assert-True 'ENEMY' 'Quai PLANT co du cua so de vung truoc khi bi chay qua' `
+    ($badTele.Count -eq 0) `
+    ("cua so = (attackRangeM - contactM) / speedMps" + $(if ($badTele.Count) { ' | ' + ($badTele -join ' ; ') } else { '' }))
+# CUA SO PHAN UNG: quai nhanh nhat phai o trong dai tap duoc du lau de kip xu ly.
+$fastest = (($gdEne.enemies | ForEach-Object { [double]$_.speed } | Measure-Object -Maximum).Maximum)
+$closing = [double]$gdRun.speedMps + $fastest
+$window = ([double]$gdRun.tapFarM - [double]$gdRun.tapNearM) / $closing
+Assert-True 'ENEMY' 'Cua so phan ung voi quai nhanh nhat >= minReactionSec' `
+    ($window -ge [double]$gdRun.minReactionSec) `
+    ("nhanh nhat {0:N1} m/s + chay {1:N1} = {2:N1} m/s; cua so {3:N2}s (can >= {4:N2}s)" -f $fastest, [double]$gdRun.speedMps, $closing, $window, [double]$gdRun.minReactionSec)
+
+# Do dai phong tinh theo quang duong, khong phai theo dong ho.
+$roomSec = [double]$gdRun.roomDistanceM / [double]$gdRun.speedMps
+$nWaves = [Math]::Round([double]$gdRun.roomDistanceM / [double]$gdRun.waveSegmentM)
+Assert-True 'WAVE' 'Do dai 1 phong (quang duong / toc do) nam trong 25-60 giay' `
+    ($roomSec -ge 25 -and $roomSec -le 60) `
+    ("{0:N0}m / {1:N1} m/s = {2:N1}s, chia {3} wave x {4:N0}m" -f [double]$gdRun.roomDistanceM, [double]$gdRun.speedMps, $roomSec, $nWaves, [double]$gdRun.waveSegmentM)
+
+# CHEM LIEN TUC (kieu chem hoa qua) phai co TRAN. Hai thu chan lai:
+#   - moi con chi an dmg mot lan moi slideHitCooldownSec -> rung ngon tay khong nhan dmg
+#   - giu ngon tay drain stamina -> khong the chem mai
+$gdMel2 = $gdFel.melee
+$sliceSec = 100.0 / [double]$gdMel2.slideStaminaPerSec
+Assert-True 'FEEL' 'Chem lien tuc co tran: giu toi da 2-5s roi het stamina' `
+    ($sliceSec -ge 2.0 -and $sliceSec -le 5.0) `
+    ("stamina 100 / {0:N0} moi giay = {1:N2}s giu lien tuc; moi con an dmg toi da 1 lan moi {2:N2}s" -f [double]$gdMel2.slideStaminaPerSec, $sliceSec, [double]$gdMel2.slideHitCooldownSec)
+
+Assert-True 'FEEL' 'Chem lien tuc yeu hon nhat chem don (khong thay the han)' `
+    ([double]$gdMel2.slideTickDamageMult -gt 0 -and [double]$gdMel2.slideTickDamageMult -lt 1) `
+    ("slideTickDamageMult = {0:N2}" -f [double]$gdMel2.slideTickDamageMult)
+
+# Sung phai o ngoai du lau de NHIN THAY duoc, khong thi mot cai tap chi thay nhap nhay.
+$gdGun = $gdFel.gun
+Assert-True 'FEEL' 'Sung o ngoai du lau de doc duoc trang thai (gunHoldSec >= drawSec)' `
+    ([double]$gdGun.gunHoldSec -ge [double]$gdGun.drawSec) `
+    ("gunHoldSec {0:N2}s vs drawSec {1:N2}s + holsterSec {2:N2}s" -f [double]$gdGun.gunHoldSec, [double]$gdGun.drawSec, [double]$gdGun.holsterSec)
+
 # -------------------------------------------------------------- K. output
 $pass = @($auditResults | Where-Object { $_.Status -eq 'PASS' }).Count
 $warn = @($auditResults | Where-Object { $_.Status -eq 'WARN' }).Count

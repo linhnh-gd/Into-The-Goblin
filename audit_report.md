@@ -2,7 +2,7 @@
 
 > File nay do `audit_gdd.ps1` sinh ra. KHONG sua tay.
 
-**PASS 58 / WARN 2 / FAIL 0** trong 60 check.
+**PASS 69 / WARN 2 / FAIL 0** trong 71 check.
 
 | Nhom | Trang thai | Check | Chi tiet |
 |---|---|---|---|
@@ -66,5 +66,16 @@
 | CTRL | **PASS** | Vung chet giua goc chem va goc di chuyen >= 5 do | melee <= 55 deg, move >= 65 deg, dead zone = 10 deg |
 | CTRL | **PASS** | Co phuong an thoat cho rui ro R1 (Che do Hai Vung) | ac_haivung ton tai |
 | CTRL | **PASS** | Co gesture cho ca tam xa va can chien, va co vung chet | ranged=4, melee=2, deadzone=1 |
+| RUN | **PASS** | gamefeel.json co khoi camera + run day du | camera=True run=True |
+| RUN | **PASS** | Quai o tapNearM van nam trong dai man hinh cho phep (tap duoc) | con thap nhat (scale 0.74) o 2.40m nam o 72.1% chieu cao man hinh; cho phep 45-75% |
+| RUN | **PASS** | Quai ranged o rangedStandoffM van trong dai man hinh | o 8.5m nam o 48.7%; cho phep 45-75% |
+| WEAPON | **PASS** | Moi vu khi can chien voi xa hon khoang quai dung (tapNearM + margin) | can >= 2.80m; ngan nhat hien tai = 2.80m |
+| ENEMY | **PASS** | Don AoE: vua trung duoc khi dung im, vua ne duoc bang 1 Buoc Lui | impact = max(contactM, attackRange - speed*telegraph) |
+| ENEMY | **PASS** | Quai PLANT co du cua so de vung truoc khi bi chay qua | cua so = (attackRangeM - contactM) / speedMps |
+| ENEMY | **PASS** | Cua so phan ung voi quai nhanh nhat >= minReactionSec | nhanh nhat 5.2 m/s + chay 2.4 = 7.6 m/s; cua so 1.53s (can >= 1.20s) |
+| WAVE | **PASS** | Do dai 1 phong (quang duong / toc do) nam trong 25-60 giay | 90m / 2.4 m/s = 37.5s, chia 3 wave x 30m |
+| FEEL | **PASS** | Chem lien tuc co tran: giu toi da 2-5s roi het stamina | stamina 100 / 34 moi giay = 2.94s giu lien tuc; moi con an dmg toi da 1 lan moi 0.22s |
+| FEEL | **PASS** | Chem lien tuc yeu hon nhat chem don (khong thay the han) | slideTickDamageMult = 0.62 |
+| FEEL | **PASS** | Sung o ngoai du lau de doc duoc trang thai (gunHoldSec >= drawSec) | gunHoldSec 0.30s vs drawSec 0.14s + holsterSec 0.18s |
 
 WARN = lech y do thiet ke, can playtest quyet dinh. FAIL = vi pham bat bien, build phai dung.

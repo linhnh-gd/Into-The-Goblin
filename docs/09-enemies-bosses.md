@@ -64,18 +64,60 @@ sau trước khi nó kịp quay lại. Đây là phát hiện của prototype, x
 
 | Tham số | Giá trị | Nghĩa |
 |---|---|---|
-| `attackRangeM` | 2.6 | Bắt đầu vung từ 2.6m — xa hơn quái thường (1.2m) |
+| `attackRangeM` | **3.4** | Bắt đầu vung từ 3.4m. Không phải 2.6m — xem ô dưới bảng |
 | `telegraphSec` | 0.6 | **Vòng đỏ hiện trên sàn** suốt 0.6s trước khi đập |
 | `aoeRadiusM` | 2.5 | Chỉ trúng nếu người chơi **còn trong vòng** lúc đập xuống |
 | `cooldownSec` | 2.6 | |
 | `weakPointMult` | 2.0 | Tap vào **nửa dưới** hitbox (bụng) = damage ×2 |
 
+**Cửa sổ vung phải đủ dài, nếu không đòn đặc trưng không bao giờ thấy được.** Người chơi tự chạy tiến
+2.4 m/s, nên thời gian từ lúc Ogre vào tầm đến lúc bị va phải chỉ là `(attackRangeM − contactM) / speedMps`.
+Với `attackRangeM = 2.6` cửa sổ đó là **0.67s** trong khi telegraph đã 0.6s, và `atk` khởi tạo ngẫu nhiên
+1.3–2.6s — **người chơi chạy qua trước khi Ogre kịp đập**. Hai sửa đổi:
+
+1. `attackRangeM = 3.4` → cửa sổ **1.0s**.
+2. Quái đứng-lại-đánh bắt đầu telegraph **ngay khi vào tầm**, không chờ cooldown ngẫu nhiên.
+
+Audit gate: `(attackRangeM − contactM) / speedMps ≥ telegraphSec + 0.25` cho **mọi** quái có telegraph.
+
 **Luật bắt buộc: đòn AoE phải COMMIT.** Khi đã vào telegraph, Ogre vung **dù người chơi đã lùi ra xa**.
 Nếu không commit thì Bước Lùi *huỷ* đòn thay vì *né* đòn, và người chơi mất hẳn cảm giác "vừa né được" —
 tức là mất luôn lý do tồn tại của đòn AoE. Xem `18` mục 4.
 
-Vì `aoeRadius` (2.5) < `attackRange` (2.6), và Bước Lùi đi 1.2m, nên **một lần Bước Lùi đúng lúc luôn né
-được**. Đó là hợp đồng giữa hai con số này — đổi một cái thì phải kiểm cái kia.
+Hợp đồng số, tính theo **điểm giáng đòn thật** chứ không theo `attackRange`:
+
+```
+impact = max(contactM, attackRangeM - speedMps * telegraphSec) = max(1.0, 3.4 - 1.44) = 1.96m
+
+trung duoc khi dung im   : aoeRadiusM >= impact              -> 2.50 >= 1.96      OK
+ne duoc bang 1 Buoc Lui  : impact + dodgeBackM > aoeRadiusM  -> 1.96 + 1.80 > 2.50 OK
+```
+
+**Bước Lùi phải là 1.8m, không phải 1.2m.** Chạy tiến 2.4 m/s trong 0.6s telegraph ăn mất 1.44m, nên lùi
+1.2m chỉ đưa người chơi ra 2.36m — **vẫn nằm trong vòng AoE 2.5m**, tức né không thoát. Cả hai bất biến
+trên đều có gate, nên đổi một con số là biết ngay con nào vỡ.
+
+## 2c. Hai kiểu tiến, và luật "va một lần rồi biến mất"
+
+Trong mô hình quãng đường (`07` mục 3.5) người chơi **luôn** tiến lên, nên mọi con quái rồi cũng bị vượt qua.
+Chia làm hai kiểu, đọc từ `role` và `behavior`:
+
+| Kiểu | Ai | Cách tiến |
+|---|---|---|
+| **Đứng lại** (`holds`) | `role: ranged`, và quái có `behavior.kind = "slam"` | Tiến tới `atkRange` rồi **cắm chân** đánh từ đó. `atkRange` luôn ≥ `run.tapNearM` nên **luôn còn tap được** |
+| **Xông tới** | mọi loại còn lại | Không dừng ở khoảng nào cả, tiến thẳng tới `run.contactM` |
+
+**Con nào tới được người chơi thì gây damage MỘT lần rồi BIẾN MẤT, và không rơi vàng.**
+
+Ba lý do đây là luật đúng, không phải luật cho tiện:
+1. **Không con nào được chặn đường chạy.** Nếu quái dừng lại húc mãi thì mô hình quãng đường vỡ.
+2. **9/21 loài chạy nhanh hơn người chơi** (Đầu Bò 5.2 m/s vs 2.4). Nếu chúng sống sót sau khi va thì
+   chúng sẽ đuổi lại và đánh từ **phía sau màn hình** — chỗ người chơi không thấy và không thể giết. Không
+   có phản biện nào cho damage kiểu đó.
+3. **Không rơi vàng** giữ nguyên động lực thật sự phải giết quái: bỏ qua thì mất máu *và* mất vàng.
+
+Trước đây **mọi** con đều dừng ở `atkRange = 1.2m` và đứng đó húc. Ở 1.2m điểm tap của quái nằm ở **92.7%**
+chiều cao màn hình — dưới cả nút NẠP. Đó là lỗi #9 ở `18` mục 4.
 
 ## 3. Affix (chỉ từ Depth 4)
 
