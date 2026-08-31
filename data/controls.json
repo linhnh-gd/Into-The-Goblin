@@ -13,7 +13,7 @@
     { "id": "gs_deadzone", "name": "VÙNG CHẾT", "condition": "slide có góc lệch khỏi ngang trong khoảng 55°–65°", "action": "BỎ QUA HOÀN TOÀN + rung 8ms. Thà mất input còn hơn làm sai input", "weapon": "none" }
   ],
   "params": [
-    { "key": "tapMaxDuration", "value": 180, "unit": "ms", "note": "Tăng nếu tester 'muốn bắn mà ra dao'" },
+    { "key": "tapMaxDuration", "value": 110, "unit": "ms", "note": "Do TRE truoc khi sung bat dau ban lien tuc. Tang neu tester muon ban ma ra dao" },
     { "key": "tapMaxTravel", "value": 0.05, "unit": "S", "note": "" },
     { "key": "slideVelocityThreshold", "value": 900, "unit": "px/s", "note": "SO QUAN TRONG NHAT CUA GAME. Test tren may 60Hz va 120Hz" },
     { "key": "slideDetectWindow", "value": 250, "unit": "ms", "note": "" },

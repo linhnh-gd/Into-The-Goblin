@@ -696,14 +696,15 @@ foreach ($itM in $gdMel) {
     $ti = [int]$itM.tier
     if ($ti -lt 1 -or $ti -gt 6) { continue }
     $hp = $trashBase * [Math]::Pow($hpPerRoom, $anchorRoom[$ti - 1] - 1)
-    $tick = [double]$itM.dmg * [double]$gdFel.melee.slideTickDamageMult
-    if ($tick -lt $hp) {
-        $badOne += ("$($itM.id) T$ti : 1 doan quet = {0:N0} dmg < trash {1:N0} HP" -f $tick, $hp)
+    # docs/09 nguyen tac 4 noi "1 NHAT", tuc mot nhat chem day du -- khong phai mot doan
+    # quet trong che do chem lien tuc (doan quet chi an slideTickDamageMult cua nhat day).
+    if ([double]$itM.dmg -lt $hp) {
+        $badOne += ("$($itM.id) T$ti : 1 nhat = {0:N0} dmg < trash {1:N0} HP" -f [double]$itM.dmg, $hp)
     }
 }
-Assert-True 'WEAPON' 'Mot doan quet du giet trash cung tier (luat 1 nhat 1 mang)' `
+Assert-True 'WEAPON' 'Mot NHAT CHEM du giet trash cung tier (docs/09 nguyen tac 4)' `
     ($badOne.Count -eq 0) `
-    ("kiem $($gdMel.Count) vu khi; dmg x slideTickDamageMult {0:N2}" -f [double]$gdFel.melee.slideTickDamageMult) `
+    ("kiem $($gdMel.Count) vu khi; 1 doan quet chem lien tuc = {0:N0}%% cua 1 nhat" -f (100 * [double]$gdFel.melee.slideTickDamageMult)) `
     -failStatus 'FAIL'
 if ($badOne.Count) { $auditResults[-1].Detail += ' | VI PHAM: ' + ($badOne -join ' ; ') }
 

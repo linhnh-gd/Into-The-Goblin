@@ -120,6 +120,20 @@ Nhát **đầu tiên** vẫn đi qua `slash()` nguyên giá (có chém nặng th
 ngang) → vào chế độ chém liên tục, súng được cất. Không di chuyển ngón → rút súng. Vùng chết 55–65° vẫn giữ
 nguyên: thà mất input còn hơn làm sai input.
 
+
+### Độ trễ vào chế độ bắn liên tục
+
+`tapMaxDuration` **180 → 110ms**. Đây là độ trễ từ lúc chạm tới lúc súng bắt đầu bắn liên tục — nó phải đủ
+dài để phân biệt với một cú quẹt chém, và đủ ngắn để không thấy khựng.
+
+**Máy trạng thái phải được đánh thức bằng HẸN GIỜ, không phải bằng `pointermove`.** Bản đầu chỉ kiểm tra
+`elapsed >= tapMaxDuration` bên trong hàm xử lý `pointermove`; giữ ngón tay **đứng yên** thì không có sự kiện
+move nào, máy trạng thái kẹt ở `PENDING`, và tới lúc nhả tay nó thành một cái TAP. Nghĩa là **phải rê tay mới
+bắn liên tục được**. Đo sau khi sửa: giữ yên hoàn toàn → vào chế độ bắn liên tục sau **132ms**.
+
+Hẹn giờ phải bị **huỷ** ở hai chỗ: khi khoá sang SLIDE, và khi nhả tay. Không huỷ thì một cú quẹt chém sẽ
+rút súng ra giữa chừng. Đo: quẹt nhanh → vào chế độ chém, **không** ra súng, tốn **0 đạn**.
+
 ## 3. Tham số tinh chỉnh (đưa vào `data/controls.json`, không hardcode)
 
 | Tham số | Mặc định | Ghi chú tune |

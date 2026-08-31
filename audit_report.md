@@ -28,8 +28,8 @@
 | WPN | **PASS** | Luon con >=1 nhat chem trong 1.4s khi stamina can (regen*1.4 >= staminaCost) | vi pham: khong |
 | WPN | **PASS** | Co it nhat 1 vu khi T1 one-shot trash o Depth 1 | one-shot: rw_pistol_kendong, rw_shotgun_mienghang |
 | WPN | **PASS** | GATE P2: khong bang dan nao don sach ca wave (magClearRatio <= 1.0) | vi pham: 0 |
-| WPN | **WARN** | magClearRatio trong [0.45, 0.70] (y do thiet ke) | ngoai khoang: rw_shotgun_mienghang T1 0.89, rw_smg_ochuot T1 0.75, rw_shotgun_longmoc T2 0.76, rw_lmg_trongdoi T3 0.72, rw_launcher_noidat T4 0.42, rw_smg_muikim T4 0.22, rw_shotgun_hamtoi T5 0.19, rw_acid_ruotdat T5 0.37, rw_launcher_ongsam T5 0.27, rw_deeptech_loino T6 0.11, rw_deeptech_miengmo T6 0.14, rw_minigun_ruotsat T6 0.23 |
-| WPN | **WARN** | Du tru du 6-9 wave neu khong melee | ngoai khoang: rw_rifle_matcu 2.9, rw_lmg_trongdoi 4.3, rw_flamer_hoingam 4, rw_launcher_noidat 2.5, rw_smg_muikim 1.5, rw_sniper_dinhsat 3.7, rw_shotgun_hamtoi 1.3, rw_acid_ruotdat 2.2, rw_launcher_ongsam 1.6, rw_deeptech_loino 0.7, rw_deeptech_miengmo 1, rw_minigun_ruotsat 1.4 |
+| WPN | **WARN** | magClearRatio trong [0.45, 0.70] (y do thiet ke) | ngoai khoang: rw_shotgun_mienghang T1 0.95, rw_smg_ochuot T1 0.89, rw_rifle_gongsat T2 0.76, rw_crossbow_gaimuc T2 0.82, rw_shotgun_longmoc T2 0.91, rw_lmg_trongdoi T3 0.92, rw_flamer_hoingam T3 0.87, rw_smg_muikim T4 0.27, rw_sniper_dinhsat T4 0.79, rw_shotgun_hamtoi T5 0.23, rw_launcher_ongsam T5 0.33, rw_deeptech_loino T6 0.13, rw_deeptech_miengmo T6 0.18, rw_minigun_ruotsat T6 0.29 |
+| WPN | **WARN** | Du tru du 6-9 wave neu khong melee | ngoai khoang: rw_rifle_matcu 3, rw_lmg_trongdoi 4.5, rw_flamer_hoingam 4.3, rw_launcher_noidat 2.6, rw_smg_muikim 1.6, rw_sniper_dinhsat 3.9, rw_shotgun_hamtoi 1.3, rw_acid_ruotdat 2.4, rw_launcher_ongsam 1.7, rw_deeptech_loino 0.8, rw_deeptech_miengmo 1, rw_minigun_ruotsat 1.4 |
 | WPN | **PASS** | Melee DPS THAP HON ranged DPS o cung tier (dao nguoc, docs/05 muc 8.3) | so sanh 6 tier; vi pham: 0 |
 | WPN | **PASS** | Moi Depth 1-5 mo it nhat 1 cong cu dan cach (kb >= 1.0) | thieu: khong |
 | WPN | **PASS** | Moi vu khi duoc mo o mot Depth nao do | khong co duong mo: khong |
@@ -71,13 +71,13 @@
 | RUN | **PASS** | Quai ranged o rangedStandoffM van trong dai man hinh | o 8.5m nam o 48.7%; cho phep 45-75% |
 | WEAPON | **PASS** | Moi vu khi can chien voi xa hon khoang quai dung (tapNearM + margin) | can >= 2.80m; ngan nhat hien tai = 6.00m |
 | WEAPON | **PASS** | Tam can chien ngan hon khoang quai ranged dung | tam dao 6.00m vs rangedStandoffM 8.50m |
-| WEAPON | **PASS** | Mot doan quet du giet trash cung tier (luat 1 nhat 1 mang) | kiem 12 vu khi; dmg x slideTickDamageMult 0.62 |
+| WEAPON | **PASS** | Mot NHAT CHEM du giet trash cung tier (docs/09 nguyen tac 4) | kiem 12 vu khi; 1 doan quet chem lien tuc = 62%% cua 1 nhat |
 | ENEMY | **PASS** | Don AoE: vua trung duoc khi dung im, vua ne duoc bang 1 Buoc Lui | impact = max(contactM, attackRange - speed*telegraph) |
 | RUN | **PASS** | Lan giua rong hon moi lan ben (yeu cau thiet ke) | lan giua rong 3.60m, moi lan ben 1.45m; hanh lang 9m |
 | RUN | **PASS** | Quai lan giua spawn quanh truc, khong trai sat ranh lan | jitter +-0.90m trong lan +-1.80m -> vung 0.90m..1.80m khong co quai nao |
-| WAVE | **PASS** | So quai LAN GIUA moi phong (R1) nam trong 60-150 | phong R1: ~149 quai tong, lan giua ~104 (moi de), lan ben ~45 (vang them) |
+| WAVE | **PASS** | So quai LAN GIUA moi phong (R1) nam trong 60-150 | phong R1: ~149 quai tong, lan giua ~98 (moi de), lan ben ~51 (vang them) |
 | WAVE | **PASS** | Tong quai / phong khong vuot cap maxTotalAlive | ~149 quai / phong, cap 240 |
-| WEAPON | **PASS** | Vu khi can chien chi khac nhau o dmg (moi thong so khac phai dong nhat) | 12 vu khi can chien; dmg tu 78 den 5606 |
+| WEAPON | **PASS** | Vu khi can chien chi khac nhau o dmg (moi thong so khac phai dong nhat) | 12 vu khi can chien; dmg tu 54 den 3854 |
 | WEAPON | **PASS** | Moi vu khi can chien chem duoc NHIEU muc tieu (>= 3) | targets = 8 |
 | RUN | **PASS** | Lane spring ton tai va separation khong day ngang qua manh | laneSpringPerSec 3.2/s, sepLateralMult 0.35 |
 | WAVE | **PASS** | Moi spawn pattern cho du cua so phan ung (quai dung yen) | can spawn xa >= tapNearM + minReactionSec*speedMps = 7.44m |

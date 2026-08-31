@@ -88,7 +88,7 @@
 
 | Tham số | Giá trị | Đơn vị | Ghi chú |
 |---|---|---|---|
-| tapMaxDuration | 180 | ms | Tăng nếu tester 'muốn bắn mà ra dao' |
+| tapMaxDuration | 110 | ms | Do TRE truoc khi sung bat dau ban lien tuc. Tang neu tester muon ban ma ra dao |
 | tapMaxTravel | 0.05 | S |  |
 | slideVelocityThreshold | 900 | px/s | SO QUAN TRONG NHAT CUA GAME. Test tren may 60Hz va 120Hz |
 | slideDetectWindow | 250 | ms |  |

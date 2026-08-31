@@ -79,6 +79,13 @@ export class InputRouter {
     this.p = { ...this.p0 };
     this.prev = { ...this.p0, t: this.t0 };
     this.peakVel = 0;
+    /* HEN GIO vao HOLD_FIRE. Truoc day _enterHold() CHI duoc goi trong pointermove, nen
+       giu ngon tay DUNG YEN thi khong co su kien move nao va sung khong bao gio ban lien
+       tuc -- phai re tay moi ra dan. Do la "hold bi delay" ma nguoi choi gap. */
+    clearTimeout(this._holdTimer);
+    this._holdTimer = setTimeout(() => {
+      if (this.state === ST.PENDING && this.id !== null) this._enterHold();
+    }, this.P.tapMaxDuration);
   }
 
   _move(e) {
@@ -101,6 +108,7 @@ export class InputRouter {
         return;
       }
       if (elapsed <= this.P.slideWindow && vel >= this.P.slideVel) {
+        clearTimeout(this._holdTimer);
         this.state = ST.SLIDE;                       // KHOA sang nhanh chem
       } else if (elapsed >= this.P.tapMaxDuration) {
         this._enterHold();                           // KHOA sang nhanh sung
@@ -137,6 +145,7 @@ export class InputRouter {
   _up(e) {
     if (e.pointerId !== this.id) return;
     e.preventDefault();
+    clearTimeout(this._holdTimer);
     const now = performance.now();
     const elapsed = now - this.t0;
     const travel = Math.hypot(this.p.x - this.p0.x, this.p.y - this.p0.y);
@@ -239,6 +248,7 @@ export class InputRouter {
   holdPoint() { return this.p; }
 
   dispose() {
+    clearTimeout(this._holdTimer);
     this.el.removeEventListener('pointerdown', this._down);
     this.el.removeEventListener('pointermove', this._move);
     this.el.removeEventListener('pointerup', this._up);

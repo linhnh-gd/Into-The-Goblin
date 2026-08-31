@@ -81,7 +81,7 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 
 ## 4. Prototype đã sửa GDD ở đâu
 
-Đây là phần quan trọng nhất của doc này: **prototype tìm ra 27 lỗi mà đọc doc không thấy.**
+Đây là phần quan trọng nhất của doc này: **prototype tìm ra 29 lỗi mà đọc doc không thấy.**
 
 | # | Phát hiện | Sửa |
 |---|---|---|
@@ -113,6 +113,8 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 | 25 | **Vệt slash vẽ đè lên cả HUD và màn chọn thẻ**, vì canvas 2D của nó có `z-index: 2` trong khi HUD và sheet đều dùng z-index tự động | Bỏ `z-index`: thứ tự DOM đã đúng (`view` → `fxTrail` → `hud` → `screen`) |
 | 26 | **Luật "melee mạnh hơn ranged +30%" có lý do đã hết hiệu lực.** Doc ghi *"nếu không thì không ai dám vào gần và Cướp Đạn chết"* — nhưng trong mô hình chạy X mét người chơi **không chọn** vào gần: quái làn giữa tự đến trước mặt. "Vào gần" không còn là rủi ro phải trả giá | Đảo gate: `meleeAdvantage` 1.45 → **0.80**, melee DPS phải **thấp hơn** ranged. Đối mặt thật là **đạn**: súng mạnh hơn nhưng hữu hạn, dao yếu hơn nhưng miễn phí và nạp đạn lại qua Cướp Đạn. Xem `05` mục 7d |
 | 27 | **`canvas.clientWidth` ra 0 thì lưỡi dao im lặng không trúng gì.** Toạ độ lưỡi dao và vệt slash lấy từ `clientWidth`, mà renderer lại lấy từ `window.innerWidth` — hai nguồn khác nhau. Khi layout chưa xong hoặc pane bị ẩn thì `clientWidth = 0`, lưỡi dao co về một điểm và **không có lỗi nào được ghi ra** | Một nguồn kích thước duy nhất: `resize()` lưu `this.vw/vh` từ `window.innerWidth/Height`, và lưỡi dao, vệt slash, renderer đều dùng nó |
+| 28 | **Giữ ngón tay đứng yên thì súng KHÔNG BAO GIỜ bắn liên tục.** `_enterHold()` chỉ được gọi bên trong `pointermove`, nên nếu ngón tay không nhúc nhích thì không có sự kiện nào và máy trạng thái kẹt ở `PENDING` cho tới lúc nhả tay — lúc đó nó thành một cái TAP. Người chơi phải **rê tay** mới ra đạn liên tục. Doc `03` mô tả máy trạng thái bằng *điều kiện*, không bằng *sự kiện nào đánh thức nó* — nên lỗi này đọc doc không thấy | Đặt `setTimeout` ngay ở `pointerdown`, huỷ khi khoá sang SLIDE hoặc khi nhả tay. Đo: giữ yên hoàn toàn → vào chế độ bắn liên tục sau **132ms**. Hạ `tapMaxDuration` 180 → **110ms** |
+| 29 | **Tăng băng đạn và giảm tốc độ bắn cùng lúc làm vỡ trụ P2.** `magClearRatio = dpsTarget × cycle / waveEHP` chỉ phụ thuộc **thời lượng chu kỳ**, mà `mag↑` và `rpm↓` **đều** kéo dài chu kỳ. Băng ×1.6 + rpm ×0.7 cho ra 8 vũ khí có ratio > 1.0, tức **một băng đạn dọn sạch cả wave** — vòng khoá Đạn↔Stamina chết vì người chơi không bao giờ hết đạn | Biên độ bị chính gate chặn: chốt ở **mag ×1.18, rpm ×0.85**. Muốn băng to hơn nữa thì phải rút ngắn `reloadTime` để bù, chứ không thể chỉ tăng mag |
 
 > **Lỗi #14 và #16 đã bị chính thiết kế vượt qua.** Khi chuyển sang **quái đứng yên**, bài toán đón đầu của
 > `pincer` (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó **đã bị bỏ khỏi code**.
@@ -141,6 +143,10 @@ toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 l
 | Một đoạn quét giết trash | **48 dmg vs 40 HP** → chết ngay, dù melee DPS đã thấp hơn súng | ✓ sàn one-shot |
 | Một nhát quét giết được | tối đa **6**, trung bình **2.1** | thấp hơn trước (7 / 2.65) — xem ghi chú dưới |
 | Không bắn phát nào | mất **312–382 HP** trên 100 HP | phải dọn làn giữa, không có cách khác |
+| Giữ ngón tay **đứng yên hoàn toàn** | vào bắn liên tục sau **132ms** (trước: không bao giờ) | ✓ `03` mục 2b |
+| Giữ ~0.75s | bắn **3 phát** (rpm 254 → 4.2 phát/s) | ✓ tốc độ bắn đã giảm |
+| Tap nhanh 60ms | **1 phát**, không vào chế độ giữ | ✓ |
+| Quẹt nhanh | vào chế độ **chém**, không ra súng, **tốn 0 đạn** | ✓ hẹn giờ bị huỷ đúng |
 
 ### Kiểm chứng súng và chém liên tục
 

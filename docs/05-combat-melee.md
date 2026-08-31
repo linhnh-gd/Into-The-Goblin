@@ -123,7 +123,7 @@ Mọi vũ khí cận chiến dùng **cùng một bộ thông số nhắm bắn**
 | `swingTime` | 0.34 |
 | `knockback` · `critMult` · `corpseLaunch` | 1.0 · 2.5 · 4.0 |
 
-`dmg` là bậc thang duy nhất: **78 → 184 → 432 → 1015 → 2386 → 5606** (tier 1→6) — thấp hơn súng, xem mục 7d.
+`dmg` là bậc thang duy nhất: **54 → 126 → 297 → 698 → 1640 → 3854** (tier 1→6) — thấp hơn súng, xem mục 7d.
 
 Ba lý do đây là luật, không phải chỗ tinh chỉnh:
 1. **Không có vũ khí nào "xấu" ở một trục nào.** Trước đây `targets` từ 2 đến 6 và `reachM` từ 2.0 đến 3.4 —
@@ -206,8 +206,8 @@ không — quái làn giữa tự đến trước mặt. "Vào gần" không cò
 Nên quyết định mỗi giây là: *bắn để giết nhanh mà tốn đạn*, hay *chém để giữ đạn mà chậm hơn*. Nếu dao vừa
 mạnh hơn vừa miễn phí thì không ai bắn cả — đó mới là điều phá vòng lặp, chứ không phải chuyện dám vào gần.
 
-Sàn one-shot vẫn giữ nguyên và **vẫn thắng** khi xung đột: dù DPS thấp hơn, `dmg ≥ trashHp × 1.65` nên một
-đoạn quét vẫn giết trash cùng tier. Đo: dmg 78, một đoạn quét 48 vs trash 40 HP → chết ngay.
+`meleeAdvantage` hạ tiếp xuống **0.55** và `meleeOneShotFactor` 1.65 → **1.15**. Sàn one-shot vẫn thắng khi xung đột, nhưng nó giờ chỉ bảo đảm **một NHÁT CHÉM** giết trash — một
+đoạn quét trong chế độ chém liên tục chỉ ăn 62% nên cần **2 lượt**. Đo: dmg 54 vs trash 40 HP → một nhát chém giết ngay.
 
 ## 8. Ràng buộc cân bằng (audit)
 
