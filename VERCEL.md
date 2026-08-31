@@ -33,3 +33,24 @@ Có sẵn `deploy_vercel.ps1` (dùng Vercel REST API, không cần Node/npm/verc
 ```bash
 powershell -ExecutionPolicy Bypass -File .\deploy_vercel.ps1 -Token "<vercel-token>"
 ```
+
+## Nếu gặp `404: NOT_FOUND`
+
+Gốc repo **không có `index.html`** (chỉ có `GDD.html`, `content.html`, …). Nên khi Root Directory
+để mặc định là gốc repo, Vercel không tìm thấy file nào cho `/` → trả về 404 của Vercel
+(không phải lỗi JS — trang trắng có khung "404: NOT_FOUND" là Vercel, không phải game).
+
+Cách sửa đúng: đặt **Root Directory = `prototype`** trong Settings → Build & Deployment, rồi
+**Redeploy** (đổi setting không tự deploy lại).
+
+Repo cũng đã có sẵn đường dự phòng để chạy được ngay cả khi Root Directory là gốc repo:
+
+| File | Việc |
+|---|---|
+| `index.html` (gốc) | Redirect sang `prototype/`. Mọi đường dẫn trong prototype đều **tương đối** nên nó chạy đúng ở subpath |
+| `.vercelignore` | Chỉ upload `index.html` + `prototype/` — giữ `docs/`, `data/`, `*.ps1` **không** lên URL công khai |
+| `vercel.json` (gốc) | Header `no-cache` cho `/prototype/data/` và `/prototype/js/` |
+
+Mọi pattern trong `.vercelignore` đều **neo bằng `/` ở đầu** (`/data/`, không phải `data/`).
+Bỏ dấu neo là loại luôn `prototype/data/` và game mất toàn bộ số cân bằng.
+Muốn GDD đọc được công khai thì xoá dòng `/*.html` và `/docs/`.

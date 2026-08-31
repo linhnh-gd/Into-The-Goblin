@@ -1,0 +1,12 @@
+# Chi deploy prototype. Cac pattern deu neo bang "/" o dau -> chi khop
+# thu muc goc, KHONG khop prototype/data hay prototype/*.md.
+/docs/
+/data/
+/artifact/
+/.claude/
+/*.ps1
+/*.md
+/*.html
+!/index.html
+
+# Muon GDD doc duoc tren URL cong khai thi xoa dong "/*.html" va "/docs/".
