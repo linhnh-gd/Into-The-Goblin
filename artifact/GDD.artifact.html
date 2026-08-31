@@ -152,7 +152,7 @@ footer{padding:34px 0 0;color:var(--muted);font-size:12.5px;border-top:1px solid
 <p class="sub">FPS màn hình dọc, chơi một tay — lối di chuyển của Into the Dead, cộng cảm giác mật độ quái đông của Guns 'n Goblins (chỉ lấy feel, không lấy cơ chế)</p>
 <p class="quote">Xuống sâu nữa. Vàng ở dưới đó.</p>
 <ul class="chips"><li><b>30</b><span>vũ khí</span></li><li><b>21</b><span>loại quái</span></li><li><b>7</b><span>boss</span></li><li><b>50</b><span>thẻ nâng cấp</span></li><li><b>12</b><span>bảo vật</span></li><li><b>24</b><span>talent</span></li><li><b>19</b><span>wave template</span></li><li><b>7</b><span>tầng hầm</span></li><li><b>12</b><span>công trình</span></li></ul>
-<div class="stat"><div><b class="ok">57</b><span>audit pass</span></div><div><b class="warn">2</b><span>warn</span></div><div><b class="bad">0</b><span>fail</span></div><div><b>19</b><span>pillar doc</span></div></div>
+<div class="stat"><div><b class="ok">58</b><span>audit pass</span></div><div><b class="warn">2</b><span>warn</span></div><div><b class="bad">0</b><span>fail</span></div><div><b>19</b><span>pillar doc</span></div></div>
 </header>
 <section class="doc" id="escal"><p class="docnum">HOOK</p><h2>Nhịp leo thang &amp; mật độ quái</h2><div class="rule"></div><div class="body"><p>Không có nút nào cho người chơi tự bơm độ khó. Hầm tự đông dần và tự khoẻ dần theo từng phòng — đúng dòng docs gốc &quot;độ khó mỗi wave sẽ tăng dần, có thể là tăng số lượng, loại quái mới khoẻ hơn&quot;. Cột vàng bên dưới là số quái mỗi wave; cột tím là HP mỗi con. Chỗ hai cột doãng ra xa nhau chính là chỗ cảm giác &quot;một mình giữa cả hầm&quot; xuất hiện.</p><div class="ladder">
 <div class="rung"><span class="g">R1</span><span class="bars"><i class="bar gold" style="width:5.93%"></i><i class="bar bell" style="width:1.07%"></i></span><span class="mult">29 / x1.0</span></div>
@@ -1193,6 +1193,31 @@ w_epic   = 10 + 1.0*L             w_legend =  2 + 0.4*L      (chuẩn hoá về 
 <tr><td>Elite</td><td>Tên Đồ Tể</td><td>Cận chiến</td><td>Giữ khoảng cách</td></tr>
 <tr><td>Elite</td><td>Ổ Vàng</td><td>Ăn vàng trên sàn rồi bỏ chạy mang theo</td><td>Chọn: rượt nó hay giữ hàng</td></tr>
 </tbody></table></div>
+<h3>2b. Hai con phá chiến thuật đầu tiên — spec cài đặt</h3>
+<p>Đây là hai loại quái duy nhất (tính tới nay) đã cài <strong>hành vi riêng</strong> trong prototype. Số nằm ở <code>data/enemies.json</code> field <code>behavior</code>; audit có gate kiểm tra khối này đầy đủ.</p>
+<h4>Goblin Khiên (<code>behavior.kind = &quot;shield&quot;</code>)</h4>
+<div class="tw"><table>
+<thead><tr><th>Tham số</th><th>Giá trị</th><th>Nghĩa</th></tr></thead><tbody>
+<tr><td><code>frontRangedMult</code></td><td>0.30</td><td>Damage <strong>tầm xa</strong> từ chính diện chỉ còn 30%</td></tr>
+<tr><td><code>cycleSec</code> / <code>openSec</code></td><td>4.0 / 0.8</td><td>Mỗi 4s hở khiên 0.8s. <strong>Trong lúc hở, mắt nó sáng vàng</strong> — đó là tín hiệu duy nhất người chơi cần</td></tr>
+<tr><td><code>kbResist</code> / <code>kbResistBack</code></td><td>0.55 / 0.05</td><td>Chắn được lực đẩy từ trước; sau lưng thì gần như không</td></tr>
+<tr><td><code>turnRateDeg</code></td><td>92</td><td><strong>Quay chậm</strong> — đây là thứ làm counter &quot;đánh sau lưng&quot; tồn tại thật</td></tr>
+<tr><td><code>frontalDot</code></td><td>0.20</td><td>Ngưỡng coi là &quot;chính diện&quot;</td></tr>
+<tr><td><code>bypassArchetypes</code></td><td><code>hammer</code>, <code>acid</code></td><td>Búa và axit bỏ qua khiên</td></tr>
+<tr><td><code>bypassHeavySlash</code></td><td>true</td><td>Chém nặng bỏ qua khiên</td></tr>
+</tbody></table></div>
+<p><strong>Vì sao cần <code>turnRateDeg</code>:</strong> bản doc đầu ghi counter &quot;đánh sau lưng&quot; mà không nói quái quay thế nào. Trong một hành lang mà quái <strong>luôn tự động hướng về người chơi</strong>, &quot;sau lưng&quot; là vị trí không bao giờ tồn tại — counter đó là counter giấy. Cho nó quay 92°/s thì <strong>Xốc Tới</strong> (quẹt dọc lên, tiến 2m) thật sự vòng được ra sau trước khi nó kịp quay lại. Đây là phát hiện của prototype, xem <code>18</code> mục 4.</p>
+<h4>Ogre Hầm (<code>behavior.kind = &quot;slam&quot;</code>)</h4>
+<div class="tw"><table>
+<thead><tr><th>Tham số</th><th>Giá trị</th><th>Nghĩa</th></tr></thead><tbody>
+<tr><td><code>attackRangeM</code></td><td>2.6</td><td>Bắt đầu vung từ 2.6m — xa hơn quái thường (1.2m)</td></tr>
+<tr><td><code>telegraphSec</code></td><td>0.6</td><td><strong>Vòng đỏ hiện trên sàn</strong> suốt 0.6s trước khi đập</td></tr>
+<tr><td><code>aoeRadiusM</code></td><td>2.5</td><td>Chỉ trúng nếu người chơi <strong>còn trong vòng</strong> lúc đập xuống</td></tr>
+<tr><td><code>cooldownSec</code></td><td>2.6</td><td></td></tr>
+<tr><td><code>weakPointMult</code></td><td>2.0</td><td>Tap vào <strong>nửa dưới</strong> hitbox (bụng) = damage ×2</td></tr>
+</tbody></table></div>
+<p><strong>Luật bắt buộc: đòn AoE phải COMMIT.</strong> Khi đã vào telegraph, Ogre vung <strong>dù người chơi đã lùi ra xa</strong>. Nếu không commit thì Bước Lùi <em>huỷ</em> đòn thay vì <em>né</em> đòn, và người chơi mất hẳn cảm giác &quot;vừa né được&quot; — tức là mất luôn lý do tồn tại của đòn AoE. Xem <code>18</code> mục 4.</p>
+<p>Vì <code>aoeRadius</code> (2.5) &lt; <code>attackRange</code> (2.6), và Bước Lùi đi 1.2m, nên <strong>một lần Bước Lùi đúng lúc luôn né được</strong>. Đó là hợp đồng giữa hai con số này — đổi một cái thì phải kiểm cái kia.</p>
 <h3>3. Affix (chỉ từ Depth 4)</h3>
 <div class="tw"><table>
 <thead><tr><th>Affix</th><th>Hiệu ứng</th><th>Tín hiệu</th></tr></thead><tbody>
@@ -2013,9 +2038,18 @@ seed_reload = hash(seed_room, shotCount)      -- vị trí vùng Nạp Hoàn H�
 { &quot;enemies&quot;: [ {
   &quot;id&quot;,&quot;name&quot;,&quot;role&quot;:&quot;trash|ranged|special|support|heavy|elite|boss&quot;,&quot;introDepth&quot;,
   &quot;hp&quot;,&quot;dmg&quot;,&quot;speed&quot;,&quot;kbResist&quot;:0-1,&quot;tpCost&quot;,&quot;goldDrop&quot;,&quot;attackType&quot;,&quot;mechanic&quot;,
-  &quot;counters&quot;:&quot;người chơi phải làm gì&quot;,&quot;sfxSpawn&quot;,&quot;tags&quot;:[]
+  &quot;counters&quot;:&quot;người chơi phải làm gì&quot;,&quot;sfxSpawn&quot;,&quot;tags&quot;:[],
+  behavior? : { &quot;kind&quot;:&quot;shield|slam&quot;, ... }   // chi quai co hanh vi rieng moi co
 } ], &quot;bosses&quot;: [ { &quot;id&quot;,&quot;name&quot;,&quot;depth&quot;,&quot;hp&quot;,&quot;phases&quot;:[...],&quot;ttkTargetSec&quot;,&quot;drops&quot; } ],
   &quot;affixes&quot;: [ { &quot;id&quot;,&quot;name&quot;,&quot;effect&quot;,&quot;signal&quot;,&quot;minDepth&quot;,&quot;excludes&quot;:[] } ] }
+</code></pre>
+<p><strong><code>behavior</code> (tuy chon, chi quai co hanh vi rieng)</strong> — audit co gate kiem tra day du:</p>
+<pre class="ascii"><code>
+kind &quot;shield&quot;:  frontRangedMult  kbResistBack  cycleSec  openSec  turnRateDeg  frontalDot
+                bypassArchetypes[]  bypassHeavySlash
+                rang buoc: 0 &lt; openSec &lt; cycleSec · frontRangedMult &lt; 1 · phai co it nhat 1 duong pha khien
+kind &quot;slam&quot;:    attackRangeM  telegraphSec  aoeRadiusM  cooldownSec  weakPointMult  weakPointZone  turnRateDeg
+                rang buoc: telegraphSec &gt;= 0.5 (phai ne kip) · aoeRadiusM &lt;= attackRangeM · weakPointMult &gt; 1
 </code></pre>
 <h4><code>data/waves.json</code></h4>
 <pre class="ascii"><code>
@@ -2222,19 +2256,23 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>Vàng: nổ chùm, vật lý, hút, <strong>coin chime ladder</strong>, cột vàng</td><td><strong>Có</strong></td></tr>
 <tr><td>7 biome theo Depth, cửa &quot;tối&quot; thu đuốc</td><td><strong>Có</strong></td></tr>
 <tr><td>Phòng nghỉ (Shop / Miếu / Kho báu / Suối)</td><td><strong>Có</strong> (tự động, chưa có UI mua)</td></tr>
+<tr><td><strong>Goblin Khiên</strong>: khiên chắn tầm xa x0.3, hở 0.8s/4s, quay chậm 92°/s nên vòng ra sau lưng được, búa/axit/chém nặng bỏ qua</td><td><strong>Có</strong></td></tr>
+<tr><td><strong>Ogre Hầm</strong>: vòng cảnh báo AoE trên sàn, telegraph 0.6s có commit, yếu điểm bụng x2.0</td><td><strong>Có</strong></td></tr>
+<tr><td>Chọn Depth khởi đầu (1/3/5) + chọn dao ở màn hình đầu</td><td><strong>Có</strong> — để test quái Depth 3+ không phải chơi lại từ đầu</td></tr>
 </tbody></table></div>
 <h3>3. Cái gì CHƯA có (ngoài scope prototype)</h3>
 <ul>
 <li><strong>Boss</strong> — phòng 10 hiện chỉ là một wave lớn (<code>roomTypeMult</code> 1.6), không có boss thật.</li>
-<li>Meta ngoài run: Weapon XP, talent, Trại Mỏ, Depth unlock — prototype luôn bắt đầu ở D1 với pistol + dao găm.</li>
+<li>Meta ngoài run: Weapon XP, talent, Trại Mỏ, Depth unlock. Depth khởi đầu và dao chọn được ở màn hình đầu</li>
+<span class="cont">nhưng đó là công cụ test, không phải meta thật.</span>
 <li>UI shop để tự chọn mua (hiện tự mua máu + đạn).</li>
 <li>26 thẻ còn lại và toàn bộ 12 Bảo Vật.</li>
-<li>Quái từ Depth 3 trở xuống (Khiên, Ogre, Dơi, Đào Hầm, support, heavy) đã có trong data và director</li>
-<span class="cont">spawn được, nhưng <strong>hành vi riêng</strong> của chúng chưa cài (khiên chắn, charge, bay, trồi lên) — hiện chúng</span>
-<span class="cont">chạy như trash có HP cao hơn.</span>
+<li>Quái Depth 4+ (Dơi Hầm bay, Goblin Đào Hầm trồi lên sau lưng, Đầu Bò charge, support, Quỷ Hầm)</li>
+<span class="cont">đã có trong data và director spawn được, nhưng <strong>hành vi riêng chưa cài</strong> — hiện chạy như trash HP cao.</span>
+<span class="cont"><strong>Đã cài: Goblin Khiên + Ogre Hầm</strong> (xem <code>09</code> mục 2b).</span>
 </ul>
 <h3>4. Prototype đã sửa GDD ở đâu</h3>
-<p>Đây là phần quan trọng nhất của doc này: <strong>prototype tìm ra 6 lỗi mà đọc doc không thấy.</strong></p>
+<p>Đây là phần quan trọng nhất của doc này: <strong>prototype tìm ra 8 lỗi mà đọc doc không thấy.</strong></p>
 <div class="tw"><table>
 <thead><tr><th>#</th><th>Phát hiện</th><th>Sửa</th></tr></thead><tbody>
 <tr><td>1</td><td>17 con cùng đi tới <strong>một điểm</strong> → xếp chồng lên nhau, màn hình thành một bức tường capsule, không đọc được gì</td><td>Thêm separation bằng spatial hash. Đây là thứ doc chưa bao giờ nói tới nhưng bắt buộc phải có</td></tr>
@@ -2243,8 +2281,23 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>4</td><td><strong>Trần DPS ở dải Cận chiến 0.28×HP/giây tại R1</strong> = chết sau 3.6s tiếp xúc. Không còn chỗ để học</td><td>Hạ base xuống <strong>0.16</strong> (~6.3s), giữ trần 0.55. Đã sửa <code>16</code> mục 5 và <code>06</code> mục 5. <strong>Cần human playtest xác nhận</strong></td></tr>
 <tr><td>5</td><td>Phòng đầu tiên của run có thể roll ra wave <strong>Thuỷ Triều 29 con</strong> → người mới chết ngay</td><td>Phòng 1–2 của mỗi Depth chỉ roll wave <code>tpMult ≤ 1.05</code>; wave đầu tiên của run luôn là <code>wv_dongchay</code>. Đúng <code>07</code> mục 3.4 nhưng doc chưa nói rõ là ràng buộc cứng</td></tr>
 <tr><td>6</td><td>Telegraph đỏ cộng dồn → <strong>cả đám đỏ vĩnh viễn</strong>, mất hoàn toàn tín hiệu &quot;con này sắp đánh&quot;</td><td>Telegraph lấy từ cooldown đòn: chỉ đỏ trong 0.4s trước khi vung</td></tr>
+<tr><td>7</td><td>Counter <strong>&quot;đánh sau lưng Goblin Khiên&quot;</strong> là counter giấy: trong hành lang mà quái luôn tự hướng về người chơi thì &quot;sau lưng&quot; không bao giờ tồn tại</td><td>Cho quái một <strong>tốc độ quay có giới hạn</strong> (<code>turnRateDeg</code>, Khiên = 92°/s). Xốc Tới giờ thật sự vòng được ra sau. Đã ghi vào <code>09</code> mục 2b</td></tr>
+<tr><td>8</td><td>Bước Lùi <strong>huỷ</strong> đòn AoE của Ogre thay vì <strong>né</strong> nó — vì lùi ra khỏi <code>attackRange</code> là ogre thoát trạng thái đánh. Mất hẳn cảm giác &quot;vừa né được&quot;, tức mất lý do tồn tại của đòn AoE</td><td>Đòn AoE phải <strong>COMMIT</strong>: đã vào telegraph là vung, dù người chơi đã lùi. Né = ra khỏi <code>aoeRadius</code>. Đã ghi vào <code>09</code> mục 2b</td></tr>
 </tbody></table></div>
 <p>Ngoài ra prototype xác nhận <strong>công thức số quái phải tính theo <code>composition</code></strong>, không phải <code>tpCost</code> trung bình toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 lần. Đã ghi vào <code>16</code> mục 4.4.</p>
+<h4>Kiểm chứng hai hành vi mới (test tiền định, <code>ITG.run</code> bước dt cố định)</h4>
+<div class="tw"><table>
+<thead><tr><th>Tình huống</th><th>Kết quả</th><th>Đúng docs?</th></tr></thead><tbody>
+<tr><td>Bắn Khiên từ chính diện, khiên giương</td><td>100 → <strong>30</strong> damage (×0.3), số hiện màu xám</td><td>✓ <code>09</code></td></tr>
+<tr><td>Bắn đúng lúc <strong>hở khiên</strong></td><td>100 → <strong>100</strong></td><td>✓</td></tr>
+<tr><td>Bắn bằng <strong>axit</strong> (bypass)</td><td>100 → <strong>100</strong></td><td>✓</td></tr>
+<tr><td>Bắn <strong>từ sau lưng</strong> (face quay ngược)</td><td>100 → <strong>100</strong> + cờ <code>flanked</code></td><td>✓</td></tr>
+<tr><td><strong>Chém nặng</strong> / <strong>búa</strong></td><td>100 → <strong>100</strong>, và kbResist rơi 0.55 → 0.05</td><td>✓</td></tr>
+<tr><td>Bắn Ogre vào thân</td><td>100 → <strong>100</strong></td><td>✓</td></tr>
+<tr><td>Bắn Ogre vào <strong>bụng</strong> (tap nửa dưới)</td><td>100 → <strong>200</strong> (×2.0)</td><td>✓</td></tr>
+<tr><td>Ogre đập, <strong>không né</strong></td><td>mất 67.5 HP, vòng đỏ đã hiện trước 0.6s</td><td>✓</td></tr>
+<tr><td>Ogre đập, <strong>Bước Lùi giữa telegraph</strong> (2.4m → 3.6m)</td><td><strong>0 HP</strong>, banner &quot;NÉ ĐƯỢC&quot;</td><td>✓</td></tr>
+</tbody></table></div>
 <h3>5. Số đo từ lần chạy tự động</h3>
 <p>Bot tự chơi (tap con xa nhất, quẹt khi có con trong 2.3m, reload khi hết đạn):</p>
 <div class="tw"><table>
@@ -2266,9 +2319,11 @@ powershell -ExecutionPolicy Bypass -File .\deploy_vercel.ps1 -Token &quot;&lt;ve
 <h3>7. Việc tiếp theo cho prototype</h3>
 <ol>
 <li><strong>Đo trên người thật</strong> — 10 người, mỗi người 2 phút, ghi tỉ lệ input huỷ. Đây là cổng Sprint 0.</li>
-<li>Cài hành vi riêng cho Goblin Khiên và Ogre Hầm — chúng là hai con phá chiến thuật đầu tiên (<code>09</code>).</li>
 <li>Thả 150 con trong một phòng để đo frame thật trên điện thoại tầm trung (rủi ro R2).</li>
 <li>Thêm 1 boss (Goblin Vương Béo) để kiểm tra cửa sổ bắt buộc dùng dao.</li>
+<li>Cài hành vi cho nhóm Depth 4+: Dơi Hầm (bay, trục dọc), Goblin Đào Hầm (trồi lên sau lưng),</li>
+<span class="cont">Đầu Bò Đá (charge rồi đâm tường choáng 2s) — ba con này dạy ba trục không gian khác nhau.</span>
+<li>UI shop để tự chọn mua thay vì tự động.</li>
 </ol>
 </div></section>
 <section class="doc" id="d-weapons"><p class="docnum">DATA &middot; data/weapons.json</p><h2>Vũ khí</h2><div class="rule"></div>
@@ -2324,8 +2379,8 @@ powershell -ExecutionPolicy Bypass -File .\deploy_vercel.ps1 -Token &quot;&lt;ve
 <tr data-hay="tướng goblin en_elite_tuonggoblin elite d2 700 30 2.2 0.70 12.0 60 có 2 affix ngẫu nhiên. hô hào: mọi trash trong phòng +20% damage. rơi chìa khoá dồn burst damage, dùng relic/ultimate"><td>Tướng Goblin</td><td>en_elite_tuonggoblin</td><td>elite</td><td>D2</td><td>700</td><td>30</td><td>2.2</td><td>0.70</td><td>12.0</td><td>60</td><td>Có 2 affix ngẫu nhiên. Hô hào: mọi trash trong phòng +20% damage. Rơi Chìa Khoá</td><td>Dồn burst damage, dùng relic/ultimate</td></tr>
 <tr data-hay="goblin ném đá en_ranged_nemda ranged d2 34 12 1.8 0.15 2.0 6 đứng ở dải xa ném đá theo đường vòng cung, tốc độ 11 m/s phải tiến lên hoặc bắn tỉa — không được rùa tại chỗ"><td>Goblin Ném Đá</td><td>en_ranged_nemda</td><td>ranged</td><td>D2</td><td>34</td><td>12</td><td>1.8</td><td>0.15</td><td>2.0</td><td>6</td><td>Đứng ở dải Xa ném đá theo đường vòng cung, tốc độ 11 m/s</td><td>Phải tiến lên hoặc bắn tỉa — không được rùa tại chỗ</td></tr>
 <tr data-hay="goblin thuốc nổ en_special_thuocno special d2 30 25 3.0 0.05 2.2 6 lao vào rồi tự nổ bán kính 3m. bình nổ trên lưng bắn được — nổ sớm gây 25 damage lên đồng bọn knockback hoặc bắn bình nổ khi nó còn ở dải giữa"><td>Goblin Thuốc Nổ</td><td>en_special_thuocno</td><td>special</td><td>D2</td><td>30</td><td>25</td><td>3.0</td><td>0.05</td><td>2.2</td><td>6</td><td>Lao vào rồi tự nổ bán kính 3m. Bình nổ trên lưng bắn được — nổ sớm gây 25 damage lên đồng bọn</td><td>Knockback hoặc bắn bình nổ khi nó còn ở dải Giữa</td></tr>
-<tr data-hay="ogre hầm en_heavy_ogreham heavy d3 320 26 1.4 0.85 6.0 20 gần như không đẩy được. đập đất gây aoe 2.5m, telegraph 0.6s kite bằng bước lùi, bắn yếu điểm ở bụng (x2.0)"><td>Ogre Hầm</td><td>en_heavy_ogreham</td><td>heavy</td><td>D3</td><td>320</td><td>26</td><td>1.4</td><td>0.85</td><td>6.0</td><td>20</td><td>Gần như không đẩy được. Đập đất gây AoE 2.5m, telegraph 0.6s</td><td>Kite bằng Bước Lùi, bắn yếu điểm ở bụng (x2.0)</td></tr>
-<tr data-hay="goblin khiên en_special_khien special d3 90 10 1.6 0.55 3.0 7 khiên chắn chính diện: damage tầm xa x0.3, kbresist 0.55 (sau lưng chỉ 0.05). vung khiên mỗi 4s, hở 0.8s búa (bỏ qua khiên), chém nặng, axit, hoặc đánh khi nó vung khiên"><td>Goblin Khiên</td><td>en_special_khien</td><td>special</td><td>D3</td><td>90</td><td>10</td><td>1.6</td><td>0.55</td><td>3.0</td><td>7</td><td>Khiên chắn chính diện: damage tầm xa x0.3, kbResist 0.55 (sau lưng chỉ 0.05). Vung khiên mỗi 4s, hở 0.8s</td><td>Búa (bỏ qua khiên), chém nặng, axit, hoặc đánh khi nó vung khiên</td></tr>
+<tr data-hay="ogre hầm en_heavy_ogreham heavy d3 320 26 1.4 0.85 6.0 20 gần như không đẩy được. đập đất gây aoe 2.5m, telegraph 0.6s có vòng cảnh báo trên sàn kite bằng bước lùi ra khỏi vòng, bắn yếu điểm ở bụng (x2.0)"><td>Ogre Hầm</td><td>en_heavy_ogreham</td><td>heavy</td><td>D3</td><td>320</td><td>26</td><td>1.4</td><td>0.85</td><td>6.0</td><td>20</td><td>Gần như không đẩy được. Đập đất gây AoE 2.5m, telegraph 0.6s có vòng cảnh báo trên sàn</td><td>Kite bằng Bước Lùi ra khỏi vòng, bắn yếu điểm ở bụng (x2.0)</td></tr>
+<tr data-hay="goblin khiên en_special_khien special d3 90 10 1.6 0.55 3.0 7 khiên chắn chính diện: damage tầm xa x0.3, kbresist 0.55 (sau lưng chỉ 0.05). vung khiên mỗi 4s, hở 0.8s búa (bỏ qua khiên), chém nặng, axit, hoặc đánh khi nó vung khiên, hoặc xốc tới vòng ra sau lưng"><td>Goblin Khiên</td><td>en_special_khien</td><td>special</td><td>D3</td><td>90</td><td>10</td><td>1.6</td><td>0.55</td><td>3.0</td><td>7</td><td>Khiên chắn chính diện: damage tầm xa x0.3, kbResist 0.55 (sau lưng chỉ 0.05). Vung khiên mỗi 4s, hở 0.8s</td><td>Búa (bỏ qua khiên), chém nặng, axit, hoặc đánh khi nó vung khiên, hoặc Xốc Tới vòng ra sau lưng</td></tr>
 <tr data-hay="tên đồ tể en_elite_dote elite d4 900 45 3.2 0.75 14.0 80 lao tới dải cận chiến và ở đó. móc câu kéo người chơi lại gần từ 6m giữ khoảng cách bằng shotgun/chuỳ, đừng đấu dao với hắn"><td>Tên Đồ Tể</td><td>en_elite_dote</td><td>elite</td><td>D4</td><td>900</td><td>45</td><td>3.2</td><td>0.75</td><td>14.0</td><td>80</td><td>Lao tới dải Cận chiến và ở đó. Móc câu kéo người chơi lại gần từ 6m</td><td>Giữ khoảng cách bằng shotgun/chuỳ, đừng đấu dao với hắn</td></tr>
 <tr data-hay="dơi hầm en_special_doiham special d4 22 7 3.6 0.40 1.6 5 bay ở độ cao 2–4m, lao xuống theo đường chéo. bị đẩy cả trục dọc (bay lên nhìn rất sướng) bắn, hoặc chém chéo lên — chém ngang không tới"><td>Dơi Hầm</td><td>en_special_doiham</td><td>special</td><td>D4</td><td>22</td><td>7</td><td>3.6</td><td>0.40</td><td>1.6</td><td>5</td><td>Bay ở độ cao 2–4m, lao xuống theo đường chéo. Bị đẩy cả trục dọc (bay lên nhìn rất sướng)</td><td>Bắn, hoặc chém chéo lên — chém ngang không tới</td></tr>
 <tr data-hay="goblin đào hầm en_special_daoham special d4 45 14 2.4 0.20 2.4 8 trồi lên từ sàn phía sau người chơi sau 2.5s, có tiếng đất nứt báo trước 0.8s bước lùi rồi quay chém — dạy người chơi rằng phía sau cũng tồn tại"><td>Goblin Đào Hầm</td><td>en_special_daoham</td><td>special</td><td>D4</td><td>45</td><td>14</td><td>2.4</td><td>0.20</td><td>2.4</td><td>8</td><td>Trồi lên từ sàn PHÍA SAU người chơi sau 2.5s, có tiếng đất nứt báo trước 0.8s</td><td>Bước Lùi rồi quay chém — dạy người chơi rằng phía sau cũng tồn tại</td></tr>
@@ -2881,5 +2936,5 @@ powershell -ExecutionPolicy Bypass -File .\deploy_vercel.ps1 -Token &quot;&lt;ve
 </tbody></table></div>
 
 </section>
-<footer><p>Trang này do build_pages.ps1 sinh ra từ data/*.json và docs/*.md — KHÔNG sửa tay. &middot; audit: 59 check</p></footer>
+<footer><p>Trang này do build_pages.ps1 sinh ra từ data/*.json và docs/*.md — KHÔNG sửa tay. &middot; audit: 60 check</p></footer>
 </main></div>

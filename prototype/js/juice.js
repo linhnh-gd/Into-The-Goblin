@@ -7,7 +7,8 @@ import { GD } from './data.js';
 
 const GOLD_CAP = 400;      // gamefeel.globalRules.goldPhysicsCap
 const CORPSE_CAP = 14;     // ragdollCap 12, +2 dem
-const NUM_CAP = 14;        // damageNumberCap
+const NUM_CAP = 14;       // damageNumberCap
+const S_NORMAL = { size: '15px', color: '#fff' };
 
 export class Juice {
   constructor(scene, camera, hudEl, audio) {
@@ -55,12 +56,42 @@ export class Juice {
       this.nums.push({ el: d, on: false, t: 0, x: 0, y: 0, z: 0 });
     }
 
+    /* ---- vong canh bao tren san (don AoE cua Ogre) ----
+       Bat buoc phai co: nguoi choi phai THAY duoc ban kinh nguy hiem truoc 0.6s
+       moi ne kip. Khong co vong nay thi don AoE la chet oan (docs/06 muc 4). */
+    const RING_CAP = 8;
+    this.rings = [];
+    for (let i = 0; i < RING_CAP; i++) {
+      this.rings.push({ on: false, x: 0, z: 0, r0: 0, r1: 1, t: 0, dur: 1, warn: true });
+    }
+    const ringGeo = new THREE.RingGeometry(0.86, 1.0, 40);
+    ringGeo.rotateX(-Math.PI / 2);
+    this.ringMat = new THREE.MeshBasicMaterial({
+      color: 0xffffff, transparent: true, opacity: 0.85, side: THREE.DoubleSide, depthWrite: false,
+    });
+    this.ringMesh = new THREE.InstancedMesh(ringGeo, this.ringMat, RING_CAP);
+    this.ringMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    this.ringMesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(RING_CAP * 3), 3);
+    this.ringMesh.frustumCulled = false;
+    this.ringMesh.count = 0;
+    scene.add(this.ringMesh);
+
     this._m = new THREE.Matrix4();
     this._q = new THREE.Quaternion();
     this._v = new THREE.Vector3();
     this._c = new THREE.Color();
     this._proj = new THREE.Vector3();
     this._eu = new THREE.Euler();
+  }
+
+  /** warn = vong do phinh ra trong luc telegraph; !warn = vong trang no ra luc trung. */
+  addRing(x, z, radius, dur, warn) {
+    const slot = this.rings.find((r) => !r.on) || this.rings[0];
+    slot.on = true; slot.t = 0; slot.dur = Math.max(0.05, dur);
+    slot.x = x; slot.z = z;
+    slot.r0 = warn ? radius * 0.25 : radius * 0.6;
+    slot.r1 = radius;
+    slot.warn = warn;
   }
 
   /* ---------------- shake / hitstop ---------------- */
@@ -121,12 +152,19 @@ export class Juice {
   }
 
   /* ---------------- so damage ---------------- */
-  addNumber(x, y, z, text, crit) {
+  /** style: "normal" | "crit" | "weak" | "blocked" */
+  addNumber(x, y, z, text, style) {
     const slot = this.nums.find((n) => !n.on) || this.nums[0];
     slot.on = true; slot.t = 0; slot.x = x; slot.y = y; slot.z = z;
     slot.el.textContent = text;
-    slot.el.style.fontSize = crit ? '27px' : '15px';
-    slot.el.style.color = crit ? '#FFC53D' : '#fff';
+    const S = {
+      normal:  { size: '15px', color: '#fff' },
+      crit:    { size: '27px', color: '#FFC53D' },
+      weak:    { size: '30px', color: '#FF8A00' },   // yeu diem Ogre
+      blocked: { size: '13px', color: '#8B93A2' },   // khien chan
+    }[style] || S_NORMAL;
+    slot.el.style.fontSize = S.size;
+    slot.el.style.color = S.color;
   }
 
   /* ---------------- update ---------------- */
@@ -193,6 +231,27 @@ export class Juice {
     this.corpseMesh.instanceMatrix.needsUpdate = true;
     this.corpseMesh.instanceColor.needsUpdate = true;
 
+    /* vong canh bao / vong no */
+    let ri = 0;
+    const rcol = this.ringMesh.instanceColor.array;
+    for (const r of this.rings) {
+      if (!r.on) continue;
+      r.t += dt;
+      const k = r.t / r.dur;
+      if (k >= 1) { r.on = false; continue; }
+      const rad = r.r0 + (r.r1 - r.r0) * (r.warn ? k : Math.sqrt(k));
+      this._m.makeScale(rad, 1, rad);
+      this._m.setPosition(r.x, 0.035, r.z);
+      this.ringMesh.setMatrixAt(ri, this._m);
+      const fade = r.warn ? 0.35 + 0.65 * k : 1 - k;
+      if (r.warn) { rcol[ri * 3] = 1 * fade; rcol[ri * 3 + 1] = 0.24 * fade; rcol[ri * 3 + 2] = 0.19 * fade; }
+      else { rcol[ri * 3] = fade; rcol[ri * 3 + 1] = fade * 0.85; rcol[ri * 3 + 2] = fade * 0.6; }
+      ri++;
+    }
+    this.ringMesh.count = ri;
+    this.ringMesh.instanceMatrix.needsUpdate = true;
+    this.ringMesh.instanceColor.needsUpdate = true;
+
     /* so damage */
     const w = window.innerWidth, h = window.innerHeight;
     for (const n of this.nums) {
@@ -216,7 +275,9 @@ export class Juice {
   clearWorld() {
     for (const c of this.gold) c.on = false;
     for (const c of this.corpses) c.on = false;
+    for (const r of this.rings) r.on = false;
     this.goldMesh.count = 0;
     this.corpseMesh.count = 0;
+    this.ringMesh.count = 0;
   }
 }

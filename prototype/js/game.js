@@ -62,11 +62,16 @@ export class Game {
   }
 
   /* =============================== RUN =============================== */
-  newRun() {
+  /**
+   * @param {number} startDepth Depth khoi dau (Trai Mo: Gieng Sau, docs/10) — o prototype
+   *        dung de test quai tu Depth 3+ ma khong phai choi lai tu dau.
+   * @param {string} meleeId id vu khi can chien khoi dau (Bua Da bo qua khien).
+   */
+  newRun(startDepth = 1, meleeId = 'mw_dagger_daogam') {
     const c = P();
     this.const = c;
-    const rw = weapon('rw_pistol_kendong');
-    const mw = weapon('mw_dagger_daogam');
+    const rw = weapon(startDepth >= 3 ? 'rw_rifle_gongsat' : 'rw_pistol_kendong');
+    const mw = weapon(meleeId);
     this.rw = rw; this.mw = mw;
 
     this.mods = {
@@ -105,22 +110,25 @@ export class Game {
     this.dodgeCd = 0; this.dashCd = 0; this.iframe = 0;
     this.dmgBudget = undefined;
     this.roomClearSweep = 0;
+    this.blockHintShown = false;
+    this.flankHintShown = false;
+    this.dodgeHintShown = false;
     this.walked = 0;
     this.playerZ = 0;
     this.advancing = null;
     this.bob = 0; this.bobT = 0;
 
-    this.director.reset(1);
+    this.director.reset(startDepth);
     this.pool.clear();
     this.juice.clearWorld();
-    this.world.setDepth(1);
+    this.world.setDepth(startDepth);
     this.world.setDark(false);
     this.startedAt = performance.now();
 
     this.director.beginRoom();
     this.running = true;
     this.ui.showHud();
-    this.ui.banner('PHÒNG 1', 'chạm vào nó');
+    this.ui.banner(`D${startDepth} · PHÒNG 1`, startDepth > 1 ? 'có quái phá chiến thuật' : 'chạm vào nó');
   }
 
   /* =============================== THE =============================== */
@@ -202,8 +210,9 @@ export class Game {
     this.juice.addShake(rw.pellets > 1 ? 14 : fk.amplitudePx, 0, 1);
 
     const w = window.innerWidth, h = window.innerHeight;
-    const target = this.pool.pickByScreen(this.world.camera, sx, sy, w, h, this.mods.aimCone);
-    if (!target) { this.chain = 0; if (this.mag <= 0) this.startReload(); return; }
+    const picked = this.pool.pickByScreen(this.world.camera, sx, sy, w, h, this.mods.aimCone);
+    if (!picked) { this.chain = 0; if (this.mag <= 0) this.startReload(); return; }
+    const target = picked.e;
 
     const crit = Math.random() < this.mods.crit;
     let dmg = rw.dmg * rw.pellets * this.mods.rangedDmg * this.dmgBuff * this.chainMult;
@@ -212,10 +221,14 @@ export class Game {
     if (crit) dmg *= this.mods.critMult;
     dmg = Math.round(dmg);
 
-    // vector dan: tu nguoi choi tới quái -> xac bay NGUOC VE SAU (docs)
+    // vector dan: tu nguoi choi toi quai -> xac bay NGUOC VE SAU (docs)
     const dx = target.x - 0, dz = target.z - this.playerZ;
     const len = Math.hypot(dx, dz) || 1;
-    this.hitEnemy(target, dmg, dx / len, dz / len, rw.knockback * this.mods.kb, crit, 'ranged');
+    this.hitEnemy(target, dmg, {
+      kx: dx / len, kz: dz / len, kbForce: rw.knockback * this.mods.kb,
+      source: 'ranged', archetype: rw.archetype, heavy: false,
+      weakPoint: picked.weakPoint, crit,
+    });
 
     this.chain++;
     if (this.mods.twoBlades) this.buffNextSlash = 1;
@@ -263,7 +276,11 @@ export class Game {
       const crit = Math.random() < this.mods.crit;
       const d = crit ? Math.round(dmg * this.mods.critMult) : dmg;
       // xac VANG THEO CHIEU SLIDE (docs) — dung chinh vector quet
-      const ok = this.hitEnemy(e, d, nx, dirZ * 0.6 + (ny < 0 ? 0.25 : -0.25), mw.knockback * this.mods.kb * (heavy ? 2.2 : 1), crit, 'melee');
+      const ok = this.hitEnemy(e, d, {
+        kx: nx, kz: dirZ * 0.6 + (ny < 0 ? 0.25 : -0.25),
+        kbForce: mw.knockback * this.mods.kb * (heavy ? 2.2 : 1),
+        source: 'melee', archetype: mw.archetype, heavy, weakPoint: false, crit,
+      });
       if (ok) killed++;
     }
     this.audio.hitFlesh();
@@ -297,14 +314,31 @@ export class Game {
     if (this.mods.twoBlades) this.buffNextShot = 1;
   }
 
-  /** @returns {boolean} co giet duoc khong */
-  hitEnemy(e, dmg, kx, kz, kbForce, crit, source) {
-    const res = this.pool.damage(e, dmg, kx, kz, kbForce);
-    this.juice.addNumber(e.x, 1.05 * e.scale, e.z, String(dmg), crit);
-    if (source === 'ranged') this.juice.addHitstop(crit ? 4 : 2);
+  /** @param {object} o {kx,kz,kbForce,source,archetype,heavy,weakPoint,crit}
+   *  @returns {boolean} co giet duoc khong */
+  hitEnemy(e, dmg, o) {
+    const scale = e.scale;
+    const res = this.pool.damage(e, dmg, { ...o, px: 0, pz: this.playerZ });
     if (!res) return false;
 
+    // so damage doi mau theo ket qua: khien chan (xam nho) / yeu diem (cam to)
+    const style = res.blocked ? 'blocked' : res.weak ? 'weak' : o.crit ? 'crit' : 'normal';
+    this.juice.addNumber(e.x, 1.05 * scale, e.z, String(res.dmgDealt), style);
+    if (o.source === 'ranged') this.juice.addHitstop(o.crit || res.weak ? 4 : res.blocked ? 1 : 2);
+
+    if (res.blocked && !this.blockHintShown) {
+      this.blockHintShown = true;
+      this.ui.banner('KHIÊN CHẶN', 'chờ nó hở khiên · búa · chém nặng · vòng ra sau');
+    }
+    if (res.weak) this.audio.perfect();
+    if (res.flanked && !this.flankHintShown) {
+      this.flankHintShown = true;
+      this.ui.banner('SAU LƯNG', 'khiên không cứu nó được');
+    }
+    if (!res.killed) return false;
+
     this.kills++;
+    const kx = o.kx, kz = o.kz;
     const D = this.director.depth;
     const def = GD.byId[e.id];
     const tagMult = this.director.doorTag?.goldMult || 1;
@@ -328,7 +362,7 @@ export class Game {
     if (this.mods.collapse) {
       const aoe = Math.round(e.maxHp * 0.15);
       for (const n of this.pool.queryArc(res.x, res.z, 0, -1, 3.2, 360, 8)) {
-        this.pool.damage(n, aoe, 0, -1, 0.4);
+        this.pool.damage(n, aoe, { kx: 0, kz: -1, kbForce: 0.4, source: o.source, px: 0, pz: this.playerZ });
       }
     }
     if (def.role === 'elite') this.addLuck(2, 'Elite');
@@ -435,8 +469,24 @@ export class Game {
         this.bob *= 0.9;
       }
 
-      // quai
-      const dmgIn = this.pool.update(dt, 0, this.playerZ, () => {});
+      // quai + hieu ung hanh vi rieng (vong canh bao AoE, tieng ho khien)
+      const dmgIn = this.pool.update(dt, 0, this.playerZ, {
+        onTelegraph: (e) => {
+          this.juice.addRing(e.x, e.z, e.behav.aoeRadiusM, e.behav.telegraphSec, true);
+          this.audio.reloadClick(false);
+        },
+        onSlam: (e, hit) => {
+          this.juice.addRing(e.x, e.z, e.behav.aoeRadiusM, 0.3, false);
+          this.juice.addShake(hit ? 26 : 14, 0, 1);
+          this.juice.addHitstop(hit ? 8 : 3);
+          this.audio.shot(true);
+          if (!hit && !this.dodgeHintShown) {
+            this.dodgeHintShown = true;
+            this.ui.banner('NÉ ĐƯỢC', 'quẹt dọc xuống để ra khỏi vòng');
+          }
+        },
+        onShieldOpen: (e) => this.audio.reloadClick(true),
+      });
       /* TRAN DPS O DAI CAN CHIEN (docs/16 muc 5):
          <= min(0.55, 0.28 + 0.0045*(R-1)) * hpBase moi giay.
          Khong co tran nay thi 18 con x 6 dmg / 1.15s = ~94 HP/s -> chet trong 1 giay

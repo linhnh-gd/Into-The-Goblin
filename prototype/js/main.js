@@ -34,7 +34,9 @@ function fail(err) {
     document.getElementById('dbg').classList.toggle('hidden', !ui.showDbg);
     if (!game) game = new Game(canvas, hud, audio, ui);
     game.input.twoZone = document.getElementById('optTwoZone').checked;
-    game.newRun();
+    const depth = parseInt(document.getElementById('optDepth').value, 10) || 1;
+    const melee = document.getElementById('optMelee').value;
+    game.newRun(depth, melee);
   };
 
   document.getElementById('btnStart').onclick = start;

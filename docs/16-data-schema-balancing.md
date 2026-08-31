@@ -297,9 +297,19 @@ tự bơm. Hệ đó đã bị loại vì là cơ chế của Guns 'n Goblins; t
 { "enemies": [ {
   "id","name","role":"trash|ranged|special|support|heavy|elite|boss","introDepth",
   "hp","dmg","speed","kbResist":0-1,"tpCost","goldDrop","attackType","mechanic",
-  "counters":"người chơi phải làm gì","sfxSpawn","tags":[]
+  "counters":"người chơi phải làm gì","sfxSpawn","tags":[],
+  behavior? : { "kind":"shield|slam", ... }   // chi quai co hanh vi rieng moi co
 } ], "bosses": [ { "id","name","depth","hp","phases":[...],"ttkTargetSec","drops" } ],
   "affixes": [ { "id","name","effect","signal","minDepth","excludes":[] } ] }
+```
+
+**`behavior` (tuy chon, chi quai co hanh vi rieng)** — audit co gate kiem tra day du:
+```
+kind "shield":  frontRangedMult  kbResistBack  cycleSec  openSec  turnRateDeg  frontalDot
+                bypassArchetypes[]  bypassHeavySlash
+                rang buoc: 0 < openSec < cycleSec · frontRangedMult < 1 · phai co it nhat 1 duong pha khien
+kind "slam":    attackRangeM  telegraphSec  aoeRadiusM  cooldownSec  weakPointMult  weakPointZone  turnRateDeg
+                rang buoc: telegraphSec >= 0.5 (phai ne kip) · aoeRadiusM <= attackRangeM · weakPointMult > 1
 ```
 
 ### `data/waves.json`

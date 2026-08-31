@@ -38,6 +38,45 @@ Dữ liệu số: `data/enemies.json` → `gen-enemies.md`. Doc này là **tri�
 | Elite | Tên Đồ Tể | Cận chiến | Giữ khoảng cách |
 | Elite | Ổ Vàng | Ăn vàng trên sàn rồi bỏ chạy mang theo | Chọn: rượt nó hay giữ hàng |
 
+## 2b. Hai con phá chiến thuật đầu tiên — spec cài đặt
+
+Đây là hai loại quái duy nhất (tính tới nay) đã cài **hành vi riêng** trong prototype. Số nằm ở
+`data/enemies.json` field `behavior`; audit có gate kiểm tra khối này đầy đủ.
+
+### Goblin Khiên (`behavior.kind = "shield"`)
+
+| Tham số | Giá trị | Nghĩa |
+|---|---|---|
+| `frontRangedMult` | 0.30 | Damage **tầm xa** từ chính diện chỉ còn 30% |
+| `cycleSec` / `openSec` | 4.0 / 0.8 | Mỗi 4s hở khiên 0.8s. **Trong lúc hở, mắt nó sáng vàng** — đó là tín hiệu duy nhất người chơi cần |
+| `kbResist` / `kbResistBack` | 0.55 / 0.05 | Chắn được lực đẩy từ trước; sau lưng thì gần như không |
+| `turnRateDeg` | 92 | **Quay chậm** — đây là thứ làm counter "đánh sau lưng" tồn tại thật |
+| `frontalDot` | 0.20 | Ngưỡng coi là "chính diện" |
+| `bypassArchetypes` | `hammer`, `acid` | Búa và axit bỏ qua khiên |
+| `bypassHeavySlash` | true | Chém nặng bỏ qua khiên |
+
+**Vì sao cần `turnRateDeg`:** bản doc đầu ghi counter "đánh sau lưng" mà không nói quái quay thế nào.
+Trong một hành lang mà quái **luôn tự động hướng về người chơi**, "sau lưng" là vị trí không bao giờ tồn tại
+— counter đó là counter giấy. Cho nó quay 92°/s thì **Xốc Tới** (quẹt dọc lên, tiến 2m) thật sự vòng được ra
+sau trước khi nó kịp quay lại. Đây là phát hiện của prototype, xem `18` mục 4.
+
+### Ogre Hầm (`behavior.kind = "slam"`)
+
+| Tham số | Giá trị | Nghĩa |
+|---|---|---|
+| `attackRangeM` | 2.6 | Bắt đầu vung từ 2.6m — xa hơn quái thường (1.2m) |
+| `telegraphSec` | 0.6 | **Vòng đỏ hiện trên sàn** suốt 0.6s trước khi đập |
+| `aoeRadiusM` | 2.5 | Chỉ trúng nếu người chơi **còn trong vòng** lúc đập xuống |
+| `cooldownSec` | 2.6 | |
+| `weakPointMult` | 2.0 | Tap vào **nửa dưới** hitbox (bụng) = damage ×2 |
+
+**Luật bắt buộc: đòn AoE phải COMMIT.** Khi đã vào telegraph, Ogre vung **dù người chơi đã lùi ra xa**.
+Nếu không commit thì Bước Lùi *huỷ* đòn thay vì *né* đòn, và người chơi mất hẳn cảm giác "vừa né được" —
+tức là mất luôn lý do tồn tại của đòn AoE. Xem `18` mục 4.
+
+Vì `aoeRadius` (2.5) < `attackRange` (2.6), và Bước Lùi đi 1.2m, nên **một lần Bước Lùi đúng lúc luôn né
+được**. Đó là hợp đồng giữa hai con số này — đổi một cái thì phải kiểm cái kia.
+
 ## 3. Affix (chỉ từ Depth 4)
 
 | Affix | Hiệu ứng | Tín hiệu |

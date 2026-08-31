@@ -353,6 +353,35 @@ foreach ($itE in $gdEne.enemies) {
 Assert-True 'ENEMY' 'Moi quai co tpCost/goldDrop/hp/sfxSpawn/counters/mechanic' ($badEnemy.Count -eq 0) `
     ("$(@($gdEne.enemies).Count) quai; thieu: " + (Join-Or $badEnemy))
 
+# behavior block: chi quai co hanh vi rieng moi co, nhung co thi phai day du
+$badBehav = @()
+$behavKinds = @('shield', 'slam')
+$withBehav = @($gdEne.enemies | Where-Object { $_.behavior })
+foreach ($itE in $withBehav) {
+    $b = $itE.behavior
+    if ($behavKinds -notcontains $b.kind) { $badBehav += "$($itE.id) kind=$($b.kind)"; continue }
+    if ($b.kind -eq 'shield') {
+        foreach ($k in @('frontRangedMult', 'kbResistBack', 'cycleSec', 'openSec', 'turnRateDeg', 'frontalDot')) {
+            if ($null -eq $b.$k) { $badBehav += "$($itE.id) thieu $k" }
+        }
+        if ([double]$b.openSec -le 0 -or [double]$b.openSec -ge [double]$b.cycleSec) { $badBehav += "$($itE.id) openSec phai trong (0, cycleSec)" }
+        if ([double]$b.frontRangedMult -ge 1) { $badBehav += "$($itE.id) frontRangedMult phai < 1" }
+        if (@($b.bypassArchetypes).Count -lt 1 -and -not $b.bypassHeavySlash) { $badBehav += "$($itE.id) khong co duong pha khien" }
+    }
+    if ($b.kind -eq 'slam') {
+        foreach ($k in @('attackRangeM', 'telegraphSec', 'aoeRadiusM', 'cooldownSec', 'weakPointMult')) {
+            if ($null -eq $b.$k) { $badBehav += "$($itE.id) thieu $k" }
+        }
+        # telegraph phai du dai de Buoc Lui (cooldown 2.5s) co the cuu duoc
+        if ([double]$b.telegraphSec -lt 0.5) { $badBehav += "$($itE.id) telegraphSec < 0.5 (khong ne kip)" }
+        if ([double]$b.aoeRadiusM -gt [double]$b.attackRangeM) { $badBehav += "$($itE.id) aoe > attackRange" }
+        if ([double]$b.weakPointMult -le 1) { $badBehav += "$($itE.id) weakPointMult phai > 1" }
+    }
+}
+Assert-True 'ENEMY' 'behavior block day du va hop le (shield / slam)' ($badBehav.Count -eq 0) `
+    ("$($withBehav.Count) quai co hanh vi rieng: " + (Join-Or @($withBehav | ForEach-Object { "$($_.id)=$($_.behavior.kind)" }) 'khong') +
+     $(if ($badBehav.Count) { ' | SAI: ' + ($badBehav -join ', ') } else { '' }))
+
 $earlyKb = @($gdEne.enemies | Where-Object {
     [int]$_.introDepth -le 2 -and [double]$_.kbResist -gt 0.20 -and (@($_.tags) -notcontains 'invulnerable') -and $_.role -ne 'elite'
 } | ForEach-Object { "$($_.id) $($_.kbResist)" })

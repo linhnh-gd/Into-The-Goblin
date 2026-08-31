@@ -59,8 +59,9 @@ ITG.game.input.stats // bộ đếm gesture
 ## Giới hạn đã biết
 
 - **Chưa có boss.** Phòng 10 chỉ là một wave lớn hơn.
-- Quái từ Depth 3+ đã spawn được nhưng **hành vi riêng chưa cài** (khiên chắn, charge, bay, trồi lên) —
-  hiện chạy như trash có HP cao hơn.
-- Không có meta ngoài run: luôn bắt đầu Depth 1 với Kèn Đồng + Dao Găm.
+- **Đã cài hành vi riêng:** Goblin Khiên (khiên chắn / hở khiên / vòng ra sau lưng) và Ogre Hầm
+  (vòng cảnh báo AoE / yếu điểm bụng). Quái Depth 4+ (bay, trồi lên sau lưng, charge) chưa cài.
+- Không có meta ngoài run. Màn hình đầu cho chọn **Depth khởi đầu** (1/3/5) và **dao** — đó là công cụ
+  test để xem quái Depth 3+ mà không phải chơi lại từ đầu. Chọn **Búa Đá** để thử counter phá khiên.
 - 24/50 thẻ đã cài hiệu ứng thật; các thẻ chưa cài **không được đưa vào pool** (không có thẻ ma).
 - three.js nạp từ CDN jsdelivr (ghim `0.169.0`) — cần mạng ở lần tải đầu.

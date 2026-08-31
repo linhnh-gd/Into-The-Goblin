@@ -50,20 +50,24 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 | Vàng: nổ chùm, vật lý, hút, **coin chime ladder**, cột vàng | **Có** |
 | 7 biome theo Depth, cửa "tối" thu đuốc | **Có** |
 | Phòng nghỉ (Shop / Miếu / Kho báu / Suối) | **Có** (tự động, chưa có UI mua) |
+| **Goblin Khiên**: khiên chắn tầm xa x0.3, hở 0.8s/4s, quay chậm 92°/s nên vòng ra sau lưng được, búa/axit/chém nặng bỏ qua | **Có** |
+| **Ogre Hầm**: vòng cảnh báo AoE trên sàn, telegraph 0.6s có commit, yếu điểm bụng x2.0 | **Có** |
+| Chọn Depth khởi đầu (1/3/5) + chọn dao ở màn hình đầu | **Có** — để test quái Depth 3+ không phải chơi lại từ đầu |
 
 ## 3. Cái gì CHƯA có (ngoài scope prototype)
 
 - **Boss** — phòng 10 hiện chỉ là một wave lớn (`roomTypeMult` 1.6), không có boss thật.
-- Meta ngoài run: Weapon XP, talent, Trại Mỏ, Depth unlock — prototype luôn bắt đầu ở D1 với pistol + dao găm.
+- Meta ngoài run: Weapon XP, talent, Trại Mỏ, Depth unlock. Depth khởi đầu và dao chọn được ở màn hình đầu
+  nhưng đó là công cụ test, không phải meta thật.
 - UI shop để tự chọn mua (hiện tự mua máu + đạn).
 - 26 thẻ còn lại và toàn bộ 12 Bảo Vật.
-- Quái từ Depth 3 trở xuống (Khiên, Ogre, Dơi, Đào Hầm, support, heavy) đã có trong data và director
-  spawn được, nhưng **hành vi riêng** của chúng chưa cài (khiên chắn, charge, bay, trồi lên) — hiện chúng
-  chạy như trash có HP cao hơn.
+- Quái Depth 4+ (Dơi Hầm bay, Goblin Đào Hầm trồi lên sau lưng, Đầu Bò charge, support, Quỷ Hầm)
+  đã có trong data và director spawn được, nhưng **hành vi riêng chưa cài** — hiện chạy như trash HP cao.
+  **Đã cài: Goblin Khiên + Ogre Hầm** (xem `09` mục 2b).
 
 ## 4. Prototype đã sửa GDD ở đâu
 
-Đây là phần quan trọng nhất của doc này: **prototype tìm ra 6 lỗi mà đọc doc không thấy.**
+Đây là phần quan trọng nhất của doc này: **prototype tìm ra 8 lỗi mà đọc doc không thấy.**
 
 | # | Phát hiện | Sửa |
 |---|---|---|
@@ -73,9 +77,25 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 | 4 | **Trần DPS ở dải Cận chiến 0.28×HP/giây tại R1** = chết sau 3.6s tiếp xúc. Không còn chỗ để học | Hạ base xuống **0.16** (~6.3s), giữ trần 0.55. Đã sửa `16` mục 5 và `06` mục 5. **Cần human playtest xác nhận** |
 | 5 | Phòng đầu tiên của run có thể roll ra wave **Thuỷ Triều 29 con** → người mới chết ngay | Phòng 1–2 của mỗi Depth chỉ roll wave `tpMult ≤ 1.05`; wave đầu tiên của run luôn là `wv_dongchay`. Đúng `07` mục 3.4 nhưng doc chưa nói rõ là ràng buộc cứng |
 | 6 | Telegraph đỏ cộng dồn → **cả đám đỏ vĩnh viễn**, mất hoàn toàn tín hiệu "con này sắp đánh" | Telegraph lấy từ cooldown đòn: chỉ đỏ trong 0.4s trước khi vung |
+| 7 | Counter **"đánh sau lưng Goblin Khiên"** là counter giấy: trong hành lang mà quái luôn tự hướng về người chơi thì "sau lưng" không bao giờ tồn tại | Cho quái một **tốc độ quay có giới hạn** (`turnRateDeg`, Khiên = 92°/s). Xốc Tới giờ thật sự vòng được ra sau. Đã ghi vào `09` mục 2b |
+| 8 | Bước Lùi **huỷ** đòn AoE của Ogre thay vì **né** nó — vì lùi ra khỏi `attackRange` là ogre thoát trạng thái đánh. Mất hẳn cảm giác "vừa né được", tức mất lý do tồn tại của đòn AoE | Đòn AoE phải **COMMIT**: đã vào telegraph là vung, dù người chơi đã lùi. Né = ra khỏi `aoeRadius`. Đã ghi vào `09` mục 2b |
 
 Ngoài ra prototype xác nhận **công thức số quái phải tính theo `composition`**, không phải `tpCost` trung bình
 toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 lần. Đã ghi vào `16` mục 4.4.
+
+### Kiểm chứng hai hành vi mới (test tiền định, `ITG.run` bước dt cố định)
+
+| Tình huống | Kết quả | Đúng docs? |
+|---|---|---|
+| Bắn Khiên từ chính diện, khiên giương | 100 → **30** damage (×0.3), số hiện màu xám | ✓ `09` |
+| Bắn đúng lúc **hở khiên** | 100 → **100** | ✓ |
+| Bắn bằng **axit** (bypass) | 100 → **100** | ✓ |
+| Bắn **từ sau lưng** (face quay ngược) | 100 → **100** + cờ `flanked` | ✓ |
+| **Chém nặng** / **búa** | 100 → **100**, và kbResist rơi 0.55 → 0.05 | ✓ |
+| Bắn Ogre vào thân | 100 → **100** | ✓ |
+| Bắn Ogre vào **bụng** (tap nửa dưới) | 100 → **200** (×2.0) | ✓ |
+| Ogre đập, **không né** | mất 67.5 HP, vòng đỏ đã hiện trước 0.6s | ✓ |
+| Ogre đập, **Bước Lùi giữa telegraph** (2.4m → 3.6m) | **0 HP**, banner "NÉ ĐƯỢC" | ✓ |
 
 ## 5. Số đo từ lần chạy tự động
 
@@ -110,6 +130,8 @@ tải `three.module.js` vào `prototype/vendor/` rồi sửa importmap trong `in
 ## 7. Việc tiếp theo cho prototype
 
 1. **Đo trên người thật** — 10 người, mỗi người 2 phút, ghi tỉ lệ input huỷ. Đây là cổng Sprint 0.
-2. Cài hành vi riêng cho Goblin Khiên và Ogre Hầm — chúng là hai con phá chiến thuật đầu tiên (`09`).
-3. Thả 150 con trong một phòng để đo frame thật trên điện thoại tầm trung (rủi ro R2).
-4. Thêm 1 boss (Goblin Vương Béo) để kiểm tra cửa sổ bắt buộc dùng dao.
+2. Thả 150 con trong một phòng để đo frame thật trên điện thoại tầm trung (rủi ro R2).
+3. Thêm 1 boss (Goblin Vương Béo) để kiểm tra cửa sổ bắt buộc dùng dao.
+4. Cài hành vi cho nhóm Depth 4+: Dơi Hầm (bay, trục dọc), Goblin Đào Hầm (trồi lên sau lưng),
+   Đầu Bò Đá (charge rồi đâm tường choáng 2s) — ba con này dạy ba trục không gian khác nhau.
+5. UI shop để tự chọn mua thay vì tự động.

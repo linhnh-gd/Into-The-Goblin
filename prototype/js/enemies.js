@@ -1,8 +1,15 @@
-/* enemies.js — pool quai instanced. Muc tieu: 150+ con nhin thay duoc cung luc
-   (feel tham chieu tu Guns 'n Goblins -- CHI feel mat do, khong lay co che nao).
+/* enemies.js — pool quai instanced + HANH VI RIENG doc tu data/enemies.json.
+   (feel mat do quai tham chieu tu Guns 'n Goblins -- CHI feel, khong lay co che nao)
 
    Nhan dang bang SILHOUETTE + MAT DO, khong bang texture (docs/09 nguyen tac 2)
-   -> LOD thap khong bi phat hien, va chay duoc 240 agent. */
+   -> LOD thap khong bi phat hien, va chay duoc 240 agent.
+
+   Hanh vi rieng (docs/09, field `behavior` trong data):
+     kind "shield" -> Goblin Khien: khien chan chinh dien, ho 0.8s moi 4s, quay CHAM
+                      nen vong ra sau lung (Xoc Toi) la counter that. Bua/axit/chem
+                      nang bo qua khien.
+     kind "slam"   -> Ogre Ham: don AoE co vong canh bao tren san, telegraph 0.6s,
+                      yeu diem o bung (tap vao nua duoi hitbox = x2.0). */
 
 import * as THREE from 'three';
 import { GD } from './data.js';
@@ -26,16 +33,24 @@ const TYPE_LOOK = {
   en_elite_tuonggoblin: { s: 1.34, c: 0x2e1a38, eye: 0xd07bff },
 };
 const DEFAULT_LOOK = { s: 1.0, c: 0x171c24, eye: 0xff3b30 };
+const D2R = Math.PI / 180;
+
+function wrapAngle(a) {
+  while (a > Math.PI) a -= Math.PI * 2;
+  while (a < -Math.PI) a += Math.PI * 2;
+  return a;
+}
 
 export class EnemyPool {
   constructor(scene) {
     this.scene = scene;
-    this.n = 0;
     this.list = [];
     for (let i = 0; i < CAP; i++) {
       this.list.push({
-        alive: false, id: '', x: 0, z: 0, hp: 0, maxHp: 0, dmg: 0, speed: 0, kbResist: 0,
-        vx: 0, vz: 0, scale: 1, color: 0, eye: 0, atk: 0, tele: 0, flash: 0, gold: 0, role: '',
+        alive: false, id: '', role: '', x: 0, z: 0, hp: 0, maxHp: 0, dmg: 0, speed: 0, kbResist: 0,
+        vx: 0, vz: 0, scale: 1, color: 0, eye: 0, atk: 0, tele: 0, flash: 0, gold: 0,
+        face: 0, turnRate: 6, behav: null, atkRange: ATTACK_RANGE, teleTime: TELEGRAPH,
+        shieldUp: true, bcycle: 0, invuln: false, ringShown: false, committed: false,
       });
     }
 
@@ -59,18 +74,37 @@ export class EnemyPool {
     this.eyes.frustumCulled = false;
     scene.add(this.eyes);
 
+    /* Khien: chi ve khi dang GIUONG. Bien mat trong 0.8s "ho" -> day chinh la
+       tin hieu cho nguoi choi biet cua so tan cong (readability, docs/06 muc 4). */
+    const SHIELD_CAP = 48;
+    const shield = new THREE.BoxGeometry(0.66, 0.78, 0.09);
+    this.matShield = new THREE.MeshBasicMaterial({ color: 0x6d7a92 });
+    this.shields = new THREE.InstancedMesh(shield, this.matShield, SHIELD_CAP);
+    this.shields.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    this.shields.frustumCulled = false;
+    this.shields.count = 0;
+    this.shieldCap = SHIELD_CAP;
+    scene.add(this.shields);
+
     this._m = new THREE.Matrix4();
     this._q = new THREE.Quaternion();
     this._v = new THREE.Vector3();
     this._c = new THREE.Color();
-    this._axisX = new THREE.Vector3(1, 0, 0);
+    this._axisY = new THREE.Vector3(0, 1, 0);
     this._white = new THREE.Color(1, 1, 1);
     this._red = new THREE.Color(0.55, 0.09, 0.06);
+    this._openEye = new THREE.Color(1, 0.9, 0.35);
   }
 
   get aliveCount() {
     let k = 0;
     for (const e of this.list) if (e.alive) k++;
+    return k;
+  }
+
+  countOf(id) {
+    let k = 0;
+    for (const e of this.list) if (e.alive && e.id === id) k++;
     return k;
   }
 
@@ -80,6 +114,8 @@ export class EnemyPool {
     const slot = this.list.find((e) => !e.alive);
     if (!slot) return null;
     const look = TYPE_LOOK[typeId] || DEFAULT_LOOK;
+    const b = def.behavior || null;
+
     slot.alive = true;
     slot.id = typeId;
     slot.role = def.role;
@@ -94,10 +130,20 @@ export class EnemyPool {
     slot.scale = look.s;
     slot.color = look.c;
     slot.eye = look.eye;
-    slot.atk = 0.6 + Math.random() * 0.6;
     slot.tele = 0;
     slot.flash = 0;
     slot.invuln = (def.tags || []).includes('invulnerable');
+    slot.ringShown = false;
+    slot.committed = false;
+
+    slot.behav = b;
+    slot.face = 0;                                   // 0 = nhin ve +Z (ve phia nguoi choi)
+    slot.turnRate = (b && b.turnRateDeg ? b.turnRateDeg : 360) * D2R;
+    slot.atkRange = b && b.attackRangeM ? b.attackRangeM : ATTACK_RANGE;
+    slot.teleTime = b && b.telegraphSec ? b.telegraphSec : TELEGRAPH;
+    slot.atk = (b && b.cooldownSec ? b.cooldownSec : 1.15) * (0.5 + Math.random() * 0.5);
+    slot.bcycle = b && b.kind === 'shield' ? Math.random() * b.cycleSec : 0;
+    slot.shieldUp = true;
     return slot;
   }
 
@@ -136,17 +182,18 @@ export class EnemyPool {
           }
         }
       }
-      // khong cho lot qua tuong hanh lang
       const lim = 4.0;
       if (e.x < -lim) e.x = -lim;
       if (e.x > lim) e.x = lim;
     }
   }
 
-  /** @returns {number} tong damage giang vao nguoi choi trong frame nay */
-  update(dt, px, pz, onAttack) {
+  /**
+   * @param {object} fx { onTelegraph(e), onSlam(e, hitPlayer), onShieldOpen(e) }
+   * @returns {number} tong damage giang vao nguoi choi trong frame nay
+   */
+  update(dt, px, pz, fx) {
     let dmgToPlayer = 0;
-    const target = pz - ATTACK_RANGE * 0.8;
     for (const e of this.list) {
       if (!e.alive) continue;
 
@@ -157,24 +204,60 @@ export class EnemyPool {
       e.vz *= Math.pow(0.02, dt);
 
       const dx = px - e.x;
-      const dz = target - e.z;
-      const d = Math.hypot(dx, dz) || 1;
+      const dzp = pz - e.z;
+      const dist = Math.hypot(dx, dzp) || 1;
 
-      if (d > ATTACK_RANGE) {
-        const sp = e.speed;
-        e.x += (dx / d) * sp * dt;
-        e.z += (dz / d) * sp * dt;
+      /* ---- quay dau, co gioi han toc do ----
+         Quan trong cho Goblin Khien: 92 deg/s nen Xoc Toi vong ra sau lung
+         la mot counter THAT SU, dung nhu docs/09 noi. */
+      const want = Math.atan2(dx, dzp);
+      const diff = wrapAngle(want - e.face);
+      const maxTurn = e.turnRate * dt;
+      e.face = wrapAngle(e.face + Math.max(-maxTurn, Math.min(maxTurn, diff)));
+
+      /* ---- chu ky khien ---- */
+      if (e.behav && e.behav.kind === 'shield') {
+        e.bcycle = (e.bcycle + dt) % e.behav.cycleSec;
+        const wasUp = e.shieldUp;
+        e.shieldUp = e.bcycle > e.behav.openSec;
+        if (wasUp && !e.shieldUp) fx?.onShieldOpen?.(e);
+      }
+
+      /* ---- di chuyen / tan cong ----
+         COMMIT: khi da vao telegraph thi don VAN RA du nguoi choi da lui ra xa.
+         Neu khong commit thi Buoc Lui se HUY don chu khong phai NE don, va
+         nguoi choi mat han cam giac "vua ne duoc" — cai lam don AoE co gia tri. */
+      if (dist > e.atkRange && !e.committed) {
+        e.x += (dx / dist) * e.speed * dt;
+        e.z += (dzp / dist) * e.speed * dt;
         e.tele = 0;
+        e.ringShown = false;
       } else {
-        // telegraph: chi sang do trong 0.4s TRUOC khi vung (docs/06 muc 4).
-        // Neu de tele cong don thi ca dam do vinh vien -> khong doc duoc gi.
         e.atk -= dt;
-        e.tele = e.atk <= TELEGRAPH ? Math.max(0, TELEGRAPH - e.atk) : 0;
+        e.tele = e.atk <= e.teleTime ? Math.max(0, e.teleTime - e.atk) : 0;
+        if (e.tele > 0) e.committed = true;
+
+        // vong canh bao tren san cho don AoE — ve NGAY khi telegraph bat dau
+        if (e.behav && e.behav.kind === 'slam' && e.tele > 0 && !e.ringShown) {
+          e.ringShown = true;
+          fx?.onTelegraph?.(e);
+        }
+
         if (e.atk <= 0) {
-          dmgToPlayer += e.dmg;
-          e.atk = 1.15;
+          e.atk = e.behav && e.behav.cooldownSec ? e.behav.cooldownSec : 1.15;
           e.tele = 0;
-          onAttack?.(e);
+          e.ringShown = false;
+          e.committed = false;
+          if (e.behav && e.behav.kind === 'slam') {
+            /* AoE chi trung neu nguoi choi CON trong ban kinh luc dap xuong.
+               aoeRadius (2.5) < attackRange (2.6) -> Buoc Lui ra khoi vong la ne duoc.
+               Day chinh la counter "kite bang Buoc Lui" trong docs/09. */
+            const hit = dist <= e.behav.aoeRadiusM;
+            if (hit) dmgToPlayer += e.dmg;
+            fx?.onSlam?.(e, hit);
+          } else {
+            dmgToPlayer += e.dmg;
+          }
         }
       }
       if (e.flash > 0) e.flash = Math.max(0, e.flash - dt * 6);
@@ -185,73 +268,127 @@ export class EnemyPool {
   }
 
   _writeInstances() {
-    let k = 0;
+    let k = 0, sh = 0;
     const bodyCol = this.bodies.instanceColor.array;
     const eyeCol = this.eyes.instanceColor.array;
     for (const e of this.list) {
       if (!e.alive) continue;
       const s = e.scale;
       const lean = e.tele > 0 ? Math.min(0.22, e.tele * 0.5) : 0;
-      this._q.setFromAxisAngle(this._axisX, -lean);
+      const fwdX = Math.sin(e.face), fwdZ = Math.cos(e.face);
+      this._q.setFromAxisAngle(this._axisY, e.face);
+
       this._m.compose(
-        this._v.set(e.x, 0.51 * s, e.z),
-        this._q,
-        { x: s, y: s, z: s }
+        this._v.set(e.x, 0.51 * s - lean * 0.08, e.z),
+        this._q, { x: s, y: s * (1 - lean * 0.3), z: s }
       );
       this.bodies.setMatrixAt(k, this._m);
 
       this._c.setHex(e.color);
       if (e.flash > 0) this._c.lerp(this._white, Math.min(1, e.flash));
-      if (e.tele > 0.15) this._c.lerp(this._red, 0.45);
+      if (e.tele > 0.12) this._c.lerp(this._red, 0.5);
       bodyCol[k * 3] = this._c.r; bodyCol[k * 3 + 1] = this._c.g; bodyCol[k * 3 + 2] = this._c.b;
 
       this._m.compose(
-        this._v.set(e.x, 0.86 * s, e.z + 0.23 * s),
-        this._q,
-        { x: s, y: s, z: s }
+        this._v.set(e.x + fwdX * 0.23 * s, 0.86 * s, e.z + fwdZ * 0.23 * s),
+        this._q, { x: s, y: s, z: s }
       );
       this.eyes.setMatrixAt(k, this._m);
+      // khien dang HO -> mat sang vang: tin hieu "danh duoc bay gio"
+      const openWindow = e.behav && e.behav.kind === 'shield' && !e.shieldUp;
       this._c.setHex(e.eye);
+      if (openWindow) this._c.lerp(this._openEye, 0.85);
       eyeCol[k * 3] = this._c.r; eyeCol[k * 3 + 1] = this._c.g; eyeCol[k * 3 + 2] = this._c.b;
-
       k++;
+
+      if (e.behav && e.behav.kind === 'shield' && e.shieldUp && sh < this.shieldCap) {
+        this._m.compose(
+          this._v.set(e.x + fwdX * 0.34 * s, 0.55 * s, e.z + fwdZ * 0.34 * s),
+          this._q, { x: s, y: s, z: s }
+        );
+        this.shields.setMatrixAt(sh++, this._m);
+      }
     }
     this.bodies.count = k;
     this.eyes.count = k;
+    this.shields.count = sh;
     this.bodies.instanceMatrix.needsUpdate = true;
     this.eyes.instanceMatrix.needsUpdate = true;
+    this.shields.instanceMatrix.needsUpdate = true;
     this.bodies.instanceColor.needsUpdate = true;
     this.eyes.instanceColor.needsUpdate = true;
   }
 
-  /** Ban/chem: tra ve true neu chet. Knockback theo vector (kx,kz). */
-  damage(e, amount, kx, kz, kbForce) {
+  /**
+   * Gay damage.
+   * @param {object} o {kx,kz,kbForce,source:'ranged'|'melee',archetype,heavy,weakPoint,px,pz}
+   * @returns {object|false} object mo ta cai chet, hoac {alive:true,...}, hoac false
+   */
+  damage(e, amount, o) {
     if (!e.alive) return false;
+    const kx = o.kx || 0, kz = o.kz || 0, kbForce = o.kbForce || 0;
+
     if (e.invuln) {
       // Bong Ham: khong giet duoc, chi day duoc (docs/09)
       const r = 1 - e.kbResist;
       e.vx += kx * kbForce * r * 2.4;
       e.vz += kz * kbForce * r * 2.4;
       e.flash = 0.5;
-      return false;
+      return { alive: true, dmgDealt: 0, blocked: true, invuln: true };
     }
-    e.hp -= amount;
+
+    let dmg = amount;
+    let kbResist = e.kbResist;
+    let blocked = false;
+    let flanked = false;
+    const b = e.behav;
+
+    /* ---------- KHIEN ---------- */
+    if (b && b.kind === 'shield') {
+      const toPX = (o.px ?? 0) - e.x, toPZ = (o.pz ?? 0) - e.z;
+      const len = Math.hypot(toPX, toPZ) || 1;
+      const dot = (toPX / len) * Math.sin(e.face) + (toPZ / len) * Math.cos(e.face);
+      const frontal = dot > b.frontalDot;
+      const bypass =
+        (b.bypassArchetypes || []).includes(o.archetype) ||
+        (b.bypassHeavySlash && o.heavy);
+
+      if (e.shieldUp && frontal && !bypass) {
+        if (o.source === 'ranged') { dmg *= b.frontRangedMult; blocked = true; }
+        kbResist = e.kbResist;                     // khien chan luc day
+      } else {
+        kbResist = b.kbResistBack;                 // ho khien / sau lung / bi pha
+        flanked = !frontal;
+      }
+    }
+
+    /* ---------- YEU DIEM (Ogre: bung, x2.0) ---------- */
+    let weak = false;
+    if (b && b.weakPointMult && o.weakPoint) { dmg *= b.weakPointMult; weak = true; }
+
+    dmg = Math.max(1, Math.round(dmg));
+    e.hp -= dmg;
     e.flash = 1;
-    const r = 1 - e.kbResist;
+    const r = 1 - kbResist;
+
     if (e.hp <= 0) {
       e.alive = false;
       // launch = kb * 2.2 * (1 - kbResist)  (docs/16 muc 4.9)
-      return { x: e.x, z: e.z, scale: e.scale, color: e.color, gold: e.gold, role: e.role,
-               lx: kx * kbForce * 2.2 * r, lz: kz * kbForce * 2.2 * r };
+      return {
+        x: e.x, z: e.z, scale: e.scale, color: e.color, gold: e.gold, role: e.role,
+        maxHp: e.maxHp, id: e.id, dmgDealt: dmg, blocked, weak, flanked, killed: true,
+        lx: kx * kbForce * 2.2 * r, lz: kz * kbForce * 2.2 * r,
+      };
     }
     e.vx += kx * kbForce * r;
     e.vz += kz * kbForce * r;
-    return false;
+    return { alive: true, dmgDealt: dmg, blocked, weak, flanked };
   }
 
-  /** Nhat quai gan diem tap nhat trong hinh non aim-assist (do bang goc). */
+  /** Nhat quai gan diem tap nhat trong hinh non aim-assist (do bang goc).
+   *  weakPoint = tap vao NUA DUOI hitbox (bung) — dung cho Ogre. */
   pickByScreen(camera, sx, sy, w, h, coneDeg) {
-    let best = null, bestD = Infinity;
+    let best = null, bestD = Infinity, bestLow = false;
     const v = new THREE.Vector3();
     for (const e of this.list) {
       if (!e.alive) continue;
@@ -260,17 +397,19 @@ export class EnemyPool {
       const ex = (v.x * 0.5 + 0.5) * w;
       const ey = (-v.y * 0.5 + 0.5) * h;
       const dist = Math.hypot(ex - sx, ey - sy);
-      // ban kinh cho phep = cone(deg) quy ra pixel, cong 1 nua ben rong con quai
       const tol = (coneDeg / camera.fov) * h + 26 * e.scale;
-      if (dist < tol && dist < bestD) { bestD = dist; best = e; }
+      if (dist < tol && dist < bestD) {
+        bestD = dist; best = e;
+        bestLow = sy > ey + 6 * e.scale;
+      }
     }
-    return best;
+    return best ? { e: best, weakPoint: bestLow } : null;
   }
 
   /** Moi con trong hinh quat quanh huong quet (world space). */
   queryArc(px, pz, dirX, dirZ, reach, arcDeg, max) {
     const out = [];
-    const half = (arcDeg / 2) * (Math.PI / 180);
+    const half = (arcDeg / 2) * D2R;
     const len = Math.hypot(dirX, dirZ) || 1;
     const nx = dirX / len, nz = dirZ / len;
     for (const e of this.list) {

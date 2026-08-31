@@ -2,7 +2,7 @@
 
 > File nay do `audit_gdd.ps1` sinh ra. KHONG sua tay.
 
-**PASS 57 / WARN 2 / FAIL 0** trong 59 check.
+**PASS 58 / WARN 2 / FAIL 0** trong 60 check.
 
 | Nhom | Trang thai | Check | Chi tiet |
 |---|---|---|---|
@@ -34,6 +34,7 @@
 | WPN | **PASS** | Moi Depth 1-5 mo it nhat 1 cong cu dan cach (kb >= 1.0) | thieu: khong |
 | WPN | **PASS** | Moi vu khi duoc mo o mot Depth nao do | khong co duong mo: khong |
 | ENEMY | **PASS** | Moi quai co tpCost/goldDrop/hp/sfxSpawn/counters/mechanic | 21 quai; thieu: 0 |
+| ENEMY | **PASS** | behavior block day du va hop le (shield / slam) | 2 quai co hanh vi rieng: en_special_khien=shield, en_heavy_ogreham=slam |
 | ENEMY | **PASS** | Depth 1-2: khong quai nao kbResist > 0.20 (day co che truoc khi pha) | vi pham: 0 |
 | ENEMY | **PASS** | Moi Depth gioi thieu 1-3 loai quai moi | sai: 0 |
 | ENEMY | **PASS** | introDepth khop giua enemies.json va depths.json | lech: 0 |

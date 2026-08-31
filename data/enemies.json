@@ -41,15 +41,36 @@
       "id": "en_special_khien", "name": "Goblin Khiên", "role": "special", "introDepth": 3,
       "hp": 90, "dmg": 10, "speed": 1.6, "kbResist": 0.55, "tpCost": 3.0, "goldDrop": 7,
       "attackType": "melee", "mechanic": "Khiên chắn chính diện: damage tầm xa x0.3, kbResist 0.55 (sau lưng chỉ 0.05). Vung khiên mỗi 4s, hở 0.8s",
-      "counters": "Búa (bỏ qua khiên), chém nặng, axit, hoặc đánh khi nó vung khiên",
-      "sfxSpawn": "shield_clank", "tags": ["antispam", "shield"]
+      "counters": "Búa (bỏ qua khiên), chém nặng, axit, hoặc đánh khi nó vung khiên, hoặc Xốc Tới vòng ra sau lưng",
+      "sfxSpawn": "shield_clank", "tags": ["antispam", "shield"],
+      "behavior": {
+        "kind": "shield",
+        "frontRangedMult": 0.3,
+        "kbResistBack": 0.05,
+        "cycleSec": 4.0,
+        "openSec": 0.8,
+        "turnRateDeg": 92,
+        "frontalDot": 0.2,
+        "bypassArchetypes": ["hammer", "acid"],
+        "bypassHeavySlash": true
+      }
     },
     {
       "id": "en_heavy_ogreham", "name": "Ogre Hầm", "role": "heavy", "introDepth": 3,
       "hp": 320, "dmg": 26, "speed": 1.4, "kbResist": 0.85, "tpCost": 6.0, "goldDrop": 20,
-      "attackType": "melee_slam", "mechanic": "Gần như không đẩy được. Đập đất gây AoE 2.5m, telegraph 0.6s",
-      "counters": "Kite bằng Bước Lùi, bắn yếu điểm ở bụng (x2.0)",
-      "sfxSpawn": "ogre_roar", "tags": ["teaches_kbresist", "heavy"]
+      "attackType": "melee_slam", "mechanic": "Gần như không đẩy được. Đập đất gây AoE 2.5m, telegraph 0.6s có vòng cảnh báo trên sàn",
+      "counters": "Kite bằng Bước Lùi ra khỏi vòng, bắn yếu điểm ở bụng (x2.0)",
+      "sfxSpawn": "ogre_roar", "tags": ["teaches_kbresist", "heavy"],
+      "behavior": {
+        "kind": "slam",
+        "attackRangeM": 2.6,
+        "telegraphSec": 0.6,
+        "aoeRadiusM": 2.5,
+        "cooldownSec": 2.6,
+        "weakPointMult": 2.0,
+        "weakPointZone": "belly",
+        "turnRateDeg": 70
+      }
     },
     {
       "id": "en_special_doiham", "name": "Dơi Hầm", "role": "special", "introDepth": 4,
