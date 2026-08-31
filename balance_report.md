@@ -2,21 +2,21 @@
 
 > File nay do `normalize_balance.ps1` sinh ra. KHONG sua tay.
 
-- Cong thuc: `dpsTarget(T) = 110 * 2.35^(T-1)`, meleeAdvantage = **1.45**, staminaRegen = 18/s
+- Cong thuc: `dpsTarget(T) = 110 * 2.35^(T-1)`, meleeAdvantage = **0.8**, staminaRegen = 18/s
 - anchorRoom(T) = 1, 8, 18, 30, 45, 60
 - waveEHP(T) = (TP/1.6) * 40 * 1.068^(R-1) * 1.15
 - So vu khi xu ly: **30**
 
 ## dpsTarget theo tier
 
-| Tier | dpsTarget (ranged) | target melee (x1.45) |
+| Tier | dpsTarget (ranged) | target melee (x0.8) |
 |---|---|---|
-| T1 | 110 | 160 |
-| T2 | 259 | 375 |
-| T3 | 607 | 881 |
-| T4 | 1,428 | 2,070 |
-| T5 | 3,355 | 4,864 |
-| T6 | 7,884 | 11,431 |
+| T1 | 110 | 88 |
+| T2 | 259 | 207 |
+| T3 | 607 | 486 |
+| T4 | 1,428 | 1,142 |
+| T5 | 3,355 | 2,684 |
+| T6 | 7,884 | 6,307 |
 
 ## Before / After
 
@@ -40,22 +40,22 @@
 | Lõi Nổ | ranged | 6 | 3285 | 3285 | 0.0% | dpsSustained | 7,884 | 7,884 | 0.0% OK | mag clear 0.11 | reserve 0.7 wave | TTK trash 0.25s |
 | Miệng Mỏ | ranged | 6 | 558 | 558 | 0.0% | dpsSustained | 7,878 | 7,884 | -0.1% OK | mag clear 0.14 | reserve 1.0 wave | TTK trash 0.25s |
 | Ruột Sắt | ranged | 6 | 574 | 574 | 0.0% | dpsSustained | 7,878 | 7,884 | -0.1% OK | mag clear 0.23 | reserve 1.4 wave | TTK trash 0.25s |
-| Dao Găm | melee | 1 | 66 | 142 | +115.2% | dpsMeleeEff | 160 | 160 | +0.2% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 8.9 |
-| Rựa Rừng | melee | 1 | 66 | 142 | +115.2% | dpsMeleeEff | 160 | 160 | +0.2% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 8.9 |
-| Búa Đá | melee | 2 | 105 | 333 | +217.1% | dpsMeleeEff | 375 | 375 | -0.1% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 20.8 |
-| Giáo Tre | melee | 2 | 105 | 333 | +217.1% | dpsMeleeEff | 375 | 375 | -0.1% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 20.8 |
-| Đại Đao | melee | 3 | 227 | 783 | +244.9% | dpsMeleeEff | 881 | 881 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 48.9 |
-| Song Đao | melee | 3 | 227 | 783 | +244.9% | dpsMeleeEff | 881 | 881 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 48.9 |
-| Cưa Máy | melee | 4 | 533 | 1840 | +245.2% | dpsMeleeEff | 2,070 | 2,070 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 115.0 |
-| Phủ Nguyệt | melee | 4 | 533 | 1840 | +245.2% | dpsMeleeEff | 2,070 | 2,070 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 115.0 |
-| Lưỡi Liềm | melee | 5 | 1253 | 4324 | +245.1% | dpsMeleeEff | 4,865 | 4,864 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 270.3 |
-| Chuỳ Trời | melee | 5 | 1253 | 4324 | +245.1% | dpsMeleeEff | 4,865 | 4,864 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 270.3 |
-| Lưỡi Lõi | melee | 6 | 3201 | 10161 | +217.4% | dpsMeleeEff | 11,431 | 11,431 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 635.1 |
-| Xẻ Long | melee | 6 | 3201 | 10161 | +217.4% | dpsMeleeEff | 11,431 | 11,431 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 635.1 |
+| Dao Găm | melee | 1 | 142 | 78 | -45.1% | dpsMeleeEff | 88 | 88 | -0.3% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 4.9 |
+| Rựa Rừng | melee | 1 | 142 | 78 | -45.1% | dpsMeleeEff | 88 | 88 | -0.3% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 4.9 |
+| Búa Đá | melee | 2 | 333 | 184 | -44.7% | dpsMeleeEff | 207 | 207 | +0.1% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 11.5 |
+| Giáo Tre | melee | 2 | 333 | 184 | -44.7% | dpsMeleeEff | 207 | 207 | +0.1% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 11.5 |
+| Đại Đao | melee | 3 | 783 | 432 | -44.8% | dpsMeleeEff | 486 | 486 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 27.0 |
+| Song Đao | melee | 3 | 783 | 432 | -44.8% | dpsMeleeEff | 486 | 486 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 27.0 |
+| Cưa Máy | melee | 4 | 1840 | 1015 | -44.8% | dpsMeleeEff | 1,142 | 1,142 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 63.4 |
+| Phủ Nguyệt | melee | 4 | 1840 | 1015 | -44.8% | dpsMeleeEff | 1,142 | 1,142 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 63.4 |
+| Lưỡi Liềm | melee | 5 | 4324 | 2386 | -44.8% | dpsMeleeEff | 2,684 | 2,684 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 149.1 |
+| Chuỳ Trời | melee | 5 | 4324 | 2386 | -44.8% | dpsMeleeEff | 2,684 | 2,684 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 149.1 |
+| Lưỡi Lõi | melee | 6 | 10161 | 5606 | -44.8% | dpsMeleeEff | 6,307 | 6,307 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 350.4 |
+| Xẻ Long | melee | 6 | 10161 | 5606 | -44.8% | dpsMeleeEff | 6,307 | 6,307 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 350.4 |
 
 ## Ket luan
 
-- Thay doi lon nhat: **245.2%**
+- Thay doi lon nhat: **45.1%**
 - Moi vu khi bay gio nam dung tren duong cong tier. Cac rang buoc con lai (mag clear ratio,
   reserve waves, TTK trash, melee > ranged) do `audit_gdd.ps1` kiem tra va co the FAIL/WARN.
 - Day la so **first-pass**: dung de bat dau playtest, khong phai so da tune.

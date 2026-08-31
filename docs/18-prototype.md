@@ -81,7 +81,7 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 
 ## 4. Prototype đã sửa GDD ở đâu
 
-Đây là phần quan trọng nhất của doc này: **prototype tìm ra 25 lỗi mà đọc doc không thấy.**
+Đây là phần quan trọng nhất của doc này: **prototype tìm ra 27 lỗi mà đọc doc không thấy.**
 
 | # | Phát hiện | Sửa |
 |---|---|---|
@@ -111,6 +111,8 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 | 23 | **Chỉ có 1.63 con trong tầm dao**, 32% thời gian không có con nào — nên `targets = 8` là con số chết. Rải đều 0.7 con/m thì tầm 4.5m không bao giờ đủ đông | Tầm **7.0m** (gate mới: phải < `rangedStandoffM` 8.5m, nếu không dao giải quyết luôn cả quái ranged) + **cụm** (`clumpChance` 0.72). Đo lại: trung bình **16.8 con** trong tầm, một nhát giết tối đa **7 con**, trung bình **2.65** |
 | 24 | **Quái làn bên không bao giờ chém được.** FOV ngang của màn hình dọc chỉ 58.8°, nên ở độ sâu 3m thì 3m ngang đã ra ngoài khung — chúng chỉ vào khung từ ~5.3m, nhưng lúc đó vẫn ngoài tầm dao cũ | Không sửa: đây là **phân vai đúng** — làn bên chỉ **bắn** được, làn giữa mới **chém**. Đã ghi vào `09` mục 2c để không ai đi tìm "bug" này nữa |
 | 25 | **Vệt slash vẽ đè lên cả HUD và màn chọn thẻ**, vì canvas 2D của nó có `z-index: 2` trong khi HUD và sheet đều dùng z-index tự động | Bỏ `z-index`: thứ tự DOM đã đúng (`view` → `fxTrail` → `hud` → `screen`) |
+| 26 | **Luật "melee mạnh hơn ranged +30%" có lý do đã hết hiệu lực.** Doc ghi *"nếu không thì không ai dám vào gần và Cướp Đạn chết"* — nhưng trong mô hình chạy X mét người chơi **không chọn** vào gần: quái làn giữa tự đến trước mặt. "Vào gần" không còn là rủi ro phải trả giá | Đảo gate: `meleeAdvantage` 1.45 → **0.80**, melee DPS phải **thấp hơn** ranged. Đối mặt thật là **đạn**: súng mạnh hơn nhưng hữu hạn, dao yếu hơn nhưng miễn phí và nạp đạn lại qua Cướp Đạn. Xem `05` mục 7d |
+| 27 | **`canvas.clientWidth` ra 0 thì lưỡi dao im lặng không trúng gì.** Toạ độ lưỡi dao và vệt slash lấy từ `clientWidth`, mà renderer lại lấy từ `window.innerWidth` — hai nguồn khác nhau. Khi layout chưa xong hoặc pane bị ẩn thì `clientWidth = 0`, lưỡi dao co về một điểm và **không có lỗi nào được ghi ra** | Một nguồn kích thước duy nhất: `resize()` lưu `this.vw/vh` từ `window.innerWidth/Height`, và lưỡi dao, vệt slash, renderer đều dùng nó |
 
 > **Lỗi #14 và #16 đã bị chính thiết kế vượt qua.** Khi chuyển sang **quái đứng yên**, bài toán đón đầu của
 > `pincer` (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó **đã bị bỏ khỏi code**.
@@ -131,11 +133,14 @@ toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 l
 | Quái có đứng yên thật không | dịch **0.000m** cả trục x và z sau 2s | ✓ `09` mục 2c |
 | Tốc độ chạy | **4.2 m/s** | ✓ `speedMps` |
 | Một phòng | **150m / 37.5s**, đủ 3 wave | ✓ (mô hình: 35.7s) |
-| Quái mỗi phòng (R1) | **155**, trong đó **68%** ở làn giữa | ✓ `midSpawnFrac` 0.70 |
-| Quái trong tầm dao (làn giữa) | trung bình **16.8**, đỉnh 32; 95% thời gian có ≥3 | ✓ nhờ tầm 7m + cụm |
-| Một nhát quét giết được | tối đa **7 con**, trung bình **2.65**; 27% số nhát giết 4–7 con | ✓ `targets` 8 |
-| Trash chết trong mấy nhát | **1** (dmg 142 vs 112 HP) | ✓ `09` nguyên tắc 4 |
-| Chém nửa trái màn hình | cắt quái trái, **không** chạm quái phải | ✓ `05` mục 7c |
+| Hành lang | rộng **6.5m**: làn giữa **3.6m** (±1.8), hai làn bên **1.45m** | ✓ `09` mục 2c |
+| Tỉ lệ làn giữa (5 run) | **68–77%**, trung bình 72% ở `midSpawnFrac` 0.72 → hạ về **0.66** | mục tiêu 60–70% |
+| Quái mỗi phòng (R1) | **142–163** | — |
+| Tự nhắm | tap **góc trên trái** (không trúng con nào) → vẫn bắn con làn giữa, **không** bắn con làn bên | ✓ `04` mục 2b |
+| Chỉ còn quái làn bên | vẫn bắn được (giữ vàng thêm) | ✓ |
+| Một đoạn quét giết trash | **48 dmg vs 40 HP** → chết ngay, dù melee DPS đã thấp hơn súng | ✓ sàn one-shot |
+| Một nhát quét giết được | tối đa **6**, trung bình **2.1** | thấp hơn trước (7 / 2.65) — xem ghi chú dưới |
+| Không bắn phát nào | mất **312–382 HP** trên 100 HP | phải dọn làn giữa, không có cách khác |
 
 ### Kiểm chứng súng và chém liên tục
 

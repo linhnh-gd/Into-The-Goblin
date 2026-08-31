@@ -306,15 +306,19 @@ Assert-True 'WPN' 'magClearRatio trong [0.45, 0.70] (y do thiet ke)' ($magWarn.C
     ("ngoai khoang: " + (Join-Or $magWarn)) 'WARN'
 Assert-True 'WPN' 'Du tru du 6-9 wave neu khong melee' ($reserveWarn.Count -eq 0) `
     ("ngoai khoang: " + (Join-Or $reserveWarn)) 'WARN'
-
+# DAO NGUOC (yeu cau nguoi choi): CAN CHIEN PHAI YEU HON SUNG.
+# Ly do van chat che: sung manh hon nhung TON DAN; dao yeu hon nhung MIEN PHI va con
+# nap dan lai qua Cuop Dan (6 mang = 1 bang). Nen doi mat la "ban het dan de giet nhanh"
+# vs "chem lau hon de giu dan". Neu dao vua manh hon vua mien phi thi khong ai ban ca.
 $badAdv = @()
 foreach ($tKey in ($meleeByTier.Keys | Sort-Object)) {
     if (-not $rangedByTier.ContainsKey($tKey)) { continue }
     $mAvg = ($meleeByTier[$tKey]  | Measure-Object -Average).Average
     $rAvg = ($rangedByTier[$tKey] | Measure-Object -Average).Average
-    if ($mAvg -lt (1.30 * $rAvg)) { $badAdv += "T$tKey melee $([Math]::Round($mAvg)) vs ranged $([Math]::Round($rAvg))" }
+    if ($mAvg -ge $rAvg) { $badAdv += ("T$tKey melee {0:N0} >= ranged {1:N0}" -f $mAvg, $rAvg) }
 }
-Assert-True 'WPN' 'Melee DPS >= 1.30 x ranged DPS o cung tier (docs/05 muc 8.3)' ($badAdv.Count -eq 0) `
+Assert-True 'WPN' 'Melee DPS THAP HON ranged DPS o cung tier (dao nguoc, docs/05 muc 8.3)' ($badAdv.Count -eq 0) `
+    ("so sanh $(@($meleeByTier.Keys).Count) tier; vi pham: " + (Join-Or $badAdv))
     ("so sanh $(@($meleeByTier.Keys).Count) tier; vi pham: " + (Join-Or $badAdv))
 
 $noKbTool = @()

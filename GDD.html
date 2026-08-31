@@ -692,6 +692,16 @@ HOLD_FIRE
 <li>Trong lúc reload: <strong>súng bị khoá hoàn toàn</strong> (docs), chỉ chém được. Đây là lúc căng nhất của mỗi vòng giây.</li>
 <li><code>Auto-reload</code> bật mặc định; khi bật vẫn có thể tap để lấy Hoàn Hảo.</li>
 </ul>
+<h3>2b. TỰ NHẮM: tap ở đâu cũng bắn được</h3>
+<p>Bỏ hẳn cơ chế &quot;phải tap trúng con quái&quot;. <strong>Tap hoặc giữ ở bất kỳ đâu trên màn hình</strong> đều bắn, và mục tiêu được chọn tự động:</p>
+<ol>
+<li>Con <strong>gần nhất ở LÀN GIỮA</strong> trong <code>run.tapFarM</code> (14m) — đây là mối đe doạ thật.</li>
+<li>Nếu làn giữa trống → con <strong>gần nhất bất kỳ</strong>, để quái làn bên vẫn giết được lấy vàng</li>
+<span class="cont">(<code>09</code> mục 2c: &quot;giết là vàng thêm&quot;).</span>
+<li>Không có con nào trong tầm → không bắn, không tốn đạn.</li>
+</ol>
+<p><strong>Vị trí tap vẫn còn một nghĩa:</strong> tap ở <strong>nửa dưới màn hình</strong> = nhắm <strong>yếu điểm</strong> (bụng Ogre, ×2.0). Đây là thứ duy nhất còn phụ thuộc vào chỗ ngón tay chạm, và nó giữ lại cơ chế yếu điểm ở <code>09</code> mục 2b.</p>
+<p>Vì sao bỏ tap-vào-target: ở tốc độ chạy 4.2 m/s với 150+ quái mỗi phòng, việc bắt người chơi <strong>chạm chính xác</strong> vào một hình bóng nhỏ đang lùi dần về phía đáy màn hình biến súng thành bài kiểm tra độ chính xác của ngón tay, chứ không phải bài kiểm tra <strong>chọn mục tiêu nào</strong>. Tự nhắm trả quyết định về đúng chỗ: <em>bắn hay chém</em>, <em>bắn tiếp hay nhả tay nạp đạn</em>.</p>
 <h3>3. Chuỗi Bắn (Accuracy chain)</h3>
 <div class="tw"><table>
 <thead><tr><th>Số phát trúng liên tiếp</th><th>Buff</th></tr></thead><tbody>
@@ -840,14 +850,14 @@ HOLD_FIRE
 <p>Mọi vũ khí cận chiến dùng <strong>cùng một bộ thông số nhắm bắn</strong>. Khác nhau duy nhất là <code>dmg</code>.</p>
 <div class="tw"><table>
 <thead><tr><th>Thông số</th><th>Giá trị (toàn bộ 12 vũ khí)</th></tr></thead><tbody>
-<tr><td><code>reachM</code></td><td><strong>7.00</strong></td></tr>
+<tr><td><code>reachM</code></td><td><strong>6.00</strong></td></tr>
 <tr><td><code>arcDeg</code></td><td>110 — <strong>không còn quyết định vùng cắt</strong>, xem mục 7c</td></tr>
 <tr><td><code>targets</code></td><td><strong>8</strong></td></tr>
 <tr><td><code>staminaCost</code></td><td>16</td></tr>
 <tr><td><code>swingTime</code></td><td>0.34</td></tr>
 <tr><td><code>knockback</code> · <code>critMult</code> · <code>corpseLaunch</code></td><td>1.0 · 2.5 · 4.0</td></tr>
 </tbody></table></div>
-<p><code>dmg</code> là bậc thang duy nhất: <strong>142 → 333 → 783 → 1840 → 4324 → 10161</strong> (tier 1→6).</p>
+<p><code>dmg</code> là bậc thang duy nhất: <strong>78 → 184 → 432 → 1015 → 2386 → 5606</strong> (tier 1→6) — thấp hơn súng, xem mục 7d.</p>
 <p>Ba lý do đây là luật, không phải chỗ tinh chỉnh:</p>
 <ol>
 <li><strong>Không có vũ khí nào &quot;xấu&quot; ở một trục nào.</strong> Trước đây <code>targets</code> từ 2 đến 6 và <code>reachM</code> từ 2.0 đến 3.4 —</li>
@@ -885,6 +895,19 @@ cat neu       : khoang cach tu (ex,ey) den DOAN do  &lt;=  bladeWidthPx + 26*sca
 <p><code>normalize_balance.ps1</code> từng tính <code>dpsMeleeEff = dmg × (1 + 0.35×(targets−1)) / interval</code>. Khi <code>targets</code> còn khác nhau giữa các vũ khí (2…6) thì hệ số đó là cái giá phải trả cho khả năng đánh nhiều mục tiêu.</p>
 <p>Giờ <code>targets = 8</code> cho <strong>mọi</strong> vũ khí, nên nó chỉ còn là <strong>một phép chia đều cho 3.45</strong> — không phân biệt gì, mà kéo sát thương xuống <strong>dưới HP của trash</strong>: đo được trash cần <strong>5 nhát</strong> mới chết, phá luật cứng &quot;trash phải chết trong 1 nhát&quot; (<code>09</code> nguyên tắc 4).</p>
 <p>Sửa: bỏ <code>targets</code> khỏi ngân sách (<code>dpsMeleeEff = dmg / interval</code>), và thêm <strong>sàn one-shot</strong> <code>dmg ≥ trashHp(tier) × meleeOneShotFactor</code> với <code>meleeOneShotFactor = 1.65 ≈ 1 / slideTickDamageMult</code> — nên <strong>kể cả một đoạn quét trong chế độ chém liên tục cũng đủ giết trash</strong>. Cả <code>normalize_balance.ps1</code> và <code>audit_gdd.ps1</code> đều dùng công thức mới; nếu lệch nhau thì gate báo ngay.</p>
+<h3>7d. ĐẢO NGƯỢC: cận chiến YẾU HƠN súng</h3>
+<p><code>meleeAdvantage</code> <strong>1.45 → 0.80</strong>. Melee DPS giờ <strong>thấp hơn</strong> ranged DPS ở mọi tier, và audit gate đã đảo chiều theo (<code>WPN: Melee DPS THAP HON ranged DPS o cung tier</code>).</p>
+<p>Doc cũ ghi lý do ngược lại: <em>&quot;melee phải mạnh hơn, nếu không thì không ai dám vào gần và cơ chế Cướp Đạn chết&quot;</em>. Lý do đó <strong>không còn đúng</strong> trong mô hình chạy X mét, vì người chơi <strong>không chọn</strong> vào gần hay không — quái làn giữa tự đến trước mặt. &quot;Vào gần&quot; không còn là rủi ro phải trả giá.</p>
+<p>Đối mặt thật bây giờ là <strong>đạn</strong>:</p>
+<div class="tw"><table>
+<thead><tr><th></th><th>Súng</th><th>Dao</th></tr></thead><tbody>
+<tr><td>Sát thương</td><td><strong>cao hơn</strong></td><td>thấp hơn</td></tr>
+<tr><td>Chi phí</td><td><strong>tốn đạn</strong> (băng + dự trữ hữu hạn)</td><td>miễn phí, chỉ tốn stamina (tự hồi)</td></tr>
+<tr><td>Nạp lại</td><td>phải nhả tay, mất nhịp</td><td>không</td></tr>
+<tr><td>Cướp Đạn</td><td>—</td><td>6 mạng chém = <strong>1 băng đạn</strong></td></tr>
+</tbody></table></div>
+<p>Nên quyết định mỗi giây là: <em>bắn để giết nhanh mà tốn đạn</em>, hay <em>chém để giữ đạn mà chậm hơn</em>. Nếu dao vừa mạnh hơn vừa miễn phí thì không ai bắn cả — đó mới là điều phá vòng lặp, chứ không phải chuyện dám vào gần.</p>
+<p>Sàn one-shot vẫn giữ nguyên và <strong>vẫn thắng</strong> khi xung đột: dù DPS thấp hơn, <code>dmg ≥ trashHp × 1.65</code> nên một đoạn quét vẫn giết trash cùng tier. Đo: dmg 78, một đoạn quét 48 vs trash 40 HP → chết ngay.</p>
 <h3>8. Ràng buộc cân bằng (audit)</h3>
 <ol>
 <li><strong><code>staminaCost</code> ≤ 25 với MỌI vũ khí cận chiến.</strong> Vì <code>staminaRegen × 1.4s = 25.2</code>, luật này đảm bảo</li>
@@ -895,9 +918,9 @@ cat neu       : khoang cach tu (ex,ey) den DOAN do  &lt;=  bladeWidthPx + 26*sca
 <li>Stamina đầy cho <strong>4 nhát</strong> ở vũ khí nặng nhất và <strong>8 nhát</strong> ở vũ khí rẻ nhất.</li>
 <li><code>dpsMeleeEff</code> = <code>dmg / max(swingTime, staminaCost/staminaRegen)</code> — <strong>không</strong> tính <code>targets</code> (mục 7c) — nằm trong <strong>±25%</strong> đường cong</li>
 <span class="cont"><code>dpsTarget(tier) × 1.45</code> — xem <code>16</code> mục 4.1.</span>
-<li>Melee DPS <strong>phải cao hơn</strong> ranged DPS ở cùng tier (<strong>≥ +30%</strong>) — nếu không thì không ai dám vào gần và</li>
-<span class="cont">cơ chế Cướp Đạn chết. Audit so trung bình theo từng tier.</span>
-<li>Melee DPS phải <strong>thấp hơn</strong> ranged DPS nếu tính cả thời gian di chuyển tới dải Cận chiến (rủi ro có giá).</li>
+<li>Melee DPS <strong>phải THẤP HƠN</strong> ranged DPS ở cùng tier — xem mục 7d. Súng mạnh hơn nhưng tốn đạn;</li>
+<span class="cont">dao yếu hơn nhưng miễn phí và còn nạp đạn lại qua Cướp Đạn. Audit so trung bình theo từng tier.</span>
+<li><strong>Sàn one-shot thắng khi xung đột</strong>: <code>dmg ≥ trashHp(tier) × meleeOneShotFactor</code> — kể cả khi nó đẩy DPS lên trên đường cong.</li>
 <li>Không vũ khí cận chiến nào one-shot được Elite ở cùng Depth (giữ đất cho boss/elite fight).</li>
 </ol>
 </div></section>
@@ -2475,7 +2498,7 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <span class="cont"><strong>Đã cài: Goblin Khiên + Ogre Hầm</strong> (xem <code>09</code> mục 2b).</span>
 </ul>
 <h3>4. Prototype đã sửa GDD ở đâu</h3>
-<p>Đây là phần quan trọng nhất của doc này: <strong>prototype tìm ra 25 lỗi mà đọc doc không thấy.</strong></p>
+<p>Đây là phần quan trọng nhất của doc này: <strong>prototype tìm ra 27 lỗi mà đọc doc không thấy.</strong></p>
 <div class="tw"><table>
 <thead><tr><th>#</th><th>Phát hiện</th><th>Sửa</th></tr></thead><tbody>
 <tr><td>1</td><td>17 con cùng đi tới <strong>một điểm</strong> → xếp chồng lên nhau, màn hình thành một bức tường capsule, không đọc được gì</td><td>Thêm separation bằng spatial hash. Đây là thứ doc chưa bao giờ nói tới nhưng bắt buộc phải có</td></tr>
@@ -2505,6 +2528,8 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>23</td><td><strong>Chỉ có 1.63 con trong tầm dao</strong>, 32% thời gian không có con nào — nên <code>targets = 8</code> là con số chết. Rải đều 0.7 con/m thì tầm 4.5m không bao giờ đủ đông</td><td>Tầm <strong>7.0m</strong> (gate mới: phải &lt; <code>rangedStandoffM</code> 8.5m, nếu không dao giải quyết luôn cả quái ranged) + <strong>cụm</strong> (<code>clumpChance</code> 0.72). Đo lại: trung bình <strong>16.8 con</strong> trong tầm, một nhát giết tối đa <strong>7 con</strong>, trung bình <strong>2.65</strong></td></tr>
 <tr><td>24</td><td><strong>Quái làn bên không bao giờ chém được.</strong> FOV ngang của màn hình dọc chỉ 58.8°, nên ở độ sâu 3m thì 3m ngang đã ra ngoài khung — chúng chỉ vào khung từ ~5.3m, nhưng lúc đó vẫn ngoài tầm dao cũ</td><td>Không sửa: đây là <strong>phân vai đúng</strong> — làn bên chỉ <strong>bắn</strong> được, làn giữa mới <strong>chém</strong>. Đã ghi vào <code>09</code> mục 2c để không ai đi tìm &quot;bug&quot; này nữa</td></tr>
 <tr><td>25</td><td><strong>Vệt slash vẽ đè lên cả HUD và màn chọn thẻ</strong>, vì canvas 2D của nó có <code>z-index: 2</code> trong khi HUD và sheet đều dùng z-index tự động</td><td>Bỏ <code>z-index</code>: thứ tự DOM đã đúng (<code>view</code> → <code>fxTrail</code> → <code>hud</code> → <code>screen</code>)</td></tr>
+<tr><td>26</td><td><strong>Luật &quot;melee mạnh hơn ranged +30%&quot; có lý do đã hết hiệu lực.</strong> Doc ghi <em>&quot;nếu không thì không ai dám vào gần và Cướp Đạn chết&quot;</em> — nhưng trong mô hình chạy X mét người chơi <strong>không chọn</strong> vào gần: quái làn giữa tự đến trước mặt. &quot;Vào gần&quot; không còn là rủi ro phải trả giá</td><td>Đảo gate: <code>meleeAdvantage</code> 1.45 → <strong>0.80</strong>, melee DPS phải <strong>thấp hơn</strong> ranged. Đối mặt thật là <strong>đạn</strong>: súng mạnh hơn nhưng hữu hạn, dao yếu hơn nhưng miễn phí và nạp đạn lại qua Cướp Đạn. Xem <code>05</code> mục 7d</td></tr>
+<tr><td>27</td><td><strong><code>canvas.clientWidth</code> ra 0 thì lưỡi dao im lặng không trúng gì.</strong> Toạ độ lưỡi dao và vệt slash lấy từ <code>clientWidth</code>, mà renderer lại lấy từ <code>window.innerWidth</code> — hai nguồn khác nhau. Khi layout chưa xong hoặc pane bị ẩn thì <code>clientWidth = 0</code>, lưỡi dao co về một điểm và <strong>không có lỗi nào được ghi ra</strong></td><td>Một nguồn kích thước duy nhất: <code>resize()</code> lưu <code>this.vw/vh</code> từ <code>window.innerWidth/Height</code>, và lưỡi dao, vệt slash, renderer đều dùng nó</td></tr>
 </tbody></table></div>
 <blockquote><strong>Lỗi #14 và #16 đã bị chính thiết kế vượt qua.</strong> Khi chuyển sang <strong>quái đứng yên</strong>, bài toán đón đầu của <code>pincer</code> (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó <strong>đã bị bỏ khỏi code</strong>. Lane spring (#16) thì vẫn giữ, nhưng giờ nó chỉ chống separation làm lệch làn khi quái spawn chồng nhau, không còn phải chống lực đẩy dồn theo suốt đường đi. Ghi lại ở đây vì hai lỗi đó <strong>là lỗi thật</strong> ở thời điểm phát hiện, và vì nó cho thấy giá của việc đổi mô hình di chuyển: mọi thứ suy ra từ tốc độ quái đều phải tính lại.</blockquote>
 <p>Ngoài ra prototype xác nhận <strong>công thức số quái phải tính theo <code>composition</code></strong>, không phải <code>tpCost</code> trung bình toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 lần. Đã ghi vào <code>16</code> mục 4.4.</p>
@@ -2517,11 +2542,14 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>Quái có đứng yên thật không</td><td>dịch <strong>0.000m</strong> cả trục x và z sau 2s</td><td>✓ <code>09</code> mục 2c</td></tr>
 <tr><td>Tốc độ chạy</td><td><strong>4.2 m/s</strong></td><td>✓ <code>speedMps</code></td></tr>
 <tr><td>Một phòng</td><td><strong>150m / 37.5s</strong>, đủ 3 wave</td><td>✓ (mô hình: 35.7s)</td></tr>
-<tr><td>Quái mỗi phòng (R1)</td><td><strong>155</strong>, trong đó <strong>68%</strong> ở làn giữa</td><td>✓ <code>midSpawnFrac</code> 0.70</td></tr>
-<tr><td>Quái trong tầm dao (làn giữa)</td><td>trung bình <strong>16.8</strong>, đỉnh 32; 95% thời gian có ≥3</td><td>✓ nhờ tầm 7m + cụm</td></tr>
-<tr><td>Một nhát quét giết được</td><td>tối đa <strong>7 con</strong>, trung bình <strong>2.65</strong>; 27% số nhát giết 4–7 con</td><td>✓ <code>targets</code> 8</td></tr>
-<tr><td>Trash chết trong mấy nhát</td><td><strong>1</strong> (dmg 142 vs 112 HP)</td><td>✓ <code>09</code> nguyên tắc 4</td></tr>
-<tr><td>Chém nửa trái màn hình</td><td>cắt quái trái, <strong>không</strong> chạm quái phải</td><td>✓ <code>05</code> mục 7c</td></tr>
+<tr><td>Hành lang</td><td>rộng <strong>6.5m</strong>: làn giữa <strong>3.6m</strong> (±1.8), hai làn bên <strong>1.45m</strong></td><td>✓ <code>09</code> mục 2c</td></tr>
+<tr><td>Tỉ lệ làn giữa (5 run)</td><td><strong>68–77%</strong>, trung bình 72% ở <code>midSpawnFrac</code> 0.72 → hạ về <strong>0.66</strong></td><td>mục tiêu 60–70%</td></tr>
+<tr><td>Quái mỗi phòng (R1)</td><td><strong>142–163</strong></td><td>—</td></tr>
+<tr><td>Tự nhắm</td><td>tap <strong>góc trên trái</strong> (không trúng con nào) → vẫn bắn con làn giữa, <strong>không</strong> bắn con làn bên</td><td>✓ <code>04</code> mục 2b</td></tr>
+<tr><td>Chỉ còn quái làn bên</td><td>vẫn bắn được (giữ vàng thêm)</td><td>✓</td></tr>
+<tr><td>Một đoạn quét giết trash</td><td><strong>48 dmg vs 40 HP</strong> → chết ngay, dù melee DPS đã thấp hơn súng</td><td>✓ sàn one-shot</td></tr>
+<tr><td>Một nhát quét giết được</td><td>tối đa <strong>6</strong>, trung bình <strong>2.1</strong></td><td>thấp hơn trước (7 / 2.65) — xem ghi chú dưới</td></tr>
+<tr><td>Không bắn phát nào</td><td>mất <strong>312–382 HP</strong> trên 100 HP</td><td>phải dọn làn giữa, không có cách khác</td></tr>
 </tbody></table></div>
 <h4>Kiểm chứng súng và chém liên tục</h4>
 <div class="tw"><table>

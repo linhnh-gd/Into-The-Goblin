@@ -177,7 +177,7 @@ export class Director {
         this.mistTimer -= dt;
         if (this.mistTimer <= 0) {
           this.mistTimer = bm.spawnIntervalSec;
-          const e = this.pool.spawn(bm.spawnEnemy, (Math.random() - 0.5) * (HALL_W - 2), pz + 6, this.R, 1);
+          const e = this.pool.spawn(bm.spawnEnemy, (Math.random() - 0.5) * (GD.feel.lanes.hallWidthM - 2), pz + 6, this.R, 1);
           if (e) { e.z = pz + 7; onMistHit?.(); }
         }
       }

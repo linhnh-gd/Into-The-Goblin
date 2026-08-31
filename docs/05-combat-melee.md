@@ -116,14 +116,14 @@ Mọi vũ khí cận chiến dùng **cùng một bộ thông số nhắm bắn**
 
 | Thông số | Giá trị (toàn bộ 12 vũ khí) |
 |---|---|
-| `reachM` | **7.00** |
+| `reachM` | **6.00** |
 | `arcDeg` | 110 — **không còn quyết định vùng cắt**, xem mục 7c |
 | `targets` | **8** |
 | `staminaCost` | 16 |
 | `swingTime` | 0.34 |
 | `knockback` · `critMult` · `corpseLaunch` | 1.0 · 2.5 · 4.0 |
 
-`dmg` là bậc thang duy nhất: **142 → 333 → 783 → 1840 → 4324 → 10161** (tier 1→6).
+`dmg` là bậc thang duy nhất: **78 → 184 → 432 → 1015 → 2386 → 5606** (tier 1→6) — thấp hơn súng, xem mục 7d.
 
 Ba lý do đây là luật, không phải chỗ tinh chỉnh:
 1. **Không có vũ khí nào "xấu" ở một trục nào.** Trước đây `targets` từ 2 đến 6 và `reachM` từ 2.0 đến 3.4 —
@@ -185,6 +185,30 @@ Sửa: bỏ `targets` khỏi ngân sách (`dpsMeleeEff = dmg / interval`), và t
 **kể cả một đoạn quét trong chế độ chém liên tục cũng đủ giết trash**. Cả `normalize_balance.ps1` và
 `audit_gdd.ps1` đều dùng công thức mới; nếu lệch nhau thì gate báo ngay.
 
+## 7d. ĐẢO NGƯỢC: cận chiến YẾU HƠN súng
+
+`meleeAdvantage` **1.45 → 0.80**. Melee DPS giờ **thấp hơn** ranged DPS ở mọi tier, và audit gate đã đảo
+chiều theo (`WPN: Melee DPS THAP HON ranged DPS o cung tier`).
+
+Doc cũ ghi lý do ngược lại: *"melee phải mạnh hơn, nếu không thì không ai dám vào gần và cơ chế Cướp Đạn
+chết"*. Lý do đó **không còn đúng** trong mô hình chạy X mét, vì người chơi **không chọn** vào gần hay
+không — quái làn giữa tự đến trước mặt. "Vào gần" không còn là rủi ro phải trả giá.
+
+Đối mặt thật bây giờ là **đạn**:
+
+| | Súng | Dao |
+|---|---|---|
+| Sát thương | **cao hơn** | thấp hơn |
+| Chi phí | **tốn đạn** (băng + dự trữ hữu hạn) | miễn phí, chỉ tốn stamina (tự hồi) |
+| Nạp lại | phải nhả tay, mất nhịp | không |
+| Cướp Đạn | — | 6 mạng chém = **1 băng đạn** |
+
+Nên quyết định mỗi giây là: *bắn để giết nhanh mà tốn đạn*, hay *chém để giữ đạn mà chậm hơn*. Nếu dao vừa
+mạnh hơn vừa miễn phí thì không ai bắn cả — đó mới là điều phá vòng lặp, chứ không phải chuyện dám vào gần.
+
+Sàn one-shot vẫn giữ nguyên và **vẫn thắng** khi xung đột: dù DPS thấp hơn, `dmg ≥ trashHp × 1.65` nên một
+đoạn quét vẫn giết trash cùng tier. Đo: dmg 78, một đoạn quét 48 vs trash 40 HP → chết ngay.
+
 ## 8. Ràng buộc cân bằng (audit)
 
 1. **`staminaCost` ≤ 25 với MỌI vũ khí cận chiến.** Vì `staminaRegen × 1.4s = 25.2`, luật này đảm bảo
@@ -195,7 +219,7 @@ Sửa: bỏ `targets` khỏi ngân sách (`dpsMeleeEff = dmg / interval`), và t
 2. Stamina đầy cho **4 nhát** ở vũ khí nặng nhất và **8 nhát** ở vũ khí rẻ nhất.
 3. `dpsMeleeEff` = `dmg / max(swingTime, staminaCost/staminaRegen)` — **không** tính `targets` (mục 7c) — nằm trong **±25%** đường cong
    `dpsTarget(tier) × 1.45` — xem `16` mục 4.1.
-4. Melee DPS **phải cao hơn** ranged DPS ở cùng tier (**≥ +30%**) — nếu không thì không ai dám vào gần và
-   cơ chế Cướp Đạn chết. Audit so trung bình theo từng tier.
-5. Melee DPS phải **thấp hơn** ranged DPS nếu tính cả thời gian di chuyển tới dải Cận chiến (rủi ro có giá).
+4. Melee DPS **phải THẤP HƠN** ranged DPS ở cùng tier — xem mục 7d. Súng mạnh hơn nhưng tốn đạn;
+   dao yếu hơn nhưng miễn phí và còn nạp đạn lại qua Cướp Đạn. Audit so trung bình theo từng tier.
+5. **Sàn one-shot thắng khi xung đột**: `dmg ≥ trashHp(tier) × meleeOneShotFactor` — kể cả khi nó đẩy DPS lên trên đường cong.
 6. Không vũ khí cận chiến nào one-shot được Elite ở cùng Depth (giữ đất cho boss/elite fight).

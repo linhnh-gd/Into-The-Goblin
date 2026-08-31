@@ -68,7 +68,11 @@ export class Game {
   }
 
   resize() {
+    // MOT nguon kich thuoc duy nhat cho renderer, luoi dao va vet slash.
+    // Dung canvas.clientWidth thi co luc no ra 0 (pane an, layout chua xong) va luoi dao
+    // IM LANG khong trung gi ca -- loi khong bao gio thay duoc trong log.
     const w = window.innerWidth, h = window.innerHeight;
+    this.vw = w; this.vh = h;
     this.renderer.setSize(w, h, false);
     this.world.resize(w, h);
     this.trail.resize(w, h);
@@ -209,6 +213,28 @@ export class Game {
   get chainMult() { return this.chain >= 15 ? 1.4 : this.chain >= 8 ? 1.25 : this.chain >= 4 ? 1.1 : 1; }
 
   /* ============================= BAN =============================== */
+  /** TU NHAM: con gan nhat o LAN GIUA, khong can tap trung nguoi no (docs/04 muc 2b).
+      Neu lan giua trong thi lay con gan nhat bat ky -- de quai lan ben van giet duoc
+      lay vang, dung nhu "giet la vang them" o docs/09 muc 2c.
+      Vi tri tap van con nghia: tap nua DUOI man hinh = nham YEU DIEM (bung Ogre). */
+  pickAuto(sy) {
+    const LN = GD.feel.lanes;
+    const h = this.vh || window.innerHeight || 1;
+    let bestMid = null, bestMidD = Infinity, bestAny = null, bestAnyD = Infinity;
+    for (const e of this.pool.list) {
+      if (!e.alive) continue;
+      const zGap = this.playerZ - e.z;
+      if (zGap <= 0.1) continue;                       // da bi chay qua
+      const d = Math.hypot(e.x, zGap);
+      if (d > GD.feel.run.tapFarM) continue;
+      if (d < bestAnyD) { bestAnyD = d; bestAny = e; }
+      if (Math.abs(e.x) <= LN.midHalfWidthM && d < bestMidD) { bestMidD = d; bestMid = e; }
+    }
+    const e = bestMid || bestAny;
+    if (!e) return null;
+    return { e, weakPoint: sy != null && sy > h * 0.55 };
+  }
+
   shootAt(sx, sy, single) {
     if (!this.running || this.advancing) return;
     /* Con dan -> tap HUY reload va ban tiep. Het sach dan -> KHONG huy duoc. */
@@ -227,8 +253,7 @@ export class Game {
     const fk = GD.feel.shake.find((s) => s.event.includes('súng lục')) || { amplitudePx: 3 };
     this.juice.addShake(rw.pellets > 1 ? 14 : fk.amplitudePx, 0, 1);
 
-    const w = window.innerWidth, h = window.innerHeight;
-    const picked = this.pool.pickByScreen(this.world.camera, sx, sy, w, h, this.mods.aimCone);
+    const picked = this.pickAuto(sy);
     if (!picked) { this.chain = 0; if (this.mag <= 0) this.startReload(); return; }
     const target = picked.e;
 
@@ -410,7 +435,7 @@ export class Game {
       `arcAdd` cua the nang cap van co tac dung: no lam luoi day them. */
   _blade(s, reach, arc, maxT) {
     const M = GD.feel.melee;
-    const w = this.canvas.clientWidth || 1, h = this.canvas.clientHeight || 1;
+    const w = this.vw || window.innerWidth || 1, h = this.vh || window.innerHeight || 1;
     const widthPx = w * M.bladeWidthFrac * (1 + (this.mods.arcAdd || 0) / 110);
     const from = s.from || { x: 0, y: h * 0.5 };
     const to = s.to || { x: w, y: h * 0.5 };

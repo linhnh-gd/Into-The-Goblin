@@ -45,6 +45,25 @@ thành vô dụng và P2 chết.
 - Trong lúc reload: **súng bị khoá hoàn toàn** (docs), chỉ chém được. Đây là lúc căng nhất của mỗi vòng giây.
 - `Auto-reload` bật mặc định; khi bật vẫn có thể tap để lấy Hoàn Hảo.
 
+
+## 2b. TỰ NHẮM: tap ở đâu cũng bắn được
+
+Bỏ hẳn cơ chế "phải tap trúng con quái". **Tap hoặc giữ ở bất kỳ đâu trên màn hình** đều bắn, và mục tiêu
+được chọn tự động:
+
+1. Con **gần nhất ở LÀN GIỮA** trong `run.tapFarM` (14m) — đây là mối đe doạ thật.
+2. Nếu làn giữa trống → con **gần nhất bất kỳ**, để quái làn bên vẫn giết được lấy vàng
+   (`09` mục 2c: "giết là vàng thêm").
+3. Không có con nào trong tầm → không bắn, không tốn đạn.
+
+**Vị trí tap vẫn còn một nghĩa:** tap ở **nửa dưới màn hình** = nhắm **yếu điểm** (bụng Ogre, ×2.0).
+Đây là thứ duy nhất còn phụ thuộc vào chỗ ngón tay chạm, và nó giữ lại cơ chế yếu điểm ở `09` mục 2b.
+
+Vì sao bỏ tap-vào-target: ở tốc độ chạy 4.2 m/s với 150+ quái mỗi phòng, việc bắt người chơi **chạm chính
+xác** vào một hình bóng nhỏ đang lùi dần về phía đáy màn hình biến súng thành bài kiểm tra độ chính xác của
+ngón tay, chứ không phải bài kiểm tra **chọn mục tiêu nào**. Tự nhắm trả quyết định về đúng chỗ: *bắn hay
+chém*, *bắn tiếp hay nhả tay nạp đạn*.
+
 ## 3. Chuỗi Bắn (Accuracy chain)
 
 | Số phát trúng liên tiếp | Buff |

@@ -30,7 +30,7 @@
 | WPN | **PASS** | GATE P2: khong bang dan nao don sach ca wave (magClearRatio <= 1.0) | vi pham: 0 |
 | WPN | **WARN** | magClearRatio trong [0.45, 0.70] (y do thiet ke) | ngoai khoang: rw_shotgun_mienghang T1 0.89, rw_smg_ochuot T1 0.75, rw_shotgun_longmoc T2 0.76, rw_lmg_trongdoi T3 0.72, rw_launcher_noidat T4 0.42, rw_smg_muikim T4 0.22, rw_shotgun_hamtoi T5 0.19, rw_acid_ruotdat T5 0.37, rw_launcher_ongsam T5 0.27, rw_deeptech_loino T6 0.11, rw_deeptech_miengmo T6 0.14, rw_minigun_ruotsat T6 0.23 |
 | WPN | **WARN** | Du tru du 6-9 wave neu khong melee | ngoai khoang: rw_rifle_matcu 2.9, rw_lmg_trongdoi 4.3, rw_flamer_hoingam 4, rw_launcher_noidat 2.5, rw_smg_muikim 1.5, rw_sniper_dinhsat 3.7, rw_shotgun_hamtoi 1.3, rw_acid_ruotdat 2.2, rw_launcher_ongsam 1.6, rw_deeptech_loino 0.7, rw_deeptech_miengmo 1, rw_minigun_ruotsat 1.4 |
-| WPN | **PASS** | Melee DPS >= 1.30 x ranged DPS o cung tier (docs/05 muc 8.3) | so sanh 6 tier; vi pham: 0 |
+| WPN | **PASS** | Melee DPS THAP HON ranged DPS o cung tier (dao nguoc, docs/05 muc 8.3) | so sanh 6 tier; vi pham: 0 |
 | WPN | **PASS** | Moi Depth 1-5 mo it nhat 1 cong cu dan cach (kb >= 1.0) | thieu: khong |
 | WPN | **PASS** | Moi vu khi duoc mo o mot Depth nao do | khong co duong mo: khong |
 | ENEMY | **PASS** | Moi quai co tpCost/goldDrop/hp/sfxSpawn/counters/mechanic | 21 quai; thieu: 0 |
@@ -69,15 +69,15 @@
 | RUN | **PASS** | gamefeel.json co khoi camera + run day du | camera=True run=True |
 | RUN | **PASS** | Quai o tapNearM van nam trong dai man hinh cho phep (tap duoc) | con thap nhat (scale 0.74) o 2.40m nam o 72.1% chieu cao man hinh; cho phep 45-75% |
 | RUN | **PASS** | Quai ranged o rangedStandoffM van trong dai man hinh | o 8.5m nam o 48.7%; cho phep 45-75% |
-| WEAPON | **PASS** | Moi vu khi can chien voi xa hon khoang quai dung (tapNearM + margin) | can >= 2.80m; ngan nhat hien tai = 7.00m |
-| WEAPON | **PASS** | Tam can chien ngan hon khoang quai ranged dung | tam dao 7.00m vs rangedStandoffM 8.50m |
+| WEAPON | **PASS** | Moi vu khi can chien voi xa hon khoang quai dung (tapNearM + margin) | can >= 2.80m; ngan nhat hien tai = 6.00m |
+| WEAPON | **PASS** | Tam can chien ngan hon khoang quai ranged dung | tam dao 6.00m vs rangedStandoffM 8.50m |
 | WEAPON | **PASS** | Mot doan quet du giet trash cung tier (luat 1 nhat 1 mang) | kiem 12 vu khi; dmg x slideTickDamageMult 0.62 |
 | ENEMY | **PASS** | Don AoE: vua trung duoc khi dung im, vua ne duoc bang 1 Buoc Lui | impact = max(contactM, attackRange - speed*telegraph) |
-| RUN | **PASS** | Lan giua rong hon moi lan ben (yeu cau thiet ke) | lan giua rong 4.00m, moi lan ben 2.40m; hanh lang 9m |
-| RUN | **PASS** | Quai lan giua spawn quanh truc, khong trai sat ranh lan | jitter +-0.90m trong lan +-2.00m -> vung 0.90m..2.00m khong co quai nao |
+| RUN | **PASS** | Lan giua rong hon moi lan ben (yeu cau thiet ke) | lan giua rong 3.60m, moi lan ben 1.45m; hanh lang 9m |
+| RUN | **PASS** | Quai lan giua spawn quanh truc, khong trai sat ranh lan | jitter +-0.90m trong lan +-1.80m -> vung 0.90m..1.80m khong co quai nao |
 | WAVE | **PASS** | So quai LAN GIUA moi phong (R1) nam trong 60-150 | phong R1: ~149 quai tong, lan giua ~104 (moi de), lan ben ~45 (vang them) |
 | WAVE | **PASS** | Tong quai / phong khong vuot cap maxTotalAlive | ~149 quai / phong, cap 240 |
-| WEAPON | **PASS** | Vu khi can chien chi khac nhau o dmg (moi thong so khac phai dong nhat) | 12 vu khi can chien; dmg tu 142 den 10161 |
+| WEAPON | **PASS** | Vu khi can chien chi khac nhau o dmg (moi thong so khac phai dong nhat) | 12 vu khi can chien; dmg tu 78 den 5606 |
 | WEAPON | **PASS** | Moi vu khi can chien chem duoc NHIEU muc tieu (>= 3) | targets = 8 |
 | RUN | **PASS** | Lane spring ton tai va separation khong day ngang qua manh | laneSpringPerSec 3.2/s, sepLateralMult 0.35 |
 | WAVE | **PASS** | Moi spawn pattern cho du cua so phan ung (quai dung yen) | can spawn xa >= tapNearM + minReactionSec*speedMps = 7.44m |

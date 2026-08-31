@@ -6,7 +6,10 @@ import * as THREE from 'three';
 import { GD } from './data.js';
 
 export const ROOM_SPACING = 22;   // m giua 2 diem dung
-export const HALL_W = 9;          // chieu rong hanh lang
+// Chieu rong hanh lang: doc tu data (lanes.hallWidthM). Day la con so quyet dinh bao nhieu
+// phan khung nhin la lan giua, nen audit phai tinh duoc tu no.
+export const hallW = () => GD.feel.lanes.hallWidthM;
+export const HALL_W = 6.5;        // chi dung khi data chua nap
 export const HALL_H = 4.6;
 
 /** Biome 7 Depth — lay tu data/depths.json (name/biome) nhung mau thi o day. */
@@ -48,6 +51,7 @@ export class World {
 
   _buildTunnel() {
     const LEN = 420;
+    const HW = hallW();
     // Hanh lang TAI SU DUNG: nguoi choi chay lien tuc nen z tang khong gioi han.
     // Truoc day standZ(20) = -440 da nam NGOAI san dai 420m -> roi ra ngoai the gioi.
     const g = (this.tunnelGroup = new THREE.Group());
@@ -57,12 +61,12 @@ export class World {
     this.matWall = mkMat(0x2b3038);
     this.matFloor = mkMat(0x1a1e24);
 
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(HALL_W, LEN), this.matFloor);
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(HW, LEN), this.matFloor);
     floor.rotation.x = -Math.PI / 2;
     floor.position.set(0, 0, -LEN / 2 + 20);
     g.add(floor);
 
-    const ceil = new THREE.Mesh(new THREE.PlaneGeometry(HALL_W, LEN), this.matWall);
+    const ceil = new THREE.Mesh(new THREE.PlaneGeometry(HW, LEN), this.matWall);
     ceil.rotation.x = Math.PI / 2;
     ceil.position.set(0, HALL_H, -LEN / 2 + 20);
     g.add(ceil);
@@ -70,7 +74,7 @@ export class World {
     for (const sx of [-1, 1]) {
       const w = new THREE.Mesh(new THREE.PlaneGeometry(LEN, HALL_H), this.matWall);
       w.rotation.y = sx > 0 ? -Math.PI / 2 : Math.PI / 2;
-      w.position.set((sx * HALL_W) / 2, HALL_H / 2, -LEN / 2 + 20);
+      w.position.set((sx * HW) / 2, HALL_H / 2, -LEN / 2 + 20);
       g.add(w);
     }
 
@@ -87,9 +91,9 @@ export class World {
       for (let j = 0; j < per; j++) {
         const t = j / (per - 1);
         let x, y;
-        if (t < 0.4) { x = -HALL_W / 2 + 0.25; y = t / 0.4 * HALL_H; }
-        else if (t < 0.6) { x = -HALL_W / 2 + 0.25 + ((t - 0.4) / 0.2) * (HALL_W - 0.5); y = HALL_H - 0.2; }
-        else { x = HALL_W / 2 - 0.25; y = (1 - (t - 0.6) / 0.4) * HALL_H; }
+        if (t < 0.4) { x = -HW / 2 + 0.25; y = t / 0.4 * HALL_H; }
+        else if (t < 0.6) { x = -HW / 2 + 0.25 + ((t - 0.4) / 0.2) * (HW - 0.5); y = HALL_H - 0.2; }
+        else { x = HW / 2 - 0.25; y = (1 - (t - 0.6) / 0.4) * HALL_H; }
         m.makeTranslation(x, y, z);
         this.ribs.setMatrixAt(k++, m);
       }
