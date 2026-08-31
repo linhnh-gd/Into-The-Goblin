@@ -81,7 +81,7 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 
 ## 4. Prototype đã sửa GDD ở đâu
 
-Đây là phần quan trọng nhất của doc này: **prototype tìm ra 17 lỗi mà đọc doc không thấy.**
+Đây là phần quan trọng nhất của doc này: **prototype tìm ra 20 lỗi mà đọc doc không thấy.**
 
 | # | Phát hiện | Sửa |
 |---|---|---|
@@ -103,6 +103,9 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 | 15 | **Cả wave `wv_saulung` (đánh sau lưng) vô tác dụng.** Nó dùng Goblin Đào Hầm (2.4 m/s = **bằng đúng** người chơi) và Goblin Cùi (2.2). Spawn từ phía sau mà không nhanh hơn thì không bao giờ đuổi tới | Đào Hầm 2.4 → **3.4**; thay Goblin Cùi bằng Goblin Chạy (4.4). Gate: mọi quái trong wave `back_ambush` phải có `speed > run.speedMps` |
 | 16 | **Separation xoá sạch làn.** Nó được thêm vào ở lỗi #1 để chống quái xếp chồng khi tất cả cùng lao vào một điểm. Giờ quái đi thẳng theo làn thì lực đẩy ngang của nó phá vỡ đúng cái cơ chế "quái ở rìa đi thẳng qua" | Giảm lực đẩy ngang (`sepLateralMult` 0.35) và thêm **lane spring** kéo quái về làn spawn. Đẩy dọc giữ nguyên nên quái cùng làn xếp hàng sau nhau. Đo lại: trôi ngang = **0.00m** trên cả 5 làn |
 | 17 | **`ceiling_drop` spawn ở 5m là không kịp phản ứng.** Khi quái đứng yên thì tốc độ tiếp cận = tốc độ chạy, nên 5m ở 4.2 m/s chỉ cho **0.62s** trước khi quái tụt khỏi vùng tap được. Và `back_ambush` spawn **phía sau** thì với quái đứng yên là **không bao giờ gặp được** người chơi | Khoảng spawn của mọi pattern chuyển vào `waves.json` (`spawnDistM`) để director và audit đọc **cùng một nguồn**. Gate: mọi `spawnDistM[0] ≥ tapNearM + minReactionSec × speedMps` = **7.44m**, và chặn mọi giá trị ≤ 0. `ceiling_drop` → 9–14m, `back_ambush` → 9–12m |
+| 18 | **Thống nhất thông số vũ khí cận chiến làm vỡ mục tiêu DPS theo tier.** DPS = `dmg × targets / swingTime`, nên đổi `targets` từ 2–6 sang 5 cho tất cả làm 9/12 vũ khí lệch khỏi `dpsTarget(tier)` — lệch nhiều nhất **156%** | `normalize_balance.ps1` tính lại `dmg` (thay đổi lớn nhất **60.8%**) → bậc thang sạch 59/139/326/767/1802/4234. Đây là lý do `dmg` phải là **đại lượng suy ra**, không phải số gõ tay |
+| 19 | **Tăng mật độ quái mà không sửa `midSpawnFrac` thì độ khó tăng theo.** Nâng `tpBase`/`tpPerRoom` lên 2.7× cho ra 153 quái/phòng, nhưng nếu giữ nguyên tỉ lệ làn giữa thì số mối đe doạ cũng ×2.7 | Hệ 3 làn cho phép tách hai thứ: hạ `midSpawnFrac` 0.45 → **0.32** giữ làn giữa ở **30 con** (trước là 32) trong khi làn bên tăng 24 → **123**. Đông gấp 2.7× mà độ khó không đổi |
+| 20 | **Wave `pincer` pha loãng tỉ lệ làn giữa ~1/3.** Nó dồn **toàn bộ** ra hai làn bên (`lane: "sides"`), nên `midSpawnFrac` = 0.20 cho ra làn giữa chỉ **19 con** và **không bắn gì cũng chỉ mất 97 HP** — sống sót được mà không làm gì | Bù lên 0.32. Đo lại: làn giữa 30, không bắn gì mất **175 HP**. Gate về số tuyệt đối có ghi chú rằng con số mô hình hoá cao hơn thực đo ~1/3 |
 
 > **Lỗi #14 và #16 đã bị chính thiết kế vượt qua.** Khi chuyển sang **quái đứng yên**, bài toán đón đầu của
 > `pincer` (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó **đã bị bỏ khỏi code**.
@@ -122,12 +125,12 @@ toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 l
 | Quái ranged ở `rangedStandoffM` 8.5m | **48.7%** | ✓ |
 | Quái có đứng yên thật không | dịch **0.000m** cả trục x và z sau 2s | ✓ `09` mục 2c |
 | Tốc độ chạy | **4.2 m/s** | ✓ `speedMps` |
-| Một phòng | **150m / 37.4s**, đủ 3 wave | ✓ (mô hình: 35.7s) |
-| Ngưỡng làn: quái ở x ≤ 1.9m | mất **6 HP** (làn giữa) | ✓ đúng `midHalfWidthM` = 2.0 |
-| Ngưỡng làn: quái ở x ≥ 2.1m | **0 HP** (làn bên) | ✓ |
-| Phân bố thực tế trong một phòng | 56 con: **32 làn giữa / 24 làn bên** (57%) | ✓ `midSpawnFrac` 0.45 |
-| Một phòng, **không bắn phát nào** | mất **164 HP** | bỏ qua hết làn giữa = chết |
-| Quái cùng lúc trên sàn (đỉnh) | **14** | quái đứng chờ, không dồn cục |
+| Một phòng | **150m / 37.5s**, đủ 3 wave | ✓ (mô hình: 35.7s) |
+| Quái mỗi phòng (R1) | **153** (trước khi tăng mật độ: 56) | ✓ mô hình: ~149 |
+| Phân bố | **30 làn giữa** (mối đe doạ) / **123 làn bên** (vàng thêm) | ✓ `midSpawnFrac` 0.32 |
+| Quái cùng lúc trên sàn | đỉnh **48**, trung bình **24** (trước: đỉnh 14) | 60 fps |
+| Một phòng, **không bắn phát nào** | mất **175 HP** | bỏ qua hết làn giữa = chết |
+| Tầm chém · cung · số mục tiêu | **4.50m · 110° · 5** cho mọi vũ khí | ✓ `05` mục 7b |
 
 ### Kiểm chứng súng và chém liên tục
 

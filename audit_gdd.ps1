@@ -697,14 +697,59 @@ Assert-True 'RUN' 'Lan giua rong hon moi lan ben (yeu cau thiet ke)' `
     ("lan giua rong {0:N2}m, moi lan ben {1:N2}m; hanh lang 9m" -f (2.0 * [double]$gdLan.midHalfWidthM), [double]$gdLan.sideWidthM)
 
 # Quai lan giua spawn quanh truc chu khong trai het lan: neu mot con dung o sat ranh
-# lan (1.9m) ma van gay dmg thi nguoi choi thay no di qua canh minh roi mat mau.
 Assert-True 'RUN' 'Quai lan giua spawn quanh truc, khong trai sat ranh lan' `
     ([double]$gdLan.midSpawnJitterM -gt 0 -and [double]$gdLan.midSpawnJitterM -lt [double]$gdLan.midHalfWidthM) `
-    ("jitter +-{0:N2}m trong lan +-{1:N2}m -> vung trong {2:N2}m..{1:N2}m khong co quai nao" -f [double]$gdLan.midSpawnJitterM, [double]$gdLan.midHalfWidthM, [double]$gdLan.midSpawnJitterM)
+    ("jitter +-{0:N2}m trong lan +-{1:N2}m -> vung {0:N2}m..{1:N2}m khong co quai nao" -f [double]$gdLan.midSpawnJitterM, [double]$gdLan.midHalfWidthM)
 
-Assert-True 'RUN' 'midSpawnFrac nam trong 0.30-0.70' `
-    ([double]$gdLan.midSpawnFrac -ge 0.30 -and [double]$gdLan.midSpawnFrac -le 0.70) `
-    ("midSpawnFrac = {0:N2} -> {1:N0}% quai la moi de, con lai la vang them" -f [double]$gdLan.midSpawnFrac, (100.0 * [double]$gdLan.midSpawnFrac))
+# So quai / phong suy ra tu tpBudget. Doi tu "ti le" sang SO TUYET DOI: lan ben dong la
+# CO CHU DICH (cam giac dong quai), nen ti le lan giua thap khong con la loi.
+$dr = $gdWav.directorRules
+$nWaveRoom = [Math]::Max(1, [Math]::Round([double]$gdRun.roomDistanceM / [double]$gdRun.waveSegmentM))
+$tplWarm = @($gdWav.waveTemplates | Where-Object { [double]$_.tpMult -le 1.05 } | Select-Object -First 1)
+$cpt = 0.0
+if ($tplWarm.Count -gt 0) {
+    foreach ($c in @($tplWarm[0].composition)) {
+        $en = $gdEne.enemies | Where-Object { $_.id -eq $c.enemy } | Select-Object -First 1
+        if ($en -and [double]$en.tpCost -gt 0) { $cpt += [double]$c.weight / [double]$en.tpCost }
+    }
+    $cpt = $cpt * [double]$tplWarm[0].tpMult
+}
+$totalRoom = 0.0
+for ($w = 1; $w -le $nWaveRoom; $w++) {
+    $tp = [Math]::Round(([double]$dr.tpBase + [double]$dr.tpPerRoom * 1) * (1 + [double]$dr.tpPerWave * ($w - 1)))
+    $totalRoom += $tp * $cpt
+}
+# Luu y: wave co pattern lane="sides" (pincer) don TOAN BO ra hai lan ben, nen so thuc
+# do duoc thap hon con nay ~1/3. Day la band sanity, khong phai so chinh xac.
+$threatRoom = $totalRoom * [double]$gdLan.midSpawnFrac
+Assert-True 'WAVE' 'So quai LAN GIUA moi phong (R1) nam trong 20-60' `
+    ($threatRoom -ge 20 -and $threatRoom -le 60) `
+    ("phong R1: ~{0:N0} quai tong, lan giua ~{1:N0} (moi de), lan ben ~{2:N0} (vang them)" -f $totalRoom, $threatRoom, ($totalRoom - $threatRoom))
+
+Assert-True 'WAVE' 'Tong quai / phong khong vuot cap maxTotalAlive' `
+    ($totalRoom -le [double]$dr.hardCaps.maxTotalAlive) `
+    ("~{0:N0} quai / phong, cap {1}" -f $totalRoom, $dr.hardCaps.maxTotalAlive)
+
+# LUAT "VU KHI XIN HON CHI TANG SAT THUONG": moi vu khi can chien phai giong nhau o
+# MOI thong so tru dmg. Khong co gate nay thi cac tier se tu tro lai lech nhau khi tune.
+$melAll = @($gdWpn.weapons | Where-Object { $_.class -eq 'melee' })
+$uniFields = @('staminaCost', 'swingTime', 'arcDeg', 'reachM', 'targets', 'knockback', 'critMult', 'corpseLaunch')
+$badUni = @()
+foreach ($fn in $uniFields) {
+    $vals = @($melAll | ForEach-Object { [double]$_.$fn } | Sort-Object -Unique)
+    if ($vals.Count -gt 1) { $badUni += ("$fn co " + $vals.Count + " gia tri: " + ($vals -join '/')) }
+}
+Assert-True 'WEAPON' 'Vu khi can chien chi khac nhau o dmg (moi thong so khac phai dong nhat)' `
+    ($badUni.Count -eq 0) `
+    ("$($melAll.Count) vu khi can chien; dmg tu " +
+     (($melAll | ForEach-Object { [double]$_.dmg } | Measure-Object -Minimum).Minimum) + " den " +
+     (($melAll | ForEach-Object { [double]$_.dmg } | Measure-Object -Maximum).Maximum) +
+     $(if ($badUni.Count) { ' | LECH: ' + ($badUni -join ', ') } else { '' }))
+
+Assert-True 'WEAPON' 'Moi vu khi can chien chem duoc NHIEU muc tieu (>= 3)' `
+    (@($melAll | Where-Object { [int]$_.targets -lt 3 }).Count -eq 0) `
+    ("targets = " + (($melAll | ForEach-Object { [int]$_.targets } | Sort-Object -Unique) -join '/'))
+
 
 Assert-True 'RUN' 'Lane spring ton tai va separation khong day ngang qua manh' `
     ([double]$gdRun.laneSpringPerSec -gt 0 -and [double]$gdRun.sepLateralMult -gt 0 -and [double]$gdRun.sepLateralMult -lt 1) `

@@ -29,7 +29,7 @@
     "midHalfWidthM": 2.0,
     "midSpawnJitterM": 0.9,
     "sideWidthM": 2.4,
-    "midSpawnFrac": 0.45,
+    "midSpawnFrac": 0.32,
     "markerWidthM": 0.10,
     "markerOpacity": 0.34
   },

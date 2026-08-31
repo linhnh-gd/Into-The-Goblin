@@ -1,7 +1,10 @@
 {
   "_comment": "Director tieu het TP_budget(R,G) theo composition. weight = ti le TP phan bo cho loai do.",
   "directorRules": {
-    "tpFormula": "round((14 + 4.2*R) * (1 + 0.18*(w-1)) * roomTypeMult)  -- w = wave trong phong. KHONG co dial nguoi choi.",
+    "tpFormula": "round((tpBase + tpPerRoom*R) * (1 + tpPerWave*(w-1)) * roomTypeMult)  -- w = wave trong phong. KHONG co dial nguoi choi.",
+    "tpBase": 38,
+    "tpPerRoom": 11.5,
+    "tpPerWave": 0.18,
     "roomTypeMult": { "combat": 1.00, "elite": 1.40, "gauntlet": 2.20, "boss": 1.60 },
     "waveDelayAfterClearSec": [1.5, 2.0],
     "firstWaveDelaySec": 0.4,

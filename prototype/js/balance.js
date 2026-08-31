@@ -16,7 +16,8 @@ export function enemyDmg(e, R) {
 export function tpBudget(R, w, roomType, doorHot) {
   const mult = GD.waves.directorRules.roomTypeMult[roomType] ?? 1.0;
   const hot = doorHot ? 1.25 : 1.0;
-  return Math.round((14 + 4.2 * R) * (1 + 0.18 * (w - 1)) * mult * hot);
+  const r = GD.waves.directorRules;
+  return Math.round((r.tpBase + r.tpPerRoom * R) * (1 + r.tpPerWave * (w - 1)) * mult * hot);
 }
 
 /** So quai thuc cua 1 wave = TP * SUM(weight_i / tpCost_i) * tpMult.

@@ -110,6 +110,38 @@ Bắn súng **không** reset combo (khuyến khích trộn hai loại vũ khí �
 
 Dữ liệu chi tiết 12 vũ khí: `data/weapons.json` → `gen-weapons.md`.
 
+## 7b. Luật: vũ khí xịn hơn CHỈ tăng sát thương
+
+Mọi vũ khí cận chiến dùng **cùng một bộ thông số nhắm bắn**. Khác nhau duy nhất là `dmg`.
+
+| Thông số | Giá trị (toàn bộ 12 vũ khí) |
+|---|---|
+| `reachM` | **4.50** |
+| `arcDeg` | **110** |
+| `targets` | **5** |
+| `staminaCost` | 16 |
+| `swingTime` | 0.34 |
+| `knockback` · `critMult` · `corpseLaunch` | 1.0 · 2.5 · 4.0 |
+
+`dmg` là bậc thang duy nhất: **59 → 139 → 326 → 767 → 1802 → 4234** (tier 1→6).
+
+Ba lý do đây là luật, không phải chỗ tinh chỉnh:
+1. **Không có vũ khí nào "xấu" ở một trục nào.** Trước đây `targets` từ 2 đến 6 và `reachM` từ 2.0 đến 3.4 —
+   nghĩa là một vũ khí tier cao có thể **kém hơn** một vũ khí tier thấp ở số mục tiêu, mà người chơi không có
+   cách nào biết trước.
+2. **Mọi vũ khí đều chém được nhiều mục tiêu.** `targets = 5` cho tất cả, nên Chém Hoàn Hảo (≥3 con/nhát,
+   mục 3) luôn với được — không còn vũ khí nào bị khoá khỏi cơ chế đó.
+3. **Tầm 4.50m đặt mục tiêu vào giữa màn hình.** Chiếu phối cảnh cho ra **55%** chiều cao màn hình ở 4.5m,
+   so với 92.7% ở 1.2m (lỗi #9 ở `18`). Chém ở tầm gần thì không thấy mình chém gì.
+
+Audit có gate cho cả hai chiều: một gate bắt mọi thông số ngoài `dmg` bị lệch giữa các vũ khí, và một gate
+đòi `targets ≥ 3`. Không có gate thứ nhất thì các tier sẽ tự lệch lại khi ai đó tinh chỉnh một cái.
+
+> **Hệ quả phải biết:** hai vũ khí **cùng tier** giờ giống nhau hoàn toàn, kể cả `dmg`. Khác biệt duy nhất
+> còn lại là `archetype` — và nó **có** ý nghĩa cơ chế: `hammer` và `acid` bỏ qua khiên Goblin Khiên
+> (`09` mục 2b). Nếu muốn vũ khí có bản sắc trở lại thì `archetype` là chỗ để làm, chứ không phải các con số
+> nhắm bắn — vì `archetype` là *counter*, không phải *sức mạnh*.
+
 ## 8. Ràng buộc cân bằng (audit)
 
 1. **`staminaCost` ≤ 25 với MỌI vũ khí cận chiến.** Vì `staminaRegen × 1.4s = 25.2`, luật này đảm bảo

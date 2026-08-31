@@ -2,7 +2,7 @@
 
 > File nay do `audit_gdd.ps1` sinh ra. KHONG sua tay.
 
-**PASS 74 / WARN 2 / FAIL 0** trong 76 check.
+**PASS 77 / WARN 2 / FAIL 0** trong 79 check.
 
 | Nhom | Trang thai | Check | Chi tiet |
 |---|---|---|---|
@@ -69,11 +69,14 @@
 | RUN | **PASS** | gamefeel.json co khoi camera + run day du | camera=True run=True |
 | RUN | **PASS** | Quai o tapNearM van nam trong dai man hinh cho phep (tap duoc) | con thap nhat (scale 0.74) o 2.40m nam o 72.1% chieu cao man hinh; cho phep 45-75% |
 | RUN | **PASS** | Quai ranged o rangedStandoffM van trong dai man hinh | o 8.5m nam o 48.7%; cho phep 45-75% |
-| WEAPON | **PASS** | Moi vu khi can chien voi xa hon khoang quai dung (tapNearM + margin) | can >= 2.80m; ngan nhat hien tai = 2.80m |
+| WEAPON | **PASS** | Moi vu khi can chien voi xa hon khoang quai dung (tapNearM + margin) | can >= 2.80m; ngan nhat hien tai = 4.50m |
 | ENEMY | **PASS** | Don AoE: vua trung duoc khi dung im, vua ne duoc bang 1 Buoc Lui | impact = max(contactM, attackRange - speed*telegraph) |
 | RUN | **PASS** | Lan giua rong hon moi lan ben (yeu cau thiet ke) | lan giua rong 4.00m, moi lan ben 2.40m; hanh lang 9m |
-| RUN | **PASS** | Quai lan giua spawn quanh truc, khong trai sat ranh lan | jitter +-0.90m trong lan +-2.00m -> vung trong 0.90m..2.00m khong co quai nao |
-| RUN | **PASS** | midSpawnFrac nam trong 0.30-0.70 | midSpawnFrac = 0.45 -> 45% quai la moi de, con lai la vang them |
+| RUN | **PASS** | Quai lan giua spawn quanh truc, khong trai sat ranh lan | jitter +-0.90m trong lan +-2.00m -> vung 0.90m..2.00m khong co quai nao |
+| WAVE | **PASS** | So quai LAN GIUA moi phong (R1) nam trong 20-60 | phong R1: ~149 quai tong, lan giua ~30 (moi de), lan ben ~119 (vang them) |
+| WAVE | **PASS** | Tong quai / phong khong vuot cap maxTotalAlive | ~149 quai / phong, cap 240 |
+| WEAPON | **PASS** | Vu khi can chien chi khac nhau o dmg (moi thong so khac phai dong nhat) | 12 vu khi can chien; dmg tu 59 den 4234 |
+| WEAPON | **PASS** | Moi vu khi can chien chem duoc NHIEU muc tieu (>= 3) | targets = 5 |
 | RUN | **PASS** | Lane spring ton tai va separation khong day ngang qua manh | laneSpringPerSec 3.2/s, sepLateralMult 0.35 |
 | WAVE | **PASS** | Moi spawn pattern cho du cua so phan ung (quai dung yen) | can spawn xa >= tapNearM + minReactionSec*speedMps = 7.44m |
 | RUN | **PASS** | Cua so tu luc thay quai den luc no tut khoi vung tap duoc | (tapFar 14.0 - tapNear 2.4) / chay 4.2 = 2.76s (can >= 1.20s) |

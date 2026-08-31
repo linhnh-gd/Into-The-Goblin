@@ -119,8 +119,14 @@ màu theo đuốc của biome, `lanes.markerOpacity`.
 x = 1.9 mà vẫn gây damage thì người chơi thấy nó đi qua **cạnh** mình 1.9m rồi mất máu — đọc ra như lỗi.
 Khoảng 0.9m…2.0m là **vùng trống** không có quái nào. Có gate cho ràng buộc này.
 
-`midSpawnFrac` = 0.45 → 45% quái vào làn giữa. Không có tham số này thì hành lang 9m với làn giữa 4m cho
-ra tỉ lệ khác, mà ngân sách TP (`07` mục 3) được tính khi **mọi** con đều là mối đe doạ. Gate giữ 0.30–0.70.
+`midSpawnFrac` = **0.32** → làn giữa nhận ~30 con mỗi phòng ở R1, làn bên ~123. Hai con số này **tách rời
+nhau được** nhờ hệ 3 làn: nâng mật độ tổng lên 2.7× (`tpBase`/`tpPerRoom` ở `waves.json`) rồi hạ
+`midSpawnFrac` để giữ số mối đe doạ không đổi — đông hơn mà **không** khó hơn. Đo: không bắn phát nào thì
+mất 175 HP, tức bỏ qua hết làn giữa là chết.
+
+Lưu ý khi tinh chỉnh: wave `pincer` dồn **toàn bộ** ra hai làn bên (`lane: "sides"` ở `waves.json`), nên số
+thực đo ở làn giữa thấp hơn `tổng × midSpawnFrac` khoảng 1/3. Gate của audit là band sanity, không phải số
+chính xác — có ghi chú trong script.
 
 ### Hệ quả của việc quái đứng yên
 

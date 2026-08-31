@@ -138,86 +138,86 @@
 
     {
       "id": "mw_dagger_daogam", "name": "Dao Găm", "class": "melee", "archetype": "dagger", "tier": 1,
-      "unlock": "start", "dmg": 79, "staminaCost": 12, "swingTime": 0.30, "arcDeg": 60,
-      "reachM": 3.00, "targets": 2, "corpseLaunch": 3.0,
-      "knockback": 0.5, "critMult": 2.5, "tags": ["cheap", "scavenge", "starter"],
+      "unlock": "start", "dmg": 59, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
+      "reachM": 4.50, "targets": 5, "corpseLaunch": 4.0,
+      "knockback": 1.0, "critMult": 2.5, "tags": ["cheap", "scavenge", "starter"],
       "desc": "Rẻ stamina nhất. Máy nạp đạn tốt nhất trong game: chém nhiều, đạn nhiều."
     },
     {
       "id": "mw_machete_ruarung", "name": "Rựa Rừng", "class": "melee", "archetype": "machete", "tier": 1,
-      "unlock": "depth1", "dmg": 94, "staminaCost": 18, "swingTime": 0.38, "arcDeg": 90,
-      "reachM": 3.30, "targets": 3, "corpseLaunch": 4.0,
-      "knockback": 0.8, "critMult": 2.2, "tags": ["allround", "perfectslash"],
+      "unlock": "depth1", "dmg": 59, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
+      "reachM": 4.50, "targets": 5, "corpseLaunch": 4.0,
+      "knockback": 1.0, "critMult": 2.5, "tags": ["allround", "perfectslash"],
       "desc": "Ba con một nhát. Cửa vào của Chém Hoàn Hảo."
     },
     {
       "id": "mw_hammer_buada", "name": "Búa Đá", "class": "melee", "archetype": "hammer", "tier": 2,
-      "unlock": "depth2", "dmg": 355, "staminaCost": 23, "swingTime": 0.55, "arcDeg": 70,
-      "reachM": 3.10, "targets": 2, "corpseLaunch": 7.0,
-      "knockback": 2.5, "critMult": 1.8, "tags": ["shieldbreak", "knockback"],
+      "unlock": "depth2", "dmg": 139, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
+      "reachM": 4.50, "targets": 5, "corpseLaunch": 4.0,
+      "knockback": 1.0, "critMult": 2.5, "tags": ["shieldbreak", "knockback"],
       "desc": "Bỏ qua khiên. Goblin Khiên tồn tại để cái búa này có việc làm."
     },
     {
       "id": "mw_spear_giaotre", "name": "Giáo Tre", "class": "melee", "archetype": "spear", "tier": 2,
-      "unlock": "depth2", "dmg": 196, "staminaCost": 16, "swingTime": 0.40, "arcDeg": 40,
-      "reachM": 4.20, "targets": 3, "corpseLaunch": 3.5,
-      "knockback": 1.0, "critMult": 2.6, "tags": ["reach", "safe", "pierce"],
+      "unlock": "depth2", "dmg": 139, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
+      "reachM": 4.50, "targets": 5, "corpseLaunch": 4.0,
+      "knockback": 1.0, "critMult": 2.5, "tags": ["reach", "safe", "pierce"],
       "desc": "Tầm xa nhất trong các vũ khí cận chiến. Chém mà không phải vào hẳn dải Cận chiến."
     },
     {
       "id": "mw_greatsword_daidao", "name": "Đại Đao", "class": "melee", "archetype": "greatsword", "tier": 3,
-      "unlock": "depth3", "dmg": 427, "staminaCost": 24, "swingTime": 0.62, "arcDeg": 150,
-      "reachM": 3.80, "targets": 6, "corpseLaunch": 8.0,
-      "knockback": 1.6, "critMult": 2.0, "tags": ["crowd", "perfectslash", "wavewipe"],
+      "unlock": "depth3", "dmg": 326, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
+      "reachM": 4.50, "targets": 5, "corpseLaunch": 4.0,
+      "knockback": 1.0, "critMult": 2.5, "tags": ["crowd", "perfectslash", "wavewipe"],
       "desc": "Một nhát quẹt, sáu goblin đứt đôi, xác bay theo hướng ngón tay. Đây là cảnh trong trailer."
     },
     {
       "id": "mw_twinblade_songdao", "name": "Song Đao", "class": "melee", "archetype": "twinblade", "tier": 3,
-      "unlock": "boss2", "dmg": 326, "staminaCost": 9, "swingTime": 0.22, "arcDeg": 55,
-      "reachM": 2.90, "targets": 2, "corpseLaunch": 2.5,
-      "knockback": 0.4, "critMult": 2.4, "tags": ["combo", "cheap", "scavenge"],
+      "unlock": "boss2", "dmg": 326, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
+      "reachM": 4.50, "targets": 5, "corpseLaunch": 4.0,
+      "knockback": 1.0, "critMult": 2.5, "tags": ["combo", "cheap", "scavenge"],
       "desc": "Lên bậc combo nhanh gấp đôi. Nhịp tay quyết định damage."
     },
     {
       "id": "mw_chainsaw_cuamay", "name": "Cưa Máy", "class": "melee", "archetype": "chainsaw", "tier": 4,
-      "unlock": "depth4", "dmg": 1488, "staminaCost": 22, "swingTime": 0.15, "arcDeg": 45,
-      "reachM": 2.80, "targets": 3, "corpseLaunch": 1.5,
-      "knockback": 0.3, "critMult": 1.5, "tags": ["hold", "sustain", "gore"],
+      "unlock": "depth4", "dmg": 767, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
+      "reachM": 4.50, "targets": 5, "corpseLaunch": 4.0,
+      "knockback": 1.0, "critMult": 2.5, "tags": ["hold", "sustain", "gore"],
       "desc": "Không quẹt — giữ. Tiêu stamina theo giây, cắt liên tục, máu ngập màn hình."
     },
     {
       "id": "mw_axe_phunguyet", "name": "Phủ Nguyệt", "class": "melee", "archetype": "axe", "tier": 4,
-      "unlock": "depth4", "dmg": 1346, "staminaCost": 24, "swingTime": 0.50, "arcDeg": 110,
-      "reachM": 3.50, "targets": 4, "corpseLaunch": 6.0,
-      "knockback": 1.8, "critMult": 2.2, "tags": ["allround", "knockback", "crowd"],
+      "unlock": "depth4", "dmg": 767, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
+      "reachM": 4.50, "targets": 5, "corpseLaunch": 4.0,
+      "knockback": 1.0, "critMult": 2.5, "tags": ["allround", "knockback", "crowd"],
       "desc": "Lưỡi hình bán nguyệt. Cân bằng giữa quét và đẩy."
     },
     {
       "id": "mw_scythe_luoiliem", "name": "Lưỡi Liềm", "class": "melee", "archetype": "scythe", "tier": 5,
-      "unlock": "depth5", "dmg": 2179, "staminaCost": 25, "swingTime": 0.55, "arcDeg": 170,
-      "reachM": 4.00, "targets": 7, "corpseLaunch": 5.0,
-      "knockback": 1.2, "critMult": 2.4, "tags": ["crowd", "perfectslash", "wavewipe"],
+      "unlock": "depth5", "dmg": 1802, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
+      "reachM": 4.50, "targets": 5, "corpseLaunch": 4.0,
+      "knockback": 1.0, "critMult": 2.5, "tags": ["crowd", "perfectslash", "wavewipe"],
       "desc": "Gần như một vòng tròn. Chém Hoàn Hảo gần như mọi nhát."
     },
     {
       "id": "mw_hammer_chuytroi", "name": "Chuỳ Trời", "class": "melee", "archetype": "hammer", "tier": 5,
-      "unlock": "boss4", "dmg": 3974, "staminaCost": 25, "swingTime": 0.70, "arcDeg": 80,
-      "reachM": 3.40, "targets": 3, "corpseLaunch": 11.0,
-      "knockback": 3.2, "critMult": 1.8, "tags": ["knockback", "shieldbreak", "burst"],
+      "unlock": "boss4", "dmg": 1802, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
+      "reachM": 4.50, "targets": 5, "corpseLaunch": 4.0,
+      "knockback": 1.0, "critMult": 2.5, "tags": ["knockback", "shieldbreak", "burst"],
       "desc": "Knockback mạnh nhất game. Xác bay mười một mét và kéo cả hàng sau theo."
     },
     {
       "id": "mw_deeptech_luoiloi", "name": "Lưỡi Lõi", "class": "melee", "archetype": "deeptech", "tier": 6,
-      "unlock": "boss5", "dmg": 6196, "staminaCost": 20, "swingTime": 0.35, "arcDeg": 100,
-      "reachM": 3.60, "targets": 4, "corpseLaunch": 6.0,
-      "knockback": 1.4, "critMult": 2.6, "tags": ["depth", "stamina", "scaling"],
+      "unlock": "boss5", "dmg": 4234, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
+      "reachM": 4.50, "targets": 5, "corpseLaunch": 4.0,
+      "knockback": 1.0, "critMult": 2.5, "tags": ["depth", "stamina", "scaling"],
       "desc": "Từ Depth 5 trở xuống, mỗi mạng chém hồi 6 stamina. Càng sâu càng bền."
     },
     {
       "id": "mw_greatsword_xelong", "name": "Xẻ Long", "class": "melee", "archetype": "greatsword", "tier": 6,
-      "unlock": "depth7", "dmg": 4602, "staminaCost": 25, "swingTime": 0.68, "arcDeg": 160,
-      "reachM": 4.10, "targets": 8, "corpseLaunch": 12.0,
-      "knockback": 2.0, "critMult": 2.2, "tags": ["crowd", "perfectslash", "wavewipe", "endgame"],
+      "unlock": "depth7", "dmg": 4234, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
+      "reachM": 4.50, "targets": 5, "corpseLaunch": 4.0,
+      "knockback": 1.0, "critMult": 2.5, "tags": ["crowd", "perfectslash", "wavewipe", "endgame"],
       "desc": "Tám con một nhát. Hầm không đủ rộng cho đường quẹt của nó."
     }
   ]
