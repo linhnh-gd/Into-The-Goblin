@@ -40,7 +40,12 @@ $B               = $data.balance
 $dpsBase         = [double]$B.dpsTargetBase
 $dpsGrowth       = [double]$B.dpsTargetGrowth
 $meleeAdv        = [double]$B.meleeAdvantage
-$oneShot         = [double]$B.meleeOneShotFactor
+$rangedMinDmg    = [double]$B.rangedMinDmg
+$magClearMax     = [double]$B.magClearMax
+$rpmBand         = $B.archetypeRpm
+$newRpm = @{}
+$flooredIds = @()
+$newMag = @{}
 $staminaRegen    = [double]$B.staminaRegen
 $rangedTol       = [double]$B.rangedTolerance
 $meleeTol        = [double]$B.meleeTolerance
@@ -49,6 +54,13 @@ $meleeTol        = [double]$B.meleeTolerance
 $anchorRoom = @(1, 8, 18, 30, 45, 60)
 $TRASH_HP_BASE = 40.0     # en_trash_goblincui base hp
 $HP_PER_ROOM   = 1.068
+# Ngan sach TP doc tu data/waves.json -- truoc day hardcode 14 + 4.2*R o day trong khi
+# data da doi sang 38 + 11.5*R, nen wave EHP bi danh gia THAP hon thuc te 2.7 lan va
+# gate magClearRatio khat khe qua muc. Xem docs/18 loi #30.
+$wavesRaw = Get-Content (Join-Path $root "data\waves.json") -Raw -Encoding UTF8
+$wavesJson = $wavesRaw | ConvertFrom-Json
+$TP_BASE = [double]$wavesJson.directorRules.tpBase
+$TP_PER_ROOM = [double]$wavesJson.directorRules.tpPerRoom
 $AVG_TP_COST   = 1.6      # average threat-point cost of a mixed wave
 $MIX_FACTOR    = 1.15     # tougher-than-trash units in a mixed wave
 
@@ -56,7 +68,7 @@ function Get-DpsTarget([int]$tier) { return $dpsBase * [Math]::Pow($dpsGrowth, $
 
 function Get-WaveEhp([int]$tier) {
     $R  = $anchorRoom[$tier - 1]
-    $tp = 14.0 + 4.2 * $R
+    $tp = $TP_BASE + $TP_PER_ROOM * $R
     $count = $tp / $AVG_TP_COST
     $trashHp = $TRASH_HP_BASE * [Math]::Pow($HP_PER_ROOM, $R - 1)
     return $count * $trashHp * $MIX_FACTOR
@@ -79,19 +91,57 @@ foreach ($w in $data.weapons) {
     $old    = [double]$w.dmg
 
     if ($w.class -eq 'ranged') {
-        $rpm      = [double]$w.rpm
+        $arch     = [string]$w.archetype
         $mag      = [double]$w.mag
         $pellets  = [double]$w.pellets
         $reload   = [double]$w.reloadTime
-        $cycle    = $mag / ($rpm / 60.0) + $reload
-        $new      = Round-Dmg ($target * $cycle / ($pellets * $mag))
+        $waveEhp  = Get-WaveEhp $tier
+
+        # 1. EP RPM VAO DAI CUA ARCHETYPE. Day la thu tao ra feeling khac nhau giua cac
+        #    sung: shotgun 48-78 nghe va cam khac han smg 230-320, du DPS bang nhau.
+        $rpm = [double]$w.rpm
+        if ($rpmBand.PSObject.Properties.Name -contains $arch) {
+            $band = $rpmBand.$arch
+            $rpm = [Math]::Max([double]$band[0], [Math]::Min([double]$band[1], $rpm))
+        }
+
+        # 2. HA BANG DAN neu can, de khong bang dan nao don sach ca wave (tru P2).
+        #    magClear = dpsTarget * cycle / waveEhp, ma cycle dai ra khi rpm giam
+        #    -> ban cham thi bang dan PHAI nho lai. Hai thu nay khong doc lap duoc.
+        $cycleMax = $magClearMax * $waveEhp / $target
+        $magMax   = [Math]::Floor(($cycleMax - $reload) * $rpm / 60.0)
+        if ($magMax -lt 2) { $magMax = 2 }
+        if ($mag -gt $magMax) { $mag = $magMax }
+
+        # 3. Giai dmg tu DPS muc tieu.
+        $cycle = $mag / ($rpm / 60.0) + $reload
+        $new   = Round-Dmg ($target * $cycle / ($pellets * $mag))
+
+        # 4. SAN SAT THUONG toi thieu. KHONG ha rpm de bu: o T1 muc tieu DPS la 110 nen
+        #    mot vien 120 dmg da vuot ca giay DPS -- ep giu DPS se keo shotgun xuong 8 rpm
+        #    (7 giay mot phat). Thay vao do CHAP NHAN vu khi bi san vuot duong cong DPS, va
+        #    danh dau no de audit liet ke ra thay vi bao FAIL. Xem docs/18 loi #31.
+        $floored = $false
+        if ($new -lt $rangedMinDmg) {
+            $new = $rangedMinDmg; $floored = $true; $flooredIds += $w.id
+            # Sat thuong bi san nang len -> mot bang dan gio manh hon nhieu, phai ha mag
+            # lai lan nua theo sat thuong THUC, khong phai theo DPS muc tieu.
+            $magMax2 = [Math]::Floor($magClearMax * $waveEhp / ($new * $pellets))
+            if ($magMax2 -lt 2) { $magMax2 = 2 }   # sung 1 vien la sung khong dung duoc
+            if ($mag -gt $magMax2) { $mag = $magMax2 }
+            $cycle = $mag / ($rpm / 60.0) + $reload
+        }
+        if ($mag -lt 2) { $mag = 2 }          # san cung: sung 1 vien khong dung duoc
+        $rpm = [Math]::Round($rpm)
+        $cycle = $mag / ($rpm / 60.0) + $reload
+        $newRpm[$w.id] = $rpm
+        $newMag[$w.id] = [int]$mag
+
         $dpsAfter = ($new * $pellets * $mag) / $cycle
         $metric   = 'dpsSustained'
         $tol      = $rangedTol
-        $extra    = ('mag clear {0:N2} | reserve {1:N1} wave | TTK trash {2:N2}s' -f `
-                        (($mag * $new * $pellets) / (Get-WaveEhp $tier)), `
-                        ((([double]$w.reserveMax) * $new * $pellets) / (Get-WaveEhp $tier)), `
-                        ((Get-TrashHp $tier) / $dpsAfter))
+        $extra    = ('rpm {0:N0} | mag {1:N0} | mag clear {2:N2} | TTK trash {3:N2}s' -f `
+                        $rpm, $mag, (($mag * $new * $pellets) / $waveEhp), ((Get-TrashHp $tier) / $dpsAfter))
     }
     else {
         $targets  = [double]$w.targets
@@ -104,13 +154,6 @@ foreach ($w in $data.weapons) {
         # nhung no keo sat thuong xuong duoi HP cua trash, tuc pha luat "1 nhat 1 mang".
         # Kha nang chem nhieu muc tieu gio la MOT PHAN CUA FANTASY, khong phai thu phai tra gia.
         $new      = Round-Dmg ($target * $meleeAdv * $interval)
-        # SAN ONE-SHOT. Luat cung o docs/09 nguyen tac 4: "trash phai chet trong 1 nhat".
-        # tf = 1 + 0.35*(targets-1) = 3.45 khi targets = 8, va vi targets gio DONG NHAT
-        # cho moi vu khi nen tf chi con la mot phep chia deu, khong phan biet gi ca --
-        # nhung no lam trash song sot 5 nhat. Factor 1.65 = 1/slideTickDamageMult, nen
-        # ke ca MOT DOAN quet trong che do chem lien tuc cung du giet trash.
-        $floor    = Round-Dmg ((Get-TrashHp $tier) * $oneShot)
-        if ($new -lt $floor) { $new = $floor }
         $dpsAfter = $new / $interval
         $metric   = 'dpsMeleeEff'
         $tol      = $meleeTol
@@ -134,17 +177,20 @@ foreach ($w in $data.weapons) {
     }
 }
 
-# --- rewrite only the dmg numbers, preserving file formatting exactly ---
+# --- rewrite dmg + rpm + mag, preserving file formatting exactly ---
+# rpm/mag gio la DAI LUONG SUY RA, khong con la so go tay: rpm bi ep vao dai cua
+# archetype, va mag bi ha xuong neu no lam mot bang dan don sach ca wave (tru P2).
 $script:curId = $null
 $evaluator = [System.Text.RegularExpressions.MatchEvaluator] {
     param($m)
     if ($m.Groups['wid'].Success) { $script:curId = $m.Groups['wid'].Value; return $m.Value }
-    if ($m.Groups['d'].Success -and $script:curId -and $newDmg.ContainsKey($script:curId)) {
-        return ('"dmg": {0}' -f $newDmg[$script:curId])
-    }
+    if (-not $script:curId) { return $m.Value }
+    if ($m.Groups['d'].Success   -and $newDmg.ContainsKey($script:curId)) { return ('"dmg": {0}' -f $newDmg[$script:curId]) }
+    if ($m.Groups['r'].Success   -and $newRpm.ContainsKey($script:curId)) { return ('"rpm": {0}' -f $newRpm[$script:curId]) }
+    if ($m.Groups['g'].Success   -and $newMag.ContainsKey($script:curId)) { return ('"mag": {0}' -f $newMag[$script:curId]) }
     return $m.Value
 }
-$pattern = '"id":\s*"(?<wid>[^"]+)"|"dmg":\s*(?<d>[0-9.]+)'
+$pattern = '"id":\s*"(?<wid>[^"]+)"|"dmg":\s*(?<d>[0-9.]+)|"rpm":\s*(?<r>[0-9.]+)|"mag":\s*(?<g>[0-9]+)'
 $updated = [System.Text.RegularExpressions.Regex]::Replace($raw, $pattern, $evaluator)
 
 if (-not $DryRun) {

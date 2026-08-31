@@ -2,7 +2,7 @@
 
 > File nay do `audit_gdd.ps1` sinh ra. KHONG sua tay.
 
-**PASS 79 / WARN 2 / FAIL 0** trong 81 check.
+**PASS 81 / WARN 2 / FAIL 0** trong 83 check.
 
 | Nhom | Trang thai | Check | Chi tiet |
 |---|---|---|---|
@@ -19,17 +19,17 @@
 | ECON | **PASS** | shop: price > 0 va currency ton tai | 13 item; sai: 0 |
 | ECON | **PASS** | tickets KHONG gate Depth 1-7 / Endless (docs/11 muc 6.5) | bi gate: khong |
 | ECON | **PASS** | expectedGoldG0 >= 2 x (dan re nhat + mau re nhat) -- shop phai dung duoc | nguong = 480 vang; thieu: 0 |
-| ECON | **PASS** | expectedGoldG0 khai bao khop mo hinh tinh tu data (+-40%) | d1 tinh=1400 khai=1400 / d2 tinh=3100 khai=3100 / d3 tinh=5450 khai=5450 / d4 tinh=8650 khai=8650 / d5 tinh=13150 khai=13150 / d6 tinh=19450 khai=19450 / d7 tinh=31900 khai=31900; lech: 0 |
-| ECON | **PASS** | goldCurve tang don dieu theo moc | 8 moc, cao nhat 600000 |
+| ECON | **PASS** | expectedGoldG0 khai bao khop mo hinh tinh tu data (+-40%) | d1 tinh=3150 khai=3150 / d2 tinh=7250 khai=7250 / d3 tinh=12900 khai=12900 / d4 tinh=20350 khai=20350 / d5 tinh=30800 khai=30800 / d6 tinh=44550 khai=44550 / d7 tinh=66500 khai=66500; lech: 0 |
+| ECON | **PASS** | goldCurve tang don dieu theo moc | 8 moc, cao nhat 1339000 |
 | ECON | **PASS** | goldCurve = tong tich luy expectedGoldG0 (khong co he so nhan an) | 8 moc; lech: 0 |
 | ECON | **PASS** | Loc ton tai, la currency pham vi run, co source va sink | type=run, 7 source, 3 sink |
 | WPN | **PASS** | Moi vu khi nam trong tolerance cua dpsTarget(tier) | 30 vu khi; lech: 0 |
 | WPN | **PASS** | TTK trash <= 0.60s cho moi vu khi tam xa | qua cham: khong |
 | WPN | **PASS** | Luon con >=1 nhat chem trong 1.4s khi stamina can (regen*1.4 >= staminaCost) | vi pham: khong |
-| WPN | **PASS** | Co it nhat 1 vu khi T1 one-shot trash o Depth 1 | one-shot: rw_pistol_kendong, rw_shotgun_mienghang |
+| WPN | **PASS** | Co it nhat 1 vu khi T1 one-shot trash o Depth 1 | one-shot: rw_pistol_kendong, rw_shotgun_mienghang, rw_smg_ochuot |
 | WPN | **PASS** | GATE P2: khong bang dan nao don sach ca wave (magClearRatio <= 1.0) | vi pham: 0 |
-| WPN | **WARN** | magClearRatio trong [0.45, 0.70] (y do thiet ke) | ngoai khoang: rw_shotgun_mienghang T1 0.95, rw_smg_ochuot T1 0.89, rw_rifle_gongsat T2 0.76, rw_crossbow_gaimuc T2 0.82, rw_shotgun_longmoc T2 0.91, rw_lmg_trongdoi T3 0.92, rw_flamer_hoingam T3 0.87, rw_smg_muikim T4 0.27, rw_sniper_dinhsat T4 0.79, rw_shotgun_hamtoi T5 0.23, rw_launcher_ongsam T5 0.33, rw_deeptech_loino T6 0.13, rw_deeptech_miengmo T6 0.18, rw_minigun_ruotsat T6 0.29 |
-| WPN | **WARN** | Du tru du 6-9 wave neu khong melee | ngoai khoang: rw_rifle_matcu 3, rw_lmg_trongdoi 4.5, rw_flamer_hoingam 4.3, rw_launcher_noidat 2.6, rw_smg_muikim 1.6, rw_sniper_dinhsat 3.9, rw_shotgun_hamtoi 1.3, rw_acid_ruotdat 2.4, rw_launcher_ongsam 1.7, rw_deeptech_loino 0.8, rw_deeptech_miengmo 1, rw_minigun_ruotsat 1.4 |
+| WPN | **WARN** | magClearRatio trong [0.45, 0.70] (y do thiet ke) | ngoai khoang: rw_smg_ochuot T1 0.84, rw_crossbow_gaimuc T2 0.3, rw_shotgun_longmoc T2 0.81, rw_rifle_matcu T3 0.29, rw_launcher_noidat T4 0.2, rw_smg_muikim T4 0.21, rw_sniper_dinhsat T4 0.29, rw_shotgun_hamtoi T5 0.14, rw_acid_ruotdat T5 0.32, rw_launcher_ongsam T5 0.14, rw_deeptech_loino T6 0.06, rw_deeptech_miengmo T6 0.07, rw_minigun_ruotsat T6 0.22 |
+| WPN | **WARN** | Du tru du 6-9 wave neu khong melee | ngoai khoang: rw_shotgun_mienghang 5.4, rw_smg_ochuot 17.4, rw_rifle_gongsat 5.1, rw_crossbow_gaimuc 2.6, rw_shotgun_longmoc 9.3, rw_rifle_matcu 1.4, rw_lmg_trongdoi 2.8, rw_flamer_hoingam 3, rw_launcher_noidat 1, rw_smg_muikim 1.2, rw_sniper_dinhsat 1.4, rw_shotgun_hamtoi 0.8, rw_acid_ruotdat 1.6, rw_launcher_ongsam 0.7, rw_deeptech_loino 0.4, rw_deeptech_miengmo 0.4, rw_minigun_ruotsat 1.1 |
 | WPN | **PASS** | Melee DPS THAP HON ranged DPS o cung tier (dao nguoc, docs/05 muc 8.3) | so sanh 6 tier; vi pham: 0 |
 | WPN | **PASS** | Moi Depth 1-5 mo it nhat 1 cong cu dan cach (kb >= 1.0) | thieu: khong |
 | WPN | **PASS** | Moi vu khi duoc mo o mot Depth nao do | khong co duong mo: khong |
@@ -44,7 +44,7 @@
 | ESCAL | **PASS** | GATE: data khong con co che Greed/Bell cua Guns 'n Goblins (chi lay feel mat do quai) | quet 12 file; ro ri: khong |
 | ESCAL | **PASS** | Scaling quai khong co dial nguoi choi dieu khien | khoa: hpPerRoom, dmgPerRoom, speedCap, hpPerWave |
 | ESCAL | **PASS** | Do kho tu tang: hpPerRoom > 1.0 VA hpPerWave > 0 (theo docs goc: do kho moi wave tang dan) | hpPerRoom=1.068 / dmgPerRoom=1.055 / hpPerWave=0.06 |
-| ESCAL | **PASS** | Cam giac dong (>=60 con/wave) dat duoc truoc phong R20 | wv_thuytrieu: dat o R6 (he so 1.59 con/TP; R1 = 29 con, R10 = 89 con) |
+| ESCAL | **PASS** | Cam giac dong (>=60 con/wave) dat duoc truoc phong R20 | wv_thuytrieu: dat o R1 (he so 1.59 con/TP; R1 = 29 con, R10 = 89 con) |
 | ESCAL | **PASS** | Hard cap cho phep >= 150 quai song cung luc (feel tham chieu tu Guns n Goblins) | maxTotalAlive=240, fullAI=40 |
 | ESCAL | **PASS** | Affix chi bat dau tu Depth 4 (day co che truoc khi pha) | affix som: khong |
 | FORK | **PASS** | Nga Ba Ham: moi Cong (tru phong 1/9/10) co >= 2 cua | sai: 0 |
@@ -71,13 +71,15 @@
 | RUN | **PASS** | Quai ranged o rangedStandoffM van trong dai man hinh | o 8.5m nam o 48.7%; cho phep 45-75% |
 | WEAPON | **PASS** | Moi vu khi can chien voi xa hon khoang quai dung (tapNearM + margin) | can >= 2.80m; ngan nhat hien tai = 6.00m |
 | WEAPON | **PASS** | Tam can chien ngan hon khoang quai ranged dung | tam dao 6.00m vs rangedStandoffM 8.50m |
-| WEAPON | **PASS** | Mot NHAT CHEM du giet trash cung tier (docs/09 nguyen tac 4) | kiem 12 vu khi; 1 doan quet chem lien tuc = 62%% cua 1 nhat |
+| WEAPON | **PASS** | Moi sung deu co sat thuong >= rangedMinDmg | nguong 120; thap nhat hien tai 120 |
+| WEAPON | **PASS** | Moi sung nam trong dai rpm cua archetype (feeling khac nhau) | 13 archetype co dai rpm; 0 vi pham |
+| WPN | **PASS** | So sung bi san sat thuong keo ra ngoai duong cong DPS khong qua nua | 6/18 sung bi san sat thuong toi thieu keo len tren duong cong DPS: rw_pistol_kendong, rw_shotgun_mienghang, rw_smg_ochuot, rw_rifle_gongsat, rw_shotgun_longmoc, rw_flamer_hoingam |
 | ENEMY | **PASS** | Don AoE: vua trung duoc khi dung im, vua ne duoc bang 1 Buoc Lui | impact = max(contactM, attackRange - speed*telegraph) |
 | RUN | **PASS** | Lan giua rong hon moi lan ben (yeu cau thiet ke) | lan giua rong 3.60m, moi lan ben 1.45m; hanh lang 9m |
 | RUN | **PASS** | Quai lan giua spawn quanh truc, khong trai sat ranh lan | jitter +-0.90m trong lan +-1.80m -> vung 0.90m..1.80m khong co quai nao |
 | WAVE | **PASS** | So quai LAN GIUA moi phong (R1) nam trong 60-150 | phong R1: ~149 quai tong, lan giua ~98 (moi de), lan ben ~51 (vang them) |
 | WAVE | **PASS** | Tong quai / phong khong vuot cap maxTotalAlive | ~149 quai / phong, cap 240 |
-| WEAPON | **PASS** | Vu khi can chien chi khac nhau o dmg (moi thong so khac phai dong nhat) | 12 vu khi can chien; dmg tu 54 den 3854 |
+| WEAPON | **PASS** | Vu khi can chien chi khac nhau o dmg (moi thong so khac phai dong nhat) | 12 vu khi can chien; dmg tu 30 den 2151 |
 | WEAPON | **PASS** | Moi vu khi can chien chem duoc NHIEU muc tieu (>= 3) | targets = 8 |
 | RUN | **PASS** | Lane spring ton tai va separation khong day ngang qua manh | laneSpringPerSec 3.2/s, sepLateralMult 0.35 |
 | WAVE | **PASS** | Moi spawn pattern cho du cua so phan ung (quai dung yen) | can spawn xa >= tapNearM + minReactionSec*speedMps = 7.44m |

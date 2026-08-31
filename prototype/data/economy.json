@@ -60,14 +60,14 @@
   ],
   "_goldCurveNote": "expectedGold = TONG TICH LUY expectedGoldG0 tu Depth 1 den Depth do. audit_gdd.ps1 kiem tra lai (+-10%).",
   "goldCurve": [
-    { "milestone": "Clear Depth 1", "depth": 1, "expectedGold": 1400 },
-    { "milestone": "Clear Depth 2 (tích luỹ)", "depth": 2, "expectedGold": 4500 },
-    { "milestone": "Clear Depth 3 (tích luỹ)", "depth": 3, "expectedGold": 9950 },
-    { "milestone": "Clear Depth 4 (tích luỹ)", "depth": 4, "expectedGold": 18600 },
-    { "milestone": "Clear Depth 5 (tích luỹ)", "depth": 5, "expectedGold": 31750 },
-    { "milestone": "Clear Depth 6 (tích luỹ)", "depth": 6, "expectedGold": 51200 },
-    { "milestone": "Clear Depth 7 (tích luỹ)", "depth": 7, "expectedGold": 83100 },
-    { "milestone": "Endless phòng 40 (R=110), 1 run", "depth": null, "expectedGold": 600000 }
+    { "milestone": "Clear Depth 1", "depth": 1, "expectedGold": 3150 },
+    { "milestone": "Clear Depth 2 (tích luỹ)", "depth": 2, "expectedGold": 10400 },
+    { "milestone": "Clear Depth 3 (tích luỹ)", "depth": 3, "expectedGold": 23300 },
+    { "milestone": "Clear Depth 4 (tích luỹ)", "depth": 4, "expectedGold": 43650 },
+    { "milestone": "Clear Depth 5 (tích luỹ)", "depth": 5, "expectedGold": 74450 },
+    { "milestone": "Clear Depth 6 (tích luỹ)", "depth": 6, "expectedGold": 119000 },
+    { "milestone": "Clear Depth 7 (tích luỹ)", "depth": 7, "expectedGold": 185500 },
+    { "milestone": "Endless phòng 40 (R=110), 1 run", "depth": null, "expectedGold": 1339000 }
   ],
   "monetization": {
     "rewardedAds": [

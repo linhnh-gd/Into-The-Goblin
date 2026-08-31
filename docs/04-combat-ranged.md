@@ -101,6 +101,31 @@ nếu không có cơ chế này thì tap loạn khắp màn hình là chiến th
 
 Dữ liệu chi tiết 18 khẩu: `data/weapons.json` → xem `gen-weapons.md`.
 
+
+## 5b. Dải nhịp bắn theo archetype — thứ tạo ra FEELING khác nhau
+
+`weapons.json` → `balance.archetypeRpm` giữ một **dải rpm cho từng archetype**. Normalizer ép `rpm` vào dải
+rồi mới giải `dmg` từ đó. Đây là thứ làm shotgun cảm thấy khác SMG, chứ không phải sát thương.
+
+| Archetype | Dải rpm | Cảm giác |
+|---|---|---|
+| sniper · launcher · crossbow | 28–58 | một phát một nhịp thở |
+| **shotgun** | **48–78** | chậm, nặng, nhiều viên ghém |
+| marksman · deeptech | 70–150 | có nhịp, phải ngắm |
+| pistol · **rifle** (assault) | 115–200 | nhịp đều, xương sống của game |
+| acid · lmg · smg | 150–320 | xối xả |
+| flamer · minigun | 260–460 | dòng liên tục |
+
+**Sàn sát thương `rangedMinDmg = 120`.** Mọi viên đạn phải hiện số ≥ 120 — con số nhỏ hơn đọc ra như
+"cào nhẹ", không ra cảm giác súng. Sàn này **thắng** đường cong DPS khi hai thứ xung đột.
+
+**Chọn súng ở màn hình đầu** (`optRanged`): Gọng Sắt (rifle) · Kèn Đồng (pistol) · Miệng Hang (shotgun) ·
+Ổ Chuột (SMG) · Gai Mực (nỏ). Đo thực tế trong 1 giây giữ tay: rifle **3 phát**, SMG **4 phát**,
+shotgun **1 phát** (4 viên ghém), nỏ **1 phát** (446 sát thương).
+
+Hai gate mới: mọi súng phải có `dmg ≥ rangedMinDmg`, và `rpm` phải nằm trong dải của archetype nó. Không có
+gate thứ hai thì các archetype sẽ trôi về gần nhau khi tinh chỉnh, và lý do có nhiều loại súng biến mất.
+
 ## 6. Knockback từ đạn (docs: "quái chết thì bị đẩy lùi về phía sau")
 
 | | Công thức |

@@ -737,6 +737,20 @@ HOLD_FIRE
 <tr><td><strong>Vũ khí Lõi Hầm</strong> (deep-tech)</td><td>Late game, thưởng cho đi sâu</td><td>damage scale theo <code>D</code> (+9%/Depth), hoặc nạp bằng vàng thay vì đạn</td><td>End-game</td></tr>
 </tbody></table></div>
 <p>Dữ liệu chi tiết 18 khẩu: <code>data/weapons.json</code> → xem <code>gen-weapons.md</code>.</p>
+<h3>5b. Dải nhịp bắn theo archetype — thứ tạo ra FEELING khác nhau</h3>
+<p><code>weapons.json</code> → <code>balance.archetypeRpm</code> giữ một <strong>dải rpm cho từng archetype</strong>. Normalizer ép <code>rpm</code> vào dải rồi mới giải <code>dmg</code> từ đó. Đây là thứ làm shotgun cảm thấy khác SMG, chứ không phải sát thương.</p>
+<div class="tw"><table>
+<thead><tr><th>Archetype</th><th>Dải rpm</th><th>Cảm giác</th></tr></thead><tbody>
+<tr><td>sniper · launcher · crossbow</td><td>28–58</td><td>một phát một nhịp thở</td></tr>
+<tr><td><strong>shotgun</strong></td><td><strong>48–78</strong></td><td>chậm, nặng, nhiều viên ghém</td></tr>
+<tr><td>marksman · deeptech</td><td>70–150</td><td>có nhịp, phải ngắm</td></tr>
+<tr><td>pistol · <strong>rifle</strong> (assault)</td><td>115–200</td><td>nhịp đều, xương sống của game</td></tr>
+<tr><td>acid · lmg · smg</td><td>150–320</td><td>xối xả</td></tr>
+<tr><td>flamer · minigun</td><td>260–460</td><td>dòng liên tục</td></tr>
+</tbody></table></div>
+<p><strong>Sàn sát thương <code>rangedMinDmg = 120</code>.</strong> Mọi viên đạn phải hiện số ≥ 120 — con số nhỏ hơn đọc ra như &quot;cào nhẹ&quot;, không ra cảm giác súng. Sàn này <strong>thắng</strong> đường cong DPS khi hai thứ xung đột.</p>
+<p><strong>Chọn súng ở màn hình đầu</strong> (<code>optRanged</code>): Gọng Sắt (rifle) · Kèn Đồng (pistol) · Miệng Hang (shotgun) · Ổ Chuột (SMG) · Gai Mực (nỏ). Đo thực tế trong 1 giây giữ tay: rifle <strong>3 phát</strong>, SMG <strong>4 phát</strong>, shotgun <strong>1 phát</strong> (4 viên ghém), nỏ <strong>1 phát</strong> (446 sát thương).</p>
+<p>Hai gate mới: mọi súng phải có <code>dmg ≥ rangedMinDmg</code>, và <code>rpm</code> phải nằm trong dải của archetype nó. Không có gate thứ hai thì các archetype sẽ trôi về gần nhau khi tinh chỉnh, và lý do có nhiều loại súng biến mất.</p>
 <h3>6. Knockback từ đạn (docs: &quot;quái chết thì bị đẩy lùi về phía sau&quot;)</h3>
 <div class="tw"><table>
 <thead><tr><th></th><th>Công thức</th></tr></thead><tbody>
@@ -861,7 +875,7 @@ HOLD_FIRE
 <tr><td><code>swingTime</code></td><td>0.34</td></tr>
 <tr><td><code>knockback</code> · <code>critMult</code> · <code>corpseLaunch</code></td><td>1.0 · 2.5 · 4.0</td></tr>
 </tbody></table></div>
-<p><code>dmg</code> là bậc thang duy nhất: <strong>54 → 126 → 297 → 698 → 1640 → 3854</strong> (tier 1→6) — thấp hơn súng, xem mục 7d.</p>
+<p><code>dmg</code> là bậc thang duy nhất: <strong>30 → 71 → 166 → 390 → 915 → 2151</strong> (tier 1→6) — thấp hơn súng, xem mục 7d.</p>
 <p>Ba lý do đây là luật, không phải chỗ tinh chỉnh:</p>
 <ol>
 <li><strong>Không có vũ khí nào &quot;xấu&quot; ở một trục nào.</strong> Trước đây <code>targets</code> từ 2 đến 6 và <code>reachM</code> từ 2.0 đến 3.4 —</li>
@@ -911,7 +925,7 @@ cat neu       : khoang cach tu (ex,ey) den DOAN do  &lt;=  bladeWidthPx + 26*sca
 <tr><td>Cướp Đạn</td><td>—</td><td>6 mạng chém = <strong>1 băng đạn</strong></td></tr>
 </tbody></table></div>
 <p>Nên quyết định mỗi giây là: <em>bắn để giết nhanh mà tốn đạn</em>, hay <em>chém để giữ đạn mà chậm hơn</em>. Nếu dao vừa mạnh hơn vừa miễn phí thì không ai bắn cả — đó mới là điều phá vòng lặp, chứ không phải chuyện dám vào gần.</p>
-<p><code>meleeAdvantage</code> hạ tiếp xuống <strong>0.55</strong> và <code>meleeOneShotFactor</code> 1.65 → <strong>1.15</strong>. Sàn one-shot vẫn thắng khi xung đột, nhưng nó giờ chỉ bảo đảm <strong>một NHÁT CHÉM</strong> giết trash — một đoạn quét trong chế độ chém liên tục chỉ ăn 62% nên cần <strong>2 lượt</strong>. Đo: dmg 54 vs trash 40 HP → một nhát chém giết ngay.</p>
+<p><code>meleeAdvantage</code> hạ tiếp xuống <strong>0.307</strong> → T1 dmg = <strong>30</strong>. <strong>Luật &quot;trash chết 1 nhát&quot; đã BỎ</strong> (<code>09</code> nguyên tắc 4 không còn áp cho cận chiến): 30 dmg vs trash 40 HP nên cần <strong>2 nhát</strong>, và một đoạn quét liên tục (62%) cần <strong>3 lượt</strong>. Đây là hệ quả trực tiếp của việc hạ sát thương cận chiến xuống 30, và <code>meleeOneShotFactor</code> + gate one-shot đã bị gỡ khỏi cả normalizer lẫn audit.</p>
 <h3>8. Ràng buộc cân bằng (audit)</h3>
 <ol>
 <li><strong><code>staminaCost</code> ≤ 25 với MỌI vũ khí cận chiến.</strong> Vì <code>staminaRegen × 1.4s = 25.2</code>, luật này đảm bảo</li>
@@ -2502,7 +2516,7 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <span class="cont"><strong>Đã cài: Goblin Khiên + Ogre Hầm</strong> (xem <code>09</code> mục 2b).</span>
 </ul>
 <h3>4. Prototype đã sửa GDD ở đâu</h3>
-<p>Đây là phần quan trọng nhất của doc này: <strong>prototype tìm ra 29 lỗi mà đọc doc không thấy.</strong></p>
+<p>Đây là phần quan trọng nhất của doc này: <strong>prototype tìm ra 32 lỗi mà đọc doc không thấy.</strong></p>
 <div class="tw"><table>
 <thead><tr><th>#</th><th>Phát hiện</th><th>Sửa</th></tr></thead><tbody>
 <tr><td>1</td><td>17 con cùng đi tới <strong>một điểm</strong> → xếp chồng lên nhau, màn hình thành một bức tường capsule, không đọc được gì</td><td>Thêm separation bằng spatial hash. Đây là thứ doc chưa bao giờ nói tới nhưng bắt buộc phải có</td></tr>
@@ -2536,6 +2550,9 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>27</td><td><strong><code>canvas.clientWidth</code> ra 0 thì lưỡi dao im lặng không trúng gì.</strong> Toạ độ lưỡi dao và vệt slash lấy từ <code>clientWidth</code>, mà renderer lại lấy từ <code>window.innerWidth</code> — hai nguồn khác nhau. Khi layout chưa xong hoặc pane bị ẩn thì <code>clientWidth = 0</code>, lưỡi dao co về một điểm và <strong>không có lỗi nào được ghi ra</strong></td><td>Một nguồn kích thước duy nhất: <code>resize()</code> lưu <code>this.vw/vh</code> từ <code>window.innerWidth/Height</code>, và lưỡi dao, vệt slash, renderer đều dùng nó</td></tr>
 <tr><td>28</td><td><strong>Giữ ngón tay đứng yên thì súng KHÔNG BAO GIỜ bắn liên tục.</strong> <code>_enterHold()</code> chỉ được gọi bên trong <code>pointermove</code>, nên nếu ngón tay không nhúc nhích thì không có sự kiện nào và máy trạng thái kẹt ở <code>PENDING</code> cho tới lúc nhả tay — lúc đó nó thành một cái TAP. Người chơi phải <strong>rê tay</strong> mới ra đạn liên tục. Doc <code>03</code> mô tả máy trạng thái bằng <em>điều kiện</em>, không bằng <em>sự kiện nào đánh thức nó</em> — nên lỗi này đọc doc không thấy</td><td>Đặt <code>setTimeout</code> ngay ở <code>pointerdown</code>, huỷ khi khoá sang SLIDE hoặc khi nhả tay. Đo: giữ yên hoàn toàn → vào chế độ bắn liên tục sau <strong>132ms</strong>. Hạ <code>tapMaxDuration</code> 180 → <strong>110ms</strong></td></tr>
 <tr><td>29</td><td><strong>Tăng băng đạn và giảm tốc độ bắn cùng lúc làm vỡ trụ P2.</strong> <code>magClearRatio = dpsTarget × cycle / waveEHP</code> chỉ phụ thuộc <strong>thời lượng chu kỳ</strong>, mà <code>mag↑</code> và <code>rpm↓</code> <strong>đều</strong> kéo dài chu kỳ. Băng ×1.6 + rpm ×0.7 cho ra 8 vũ khí có ratio &gt; 1.0, tức <strong>một băng đạn dọn sạch cả wave</strong> — vòng khoá Đạn↔Stamina chết vì người chơi không bao giờ hết đạn</td><td>Biên độ bị chính gate chặn: chốt ở <strong>mag ×1.18, rpm ×0.85</strong>. Muốn băng to hơn nữa thì phải rút ngắn <code>reloadTime</code> để bù, chứ không thể chỉ tăng mag</td></tr>
+<tr><td>30</td><td><strong>Ba nơi mô hình hoá cùng một cái wave, bằng ba công thức khác nhau.</strong> <code>normalize_balance.ps1</code> và <code>audit_gdd.ps1</code> đều hardcode <code>tp = 14 + 4.2R</code>, trong khi <code>data/waves.json</code> đã đổi sang <code>38 + 11.5R</code> từ lúc tăng mật độ quái. Hai script vì thế đánh giá wave <strong>nhỏ hơn thực tế 2.7 lần</strong>, làm gate <code>magClearRatio</code> báo FAIL oan cho 7 vũ khí — tôi suýt cắt băng đạn xuống một nửa để chiều một con số sai</td><td>Cả hai script đọc <code>tpBase</code>/<code>tpPerRoom</code> từ <code>waves.json</code>. Sửa xong thì 7 FAIL đó biến mất <strong>mà không đụng vào một con số cân bằng nào</strong>. Kéo theo: vàng khai báo ở <code>economy.json</code> + <code>depths.json</code> lệch 2.25× so với mật độ mới → cập nhật cả hai</td></tr>
+<tr><td>31</td><td><strong>&quot;Mọi viên đạn ≥ 120 sát thương&quot; mâu thuẫn trực tiếp với đường cong DPS.</strong> Ở T1 mục tiêu DPS là 110, nên <strong>một viên</strong> 120 dmg đã hơn cả một giây DPS. Bản đầu tôi cho normalizer hạ <code>rpm</code> để giữ DPS — nó kéo shotgun xuống <strong>8 rpm</strong>, tức 7 giây một phát</td><td>Sàn sát thương <strong>thắng</strong> đường cong: chấp nhận 4 súng tier thấp vượt DPS mục tiêu, và audit <strong>liệt kê</strong> chúng thay vì báo FAIL. Nhịp bắn do dải archetype quyết định, không do phương trình DPS</td></tr>
+<tr><td>32</td><td><strong>Shotgun T1 bị ép xuống băng 1 viên.</strong> 120 dmg × 8 viên ghém = 960 mỗi phát, mà cả một wave T1 chỉ có ~1423 EHP → hai phát đã dọn sạch wave, vỡ trụ P2. Sàn &quot;băng ≥ 2 viên&quot; thì lại vỡ gate</td><td>Giảm viên ghém của riêng nó 8 → <strong>4</strong> (vẫn là shotgun, vẫn 120/viên). Đây là archetype bị sàn 120 bóp nghẹt nhất: nhân sát thương với số viên ghém thì trần wave đến rất nhanh</td></tr>
 </tbody></table></div>
 <blockquote><strong>Lỗi #14 và #16 đã bị chính thiết kế vượt qua.</strong> Khi chuyển sang <strong>quái đứng yên</strong>, bài toán đón đầu của <code>pincer</code> (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó <strong>đã bị bỏ khỏi code</strong>. Lane spring (#16) thì vẫn giữ, nhưng giờ nó chỉ chống separation làm lệch làn khi quái spawn chồng nhau, không còn phải chống lực đẩy dồn theo suốt đường đi. Ghi lại ở đây vì hai lỗi đó <strong>là lỗi thật</strong> ở thời điểm phát hiện, và vì nó cho thấy giá của việc đổi mô hình di chuyển: mọi thứ suy ra từ tốc độ quái đều phải tính lại.</blockquote>
 <p>Ngoài ra prototype xác nhận <strong>công thức số quái phải tính theo <code>composition</code></strong>, không phải <code>tpCost</code> trung bình toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 lần. Đã ghi vào <code>16</code> mục 4.4.</p>
@@ -2560,6 +2577,10 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>Giữ ~0.75s</td><td>bắn <strong>3 phát</strong> (rpm 254 → 4.2 phát/s)</td><td>✓ tốc độ bắn đã giảm</td></tr>
 <tr><td>Tap nhanh 60ms</td><td><strong>1 phát</strong>, không vào chế độ giữ</td><td>✓</td></tr>
 <tr><td>Quẹt nhanh</td><td>vào chế độ <strong>chém</strong>, không ra súng, <strong>tốn 0 đạn</strong></td><td>✓ hẹn giờ bị huỷ đúng</td></tr>
+<tr><td>Súng bắn 1 viên vào trash</td><td>120 dmg → trash 40 HP <strong>chết ngay</strong>, tốn 1 đạn</td><td>✓ <code>rangedMinDmg</code></td></tr>
+<tr><td>Dao chém 1 nhát vào trash</td><td>30 dmg → trash <strong>còn 10 HP</strong>, cần 2 nhát</td><td>✓ luật one-shot đã bỏ</td></tr>
+<tr><td>Nhịp bắn 1 giây giữ tay</td><td>rifle <strong>3</strong> · SMG <strong>4</strong> · shotgun <strong>1</strong> · nỏ <strong>1</strong></td><td>✓ dải archetype</td></tr>
+<tr><td>Chọn súng ở màn hình đầu</td><td>5 lựa chọn, đổi được archetype</td><td>✓ <code>04</code> mục 5b</td></tr>
 </tbody></table></div>
 <h4>Kiểm chứng súng và chém liên tục</h4>
 <div class="tw"><table>

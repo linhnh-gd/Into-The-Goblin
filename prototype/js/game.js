@@ -84,10 +84,10 @@ export class Game {
    *        dung de test quai tu Depth 3+ ma khong phai choi lai tu dau.
    * @param {string} meleeId id vu khi can chien khoi dau (Bua Da bo qua khien).
    */
-  newRun(startDepth = 1, meleeId = 'mw_dagger_daogam') {
+  newRun(startDepth = 1, meleeId = 'mw_dagger_daogam', rangedId = null) {
     const c = P();
     this.const = c;
-    const rw = weapon(startDepth >= 3 ? 'rw_rifle_gongsat' : 'rw_pistol_kendong');
+    const rw = weapon(rangedId || (startDepth >= 3 ? 'rw_rifle_gongsat' : 'rw_pistol_kendong'));
     const mw = weapon(meleeId);
     this.rw = rw; this.mw = mw;
 

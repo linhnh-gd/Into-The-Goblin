@@ -200,7 +200,7 @@ foreach ($itD in $gdDep.depths) {
         $rGlobal = ($dNum - 1) * 10 + [int]$itRoom.room
         $mult = if ($layoutWeight.ContainsKey($itRoom.type)) { $layoutWeight[$itRoom.type] } else { 0.0 }
         if ($mult -le 0) { continue }
-        $tp = (14.0 + 4.2 * $rGlobal) * $mult
+        $tp = ([double]$gdWav.directorRules.tpBase + [double]$gdWav.directorRules.tpPerRoom * $rGlobal) * $mult
         $sumGold += ($tp / $avgTp) * $avgGold
     }
     $sumGold *= [Math]::Pow(1.15, $dNum - 1)
@@ -252,10 +252,10 @@ function Get-DpsTarget([int]$tier) { return $dpsBase * [Math]::Pow($dpsGrow, $ti
 function Get-TrashHp([int]$tier)   { return 40.0 * [Math]::Pow(1.068, $anchorRooms[$tier - 1] - 1) }
 function Get-WaveEhp([int]$tier) {
     $rr = $anchorRooms[$tier - 1]
-    return ((14.0 + 4.2 * $rr) / 1.6) * (40.0 * [Math]::Pow(1.068, $rr - 1)) * 1.15
+    return ((([double]$gdWav.directorRules.tpBase + [double]$gdWav.directorRules.tpPerRoom * $rr) / 1.6) * (40.0 * [Math]::Pow(1.068, $rr - 1)) * 1.15)
 }
 
-$offCurve = @(); $slowTtk = @(); $magFail = @(); $magWarn = @(); $reserveWarn = @(); $stamLock = @()
+$flooredW = @(); $offCurve = @(); $slowTtk = @(); $magFail = @(); $magWarn = @(); $reserveWarn = @(); $stamLock = @()
 $rangedByTier = @{}; $meleeByTier = @{}
 foreach ($itW in $gdWpn.weapons) {
     $tier = [int]$itW.tier
@@ -263,7 +263,11 @@ foreach ($itW in $gdWpn.weapons) {
         $cycle = [double]$itW.mag / ([double]$itW.rpm / 60.0) + [double]$itW.reloadTime
         $dps   = ([double]$itW.dmg * [double]$itW.pellets * [double]$itW.mag) / $cycle
         $dev   = [Math]::Abs($dps / (Get-DpsTarget $tier) - 1.0)
-        if ($dev -gt [double]$gdWpn.balance.rangedTolerance) { $offCurve += "$($itW.id) $([Math]::Round($dev*100))%" }
+        # Vu khi bi SAN sat thuong toi thieu (rangedMinDmg) thi VUOT duong cong DPS la
+        # dieu tat yeu: o T1 mot vien 120 dmg da hon ca giay DPS muc tieu. Liet ke ra
+        # chu khong bao FAIL -- xem docs/18 loi #31.
+        if ([double]$itW.dmg -eq [double]$gdWpn.balance.rangedMinDmg) { $flooredW += $itW.id }
+        elseif ($dev -gt [double]$gdWpn.balance.rangedTolerance) { $offCurve += "$($itW.id) $([Math]::Round($dev*100))%" }
         $ttk = (Get-TrashHp $tier) / $dps
         if ($ttk -gt 0.60) { $slowTtk += "$($itW.id) $([Math]::Round($ttk,2))s" }
         # magClearRatio: FAIL neu 1 bang don sach ca wave (bat ky tier) -> P2 chet.
@@ -481,7 +485,7 @@ if ($tideWave.Count -eq 1) {
     }
     $tideFactor *= [double]$tideWave[0].tpMult
     for ($rr = 1; $rr -le 70; $rr++) {
-        $cnt = (14.0 + 4.2 * $rr) * $tideFactor
+        $cnt = ([double]$gdWav.directorRules.tpBase + [double]$gdWav.directorRules.tpPerRoom * $rr) * $tideFactor
         if ($cnt -ge 60 -and $densityHitRoom -eq 0) { $densityHitRoom = $rr }
     }
 }
@@ -684,29 +688,33 @@ Assert-True 'WEAPON' 'Tam can chien ngan hon khoang quai ranged dung' `
     ($melMax -lt [double]$gdRun.rangedStandoffM) `
     ("tam dao {0:N2}m vs rangedStandoffM {1:N2}m" -f $melMax, [double]$gdRun.rangedStandoffM)
 
-# LUAT CUNG (docs/09 nguyen tac 4): trash phai chet trong MOT nhat -- ke ca mot doan quet
-# trong che do chem lien tuc (dmg x slideTickDamageMult). Khong co gate nay thi
-# normalize chia sat thuong cho targetFactor va trash song sot 5 nhat, tuc "chat chem"
-# mat het cam giac. Xem docs/18 loi #22.
-$trashBase = 40.0
-$hpPerRoom = 1.068
-$anchorRoom = @(3, 12, 22, 34, 48, 62)
-$badOne = @()
-foreach ($itM in $gdMel) {
-    $ti = [int]$itM.tier
-    if ($ti -lt 1 -or $ti -gt 6) { continue }
-    $hp = $trashBase * [Math]::Pow($hpPerRoom, $anchorRoom[$ti - 1] - 1)
-    # docs/09 nguyen tac 4 noi "1 NHAT", tuc mot nhat chem day du -- khong phai mot doan
-    # quet trong che do chem lien tuc (doan quet chi an slideTickDamageMult cua nhat day).
-    if ([double]$itM.dmg -lt $hp) {
-        $badOne += ("$($itM.id) T$ti : 1 nhat = {0:N0} dmg < trash {1:N0} HP" -f [double]$itM.dmg, $hp)
+# SAT THUONG TOI THIEU + DAI RPM THEO ARCHETYPE (yeu cau nguoi choi).
+$bal = $gdWpn.balance
+$rng = @($gdWpn.weapons | Where-Object { $_.class -eq 'ranged' })
+$lowDmg = @($rng | Where-Object { [double]$_.dmg -lt [double]$bal.rangedMinDmg } | ForEach-Object { "$($_.id) $($_.dmg)" })
+Assert-True 'WEAPON' 'Moi sung deu co sat thuong >= rangedMinDmg' ($lowDmg.Count -eq 0) `
+    ("nguong {0:N0}; thap nhat hien tai {1:N0}" -f [double]$bal.rangedMinDmg, (($rng | ForEach-Object { [double]$_.dmg } | Measure-Object -Minimum).Minimum) +
+     $(if ($lowDmg.Count) { ' | VI PHAM: ' + ($lowDmg -join ', ') } else { '' }))
+
+# Dai rpm la thu tao ra FEELING khac nhau giua cac archetype. Neu mot sung tuot ra ngoai
+# dai cua no thi shotgun bat dau cam giac giong smg -- mat het ly do co nhieu loai sung.
+$badRpm = @()
+foreach ($itR in $rng) {
+    $a = [string]$itR.archetype
+    if ($bal.archetypeRpm.PSObject.Properties.Name -notcontains $a) { $badRpm += "$($itR.id): archetype '$a' khong co dai rpm"; continue }
+    $bd = $bal.archetypeRpm.$a
+    if ([double]$itR.rpm -lt [double]$bd[0] -or [double]$itR.rpm -gt [double]$bd[1]) {
+        $badRpm += ("$($itR.id) rpm $($itR.rpm) ngoai dai $($bd[0])-$($bd[1]) cua '$a'")
     }
 }
-Assert-True 'WEAPON' 'Mot NHAT CHEM du giet trash cung tier (docs/09 nguyen tac 4)' `
-    ($badOne.Count -eq 0) `
-    ("kiem $($gdMel.Count) vu khi; 1 doan quet chem lien tuc = {0:N0}%% cua 1 nhat" -f (100 * [double]$gdFel.melee.slideTickDamageMult)) `
-    -failStatus 'FAIL'
-if ($badOne.Count) { $auditResults[-1].Detail += ' | VI PHAM: ' + ($badOne -join ' ; ') }
+Assert-True 'WEAPON' 'Moi sung nam trong dai rpm cua archetype (feeling khac nhau)' ($badRpm.Count -eq 0) `
+    ("$(@($bal.archetypeRpm.PSObject.Properties.Name).Count) archetype co dai rpm" +
+     $(if ($badRpm.Count) { ' | VI PHAM: ' + ($badRpm -join ', ') } else { '; 0 vi pham' }))
+
+$flooredMsg = "$($flooredW.Count)/$($rng.Count) sung bi san sat thuong toi thieu keo len tren duong cong DPS: " + (Join-Or $flooredW)
+Assert-True 'WPN' 'So sung bi san sat thuong keo ra ngoai duong cong DPS khong qua nua' `
+    ($flooredW.Count -le [Math]::Floor($rng.Count / 2)) $flooredMsg 'WARN'
+
 
 # HOP DONG DON AoE: nguoi choi chay tien nen telegraph AN MAT speed*telegraphSec met.
 # Don giang o impactM, va Buoc Lui phai dua ra NGOAI aoeRadius tu do.

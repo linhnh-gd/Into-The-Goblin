@@ -81,7 +81,7 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 
 ## 4. Prototype đã sửa GDD ở đâu
 
-Đây là phần quan trọng nhất của doc này: **prototype tìm ra 29 lỗi mà đọc doc không thấy.**
+Đây là phần quan trọng nhất của doc này: **prototype tìm ra 32 lỗi mà đọc doc không thấy.**
 
 | # | Phát hiện | Sửa |
 |---|---|---|
@@ -115,6 +115,9 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 | 27 | **`canvas.clientWidth` ra 0 thì lưỡi dao im lặng không trúng gì.** Toạ độ lưỡi dao và vệt slash lấy từ `clientWidth`, mà renderer lại lấy từ `window.innerWidth` — hai nguồn khác nhau. Khi layout chưa xong hoặc pane bị ẩn thì `clientWidth = 0`, lưỡi dao co về một điểm và **không có lỗi nào được ghi ra** | Một nguồn kích thước duy nhất: `resize()` lưu `this.vw/vh` từ `window.innerWidth/Height`, và lưỡi dao, vệt slash, renderer đều dùng nó |
 | 28 | **Giữ ngón tay đứng yên thì súng KHÔNG BAO GIỜ bắn liên tục.** `_enterHold()` chỉ được gọi bên trong `pointermove`, nên nếu ngón tay không nhúc nhích thì không có sự kiện nào và máy trạng thái kẹt ở `PENDING` cho tới lúc nhả tay — lúc đó nó thành một cái TAP. Người chơi phải **rê tay** mới ra đạn liên tục. Doc `03` mô tả máy trạng thái bằng *điều kiện*, không bằng *sự kiện nào đánh thức nó* — nên lỗi này đọc doc không thấy | Đặt `setTimeout` ngay ở `pointerdown`, huỷ khi khoá sang SLIDE hoặc khi nhả tay. Đo: giữ yên hoàn toàn → vào chế độ bắn liên tục sau **132ms**. Hạ `tapMaxDuration` 180 → **110ms** |
 | 29 | **Tăng băng đạn và giảm tốc độ bắn cùng lúc làm vỡ trụ P2.** `magClearRatio = dpsTarget × cycle / waveEHP` chỉ phụ thuộc **thời lượng chu kỳ**, mà `mag↑` và `rpm↓` **đều** kéo dài chu kỳ. Băng ×1.6 + rpm ×0.7 cho ra 8 vũ khí có ratio > 1.0, tức **một băng đạn dọn sạch cả wave** — vòng khoá Đạn↔Stamina chết vì người chơi không bao giờ hết đạn | Biên độ bị chính gate chặn: chốt ở **mag ×1.18, rpm ×0.85**. Muốn băng to hơn nữa thì phải rút ngắn `reloadTime` để bù, chứ không thể chỉ tăng mag |
+| 30 | **Ba nơi mô hình hoá cùng một cái wave, bằng ba công thức khác nhau.** `normalize_balance.ps1` và `audit_gdd.ps1` đều hardcode `tp = 14 + 4.2R`, trong khi `data/waves.json` đã đổi sang `38 + 11.5R` từ lúc tăng mật độ quái. Hai script vì thế đánh giá wave **nhỏ hơn thực tế 2.7 lần**, làm gate `magClearRatio` báo FAIL oan cho 7 vũ khí — tôi suýt cắt băng đạn xuống một nửa để chiều một con số sai | Cả hai script đọc `tpBase`/`tpPerRoom` từ `waves.json`. Sửa xong thì 7 FAIL đó biến mất **mà không đụng vào một con số cân bằng nào**. Kéo theo: vàng khai báo ở `economy.json` + `depths.json` lệch 2.25× so với mật độ mới → cập nhật cả hai |
+| 31 | **"Mọi viên đạn ≥ 120 sát thương" mâu thuẫn trực tiếp với đường cong DPS.** Ở T1 mục tiêu DPS là 110, nên **một viên** 120 dmg đã hơn cả một giây DPS. Bản đầu tôi cho normalizer hạ `rpm` để giữ DPS — nó kéo shotgun xuống **8 rpm**, tức 7 giây một phát | Sàn sát thương **thắng** đường cong: chấp nhận 4 súng tier thấp vượt DPS mục tiêu, và audit **liệt kê** chúng thay vì báo FAIL. Nhịp bắn do dải archetype quyết định, không do phương trình DPS |
+| 32 | **Shotgun T1 bị ép xuống băng 1 viên.** 120 dmg × 8 viên ghém = 960 mỗi phát, mà cả một wave T1 chỉ có ~1423 EHP → hai phát đã dọn sạch wave, vỡ trụ P2. Sàn "băng ≥ 2 viên" thì lại vỡ gate | Giảm viên ghém của riêng nó 8 → **4** (vẫn là shotgun, vẫn 120/viên). Đây là archetype bị sàn 120 bóp nghẹt nhất: nhân sát thương với số viên ghém thì trần wave đến rất nhanh |
 
 > **Lỗi #14 và #16 đã bị chính thiết kế vượt qua.** Khi chuyển sang **quái đứng yên**, bài toán đón đầu của
 > `pincer` (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó **đã bị bỏ khỏi code**.
@@ -147,6 +150,10 @@ toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 l
 | Giữ ~0.75s | bắn **3 phát** (rpm 254 → 4.2 phát/s) | ✓ tốc độ bắn đã giảm |
 | Tap nhanh 60ms | **1 phát**, không vào chế độ giữ | ✓ |
 | Quẹt nhanh | vào chế độ **chém**, không ra súng, **tốn 0 đạn** | ✓ hẹn giờ bị huỷ đúng |
+| Súng bắn 1 viên vào trash | 120 dmg → trash 40 HP **chết ngay**, tốn 1 đạn | ✓ `rangedMinDmg` |
+| Dao chém 1 nhát vào trash | 30 dmg → trash **còn 10 HP**, cần 2 nhát | ✓ luật one-shot đã bỏ |
+| Nhịp bắn 1 giây giữ tay | rifle **3** · SMG **4** · shotgun **1** · nỏ **1** | ✓ dải archetype |
+| Chọn súng ở màn hình đầu | 5 lựa chọn, đổi được archetype | ✓ `04` mục 5b |
 
 ### Kiểm chứng súng và chém liên tục
 

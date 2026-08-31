@@ -6,7 +6,7 @@
       "introEnemies": ["en_trash_goblincui", "en_trash_goblinchay", "en_trash_goblinbay"],
       "boss": "bs_d1_goblinvuongbeo",
       "loadoutUnlocks": ["rw_pistol_kendong", "rw_shotgun_mienghang", "rw_smg_ochuot", "mw_dagger_daogam", "mw_machete_ruarung"],
-      "expectedGoldG0": 1400, "entryCost": null,
+      "expectedGoldG0": 3150, "entryCost": null,
       "teaches": "tap, hold, quẹt chém, Chém Hoàn Hảo, Cướp Đạn, Ngã Ba Hầm lần đầu",
       "challenges": [
         { "id": "ch_d1_1", "name": "Clear Depth 1", "reward": "300 vàng + mở Trại Mỏ" },
@@ -21,7 +21,7 @@
       "introEnemies": ["en_ranged_nemda", "en_special_thuocno", "en_elite_tuonggoblin"],
       "boss": "bs_d2_doisongsinhri",
       "loadoutUnlocks": ["rw_rifle_gongsat", "rw_crossbow_gaimuc", "rw_shotgun_longmoc", "mw_hammer_buada", "mw_spear_giaotre"],
-      "expectedGoldG0": 3100, "entryCost": null,
+      "expectedGoldG0": 7250, "entryCost": null,
       "teaches": "không được rùa (Ném Đá), knockback cứu mạng (Thuốc Nổ), Elite",
       "challenges": [
         { "id": "ch_d2_1", "name": "Clear Depth 2", "reward": "700 vàng + mở Talent" },
@@ -36,7 +36,7 @@
       "introEnemies": ["en_special_khien", "en_heavy_ogreham"],
       "boss": "bs_d3_tuongkhiensong",
       "loadoutUnlocks": ["rw_rifle_matcu", "rw_lmg_trongdoi", "rw_flamer_hoingam", "mw_greatsword_daidao", "mw_twinblade_songdao"],
-      "expectedGoldG0": 5450, "entryCost": null,
+      "expectedGoldG0": 12900, "entryCost": null,
       "teaches": "spam bắn thẳng không còn hiệu quả; kbResist tồn tại",
       "challenges": [
         { "id": "ch_d3_1", "name": "Clear Depth 3", "reward": "1500 vàng" },
@@ -51,7 +51,7 @@
       "introEnemies": ["en_special_doiham", "en_special_daoham", "en_elite_dote"],
       "boss": "bs_d4_nhentranham",
       "loadoutUnlocks": ["rw_launcher_noidat", "rw_smg_muikim", "rw_sniper_dinhsat", "mw_chainsaw_cuamay", "mw_axe_phunguyet"],
-      "expectedGoldG0": 8650, "entryCost": null,
+      "expectedGoldG0": 20350, "entryCost": null,
       "teaches": "trục dọc (bay) và phía sau (đào hầm) — màn hình không chỉ có phía trước",
       "challenges": [
         { "id": "ch_d4_1", "name": "Clear Depth 4", "reward": "3200 vàng" },
@@ -66,7 +66,7 @@
       "introEnemies": ["en_support_trong", "en_support_phapsuxanh", "en_elite_omvang"],
       "boss": "bs_d5_ogremo",
       "loadoutUnlocks": ["rw_shotgun_hamtoi", "rw_acid_ruotdat", "rw_launcher_ongsam", "mw_scythe_luoiliem", "mw_hammer_chuytroi"],
-      "expectedGoldG0": 13150, "entryCost": null,
+      "expectedGoldG0": 30800, "entryCost": null,
       "teaches": "ưu tiên mục tiêu — bắn con gần nhất không còn đúng",
       "challenges": [
         { "id": "ch_d5_1", "name": "Clear Depth 5", "reward": "7000 vàng" },
@@ -81,7 +81,7 @@
       "introEnemies": ["en_heavy_daubo", "en_heavy_goblinbeo", "en_ranged_no"],
       "boss": "bs_d6_vuaxacvang",
       "loadoutUnlocks": ["rw_deeptech_loino", "mw_deeptech_luoiloi"],
-      "expectedGoldG0": 19450, "entryCost": null,
+      "expectedGoldG0": 44550, "entryCost": null,
       "teaches": "hỗn chiến thật sự; hành lang là tài sản phải giành",
       "challenges": [
         { "id": "ch_d6_1", "name": "Clear Depth 6", "reward": "16000 vàng" },
@@ -96,7 +96,7 @@
       "introEnemies": ["en_special_goblinlua", "en_support_thaymo", "en_heavy_quyham"],
       "boss": "bs_d7_meemo",
       "loadoutUnlocks": ["rw_deeptech_miengmo", "rw_minigun_ruotsat", "mw_greatsword_xelong"],
-      "expectedGoldG0": 31900, "entryCost": null,
+      "expectedGoldG0": 66500, "entryCost": null,
       "teaches": "kỳ thi tốt nghiệp — mọi cơ chế cùng lúc, affix mặc định bật",
       "challenges": [
         { "id": "ch_d7_1", "name": "Clear Depth 7", "reward": "40000 vàng + mở Endless" },

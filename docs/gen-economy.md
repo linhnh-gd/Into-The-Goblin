@@ -35,14 +35,14 @@
 
 | Mốc |  | Vàng dự kiến |
 |---|---|---|
-| Clear Depth 1 | G | 1,400 |
-| Clear Depth 2 (tích luỹ) | G | 4,500 |
-| Clear Depth 3 (tích luỹ) | G | 9,950 |
-| Clear Depth 4 (tích luỹ) | G | 18,600 |
-| Clear Depth 5 (tích luỹ) | G | 31,750 |
-| Clear Depth 6 (tích luỹ) | G | 51,200 |
-| Clear Depth 7 (tích luỹ) | G | 83,100 |
-| Endless phòng 40 (R=110), 1 run | G | 600,000 |
+| Clear Depth 1 | G | 3,150 |
+| Clear Depth 2 (tích luỹ) | G | 10,400 |
+| Clear Depth 3 (tích luỹ) | G | 23,300 |
+| Clear Depth 4 (tích luỹ) | G | 43,650 |
+| Clear Depth 5 (tích luỹ) | G | 74,450 |
+| Clear Depth 6 (tích luỹ) | G | 119,000 |
+| Clear Depth 7 (tích luỹ) | G | 185,500 |
+| Endless phòng 40 (R=110), 1 run | G | 1,339,000 |
 
 ### Kinh tế & Kiếm tiền
 

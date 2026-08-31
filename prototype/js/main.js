@@ -36,7 +36,8 @@ function fail(err) {
     game.input.twoZone = document.getElementById('optTwoZone').checked;
     const depth = parseInt(document.getElementById('optDepth').value, 10) || 1;
     const melee = document.getElementById('optMelee').value;
-    game.newRun(depth, melee);
+    const ranged = document.getElementById('optRanged').value;
+    game.newRun(depth, melee, ranged);
   };
 
   document.getElementById('btnStart').onclick = start;

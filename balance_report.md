@@ -2,60 +2,60 @@
 
 > File nay do `normalize_balance.ps1` sinh ra. KHONG sua tay.
 
-- Cong thuc: `dpsTarget(T) = 110 * 2.35^(T-1)`, meleeAdvantage = **0.55**, staminaRegen = 18/s
+- Cong thuc: `dpsTarget(T) = 110 * 2.35^(T-1)`, meleeAdvantage = **0.307**, staminaRegen = 18/s
 - anchorRoom(T) = 1, 8, 18, 30, 45, 60
 - waveEHP(T) = (TP/1.6) * 40 * 1.068^(R-1) * 1.15
 - So vu khi xu ly: **30**
 
 ## dpsTarget theo tier
 
-| Tier | dpsTarget (ranged) | target melee (x0.55) |
+| Tier | dpsTarget (ranged) | target melee (x0.307) |
 |---|---|---|
-| T1 | 110 | 61 |
-| T2 | 259 | 142 |
-| T3 | 607 | 334 |
-| T4 | 1,428 | 785 |
-| T5 | 3,355 | 1,845 |
-| T6 | 7,884 | 4,336 |
+| T1 | 110 | 34 |
+| T2 | 259 | 79 |
+| T3 | 607 | 186 |
+| T4 | 1,428 | 438 |
+| T5 | 3,355 | 1,030 |
+| T6 | 7,884 | 2,420 |
 
 ## Before / After
 
 | Vu khi | Lop | T | dmg cu | dmg moi | Doi | Metric | Sau chuan hoa | Muc tieu | Lech | Ghi chu |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Kèn Đồng | ranged | 1 | 45 | 45 | 0.0% | dpsSustained | 109 | 110 | -0.5% OK | mag clear 0.69 | reserve 7.2 wave | TTK trash 0.37s |
-| Miệng Hang | ranged | 1 | 31 | 31 | 0.0% | dpsSustained | 112 | 110 | +1.4% OK | mag clear 0.95 | reserve 7.6 wave | TTK trash 0.36s |
-| Ổ Chuột | ranged | 1 | 18 | 18 | 0.0% | dpsSustained | 110 | 110 | 0.0% OK | mag clear 0.89 | reserve 7.1 wave | TTK trash 0.36s |
-| Gọng Sắt | ranged | 2 | 63 | 63 | 0.0% | dpsSustained | 257 | 259 | -0.7% OK | mag clear 0.76 | reserve 7.3 wave | TTK trash 0.25s |
-| Gai Mực | ranged | 2 | 446 | 446 | 0.0% | dpsSustained | 258 | 259 | -0.1% OK | mag clear 0.82 | reserve 7.0 wave | TTK trash 0.25s |
-| Lồng Móc | ranged | 2 | 31 | 33 | +6.5% | dpsSustained | 256 | 259 | -1.0% OK | mag clear 0.91 | reserve 7.0 wave | TTK trash 0.25s |
-| Mắt Cú | ranged | 3 | 334 | 334 | 0.0% | dpsSustained | 608 | 607 | +0.1% OK | mag clear 0.59 | reserve 3.0 wave | TTK trash 0.20s |
-| Trống Đôi | ranged | 3 | 99 | 99 | 0.0% | dpsSustained | 606 | 607 | -0.3% OK | mag clear 0.92 | reserve 4.5 wave | TTK trash 0.20s |
-| Hơi Ngầm | ranged | 3 | 63 | 63 | 0.0% | dpsSustained | 604 | 607 | -0.6% OK | mag clear 0.87 | reserve 4.3 wave | TTK trash 0.20s |
-| Nồi Đất | ranged | 4 | 2953 | 2953 | 0.0% | dpsSustained | 1,428 | 1,428 | 0.0% OK | mag clear 0.54 | reserve 2.6 wave | TTK trash 0.19s |
-| Mũi Kim | ranged | 4 | 151 | 151 | 0.0% | dpsSustained | 1,425 | 1,428 | -0.2% OK | mag clear 0.27 | reserve 1.6 wave | TTK trash 0.19s |
-| Đinh Sắt | ranged | 4 | 3049 | 3049 | 0.0% | dpsSustained | 1,427 | 1,428 | 0.0% OK | mag clear 0.79 | reserve 3.9 wave | TTK trash 0.19s |
-| Hàm Tối | ranged | 5 | 289 | 289 | 0.0% | dpsSustained | 3,355 | 3,355 | 0.0% OK | mag clear 0.23 | reserve 1.3 wave | TTK trash 0.22s |
-| Ruột Đất | ranged | 5 | 613 | 613 | 0.0% | dpsSustained | 3,355 | 3,355 | 0.0% OK | mag clear 0.49 | reserve 2.4 wave | TTK trash 0.22s |
-| Ống Sấm | ranged | 5 | 5041 | 5041 | 0.0% | dpsSustained | 3,355 | 3,355 | 0.0% OK | mag clear 0.33 | reserve 1.7 wave | TTK trash 0.22s |
-| Lõi Nổ | ranged | 6 | 3445 | 3445 | 0.0% | dpsSustained | 7,884 | 7,884 | 0.0% OK | mag clear 0.13 | reserve 0.8 wave | TTK trash 0.25s |
-| Miệng Mỏ | ranged | 6 | 570 | 570 | 0.0% | dpsSustained | 7,878 | 7,884 | -0.1% OK | mag clear 0.18 | reserve 1.0 wave | TTK trash 0.25s |
-| Ruột Sắt | ranged | 6 | 595 | 595 | 0.0% | dpsSustained | 7,890 | 7,884 | +0.1% OK | mag clear 0.29 | reserve 1.4 wave | TTK trash 0.25s |
-| Dao Găm | melee | 1 | 54 | 54 | 0.0% | dpsMeleeEff | 61 | 61 | +0.4% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 3.4 |
-| Rựa Rừng | melee | 1 | 54 | 54 | 0.0% | dpsMeleeEff | 61 | 61 | +0.4% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 3.4 |
-| Búa Đá | melee | 2 | 126 | 126 | 0.0% | dpsMeleeEff | 142 | 142 | -0.3% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 7.9 |
-| Giáo Tre | melee | 2 | 126 | 126 | 0.0% | dpsMeleeEff | 142 | 142 | -0.3% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 7.9 |
-| Đại Đao | melee | 3 | 297 | 297 | 0.0% | dpsMeleeEff | 334 | 334 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 18.6 |
-| Song Đao | melee | 3 | 297 | 297 | 0.0% | dpsMeleeEff | 334 | 334 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 18.6 |
-| Cưa Máy | melee | 4 | 698 | 698 | 0.0% | dpsMeleeEff | 785 | 785 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 43.6 |
-| Phủ Nguyệt | melee | 4 | 698 | 698 | 0.0% | dpsMeleeEff | 785 | 785 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 43.6 |
-| Lưỡi Liềm | melee | 5 | 1640 | 1640 | 0.0% | dpsMeleeEff | 1,845 | 1,845 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 102.5 |
-| Chuỳ Trời | melee | 5 | 1640 | 1640 | 0.0% | dpsMeleeEff | 1,845 | 1,845 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 102.5 |
-| Lưỡi Lõi | melee | 6 | 3854 | 3854 | 0.0% | dpsMeleeEff | 4,336 | 4,336 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 240.9 |
-| Xẻ Long | melee | 6 | 3854 | 3854 | 0.0% | dpsMeleeEff | 4,336 | 4,336 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 240.9 |
+| Kèn Đồng | ranged | 1 | 120 | 120 | 0.0% | dpsSustained | 172 | 110 | +56.6% CHECK | rpm 115 | mag 8 | mag clear 0.67 | TTK trash 0.23s |
+| Miệng Hang | ranged | 1 | 120 | 120 | 0.0% | dpsSustained | 188 | 110 | +71.1% CHECK | rpm 48 | mag 2 | mag clear 0.67 | TTK trash 0.21s |
+| Ổ Chuột | ranged | 1 | 120 | 120 | 0.0% | dpsSustained | 272 | 110 | +147.4% CHECK | rpm 230 | mag 10 | mag clear 0.84 | TTK trash 0.15s |
+| Gọng Sắt | ranged | 2 | 120 | 120 | 0.0% | dpsSustained | 259 | 259 | 0.0% OK | rpm 155 | mag 26 | mag clear 0.53 | TTK trash 0.25s |
+| Gai Mực | ranged | 2 | 446 | 446 | 0.0% | dpsSustained | 258 | 259 | -0.1% OK | rpm 51 | mag 4 | mag clear 0.30 | TTK trash 0.25s |
+| Lồng Móc | ranged | 2 | 120 | 120 | 0.0% | dpsSustained | 600 | 259 | +132.1% CHECK | rpm 48 | mag 4 | mag clear 0.81 | TTK trash 0.11s |
+| Mắt Cú | ranged | 3 | 443 | 443 | 0.0% | dpsSustained | 608 | 607 | +0.1% OK | rpm 105 | mag 14 | mag clear 0.29 | TTK trash 0.20s |
+| Trống Đôi | ranged | 3 | 167 | 167 | 0.0% | dpsSustained | 606 | 607 | -0.3% OK | rpm 265 | mag 73 | mag clear 0.57 | TTK trash 0.20s |
+| Hơi Ngầm | ranged | 3 | 120 | 120 | 0.0% | dpsSustained | 607 | 607 | 0.0% OK | rpm 349 | mag 109 | mag clear 0.61 | TTK trash 0.20s |
+| Nồi Đất | ranged | 4 | 2953 | 2953 | 0.0% | dpsSustained | 1,428 | 1,428 | 0.0% OK | rpm 42 | mag 5 | mag clear 0.20 | TTK trash 0.19s |
+| Mũi Kim | ranged | 4 | 327 | 327 | 0.0% | dpsSustained | 1,427 | 1,428 | 0.0% OK | rpm 320 | mag 48 | mag clear 0.21 | TTK trash 0.19s |
+| Đinh Sắt | ranged | 4 | 3049 | 3049 | 0.0% | dpsSustained | 1,427 | 1,428 | 0.0% OK | rpm 34 | mag 7 | mag clear 0.29 | TTK trash 0.19s |
+| Hàm Tối | ranged | 5 | 488 | 488 | 0.0% | dpsSustained | 3,352 | 3,355 | -0.1% OK | rpm 78 | mag 12 | mag clear 0.14 | TTK trash 0.22s |
+| Ruột Đất | ranged | 5 | 1077 | 1077 | 0.0% | dpsSustained | 3,355 | 3,355 | 0.0% OK | rpm 210 | mag 85 | mag clear 0.32 | TTK trash 0.22s |
+| Ống Sấm | ranged | 5 | 5823 | 5823 | 0.0% | dpsSustained | 3,355 | 3,355 | 0.0% OK | rpm 48 | mag 7 | mag clear 0.14 | TTK trash 0.22s |
+| Lõi Nổ | ranged | 6 | 4280 | 4280 | 0.0% | dpsSustained | 7,884 | 7,884 | 0.0% OK | rpm 150 | mag 14 | mag clear 0.06 | TTK trash 0.25s |
+| Miệng Mỏ | ranged | 6 | 570 | 570 | 0.0% | dpsSustained | 7,878 | 7,884 | -0.1% OK | rpm 102 | mag 10 | mag clear 0.07 | TTK trash 0.25s |
+| Ruột Sắt | ranged | 6 | 1224 | 1224 | 0.0% | dpsSustained | 7,882 | 7,884 | 0.0% OK | rpm 460 | mag 181 | mag clear 0.22 | TTK trash 0.25s |
+| Dao Găm | melee | 1 | 30 | 30 | 0.0% | dpsMeleeEff | 34 | 34 | -0.1% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 1.9 |
+| Rựa Rừng | melee | 1 | 30 | 30 | 0.0% | dpsMeleeEff | 34 | 34 | -0.1% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 1.9 |
+| Búa Đá | melee | 2 | 71 | 71 | 0.0% | dpsMeleeEff | 80 | 79 | +0.6% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 4.4 |
+| Giáo Tre | melee | 2 | 71 | 71 | 0.0% | dpsMeleeEff | 80 | 79 | +0.6% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 4.4 |
+| Đại Đao | melee | 3 | 166 | 166 | 0.0% | dpsMeleeEff | 187 | 186 | +0.1% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 10.4 |
+| Song Đao | melee | 3 | 166 | 166 | 0.0% | dpsMeleeEff | 187 | 186 | +0.1% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 10.4 |
+| Cưa Máy | melee | 4 | 390 | 390 | 0.0% | dpsMeleeEff | 439 | 438 | +0.1% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 24.4 |
+| Phủ Nguyệt | melee | 4 | 390 | 390 | 0.0% | dpsMeleeEff | 439 | 438 | +0.1% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 24.4 |
+| Lưỡi Liềm | melee | 5 | 915 | 915 | 0.0% | dpsMeleeEff | 1,029 | 1,030 | -0.1% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 57.2 |
+| Chuỳ Trời | melee | 5 | 915 | 915 | 0.0% | dpsMeleeEff | 1,029 | 1,030 | -0.1% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 57.2 |
+| Lưỡi Lõi | melee | 6 | 2151 | 2151 | 0.0% | dpsMeleeEff | 2,420 | 2,420 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 134.4 |
+| Xẻ Long | melee | 6 | 2151 | 2151 | 0.0% | dpsMeleeEff | 2,420 | 2,420 | 0.0% OK | interval 0.889s | targetFactor 3.45 | dmg/stamina 134.4 |
 
 ## Ket luan
 
-- Thay doi lon nhat: **6.5%**
+- Thay doi lon nhat: **0.0%**
 - Moi vu khi bay gio nam dung tren duong cong tier. Cac rang buoc con lai (mag clear ratio,
   reserve waves, TTK trash, melee > ranged) do `audit_gdd.ps1` kiem tra va co the FAIL/WARN.
 - Day la so **first-pass**: dung de bat dau playtest, khong phai so da tune.
