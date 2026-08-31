@@ -51,7 +51,7 @@ export class EnemyPool {
         alive: false, id: '', role: '', x: 0, z: 0, hp: 0, maxHp: 0, dmg: 0, speed: 0, kbResist: 0,
         vx: 0, vz: 0, scale: 1, color: 0, eye: 0, atk: 0, tele: 0, flash: 0, gold: 0,
         face: 0, turnRate: 6, behav: null, atkRange: ATTACK_RANGE, teleTime: TELEGRAPH,
-        holds: false, acquired: false, sliceCd: 0,
+        holds: false, acquired: false, sliceCd: 0, hx: 0, hz: 1, lane: 0,
         shieldUp: true, bcycle: 0, invuln: false, ringShown: false, committed: false,
       });
     }
@@ -146,6 +146,8 @@ export class EnemyPool {
        truoc day dung ATTACK_RANGE 1.2m -- tuc "quai nem da" di tan sat mat moi nem. */
     slot.holds = def.role === 'ranged' || !!(b && b.kind === 'slam');
     slot.acquired = false;
+    slot.hx = 0; slot.hz = 1;                          // huong DI THANG, co dinh tu luc spawn
+    slot.lane = x;                                     // lan spawn: separation khong duoc pha vo no
     slot.sliceCd = 0;
     const rawRange = b && b.attackRangeM ? b.attackRangeM
       : def.role === 'ranged' ? RUNCFG().rangedStandoffM : ATTACK_RANGE;
@@ -157,10 +159,14 @@ export class EnemyPool {
     return slot;
   }
 
-  /** Day cac con dang chong len nhau ra xa — khong co buoc nay thi 17 con
-   *  se dung dung MOT diem va man hinh thanh mot buc tuong capsule.
-   *  Dung spatial hash 3x3 de khong phai so O(n^2). */
+  /** Day cac con dang chong len nhau ra xa.
+      LUC DAY NGANG BI GIAM (sepLateralMult) va co LANE SPRING keo ve lan cu: quai di
+      thang theo lan, ma separation day ngang manh thi lan bi xoa sach -- do thuc te
+      cho thay 5 con cach nhau 0.7m bi day tu x=1.5 sang x=-0.21. Khi do co che
+      "quai o ria di thang qua" khong con dung nua. Day doc (+-z) thi giu nguyen:
+      quai cung lan xep hang sau nhau, dung nhu mong muon. */
   _separate(dt) {
+    const RN = GD.feel.run;
     const CELL = 1.0;
     const grid = this._grid || (this._grid = new Map());
     grid.clear();
@@ -187,11 +193,13 @@ export class EnemyPool {
             if (d2 > min * min || d2 < 1e-6) continue;
             const d = Math.sqrt(d2);
             const f = ((min - d) / min) * push;
-            e.x += (dx / d) * f;
+            e.x += (dx / d) * f * RN.sepLateralMult;
             e.z += (dz / d) * f;
           }
         }
       }
+      // keo ve lan cu (chi voi quai di song song hanh lang; quai cheo giu nguyen duong cheo)
+      if (e.hx === 0) e.x += (e.lane - e.x) * Math.min(1, RN.laneSpringPerSec * dt);
       const lim = 4.0;
       if (e.x < -lim) e.x = -lim;
       if (e.x > lim) e.x = lim;
@@ -218,10 +226,13 @@ export class EnemyPool {
       const dzp = pz - e.z;
       const dist = Math.hypot(dx, dzp) || 1;
 
-      /* ---- quay dau, co gioi han toc do ----
-         Quan trong cho Goblin Khien: 92 deg/s nen Xoc Toi vong ra sau lung
-         la mot counter THAT SU, dung nhu docs/09 noi. */
-      const want = Math.atan2(dx, dzp);
+      /* ---- huong quay ----
+         Quai DI THANG (docs/09 muc 2d): chung khong lai theo nguoi choi, nen huong
+         cua chung la truc chay (+Z), khong phai huong toi nguoi choi.
+         Ngoai le: quai DUNG LAI de danh (ranged / slam) co ngam, nen quay ve nguoi choi.
+         Gioi han toc do quay van con y nghia cho Goblin Khien: nguoi choi o lan khac
+         thi da tu dong danh vao suon khien no -- hinh hoc lo viec, khong can counter giay. */
+      const want = e.holds ? Math.atan2(dx, dzp) : Math.atan2(e.hx, e.hz);
       const diff = wrapAngle(want - e.face);
       const maxTurn = e.turnRate * dt;
       e.face = wrapAngle(e.face + Math.max(-maxTurn, Math.min(maxTurn, diff)));
@@ -250,27 +261,35 @@ export class EnemyPool {
          COMMIT: quai dang trong telegraph thi KHONG bien mat -- don cua no van ra, dung
          nhu hop dong o docs/09 muc 2b. Khong co ngoai le nay thi chay tien se HUY don
          AoE thay vi phai NE no. */
+      /* zGap = khoang cach DOC theo truc chay. Duong = quai con o phia truoc. */
+      const zGap = pz - e.z;
+      const laneHalf = RN.contactHalfWidthM + 0.30 * e.scale;
+      const inLane = Math.abs(e.x - px) <= laneHalf;
       const stopAt = e.holds ? e.atkRange : RN.contactM;
-      const behind = e.z - pz;
+      const behind = -zGap;
 
-      if (dist <= RN.contactM && !e.committed) {
+      if (!e.holds && Math.abs(zGap) <= RN.contactM && inLane && !e.committed) {
         /* VA VAO NGUOI CHOI: gay dmg MOT lan roi BIEN MAT.
-           Khong roi vang -- nguoi choi khong giet no, chi bi no huc phai. Day cung la
-           ly do khong can co che "don ra sau": 9/21 loai chay nhanh hon nguoi choi
-           (Dau Bo 5.2 m/s vs 2.4) nen neu con song chung se duoi lai va danh tu ngoai
-           man hinh, cho nguoi choi khong the thay va khong the giet. */
+           CHI khi cung LAN (inLane). Quai di o hai ben ria di thang qua nguoi choi va
+           khong lam gi ca -- giet chung la vang THEM, khong phai bat buoc (docs/09 muc 2d).
+           Khong roi vang khi va: nguoi choi khong giet no, chi bi no huc phai. */
         dmgToPlayer += e.dmg;
         fx?.onContact?.(e);
         e.alive = false;
         continue;
-      } else if (dist > stopAt && !e.committed) {
-        e.x += (dx / dist) * e.speed * dt;
-        e.z += (dzp / dist) * e.speed * dt;
+      } else if (!e.holds || zGap > stopAt) {
+        /* DI THANG. Quai KHONG lai theo nguoi choi: x giu nguyen, chi tien theo +Z.
+           Day la ly do quai o ria bo qua duoc, va cung la ly do dam quai trai deu ra
+           ca chieu rong hanh lang thay vi don thanh mot cuc truoc mat. */
+        e.x += e.hx * e.speed * dt;
+        e.z += e.hz * e.speed * dt;
         e.tele = 0;
         e.ringShown = false;
-      } else if (e.holds && behind > RN.contactM && !e.committed) {
-        /* Quai PLANT da bi vuot qua: khong duoc ban tu phia sau man hinh. Nguoi choi
-           khong the thay va khong the giet no -> danh tu do la khong the phan doi. */
+      } else if (behind > RN.contactM && !e.committed) {
+        /* Quai PLANT da bi vuot qua: di thang tiep, va KHONG duoc ban tu phia sau man
+           hinh -- cho nguoi choi khong the thay va khong the giet no. */
+        e.x += e.hx * e.speed * dt;
+        e.z += e.hz * e.speed * dt;
         e.tele = 0;
         e.ringShown = false;
       } else {

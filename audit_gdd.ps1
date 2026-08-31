@@ -690,6 +690,40 @@ Assert-True 'ENEMY' 'Don AoE: vua trung duoc khi dung im, vua ne duoc bang 1 Buo
     ($badAoe.Count -eq 0) `
     ("impact = max(contactM, attackRange - speed*telegraph)" + $(if ($badAoe.Count) { ' | ' + ($badAoe -join ' ; ') } else { '' }))
 
+# ================== LAN (quai di thang, khong lai theo nguoi choi) ==================
+# Quai di thang nen x luc spawn quyet dinh no co va vao nguoi choi hay khong. Con o
+# ria di thang qua va khong lam gi -- giet chung la vang THEM.
+$laneFull = 2.0 * [double]$gdRun.contactHalfWidthM
+Assert-True 'RUN' 'Lan nguoi choi hep hon hanh lang (quai o ria phai di thang qua duoc)' `
+    ($laneFull -lt 9.0 -and [double]$gdRun.contactHalfWidthM -gt 0) `
+    ("lan rong {0:N2}m tren hanh lang 9m -> trai deu thi chi {1:N0}% quai la moi de" -f $laneFull, (100.0 * $laneFull / 9.0))
+
+# Neu khong co threatLaneFrac thi ngan sach TP (tinh khi MOI con la moi de) bong nhien
+# de gap ~4 lan. Duoi 0.30 thi phan lon spawn thanh trang tri; tren 0.70 thi co che lan
+# khong con y nghia vi gan nhu con nao cung va vao nguoi choi.
+Assert-True 'RUN' 'threatLaneFrac nam trong 0.30-0.70 (lan van co y nghia, ma khong rong)' `
+    ([double]$gdRun.threatLaneFrac -ge 0.30 -and [double]$gdRun.threatLaneFrac -le 0.70) `
+    ("threatLaneFrac = {0:N2}" -f [double]$gdRun.threatLaneFrac)
+
+Assert-True 'RUN' 'Lane spring keo quai ve lan nhanh hon separation day no ra' `
+    ([double]$gdRun.laneSpringPerSec -gt 0 -and [double]$gdRun.sepLateralMult -gt 0 -and [double]$gdRun.sepLateralMult -lt 1) `
+    ("laneSpringPerSec {0:N1}/s, sepLateralMult {1:N2}" -f [double]$gdRun.laneSpringPerSec, [double]$gdRun.sepLateralMult)
+
+# WAVE DANH SAU LUNG: nguoi choi luon chay tien, nen quai spawn o phia sau chi duoi kip
+# neu NHANH HON. Quai cham hon = ca wave thanh do trang tri, khong bao giu cham duoc.
+$badBack = @()
+foreach ($itW in @($gdWav.waveTemplates | Where-Object { $_.spawnPattern -eq 'back_ambush' })) {
+    foreach ($itC in @($itW.composition)) {
+        $en = $gdEne.enemies | Where-Object { $_.id -eq $itC.enemy } | Select-Object -First 1
+        if ($en -and [double]$en.speed -le [double]$gdRun.speedMps) {
+            $badBack += ("$($itW.id) dung $($itC.enemy) speed $($en.speed) <= chay $($gdRun.speedMps)")
+        }
+    }
+}
+Assert-True 'WAVE' 'Wave danh sau lung chi dung quai nhanh hon nguoi choi' `
+    ($badBack.Count -eq 0) `
+    ("quai cham hon thi khong bao gio duoi cham -> ca wave vo tac dung" +
+     $(if ($badBack.Count) { ' | VI PHAM: ' + ($badBack -join ', ') } else { ': 0 vi pham' }))
 # CUA SO TELEGRAPH: quai PLANT phai co du thoi gian vung truoc khi nguoi choi
 # chay den contactM va don no ra sau. Neu khong, don dac trung cua no khong bao gio
 # thay duoc -- prototype cho thay Ogre bi chay qua truoc khi kip dap (docs/18 loi #11).

@@ -110,7 +110,7 @@
       "tpMult": 1.05, "minDepth": 4, "spawnPattern": "back_ambush",
       "composition": [
         { "enemy": "en_special_daoham", "weight": 0.6 },
-        { "enemy": "en_trash_goblincui", "weight": 0.4 }
+        { "enemy": "en_trash_goblinchay", "weight": 0.4 }
       ]
     },
     {

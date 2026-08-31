@@ -152,7 +152,7 @@ footer{padding:34px 0 0;color:var(--muted);font-size:12.5px;border-top:1px solid
 <p class="sub">FPS màn hình dọc, chơi một tay — lối di chuyển của Into the Dead, cộng cảm giác mật độ quái đông của Guns 'n Goblins (chỉ lấy feel, không lấy cơ chế)</p>
 <p class="quote">Xuống sâu nữa. Vàng ở dưới đó.</p>
 <ul class="chips"><li><b>30</b><span>vũ khí</span></li><li><b>21</b><span>loại quái</span></li><li><b>7</b><span>boss</span></li><li><b>50</b><span>thẻ nâng cấp</span></li><li><b>12</b><span>bảo vật</span></li><li><b>24</b><span>talent</span></li><li><b>19</b><span>wave template</span></li><li><b>7</b><span>tầng hầm</span></li><li><b>12</b><span>công trình</span></li></ul>
-<div class="stat"><div><b class="ok">69</b><span>audit pass</span></div><div><b class="warn">2</b><span>warn</span></div><div><b class="bad">0</b><span>fail</span></div><div><b>19</b><span>pillar doc</span></div></div>
+<div class="stat"><div><b class="ok">73</b><span>audit pass</span></div><div><b class="warn">2</b><span>warn</span></div><div><b class="bad">0</b><span>fail</span></div><div><b>19</b><span>pillar doc</span></div></div>
 </header>
 <section class="doc" id="escal"><p class="docnum">HOOK</p><h2>Nhịp leo thang &amp; mật độ quái</h2><div class="rule"></div><div class="body"><p>Không có nút nào cho người chơi tự bơm độ khó. Hầm tự đông dần và tự khoẻ dần theo từng phòng — đúng dòng docs gốc &quot;độ khó mỗi wave sẽ tăng dần, có thể là tăng số lượng, loại quái mới khoẻ hơn&quot;. Cột vàng bên dưới là số quái mỗi wave; cột tím là HP mỗi con. Chỗ hai cột doãng ra xa nhau chính là chỗ cảm giác &quot;một mình giữa cả hầm&quot; xuất hiện.</p><div class="ladder">
 <div class="rung"><span class="g">R1</span><span class="bars"><i class="bar gold" style="width:5.93%"></i><i class="bar bell" style="width:1.07%"></i></span><span class="mult">29 / x1.0</span></div>
@@ -1308,6 +1308,28 @@ ne duoc bang 1 Buoc Lui  : impact + dodgeBackM &gt; aoeRadiusM  -&gt; 1.96 + 1.8
 <li><strong>Không rơi vàng</strong> giữ nguyên động lực thật sự phải giết quái: bỏ qua thì mất máu <em>và</em> mất vàng.</li>
 </ol>
 <p>Trước đây <strong>mọi</strong> con đều dừng ở <code>atkRange = 1.2m</code> và đứng đó húc. Ở 1.2m điểm tap của quái nằm ở <strong>92.7%</strong> chiều cao màn hình — dưới cả nút NẠP. Đó là lỗi #9 ở <code>18</code> mục 4.</p>
+<h3>2d. Quái ĐI THẲNG, và làn nào là mối đe doạ</h3>
+<p><strong>Quái không lái theo người chơi.</strong> Hướng của mỗi con <strong>cố định từ lúc spawn</strong> (<code>hx</code>, <code>hz</code>) và không đổi nữa. Hệ quả trực tiếp: con nào spawn ở <strong>rìa hành lang thì đi thẳng qua người chơi và không làm gì cả</strong>.</p>
+<div class="tw"><table>
+<thead><tr><th>Số (<code>data/gamefeel.json</code> khối <code>run</code>)</th><th>Giá trị</th><th>Việc</th></tr></thead><tbody>
+<tr><td><code>contactHalfWidthM</code></td><td>0.85</td><td>Nửa bề rộng thân người chơi</td></tr>
+<tr><td>—</td><td><code>0.85 + 0.30 × scale</code></td><td>Nửa bề rộng <strong>làn</strong>. Với goblin scale 1.0 → <strong>1.15m</strong></td></tr>
+<tr><td><code>threatLaneFrac</code></td><td>0.45</td><td>45% quái spawn <strong>trong làn</strong> (sẽ va), 55% ở rìa (đi thẳng qua)</td></tr>
+<tr><td><code>laneSpringPerSec</code></td><td>3.2</td><td>Kéo quái về làn spawn của nó</td></tr>
+<tr><td><code>sepLateralMult</code></td><td>0.35</td><td>Giảm lực đẩy <strong>ngang</strong> của separation</td></tr>
+</tbody></table></div>
+<p>Đo thực tế, ngưỡng làn chính xác: <strong>x ≤ 1.1m → va vào (6 dmg) · x ≥ 1.3m → đi thẳng qua (0 dmg)</strong>.</p>
+<p><strong>Giết quái ở rìa là vàng THÊM, không bắt buộc.</strong> Vàng chỉ đến từ việc giết; va vào người chơi thì quái biến mất mà <strong>không rơi vàng</strong>. Nên bỏ qua một con ở rìa là bỏ một khoản bonus, còn bỏ qua một con trong làn là mất máu.</p>
+<h4><code>threatLaneFrac</code> phải tồn tại, không phải để tinh chỉnh</h4>
+<p>Hành lang rộng 9m, làn người chơi rộng 2.3m. Trải đều thì chỉ <strong>~25%</strong> quái là mối đe doạ thật — mà ngân sách TP (<code>07</code> mục 3) được tính khi <strong>mọi</strong> con đều là mối đe doạ. Không có <code>threatLaneFrac</code> thì độ khó tự nhiên giảm ~4 lần và phần lớn spawn thành đồ trang trí. Gate giữ nó trong 0.30–0.70: dưới 0.30 thì quá nhiều quái vô nghĩa, trên 0.70 thì cơ chế làn mất tác dụng vì gần như con nào cũng va.</p>
+<h4>Hai pattern cần xử lý riêng</h4>
+<p><strong><code>pincer</code> (gọng kìm) phải ĐÓN ĐẦU.</strong> Nó spawn ở rìa rồi đi chéo cắt vào làn. Nhưng nhắm vào <strong>vị trí hiện tại</strong> của người chơi là sai — người chơi còn chạy tiếp nên đường chéo sẽ cắt qua <strong>phía sau lưng</strong>, không bao giờ gặp. Phải giải bài toán đón đầu, với <code>B = pz − z</code>, <code>k = (px − x)/(se·B)</code>, <code>a = k·se</code>, <code>b = k·sp</code>:</p>
+<pre class="ascii"><code>
+(a^2 + 1) * hz^2  +  2ab * hz  +  (b^2 - 1)  =  0      -&gt; lay nghiem duong
+hx = a*hz + b
+</code></pre>
+<p>Kiểm chứng: spawn ở <code>x = 3.5</code>, cách 12m, speed 2.2 → hướng <code>(−0.560, 0.829)</code>, tới sát <strong>1.02m</strong> và trúng.</p>
+<p><strong><code>back_ambush</code> (đánh sau lưng) chỉ dùng được quái NHANH HƠN người chơi.</strong> Người chơi luôn chạy tiến 2.4 m/s, nên con spawn ở phía sau mà chậm hơn thì <strong>không bao giờ đuổi tới</strong>. Wave <code>wv_saulung</code> trước đây dùng Goblin Đào Hầm (2.4 — bằng đúng người chơi) và Goblin Cùi (2.2) → <strong>cả wave vô tác dụng</strong>. Sửa: Đào Hầm lên <strong>3.4</strong>, và thay Goblin Cùi bằng Goblin Chạy (4.4). Audit có gate cho ràng buộc này.</p>
 <h3>3. Affix (chỉ từ Depth 4)</h3>
 <div class="tw"><table>
 <thead><tr><th>Affix</th><th>Hiệu ứng</th><th>Tín hiệu</th></tr></thead><tbody>
@@ -2335,6 +2357,11 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>Thanh <strong>MÉT</strong> + thanh tiến độ dưới màn hình</td><td><strong>Có</strong></td></tr>
 <tr><td>Số wave = quãng đường / 30m, <code>tpBudget(R,w)</code> tăng theo w → <strong>wave sau dồn dập hơn</strong></td><td><strong>Có</strong></td></tr>
 <tr><td>Quái tới được người chơi thì <strong>gây dmg 1 lần rồi biến mất</strong>, không rơi vàng</td><td><strong>Có</strong> — <code>09</code> mục 2c</td></tr>
+<tr><td><strong>Quái đi thẳng</strong>, hướng cố định từ lúc spawn — không lái theo người chơi</td><td><strong>Có</strong> — <code>09</code> mục 2d</td></tr>
+<tr><td>Quái ở <strong>rìa hành lang đi thẳng qua</strong>, không gây damage; giết là <strong>vàng thêm</strong></td><td><strong>Có</strong> — ngưỡng đo được: x ≤ 1.1m va, x ≥ 1.3m đi qua</td></tr>
+<tr><td><code>threatLaneFrac</code> phân 45% quái vào làn người chơi, 55% ra rìa</td><td><strong>Có</strong> — đo thực tế <code>front_stream</code> cho 53%</td></tr>
+<tr><td><code>pincer</code> <strong>đón đầu</strong> bằng nghiệm giải tích, không nhắm vào vị trí hiện tại</td><td><strong>Có</strong> — tới sát 1.02m</td></tr>
+<tr><td>Lane spring giữ làn, separation không phá được (trôi ngang 0.00m)</td><td><strong>Có</strong></td></tr>
 <tr><td>Quái <code>ranged</code> + Ogre <strong>cắm chân</strong> ở khoảng còn tap được; loại khác <strong>xông tới</strong></td><td><strong>Có</strong></td></tr>
 <tr><td><strong>Súng rút ra / cất đi</strong>: tap-hold rút súng bắn, nhả tay cất + reload</td><td><strong>Có</strong> — có model súng, nhảy lửa đầu nòng</td></tr>
 <tr><td>Huỷ reload khi <strong>còn đạn</strong>; <strong>không</strong> huỷ được khi hết sạch đạn</td><td><strong>Có</strong> — <code>03</code> mục 2b</td></tr>
@@ -2371,7 +2398,7 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <span class="cont"><strong>Đã cài: Goblin Khiên + Ogre Hầm</strong> (xem <code>09</code> mục 2b).</span>
 </ul>
 <h3>4. Prototype đã sửa GDD ở đâu</h3>
-<p>Đây là phần quan trọng nhất của doc này: <strong>prototype tìm ra 13 lỗi mà đọc doc không thấy.</strong></p>
+<p>Đây là phần quan trọng nhất của doc này: <strong>prototype tìm ra 16 lỗi mà đọc doc không thấy.</strong></p>
 <div class="tw"><table>
 <thead><tr><th>#</th><th>Phát hiện</th><th>Sửa</th></tr></thead><tbody>
 <tr><td>1</td><td>17 con cùng đi tới <strong>một điểm</strong> → xếp chồng lên nhau, màn hình thành một bức tường capsule, không đọc được gì</td><td>Thêm separation bằng spatial hash. Đây là thứ doc chưa bao giờ nói tới nhưng bắt buộc phải có</td></tr>
@@ -2388,6 +2415,11 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>12</td><td><strong>Bước Lùi 1.2m không còn né được đòn AoE.</strong> Chạy tiến ăn mất <code>2.4 × 0.6 = 1.44m</code> trong lúc telegraph, nên điểm giáng đòn là 1.96m và lùi 1.2m chỉ ra 2.36m &lt; <code>aoeRadius</code> 2.5m</td><td><code>dodgeBackM = 1.8m</code>. Hợp đồng viết lại theo <strong>điểm giáng đòn thật</strong>, không theo <code>attackRange</code>. Cả 2 chiều đều có gate</td></tr>
 <tr><td>13</td><td><code>walked</code> không bao giờ reset nên <code>standZ(20) = -440</code> nằm <strong>ngoài</strong> sàn dài 420m — sau ~19 phòng người chơi rơi ra khỏi thế giới. Chạy liên tục chạm giới hạn này nhanh hơn nhiều</td><td>Hành lang <strong>tự tái sử dụng</strong>: kéo cả nhóm mesh theo người chơi, vòng chống hầm dịch theo bội số 5.5m nên trông như đứng yên</td></tr>
 </tbody></table></div>
+<div class="tw"><table>
+<thead><tr><th>14</th><th><strong><code>pincer</code> nhắm vào vị trí hiện tại của người chơi thì không bao giờ trúng.</strong> Người chơi chạy tiến 2.4 m/s nên đường chéo cố định cắt qua <strong>phía sau lưng</strong>. Doc tả pattern &quot;vào từ hai bên&quot; mà không nói cách tính hướng</th><th>Giải bài toán <strong>đón đầu</strong> khi spawn (nghiệm dương của <code>(a²+1)hz² + 2ab·hz + b²−1 = 0</code>). Đo: spawn <code>x=3.5</code> cách 12m → hướng <code>(−0.560, 0.829)</code>, tới sát <strong>1.02m</strong> và trúng. Đã ghi vào <code>09</code> mục 2d</th></tr></thead><tbody>
+<tr><td>15</td><td><strong>Cả wave <code>wv_saulung</code> (đánh sau lưng) vô tác dụng.</strong> Nó dùng Goblin Đào Hầm (2.4 m/s = <strong>bằng đúng</strong> người chơi) và Goblin Cùi (2.2). Spawn từ phía sau mà không nhanh hơn thì không bao giờ đuổi tới</td><td>Đào Hầm 2.4 → <strong>3.4</strong>; thay Goblin Cùi bằng Goblin Chạy (4.4). Gate: mọi quái trong wave <code>back_ambush</code> phải có <code>speed &gt; run.speedMps</code></td></tr>
+<tr><td>16</td><td><strong>Separation xoá sạch làn.</strong> Nó được thêm vào ở lỗi #1 để chống quái xếp chồng khi tất cả cùng lao vào một điểm. Giờ quái đi thẳng theo làn thì lực đẩy ngang của nó phá vỡ đúng cái cơ chế &quot;quái ở rìa đi thẳng qua&quot;</td><td>Giảm lực đẩy ngang (<code>sepLateralMult</code> 0.35) và thêm <strong>lane spring</strong> kéo quái về làn spawn. Đẩy dọc giữ nguyên nên quái cùng làn xếp hàng sau nhau. Đo lại: trôi ngang = <strong>0.00m</strong> trên cả 5 làn</td></tr>
+</tbody></table></div>
 <p>Ngoài ra prototype xác nhận <strong>công thức số quái phải tính theo <code>composition</code></strong>, không phải <code>tpCost</code> trung bình toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 lần. Đã ghi vào <code>16</code> mục 4.4.</p>
 <h4>Kiểm chứng mô hình quãng đường (test tiền định, <code>ITG.run</code> bước dt cố định)</h4>
 <div class="tw"><table>
@@ -2400,6 +2432,12 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>Va vào người chơi</td><td>mất máu <strong>1 lần</strong>, con quái <strong>biến mất</strong>, <strong>vàng +0</strong></td><td>✓ <code>09</code> mục 2c</td></tr>
 <tr><td>Vị trí quái trên màn hình ở <code>tapNearM</code></td><td><strong>72.1%</strong> (con nhỏ nhất, scale 0.74)</td><td>✓ dải 45–75%</td></tr>
 <tr><td>Quái ranged ở <code>rangedStandoffM</code> 8.5m</td><td><strong>48.7%</strong></td><td>✓</td></tr>
+<tr><td>Ngưỡng làn: quái ở x ≤ 1.1m</td><td><strong>va vào</strong>, mất 6 HP</td><td>✓ <code>09</code> mục 2d</td></tr>
+<tr><td>Ngưỡng làn: quái ở x ≥ 1.3m</td><td><strong>đi thẳng qua</strong>, mất 0 HP</td><td>✓</td></tr>
+<tr><td>Trôi ngang sau ~5s (5 làn khác nhau)</td><td><strong>0.00m</strong> cả 5</td><td>✓ lane spring</td></tr>
+<tr><td><code>pincer</code> đón đầu từ x=3.5 cách 12m</td><td>hướng <code>(−0.560, 0.829)</code>, tới sát <strong>1.02m</strong>, trúng</td><td>✓ khớp phép tính tay</td></tr>
+<tr><td>Một phòng, <strong>không bắn phát nào</strong></td><td>52 con gặp phải, mất <strong>114 HP</strong></td><td>bỏ qua hết = chết, vừa sát ngưỡng</td></tr>
+<tr><td>Quái cùng lúc trên sàn (đỉnh)</td><td><strong>11</strong> (trước khi đi thẳng: 55)</td><td>quái giờ chảy qua thay vì dồn lại</td></tr>
 </tbody></table></div>
 <h4>Kiểm chứng súng và chém liên tục</h4>
 <div class="tw"><table>
@@ -2505,7 +2543,7 @@ powershell -ExecutionPolicy Bypass -File .\deploy_vercel.ps1 -Token &quot;&lt;ve
 <tr data-hay="goblin khiên en_special_khien special d3 90 10 1.6 0.55 3.0 7 khiên chắn chính diện: damage tầm xa x0.3, kbresist 0.55 (sau lưng chỉ 0.05). vung khiên mỗi 4s, hở 0.8s búa (bỏ qua khiên), chém nặng, axit, hoặc đánh khi nó vung khiên, hoặc xốc tới vòng ra sau lưng"><td>Goblin Khiên</td><td>en_special_khien</td><td>special</td><td>D3</td><td>90</td><td>10</td><td>1.6</td><td>0.55</td><td>3.0</td><td>7</td><td>Khiên chắn chính diện: damage tầm xa x0.3, kbResist 0.55 (sau lưng chỉ 0.05). Vung khiên mỗi 4s, hở 0.8s</td><td>Búa (bỏ qua khiên), chém nặng, axit, hoặc đánh khi nó vung khiên, hoặc Xốc Tới vòng ra sau lưng</td></tr>
 <tr data-hay="tên đồ tể en_elite_dote elite d4 900 45 3.2 0.75 14.0 80 lao tới dải cận chiến và ở đó. móc câu kéo người chơi lại gần từ 6m giữ khoảng cách bằng shotgun/chuỳ, đừng đấu dao với hắn"><td>Tên Đồ Tể</td><td>en_elite_dote</td><td>elite</td><td>D4</td><td>900</td><td>45</td><td>3.2</td><td>0.75</td><td>14.0</td><td>80</td><td>Lao tới dải Cận chiến và ở đó. Móc câu kéo người chơi lại gần từ 6m</td><td>Giữ khoảng cách bằng shotgun/chuỳ, đừng đấu dao với hắn</td></tr>
 <tr data-hay="dơi hầm en_special_doiham special d4 22 7 3.6 0.40 1.6 5 bay ở độ cao 2–4m, lao xuống theo đường chéo. bị đẩy cả trục dọc (bay lên nhìn rất sướng) bắn, hoặc chém chéo lên — chém ngang không tới"><td>Dơi Hầm</td><td>en_special_doiham</td><td>special</td><td>D4</td><td>22</td><td>7</td><td>3.6</td><td>0.40</td><td>1.6</td><td>5</td><td>Bay ở độ cao 2–4m, lao xuống theo đường chéo. Bị đẩy cả trục dọc (bay lên nhìn rất sướng)</td><td>Bắn, hoặc chém chéo lên — chém ngang không tới</td></tr>
-<tr data-hay="goblin đào hầm en_special_daoham special d4 45 14 2.4 0.20 2.4 8 trồi lên từ sàn phía sau người chơi sau 2.5s, có tiếng đất nứt báo trước 0.8s bước lùi rồi quay chém — dạy người chơi rằng phía sau cũng tồn tại"><td>Goblin Đào Hầm</td><td>en_special_daoham</td><td>special</td><td>D4</td><td>45</td><td>14</td><td>2.4</td><td>0.20</td><td>2.4</td><td>8</td><td>Trồi lên từ sàn PHÍA SAU người chơi sau 2.5s, có tiếng đất nứt báo trước 0.8s</td><td>Bước Lùi rồi quay chém — dạy người chơi rằng phía sau cũng tồn tại</td></tr>
+<tr data-hay="goblin đào hầm en_special_daoham special d4 45 14 3.4 0.20 2.4 8 trồi lên từ sàn phía sau người chơi sau 2.5s, có tiếng đất nứt báo trước 0.8s bước lùi rồi quay chém — dạy người chơi rằng phía sau cũng tồn tại"><td>Goblin Đào Hầm</td><td>en_special_daoham</td><td>special</td><td>D4</td><td>45</td><td>14</td><td>3.4</td><td>0.20</td><td>2.4</td><td>8</td><td>Trồi lên từ sàn PHÍA SAU người chơi sau 2.5s, có tiếng đất nứt báo trước 0.8s</td><td>Bước Lùi rồi quay chém — dạy người chơi rằng phía sau cũng tồn tại</td></tr>
 <tr data-hay="ổ vàng en_elite_omvang elite d5 800 25 2.6 0.65 15.0 100 ăn mọi đồng vàng rơi trên sàn. sau 25s nó bỏ chạy qua cửa và mang theo toàn bộ số vàng đã ăn. giết được thì nhả ra x1.5 chọn: rượt nó (bỏ mặt trước) hay giữ hàng và chấp nhận mất vàng"><td>Ổ Vàng</td><td>en_elite_omvang</td><td>elite</td><td>D5</td><td>800</td><td>25</td><td>2.6</td><td>0.65</td><td>15.0</td><td>100</td><td>Ăn mọi đồng vàng rơi trên sàn. Sau 25s nó bỏ chạy qua cửa và mang theo toàn bộ số vàng đã ăn. Giết được thì nhả ra x1.5</td><td>Chọn: rượt nó (bỏ mặt trước) hay giữ hàng và chấp nhận mất vàng</td></tr>
 <tr data-hay="goblin trống en_support_trong support d5 70 6 2.0 0.20 3.2 12 đứng ở dải xa gõ trống: đồng bọn trong 12m được +35% tốc độ di chuyển ưu tiên giết — dạy người chơi chọn mục tiêu thay vì bắn con gần nhất"><td>Goblin Trống</td><td>en_support_trong</td><td>support</td><td>D5</td><td>70</td><td>6</td><td>2.0</td><td>0.20</td><td>3.2</td><td>12</td><td>Đứng ở dải Xa gõ trống: đồng bọn trong 12m được +35% tốc độ di chuyển</td><td>Ưu tiên giết — dạy người chơi chọn mục tiêu thay vì bắn con gần nhất</td></tr>
 <tr data-hay="pháp sư xanh en_support_phapsuxanh support d5 70 15 1.8 0.25 3.6 12 tạo khiên năng lượng cho 3 đồng bọn gần nhất (hấp thụ 60 damage). khiên vỡ có tiếng riêng giết trước, hoặc dùng aoe để phá nhiều khiên cùng lúc"><td>Pháp Sư Xanh</td><td>en_support_phapsuxanh</td><td>support</td><td>D5</td><td>70</td><td>15</td><td>1.8</td><td>0.25</td><td>3.6</td><td>12</td><td>Tạo khiên năng lượng cho 3 đồng bọn gần nhất (hấp thụ 60 damage). Khiên vỡ có tiếng riêng</td><td>Giết trước, hoặc dùng AoE để phá nhiều khiên cùng lúc</td></tr>
@@ -2622,7 +2660,7 @@ powershell -ExecutionPolicy Bypass -File .\deploy_vercel.ps1 -Token &quot;&lt;ve
 <tr data-hay="mưa đá wv_muada chống rùa, ép tiến lên không được đứng một chỗ 1.0 d2+ far_static goblin ném đá 70%, goblin cùi 30%"><td>Mưa Đá</td><td>wv_muada</td><td>Chống rùa, ép tiến lên</td><td>không được đứng một chỗ</td><td>1.0</td><td>D2+</td><td>far_static</td><td>Goblin Ném Đá 70%, Goblin Cùi 30%</td></tr>
 <tr data-hay="tường khiên wv_tuongkhien chống spam bắn thẳng búa / chém nặng / đánh sau lưng 1.1 d3+ front_stream goblin khiên 50%, goblin cùi 30%, goblin ném đá 20%"><td>Tường Khiên</td><td>wv_tuongkhien</td><td>Chống spam bắn thẳng</td><td>búa / chém nặng / đánh sau lưng</td><td>1.1</td><td>D3+</td><td>front_stream</td><td>Goblin Khiên 50%, Goblin Cùi 30%, Goblin Ném Đá 20%</td></tr>
 <tr data-hay="nặng đô wv_nangdo kiểm tra kite kbresist cao thì phải né 1.15 d3+ front_stream ogre hầm 55%, goblin cùi 30%, goblin khiên 15%"><td>Nặng Đô</td><td>wv_nangdo</td><td>Kiểm tra kite</td><td>kbResist cao thì phải né</td><td>1.15</td><td>D3+</td><td>front_stream</td><td>Ogre Hầm 55%, Goblin Cùi 30%, Goblin Khiên 15%</td></tr>
-<tr data-hay="sau lưng wv_saulung dạy phía sau tồn tại bước lùi + quay chém 1.05 d4+ back_ambush goblin đào hầm 60%, goblin cùi 40%"><td>Sau Lưng</td><td>wv_saulung</td><td>Dạy phía sau tồn tại</td><td>Bước Lùi + quay chém</td><td>1.05</td><td>D4+</td><td>back_ambush</td><td>Goblin Đào Hầm 60%, Goblin Cùi 40%</td></tr>
+<tr data-hay="sau lưng wv_saulung dạy phía sau tồn tại bước lùi + quay chém 1.05 d4+ back_ambush goblin đào hầm 60%, goblin chạy 40%"><td>Sau Lưng</td><td>wv_saulung</td><td>Dạy phía sau tồn tại</td><td>Bước Lùi + quay chém</td><td>1.05</td><td>D4+</td><td>back_ambush</td><td>Goblin Đào Hầm 60%, Goblin Chạy 40%</td></tr>
 <tr data-hay="lò mổ wv_dote phòng elite cận chiến giữ khoảng cách với elite 1.40 d4+ front_stream tên đồ tể 60%, goblin chạy 40%"><td>Lò Mổ</td><td>wv_dote</td><td>Phòng Elite cận chiến</td><td>giữ khoảng cách với elite</td><td>1.40</td><td>D4+</td><td>front_stream</td><td>Tên Đồ Tể 60%, Goblin Chạy 40%</td></tr>
 <tr data-hay="trời trời wv_troitroi dạy trục dọc chém chéo lên, bắn mục tiêu bay 1.0 d4+ ceiling_drop dơi hầm 70%, goblin chạy 30%"><td>Trời Trời</td><td>wv_troitroi</td><td>Dạy trục dọc</td><td>chém chéo lên, bắn mục tiêu bay</td><td>1.0</td><td>D4+</td><td>ceiling_drop</td><td>Dơi Hầm 70%, Goblin Chạy 30%</td></tr>
 <tr data-hay="dẫn đầu wv_dandau dạy ưu tiên mục tiêu giết support trước 1.1 d5+ front_stream goblin trống 25%, pháp sư xanh 25%, goblin chạy 30%, goblin cùi 20%"><td>Dẫn Đầu</td><td>wv_dandau</td><td>Dạy ưu tiên mục tiêu</td><td>giết support trước</td><td>1.1</td><td>D5+</td><td>front_stream</td><td>Goblin Trống 25%, Pháp Sư Xanh 25%, Goblin Chạy 30%, Goblin Cùi 20%</td></tr>
@@ -3058,5 +3096,5 @@ powershell -ExecutionPolicy Bypass -File .\deploy_vercel.ps1 -Token &quot;&lt;ve
 </tbody></table></div>
 
 </section>
-<footer><p>Trang này do build_pages.ps1 sinh ra từ data/*.json và docs/*.md — KHÔNG sửa tay. &middot; audit: 71 check</p></footer>
+<footer><p>Trang này do build_pages.ps1 sinh ra từ data/*.json và docs/*.md — KHÔNG sửa tay. &middot; audit: 75 check</p></footer>
 </main></div>

@@ -16,7 +16,7 @@
 | Mưa Đá | wv_muada | Chống rùa, ép tiến lên | không được đứng một chỗ | 1.0 | D2+ | far_static | Goblin Ném Đá 70%, Goblin Cùi 30% |
 | Tường Khiên | wv_tuongkhien | Chống spam bắn thẳng | búa / chém nặng / đánh sau lưng | 1.1 | D3+ | front_stream | Goblin Khiên 50%, Goblin Cùi 30%, Goblin Ném Đá 20% |
 | Nặng Đô | wv_nangdo | Kiểm tra kite | kbResist cao thì phải né | 1.15 | D3+ | front_stream | Ogre Hầm 55%, Goblin Cùi 30%, Goblin Khiên 15% |
-| Sau Lưng | wv_saulung | Dạy phía sau tồn tại | Bước Lùi + quay chém | 1.05 | D4+ | back_ambush | Goblin Đào Hầm 60%, Goblin Cùi 40% |
+| Sau Lưng | wv_saulung | Dạy phía sau tồn tại | Bước Lùi + quay chém | 1.05 | D4+ | back_ambush | Goblin Đào Hầm 60%, Goblin Chạy 40% |
 | Lò Mổ | wv_dote | Phòng Elite cận chiến | giữ khoảng cách với elite | 1.40 | D4+ | front_stream | Tên Đồ Tể 60%, Goblin Chạy 40% |
 | Trời Trời | wv_troitroi | Dạy trục dọc | chém chéo lên, bắn mục tiêu bay | 1.0 | D4+ | ceiling_drop | Dơi Hầm 70%, Goblin Chạy 30% |
 | Dẫn Đầu | wv_dandau | Dạy ưu tiên mục tiêu | giết support trước | 1.1 | D5+ | front_stream | Goblin Trống 25%, Pháp Sư Xanh 25%, Goblin Chạy 30%, Goblin Cùi 20% |

@@ -119,6 +119,50 @@ Ba lý do đây là luật đúng, không phải luật cho tiện:
 Trước đây **mọi** con đều dừng ở `atkRange = 1.2m` và đứng đó húc. Ở 1.2m điểm tap của quái nằm ở **92.7%**
 chiều cao màn hình — dưới cả nút NẠP. Đó là lỗi #9 ở `18` mục 4.
 
+## 2d. Quái ĐI THẲNG, và làn nào là mối đe doạ
+
+**Quái không lái theo người chơi.** Hướng của mỗi con **cố định từ lúc spawn** (`hx`, `hz`) và không đổi nữa.
+Hệ quả trực tiếp: con nào spawn ở **rìa hành lang thì đi thẳng qua người chơi và không làm gì cả**.
+
+| Số (`data/gamefeel.json` khối `run`) | Giá trị | Việc |
+|---|---|---|
+| `contactHalfWidthM` | 0.85 | Nửa bề rộng thân người chơi |
+| — | `0.85 + 0.30 × scale` | Nửa bề rộng **làn**. Với goblin scale 1.0 → **1.15m** |
+| `threatLaneFrac` | 0.45 | 45% quái spawn **trong làn** (sẽ va), 55% ở rìa (đi thẳng qua) |
+| `laneSpringPerSec` | 3.2 | Kéo quái về làn spawn của nó |
+| `sepLateralMult` | 0.35 | Giảm lực đẩy **ngang** của separation |
+
+Đo thực tế, ngưỡng làn chính xác: **x ≤ 1.1m → va vào (6 dmg) · x ≥ 1.3m → đi thẳng qua (0 dmg)**.
+
+**Giết quái ở rìa là vàng THÊM, không bắt buộc.** Vàng chỉ đến từ việc giết; va vào người chơi thì quái
+biến mất mà **không rơi vàng**. Nên bỏ qua một con ở rìa là bỏ một khoản bonus, còn bỏ qua một con trong
+làn là mất máu.
+
+### `threatLaneFrac` phải tồn tại, không phải để tinh chỉnh
+
+Hành lang rộng 9m, làn người chơi rộng 2.3m. Trải đều thì chỉ **~25%** quái là mối đe doạ thật — mà ngân
+sách TP (`07` mục 3) được tính khi **mọi** con đều là mối đe doạ. Không có `threatLaneFrac` thì độ khó
+tự nhiên giảm ~4 lần và phần lớn spawn thành đồ trang trí. Gate giữ nó trong 0.30–0.70: dưới 0.30 thì quá
+nhiều quái vô nghĩa, trên 0.70 thì cơ chế làn mất tác dụng vì gần như con nào cũng va.
+
+### Hai pattern cần xử lý riêng
+
+**`pincer` (gọng kìm) phải ĐÓN ĐẦU.** Nó spawn ở rìa rồi đi chéo cắt vào làn. Nhưng nhắm vào **vị trí hiện
+tại** của người chơi là sai — người chơi còn chạy tiếp nên đường chéo sẽ cắt qua **phía sau lưng**, không bao
+giờ gặp. Phải giải bài toán đón đầu, với `B = pz − z`, `k = (px − x)/(se·B)`, `a = k·se`, `b = k·sp`:
+
+```
+(a^2 + 1) * hz^2  +  2ab * hz  +  (b^2 - 1)  =  0      -> lay nghiem duong
+hx = a*hz + b
+```
+
+Kiểm chứng: spawn ở `x = 3.5`, cách 12m, speed 2.2 → hướng `(−0.560, 0.829)`, tới sát **1.02m** và trúng.
+
+**`back_ambush` (đánh sau lưng) chỉ dùng được quái NHANH HƠN người chơi.** Người chơi luôn chạy tiến 2.4 m/s,
+nên con spawn ở phía sau mà chậm hơn thì **không bao giờ đuổi tới**. Wave `wv_saulung` trước đây dùng Goblin
+Đào Hầm (2.4 — bằng đúng người chơi) và Goblin Cùi (2.2) → **cả wave vô tác dụng**. Sửa: Đào Hầm lên **3.4**,
+và thay Goblin Cùi bằng Goblin Chạy (4.4). Audit có gate cho ràng buộc này.
+
 ## 3. Affix (chỉ từ Depth 4)
 
 | Affix | Hiệu ứng | Tín hiệu |

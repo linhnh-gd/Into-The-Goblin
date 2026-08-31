@@ -35,6 +35,10 @@
     "minReactionSec": 1.2,
     "meleeReachMarginM": 0.4,
     "contactM": 1.0,
+    "contactHalfWidthM": 0.85,
+    "threatLaneFrac": 0.45,
+    "laneSpringPerSec": 3.2,
+    "sepLateralMult": 0.35,
     "dodgeBackM": 1.8,
     "despawnBehindM": 14,
     "densityRampEnd": 1.35

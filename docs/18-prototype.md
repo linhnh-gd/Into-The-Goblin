@@ -39,6 +39,11 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 | Thanh **MÉT** + thanh tiến độ dưới màn hình | **Có** |
 | Số wave = quãng đường / 30m, `tpBudget(R,w)` tăng theo w → **wave sau dồn dập hơn** | **Có** |
 | Quái tới được người chơi thì **gây dmg 1 lần rồi biến mất**, không rơi vàng | **Có** — `09` mục 2c |
+| **Quái đi thẳng**, hướng cố định từ lúc spawn — không lái theo người chơi | **Có** — `09` mục 2d |
+| Quái ở **rìa hành lang đi thẳng qua**, không gây damage; giết là **vàng thêm** | **Có** — ngưỡng đo được: x ≤ 1.1m va, x ≥ 1.3m đi qua |
+| `threatLaneFrac` phân 45% quái vào làn người chơi, 55% ra rìa | **Có** — đo thực tế `front_stream` cho 53% |
+| `pincer` **đón đầu** bằng nghiệm giải tích, không nhắm vào vị trí hiện tại | **Có** — tới sát 1.02m |
+| Lane spring giữ làn, separation không phá được (trôi ngang 0.00m) | **Có** |
 | Quái `ranged` + Ogre **cắm chân** ở khoảng còn tap được; loại khác **xông tới** | **Có** |
 | **Súng rút ra / cất đi**: tap-hold rút súng bắn, nhả tay cất + reload | **Có** — có model súng, nhảy lửa đầu nòng |
 | Huỷ reload khi **còn đạn**; **không** huỷ được khi hết sạch đạn | **Có** — `03` mục 2b |
@@ -76,7 +81,7 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 
 ## 4. Prototype đã sửa GDD ở đâu
 
-Đây là phần quan trọng nhất của doc này: **prototype tìm ra 13 lỗi mà đọc doc không thấy.**
+Đây là phần quan trọng nhất của doc này: **prototype tìm ra 16 lỗi mà đọc doc không thấy.**
 
 | # | Phát hiện | Sửa |
 |---|---|---|
@@ -94,6 +99,9 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 | 12 | **Bước Lùi 1.2m không còn né được đòn AoE.** Chạy tiến ăn mất `2.4 × 0.6 = 1.44m` trong lúc telegraph, nên điểm giáng đòn là 1.96m và lùi 1.2m chỉ ra 2.36m < `aoeRadius` 2.5m | `dodgeBackM = 1.8m`. Hợp đồng viết lại theo **điểm giáng đòn thật**, không theo `attackRange`. Cả 2 chiều đều có gate |
 | 13 | `walked` không bao giờ reset nên `standZ(20) = -440` nằm **ngoài** sàn dài 420m — sau ~19 phòng người chơi rơi ra khỏi thế giới. Chạy liên tục chạm giới hạn này nhanh hơn nhiều | Hành lang **tự tái sử dụng**: kéo cả nhóm mesh theo người chơi, vòng chống hầm dịch theo bội số 5.5m nên trông như đứng yên |
 
+| 14 | **`pincer` nhắm vào vị trí hiện tại của người chơi thì không bao giờ trúng.** Người chơi chạy tiến 2.4 m/s nên đường chéo cố định cắt qua **phía sau lưng**. Doc tả pattern "vào từ hai bên" mà không nói cách tính hướng | Giải bài toán **đón đầu** khi spawn (nghiệm dương của `(a²+1)hz² + 2ab·hz + b²−1 = 0`). Đo: spawn `x=3.5` cách 12m → hướng `(−0.560, 0.829)`, tới sát **1.02m** và trúng. Đã ghi vào `09` mục 2d |
+| 15 | **Cả wave `wv_saulung` (đánh sau lưng) vô tác dụng.** Nó dùng Goblin Đào Hầm (2.4 m/s = **bằng đúng** người chơi) và Goblin Cùi (2.2). Spawn từ phía sau mà không nhanh hơn thì không bao giờ đuổi tới | Đào Hầm 2.4 → **3.4**; thay Goblin Cùi bằng Goblin Chạy (4.4). Gate: mọi quái trong wave `back_ambush` phải có `speed > run.speedMps` |
+| 16 | **Separation xoá sạch làn.** Nó được thêm vào ở lỗi #1 để chống quái xếp chồng khi tất cả cùng lao vào một điểm. Giờ quái đi thẳng theo làn thì lực đẩy ngang của nó phá vỡ đúng cái cơ chế "quái ở rìa đi thẳng qua" | Giảm lực đẩy ngang (`sepLateralMult` 0.35) và thêm **lane spring** kéo quái về làn spawn. Đẩy dọc giữ nguyên nên quái cùng làn xếp hàng sau nhau. Đo lại: trôi ngang = **0.00m** trên cả 5 làn |
 Ngoài ra prototype xác nhận **công thức số quái phải tính theo `composition`**, không phải `tpCost` trung bình
 toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 lần. Đã ghi vào `16` mục 4.4.
 
@@ -109,6 +117,12 @@ toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 l
 | Va vào người chơi | mất máu **1 lần**, con quái **biến mất**, **vàng +0** | ✓ `09` mục 2c |
 | Vị trí quái trên màn hình ở `tapNearM` | **72.1%** (con nhỏ nhất, scale 0.74) | ✓ dải 45–75% |
 | Quái ranged ở `rangedStandoffM` 8.5m | **48.7%** | ✓ |
+| Ngưỡng làn: quái ở x ≤ 1.1m | **va vào**, mất 6 HP | ✓ `09` mục 2d |
+| Ngưỡng làn: quái ở x ≥ 1.3m | **đi thẳng qua**, mất 0 HP | ✓ |
+| Trôi ngang sau ~5s (5 làn khác nhau) | **0.00m** cả 5 | ✓ lane spring |
+| `pincer` đón đầu từ x=3.5 cách 12m | hướng `(−0.560, 0.829)`, tới sát **1.02m**, trúng | ✓ khớp phép tính tay |
+| Một phòng, **không bắn phát nào** | 52 con gặp phải, mất **114 HP** | bỏ qua hết = chết, vừa sát ngưỡng |
+| Quái cùng lúc trên sàn (đỉnh) | **11** (trước khi đi thẳng: 55) | quái giờ chảy qua thay vì dồn lại |
 
 ### Kiểm chứng súng và chém liên tục
 

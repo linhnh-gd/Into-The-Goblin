@@ -81,7 +81,7 @@
     },
     {
       "id": "en_special_daoham", "name": "Goblin Đào Hầm", "role": "special", "introDepth": 4,
-      "hp": 45, "dmg": 14, "speed": 2.4, "kbResist": 0.20, "tpCost": 2.4, "goldDrop": 8,
+      "hp": 45, "dmg": 14, "speed": 3.4, "kbResist": 0.20, "tpCost": 2.4, "goldDrop": 8,
       "attackType": "melee_ambush", "mechanic": "Trồi lên từ sàn PHÍA SAU người chơi sau 2.5s, có tiếng đất nứt báo trước 0.8s",
       "counters": "Bước Lùi rồi quay chém — dạy người chơi rằng phía sau cũng tồn tại",
       "sfxSpawn": "dirt_crack", "tags": ["ambush", "teaches_dodge"]
