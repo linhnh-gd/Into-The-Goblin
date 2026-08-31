@@ -45,6 +45,14 @@ $magClearMax     = [double]$B.magClearMax
 $rpmBand         = $B.archetypeRpm
 $newRpm = @{}
 $flooredIds = @()
+$archSpec        = $B.archetypeSpec
+$magClearTarget  = [double]$B.magClearTarget
+$reserveWavesTarget = [double]$B.reserveWavesTarget
+$newReserve = @{}
+$newReload = @{}
+$newPellets = @{}
+$newPierce = @{}
+$newSpread = @{}
 $newMag = @{}
 $staminaRegen    = [double]$B.staminaRegen
 $rangedTol       = [double]$B.rangedTolerance
@@ -91,57 +99,71 @@ foreach ($w in $data.weapons) {
     $old    = [double]$w.dmg
 
     if ($w.class -eq 'ranged') {
-        $arch     = [string]$w.archetype
-        $mag      = [double]$w.mag
-        $pellets  = [double]$w.pellets
-        $reload   = [double]$w.reloadTime
-        $waveEhp  = Get-WaveEhp $tier
+        $arch = [string]$w.archetype
+        $spec = $null
+        if ($archSpec.PSObject.Properties.Name -contains $arch) { $spec = $archSpec.$arch }
+        $trashHp = Get-TrashHp $tier
+        $waveEhp = Get-WaveEhp $tier
 
-        # 1. EP RPM VAO DAI CUA ARCHETYPE. Day la thu tao ra feeling khac nhau giua cac
-        #    sung: shotgun 48-78 nghe va cam khac han smg 230-320, du DPS bang nhau.
-        $rpm = [double]$w.rpm
-        if ($rpmBand.PSObject.Properties.Name -contains $arch) {
-            $band = $rpmBand.$arch
-            $rpm = [Math]::Max([double]$band[0], [Math]::Min([double]$band[1], $rpm))
+        if ($null -eq $spec) {
+            $cycle = [double]$w.mag / ([double]$w.rpm / 60.0) + [double]$w.reloadTime
+            $new = Round-Dmg ($target * $cycle / ([double]$w.pellets * [double]$w.mag))
+            $dpsAfter = ($new * [double]$w.pellets * [double]$w.mag) / $cycle
+            $metric = 'dpsSustained'; $tol = $rangedTol; $extra = 'khong co archetypeSpec'
         }
+        else {
+            # 1. NHIP BAN tu dai THUC TE cua khau do (MP5 800, M4 700-900, Remington 65...).
+            $rpm = [Math]::Round([Math]::Max([double]$spec.rpm[0], [Math]::Min([double]$spec.rpm[1], [double]$w.rpm)))
+            $reload = [Math]::Round([Math]::Max([double]$spec.reload[0], [Math]::Min([double]$spec.reload[1], [double]$w.reloadTime)), 2)
+            $pellets = [double]$spec.pellets
+            $pierce  = [int]$spec.pierce
+            $spread  = [double]$spec.spreadDeg
 
-        # 2. HA BANG DAN neu can, de khong bang dan nao don sach ca wave (tru P2).
-        #    magClear = dpsTarget * cycle / waveEhp, ma cycle dai ra khi rpm giam
-        #    -> ban cham thi bang dan PHAI nho lai. Hai thu nay khong doc lap duoc.
-        $cycleMax = $magClearMax * $waveEhp / $target
-        $magMax   = [Math]::Floor(($cycleMax - $reload) * $rpm / 60.0)
-        if ($magMax -lt 2) { $magMax = 2 }
-        if ($mag -gt $magMax) { $mag = $magMax }
+            # 2. SAT THUONG suy tu CO DAN, khong tu DPS. caliberMult = so lan HP cua trash
+            #    cung tier. 9mm cua SMG yeu hon 5.56 cua rifle, dung nhu doi that.
+            $new = Round-Dmg ($trashHp * [double]$spec.caliberMult)
 
-        # 3. Giai dmg tu DPS muc tieu.
-        $cycle = $mag / ($rpm / 60.0) + $reload
-        $new   = Round-Dmg ($target * $cycle / ($pellets * $mag))
+            # 3. DAN la thu CAN BANG, khong phai DPS. Va thuoc do phai la SO MANG, khong
+            #    phai sat thuong tho: mot vien 120 dmg vao goblin 40 HP thi thua 3 lan,
+            #    nen "sat thuong moi bang dan / EHP cua wave" cho ra con so sai lech --
+            #    no ep bang dan SMG xuong 7 vien. Xem docs/18 loi #36.
+            $countWave = $waveEhp / ($trashHp * $MIX_FACTOR)
+            $killsPerProj = [Math]::Min(1.0, $new / $trashHp)
+            $aoeFactor = 1.0
+            if ([string]$spec.style -eq 'aoe') { $aoeFactor = 2.5 }
+            # killEff: dan ghem tan theo goc nen KHONG phai vien nao cung trung mot con
+            # rieng -- gan thi chum vao mot con, xa thi truot. Vien xuyen cung hiem khi
+            # thang hang hoan hao. Khong co he so nay thi shotgun ra 45 mang mot bang.
+            $killEff = 1.0
+            if ($null -ne $spec.killEff) { $killEff = [double]$spec.killEff }
+            $killsPerShot = $pellets * $killsPerProj * (1 + $pierce) * $aoeFactor * $killEff
 
-        # 4. SAN SAT THUONG toi thieu. KHONG ha rpm de bu: o T1 muc tieu DPS la 110 nen
-        #    mot vien 120 dmg da vuot ca giay DPS -- ep giu DPS se keo shotgun xuong 8 rpm
-        #    (7 giay mot phat). Thay vao do CHAP NHAN vu khi bi san vuot duong cong DPS, va
-        #    danh dau no de audit liet ke ra thay vi bao FAIL. Xem docs/18 loi #31.
-        $floored = $false
-        if ($new -lt $rangedMinDmg) {
-            $new = $rangedMinDmg; $floored = $true; $flooredIds += $w.id
-            # Sat thuong bi san nang len -> mot bang dan gio manh hon nhieu, phai ha mag
-            # lai lan nua theo sat thuong THUC, khong phai theo DPS muc tieu.
-            $magMax2 = [Math]::Floor($magClearMax * $waveEhp / ($new * $pellets))
-            if ($magMax2 -lt 2) { $magMax2 = 2 }   # sung 1 vien la sung khong dung duoc
-            if ($mag -gt $magMax2) { $mag = $magMax2 }
+            # Co bang dan THAT cua khau do, roi ha xuong neu mot bang giet qua nhieu.
+            $mag = [Math]::Max([double]$spec.mag[0], [Math]::Min([double]$spec.mag[1], [double]$w.mag))
+            $magCap = [Math]::Floor($magClearTarget * $countWave / [Math]::Max(0.01, $killsPerShot))
+            if ($magCap -lt [double]$spec.mag[0]) { $magCap = [double]$spec.mag[0] }
+            if ($mag -gt $magCap) { $mag = $magCap }
+            $mag = [Math]::Round($mag)
+            if ($mag -lt 1) { $mag = 1 }
+
+            $reserve = [Math]::Round($reserveWavesTarget * $countWave / [Math]::Max(0.01, $killsPerShot))
+            if ($reserve -lt $mag * 2) { $reserve = $mag * 2 }
+
+            $newRpm[$w.id] = $rpm
+            $newMag[$w.id] = [int]$mag
+            $newReserve[$w.id] = [int]$reserve
+            $newReload[$w.id] = $reload
+            $newPellets[$w.id] = [int]$pellets
+            $newPierce[$w.id] = $pierce
+            $newSpread[$w.id] = $spread
+
             $cycle = $mag / ($rpm / 60.0) + $reload
+            $dpsAfter = ($new * $pellets * $mag) / $cycle
+            $metric = 'dpsSustained'
+            $tol = 99.0     # DPS khong con la rang buoc: xem ghi chu o muc 3
+            $extra = ('rpm {0:N0} | mag {1:N0} | ban het bang {2:N1}s | {3:N1} mang/bang tren wave {4:N0} con | reserve {5:N1} wave' -f `
+                        $rpm, $mag, ($mag / ($rpm / 60.0)), ($mag * $killsPerShot), $countWave, ($reserve * $killsPerShot / $countWave))
         }
-        if ($mag -lt 2) { $mag = 2 }          # san cung: sung 1 vien khong dung duoc
-        $rpm = [Math]::Round($rpm)
-        $cycle = $mag / ($rpm / 60.0) + $reload
-        $newRpm[$w.id] = $rpm
-        $newMag[$w.id] = [int]$mag
-
-        $dpsAfter = ($new * $pellets * $mag) / $cycle
-        $metric   = 'dpsSustained'
-        $tol      = $rangedTol
-        $extra    = ('rpm {0:N0} | mag {1:N0} | mag clear {2:N2} | TTK trash {3:N2}s' -f `
-                        $rpm, $mag, (($mag * $new * $pellets) / $waveEhp), ((Get-TrashHp $tier) / $dpsAfter))
     }
     else {
         $targets  = [double]$w.targets
@@ -177,20 +199,33 @@ foreach ($w in $data.weapons) {
     }
 }
 
-# --- rewrite dmg + rpm + mag, preserving file formatting exactly ---
-# rpm/mag gio la DAI LUONG SUY RA, khong con la so go tay: rpm bi ep vao dai cua
-# archetype, va mag bi ha xuong neu no lam mot bang dan don sach ca wave (tru P2).
+# --- ghi lai dmg + rpm + mag + reserveMax + reloadTime + pellets + pierce + spreadDeg ---
+# Tat ca deu la DAI LUONG SUY RA tu archetypeSpec (so lieu vu khi that) + can bang dan.
+# Giu nguyen dinh dang file: chi thay tung con so tai cho.
 $script:curId = $null
 $evaluator = [System.Text.RegularExpressions.MatchEvaluator] {
     param($m)
     if ($m.Groups['wid'].Success) { $script:curId = $m.Groups['wid'].Value; return $m.Value }
     if (-not $script:curId) { return $m.Value }
-    if ($m.Groups['d'].Success   -and $newDmg.ContainsKey($script:curId)) { return ('"dmg": {0}' -f $newDmg[$script:curId]) }
-    if ($m.Groups['r'].Success   -and $newRpm.ContainsKey($script:curId)) { return ('"rpm": {0}' -f $newRpm[$script:curId]) }
-    if ($m.Groups['g'].Success   -and $newMag.ContainsKey($script:curId)) { return ('"mag": {0}' -f $newMag[$script:curId]) }
+    if ($m.Groups['d'].Success  -and $newDmg.ContainsKey($script:curId))     { return ('"dmg": {0}' -f $newDmg[$script:curId]) }
+    if ($m.Groups['r'].Success  -and $newRpm.ContainsKey($script:curId))     { return ('"rpm": {0}' -f $newRpm[$script:curId]) }
+    if ($m.Groups['g'].Success  -and $newMag.ContainsKey($script:curId))     { return ('"mag": {0}' -f $newMag[$script:curId]) }
+    if ($m.Groups['v'].Success  -and $newReserve.ContainsKey($script:curId)) { return ('"reserveMax": {0}' -f $newReserve[$script:curId]) }
+    if ($m.Groups['t'].Success  -and $newReload.ContainsKey($script:curId))  { return ('"reloadTime": {0}' -f $newReload[$script:curId]) }
+    if ($m.Groups['p'].Success  -and $newPellets.ContainsKey($script:curId)) { return ('"pellets": {0}' -f $newPellets[$script:curId]) }
+    if ($m.Groups['c'].Success  -and $newPierce.ContainsKey($script:curId))  { return ('"pierce": {0}' -f $newPierce[$script:curId]) }
+    if ($m.Groups['s'].Success  -and $newSpread.ContainsKey($script:curId))  { return ('"spreadDeg": {0}' -f $newSpread[$script:curId]) }
     return $m.Value
 }
-$pattern = '"id":\s*"(?<wid>[^"]+)"|"dmg":\s*(?<d>[0-9.]+)|"rpm":\s*(?<r>[0-9.]+)|"mag":\s*(?<g>[0-9]+)'
+$pattern = '"id":\s*"(?<wid>[^"]+)"' +
+           '|"dmg":\s*(?<d>[0-9.]+)' +
+           '|"rpm":\s*(?<r>[0-9.]+)' +
+           '|"mag":\s*(?<g>[0-9]+)' +
+           '|"reserveMax":\s*(?<v>[0-9]+)' +
+           '|"reloadTime":\s*(?<t>[0-9.]+)' +
+           '|"pellets":\s*(?<p>[0-9]+)' +
+           '|"pierce":\s*(?<c>[0-9]+)' +
+           '|"spreadDeg":\s*(?<s>[0-9.]+)'
 $updated = [System.Text.RegularExpressions.Regex]::Replace($raw, $pattern, $evaluator)
 
 if (-not $DryRun) {

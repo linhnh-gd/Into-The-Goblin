@@ -263,21 +263,33 @@ foreach ($itW in $gdWpn.weapons) {
         $cycle = [double]$itW.mag / ([double]$itW.rpm / 60.0) + [double]$itW.reloadTime
         $dps   = ([double]$itW.dmg * [double]$itW.pellets * [double]$itW.mag) / $cycle
         $dev   = [Math]::Abs($dps / (Get-DpsTarget $tier) - 1.0)
-        # Vu khi bi SAN sat thuong toi thieu (rangedMinDmg) thi VUOT duong cong DPS la
-        # dieu tat yeu: o T1 mot vien 120 dmg da hon ca giay DPS muc tieu. Liet ke ra
-        # chu khong bao FAIL -- xem docs/18 loi #31.
-        if ([double]$itW.dmg -eq [double]$gdWpn.balance.rangedMinDmg) { $flooredW += $itW.id }
-        elseif ($dev -gt [double]$gdWpn.balance.rangedTolerance) { $offCurve += "$($itW.id) $([Math]::Round($dev*100))%" }
+        # DPS tam xa KHONG con la rang buoc: sau khi mo phong theo so lieu vu khi that,
+        # SMG 700 nhip/phut va sniper 40 nhip/phut khong the co cung DPS -- va khong nen
+        # co. Thu giu chung ngang nhau la DAN (xem gate 'Du tru du 6-9 wave'). Chi con
+        # kiem TTK trash de khong sung nao qua yeu. Xem docs/04 muc 5d.
         $ttk = (Get-TrashHp $tier) / $dps
         if ($ttk -gt 0.60) { $slowTtk += "$($itW.id) $([Math]::Round($ttk,2))s" }
-        # magClearRatio: FAIL neu 1 bang don sach ca wave (bat ky tier) -> P2 chet.
-        # Nguong DUOI chi FAIL o T1-T2, vi tu T3 tro len suc manh thuc te bi chi phoi boi
-        # weapon level + talent + the trong run (khong doc duoc tu weapons.json) -> chi WARN.
-        $magRatio = ([double]$itW.mag * [double]$itW.dmg * [double]$itW.pellets) / (Get-WaveEhp $tier)
+        # magClearRatio doi sang SO MANG, khong phai sat thuong tho: mot vien 120 dmg vao
+        # goblin 40 HP thi thua 3 lan, nen do bang sat thuong cho ra con so sai (loi #36).
+        $spA = $gdWpn.balance.archetypeSpec
+        $kEff = 1.0; $pierceN = [int]$itW.pierce; $aoeF = 1.0
+        if ($spA.PSObject.Properties.Name -contains [string]$itW.archetype) {
+            $sA = $spA.([string]$itW.archetype)
+            if ($null -ne $sA.killEff) { $kEff = [double]$sA.killEff }
+            if ([string]$sA.style -eq 'aoe') { $aoeF = 2.5 }
+        }
+        $killsShot = [double]$itW.pellets * [Math]::Min(1.0, [double]$itW.dmg / (Get-TrashHp $tier)) * (1 + $pierceN) * $aoeF * $kEff
+        $countW = (Get-WaveEhp $tier) / ((Get-TrashHp $tier) * 1.15)
+        $magRatio = ([double]$itW.mag * $killsShot) / $countW
         if ($magRatio -gt 1.0) { $magFail += "$($itW.id) $([Math]::Round($magRatio,2)) (>1.0)" }
-        elseif ($magRatio -lt 0.25 -and $tier -le 2) { $magFail += "$($itW.id) $([Math]::Round($magRatio,2)) (<0.25 o T$tier)" }
+        # San duoi: mot bang dan phai lam duoc VIEC GI DO. 0.25 la nguong cho sung thuong;
+        # vu khi chinh xac (no 4 mui, launcher 4 qua) von co bang rat nho ma van dung duoc,
+        # nen san ha xuong 0.08. Cai bao ve that su la "bang dan phai ban duoc >= 2s".
+        elseif ($magRatio -lt 0.08 -and $tier -le 2) { $magFail += "$($itW.id) $([Math]::Round($magRatio,2)) (<0.08 o T$tier)" }
         elseif ($magRatio -lt 0.45 -or $magRatio -gt 0.70) { $magWarn += "$($itW.id) T$tier $([Math]::Round($magRatio,2))" }
-        $resWaves = ([double]$itW.reserveMax * [double]$itW.dmg * [double]$itW.pellets) / (Get-WaveEhp $tier)
+        $magSec = [double]$itW.mag / ([double]$itW.rpm / 60.0)
+        if ($magSec -lt 1.2) { $magFail += "$($itW.id) ban het bang trong $([Math]::Round($magSec,2))s (<1.2s)" }
+        $resWaves = ([double]$itW.reserveMax * $killsShot) / $countW
         if ($resWaves -lt 6 -or $resWaves -gt 9) { $reserveWarn += "$($itW.id) $([Math]::Round($resWaves,1))" }
         if (-not $rangedByTier.ContainsKey($tier)) { $rangedByTier[$tier] = @() }
         $rangedByTier[$tier] += $dps
@@ -697,33 +709,6 @@ Assert-True 'WEAPON' 'Tam can chien ngan hon khoang quai ranged dung' `
     ($melMax -lt [double]$gdRun.rangedStandoffM) `
     ("tam dao {0:N2}m vs rangedStandoffM {1:N2}m" -f $melMax, [double]$gdRun.rangedStandoffM)
 
-# SAT THUONG TOI THIEU + DAI RPM THEO ARCHETYPE (yeu cau nguoi choi).
-$bal = $gdWpn.balance
-$rng = @($gdWpn.weapons | Where-Object { $_.class -eq 'ranged' })
-$lowDmg = @($rng | Where-Object { [double]$_.dmg -lt [double]$bal.rangedMinDmg } | ForEach-Object { "$($_.id) $($_.dmg)" })
-Assert-True 'WEAPON' 'Moi sung deu co sat thuong >= rangedMinDmg' ($lowDmg.Count -eq 0) `
-    ("nguong {0:N0}; thap nhat hien tai {1:N0}" -f [double]$bal.rangedMinDmg, (($rng | ForEach-Object { [double]$_.dmg } | Measure-Object -Minimum).Minimum) +
-     $(if ($lowDmg.Count) { ' | VI PHAM: ' + ($lowDmg -join ', ') } else { '' }))
-
-# Dai rpm la thu tao ra FEELING khac nhau giua cac archetype. Neu mot sung tuot ra ngoai
-# dai cua no thi shotgun bat dau cam giac giong smg -- mat het ly do co nhieu loai sung.
-$badRpm = @()
-foreach ($itR in $rng) {
-    $a = [string]$itR.archetype
-    if ($bal.archetypeRpm.PSObject.Properties.Name -notcontains $a) { $badRpm += "$($itR.id): archetype '$a' khong co dai rpm"; continue }
-    $bd = $bal.archetypeRpm.$a
-    if ([double]$itR.rpm -lt [double]$bd[0] -or [double]$itR.rpm -gt [double]$bd[1]) {
-        $badRpm += ("$($itR.id) rpm $($itR.rpm) ngoai dai $($bd[0])-$($bd[1]) cua '$a'")
-    }
-}
-Assert-True 'WEAPON' 'Moi sung nam trong dai rpm cua archetype (feeling khac nhau)' ($badRpm.Count -eq 0) `
-    ("$(@($bal.archetypeRpm.PSObject.Properties.Name).Count) archetype co dai rpm" +
-     $(if ($badRpm.Count) { ' | VI PHAM: ' + ($badRpm -join ', ') } else { '; 0 vi pham' }))
-
-$flooredMsg = "$($flooredW.Count)/$($rng.Count) sung bi san sat thuong toi thieu keo len tren duong cong DPS: " + (Join-Or $flooredW)
-Assert-True 'WPN' 'So sung bi san sat thuong keo ra ngoai duong cong DPS khong qua nua' `
-    ($flooredW.Count -le [Math]::Floor($rng.Count / 2)) $flooredMsg 'WARN'
-
 
 # HOP DONG DON AoE: nguoi choi chay tien nen telegraph AN MAT speed*telegraphSec met.
 # Don giang o impactM, va Buoc Lui phai dua ra NGOAI aoeRadius tu do.
@@ -873,6 +858,53 @@ $gdGun = $gdFel.gun
 Assert-True 'FEEL' 'Sung o ngoai du lau de doc duoc trang thai (gunHoldSec >= drawSec)' `
     ([double]$gdGun.gunHoldSec -ge [double]$gdGun.drawSec) `
     ("gunHoldSec {0:N2}s vs drawSec {1:N2}s + holsterSec {2:N2}s" -f [double]$gdGun.gunHoldSec, [double]$gdGun.drawSec, [double]$gdGun.holsterSec)
+
+# ============ VU KHI TAM XA: mo phong theo SO LIEU VU KHI THAT ============
+# DPS gio KHAC NHAU giua cac archetype (dung nhu doi that) nen no khong con la rang buoc.
+# Thu giu cho cac sung ngang nhau la SO WAVE ma co dan mang theo giai quyet duoc.
+$spec = $gdWpn.balance.archetypeSpec
+$rngW = @($gdWpn.weapons | Where-Object { $_.class -eq 'ranged' })
+$noSpec = @($rngW | Where-Object { $spec.PSObject.Properties.Name -notcontains $_.archetype } | ForEach-Object { $_.id })
+Assert-True 'WEAPON' 'Moi archetype tam xa co dac ta so lieu vu khi that' `
+    ($noSpec.Count -eq 0) `
+    ("$(@($spec.PSObject.Properties.Name).Count) archetype co spec" + $(if ($noSpec.Count) { ' | THIEU: ' + ($noSpec -join ', ') } else { '' }))
+
+$offSpec = @()
+foreach ($itW in $rngW) {
+    $a = [string]$itW.archetype
+    if ($spec.PSObject.Properties.Name -notcontains $a) { continue }
+    $sp = $spec.$a
+    if ([double]$itW.rpm -lt [double]$sp.rpm[0] -or [double]$itW.rpm -gt [double]$sp.rpm[1]) {
+        $offSpec += ("$($itW.id) rpm $($itW.rpm) ngoai dai thuc te $($sp.rpm[0])-$($sp.rpm[1])")
+    }
+    if ([double]$itW.mag -gt [double]$sp.mag[1]) {
+        $offSpec += ("$($itW.id) mag $($itW.mag) > co bang that $($sp.mag[1])")
+    }
+    if ([int]$itW.pellets -ne [int]$sp.pellets) { $offSpec += ("$($itW.id) pellets $($itW.pellets) != spec $($sp.pellets)") }
+    if ([int]$itW.pierce -ne [int]$sp.pierce)   { $offSpec += ("$($itW.id) pierce $($itW.pierce) != spec $($sp.pierce)") }
+}
+Assert-True 'WEAPON' 'rpm / bang dan / co che khop dac ta vu khi that' `
+    ($offSpec.Count -eq 0) `
+    ("kiem $($rngW.Count) sung" + $(if ($offSpec.Count) { ' | LECH: ' + ($offSpec -join ', ') } else { '; 0 lech' }))
+
+# Moi vien phai du giet trash cung tier -- day la "cam giac sung" thay cho san 120 cung.
+$weakProj = @()
+foreach ($itW in $rngW) {
+    $a = [string]$itW.archetype
+    if ($spec.PSObject.Properties.Name -notcontains $a) { continue }
+    if ([double]$spec.$a.caliberMult -lt 1.0) { $weakProj += "$a caliberMult $($spec.$a.caliberMult)" }
+}
+Assert-True 'WEAPON' 'Moi vien dan du giet trash cung tier (caliberMult >= 1.0)' `
+    ($weakProj.Count -eq 0) `
+    ("caliberMult = so lan HP trash. 9mm cua SMG 3.0, 5.56 cua rifle 4.5, .50 cua sniper 24.0" +
+     $(if ($weakProj.Count) { ' | YEU: ' + ($weakProj -join ', ') } else { '' }))
+
+# Vien dan phai co hinh dang de nguoi choi PHAN BIET duoc cac loai sung tren man hinh.
+$noProj = @($spec.PSObject.Properties.Name | Where-Object { $null -eq $spec.$_.proj -or $null -eq $spec.$_.proj.speed })
+Assert-True 'FEEL' 'Moi archetype co hinh dang vien dan rieng (mau/co/toc do)' `
+    ($noProj.Count -eq 0) `
+    ("khong co vien dan bay ra thi shotgun va rifle nhin GIONG HET nhau du co che da khac" +
+     $(if ($noProj.Count) { ' | THIEU: ' + ($noProj -join ', ') } else { '; du ca ' + @($spec.PSObject.Properties.Name).Count }))
 
 # -------------------------------------------------------------- K. output
 $pass = @($auditResults | Where-Object { $_.Status -eq 'PASS' }).Count

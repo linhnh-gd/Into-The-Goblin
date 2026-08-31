@@ -784,6 +784,30 @@ HOLD_FIRE
 <tr><td>Gai Mực (nỏ, xuyên 2)</td><td><strong>3</strong></td><td>full mỗi con</td></tr>
 </tbody></table></div>
 <blockquote><strong>Lưu ý cân bằng:</strong> <code>spread</code> giữ nguyên tổng sát thương một phát (chia ra chứ không nhân lên), nên nó <strong>không</strong> phá đường cong DPS. Nhưng <code>pierce</code> và <code>aoe</code> thì <strong>có</strong> nhân lên trong đám đông — mô hình <code>dpsSustained</code> chỉ đo đơn mục tiêu. Đó là bản sắc của archetype, không phải lỗi; nhưng khi tinh chỉnh <code>pierce</code>/<code>aoeRadiusM</code> thì phải nhớ chúng nằm <strong>ngoài</strong> ngân sách DPS.</blockquote>
+<h3>5d. Mô phỏng theo SỐ LIỆU VŨ KHÍ THẬT — và đảo ngược mô hình cân bằng</h3>
+<p>Mô hình cũ ép <strong>mọi súng có cùng DPS ở cùng tier</strong>. Hệ quả: nhịp bắn thật <strong>không thể tồn tại</strong> — muốn SMG bắn 700 nhịp/phút thì sát thương mỗi viên phải tụt xuống mức vô nghĩa, còn muốn viên đạn mạnh thì phải kéo nhịp bắn xuống 48 (shotgun) hay 155 (rifle), tức chậm hơn đời thật 4–5 lần.</p>
+<p><strong>Đảo lại:</strong> sát thương suy từ <strong>cỡ đạn</strong>, nhịp bắn lấy từ <strong>số liệu thật</strong>, và <strong>ĐẠN mới là thứ cân bằng</strong>.</p>
+<h4>Bảng đặc tả (<code>weapons.json</code> → <code>balance.archetypeSpec</code>)</h4>
+<div class="tw"><table>
+<thead><tr><th>Archetype</th><th>Tham chiếu thật</th><th>rpm</th><th>Băng</th><th><code>caliberMult</code></th><th>Cơ chế</th></tr></thead><tbody>
+<tr><td>pistol</td><td>Glock 17 / M1911 9mm, bắn đơn 120–200</td><td>150–260</td><td>10–17</td><td>3.2</td><td>single</td></tr>
+<tr><td><strong>smg</strong></td><td><strong>MP5 / Uzi 9mm, 700–900</strong></td><td><strong>700–950</strong></td><td>25–32</td><td>3.0</td><td>single</td></tr>
+<tr><td><strong>rifle</strong></td><td><strong>M4 750–900 / AK-47 600</strong></td><td><strong>600–800</strong></td><td>25–30</td><td>4.5</td><td>single</td></tr>
+<tr><td>lmg</td><td>M249 750–1000 / PKM 650</td><td>650–900</td><td>100–200</td><td>4.2</td><td>single</td></tr>
+<tr><td>minigun</td><td>M134 2000–6000 (hạ xuống cho chơi được)</td><td>1800–3000</td><td>200–400</td><td>3.0</td><td>single</td></tr>
+<tr><td>shotgun</td><td>Remington 870 12ga 00 buck, bơm tay ~65</td><td>55–95</td><td>5–8</td><td>1.6</td><td><strong>9 viên ghém</strong></td></tr>
+<tr><td>marksman</td><td>SR-25 DMR bắn đơn 80–120</td><td>70–120</td><td>10–20</td><td>10.0</td><td>xuyên 1</td></tr>
+<tr><td>sniper</td><td>Barrett M82 .50, 30–50</td><td>30–50</td><td>5–10</td><td>24.0</td><td>xuyên 3</td></tr>
+<tr><td>crossbow</td><td>Nỏ nặng (thật 2–3 phát/phút, game hoá lên)</td><td>30–60</td><td>1–5</td><td>13.0</td><td>xuyên 2</td></tr>
+<tr><td>launcher</td><td>M79 40mm bắn đơn 15–25</td><td>25–45</td><td>1–6</td><td>9.0</td><td>nổ 3.2m</td></tr>
+</tbody></table></div>
+<p><code>caliberMult</code> = <strong>số lần HP của trash cùng tier</strong>. Đó là cách mô phỏng cỡ đạn: viên 9mm của SMG (3.0) yếu hơn viên 5.56 của rifle (4.5), và cả hai đều bé tí so với viên .50 của sniper (24.0). Nó thay cho sàn &quot;120 cứng&quot; — cái đó không diễn tả được sự khác nhau giữa các cỡ đạn.</p>
+<h4>DPS không còn là ràng buộc; số wave mà cơ đạn giải quyết được mới là</h4>
+<p>SMG 700 nhịp/phút và sniper 40 nhịp/phút <strong>không thể</strong> có cùng DPS, và <strong>không nên</strong>. Thứ giữ chúng ngang nhau là: cơ số đạn mang theo giải quyết được <strong>7 wave</strong> cho mọi khẩu (<code>reserveWavesTarget</code>), và <strong>một băng đạn không dọn nổi một wave</strong> (trụ P2). Nên đối mặt là <em>bắn xối xả rồi hết đạn sớm</em> vs <em>bắn dè rồi đủ đạn lâu</em>.</p>
+<p>Đo được: Ổ Chuột (SMG) bắn hết băng 25 viên trong <strong>2.1s</strong>; Kèn Đồng 10 viên trong <strong>4.0s</strong>; Miệng Hang 5 viên trong <strong>5.5s</strong>. Đó mới là cảm giác khác nhau giữa các khẩu.</p>
+<h4>Viên đạn bay ra thật (<code>projectiles.js</code>)</h4>
+<p>Sát thương vẫn giải quyết ngay lúc bắn (hitscan) — viên đạn <strong>chỉ là hình</strong>. Làm vậy để không bao giờ lệch giữa &quot;cái đã trúng&quot; và &quot;cái đang bay&quot;, và để tự nhắm không bắn trượt vì đạn bay chậm. Mỗi archetype có màu / cỡ / độ dài / tốc độ riêng, có gate kiểm.</p>
+<p><strong>Đạn ghém tản theo GÓC THẬT, không chia đều mục tiêu.</strong> Mỗi viên lấy một góc ngẫu nhiên trong nón <code>spreadDeg</code> rồi tìm con gần tia đó nhất. Đo thực tế một phát vào 8 con: 9 viên bay ra, trúng <strong>5 con</strong> với sát thương <strong>192 / 128 / 64 / 64 / 128</strong> — có con ăn 3 viên, có con ăn 1, có viên trượt hẳn. Đó là lý do shotgun mạnh ở gần và vô dụng ở xa, mà <strong>không cần luật riêng nào</strong>.</p>
 <h3>6. Knockback từ đạn (docs: &quot;quái chết thì bị đẩy lùi về phía sau&quot;)</h3>
 <div class="tw"><table>
 <thead><tr><th></th><th>Công thức</th></tr></thead><tbody>
@@ -2549,7 +2573,7 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <span class="cont"><strong>Đã cài: Goblin Khiên + Ogre Hầm</strong> (xem <code>09</code> mục 2b).</span>
 </ul>
 <h3>4. Prototype đã sửa GDD ở đâu</h3>
-<p>Đây là phần quan trọng nhất của doc này: <strong>prototype tìm ra 35 lỗi mà đọc doc không thấy.</strong></p>
+<p>Đây là phần quan trọng nhất của doc này: <strong>prototype tìm ra 38 lỗi mà đọc doc không thấy.</strong></p>
 <div class="tw"><table>
 <thead><tr><th>#</th><th>Phát hiện</th><th>Sửa</th></tr></thead><tbody>
 <tr><td>1</td><td>17 con cùng đi tới <strong>một điểm</strong> → xếp chồng lên nhau, màn hình thành một bức tường capsule, không đọc được gì</td><td>Thêm separation bằng spatial hash. Đây là thứ doc chưa bao giờ nói tới nhưng bắt buộc phải có</td></tr>
@@ -2589,6 +2613,9 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>33</td><td><strong>Shotgun chỉ giết được 1 con.</strong> Mọi súng đều tính <code>dmg × pellets</code> rồi <strong>dồn hết vào một mục tiêu</strong> — nên shotgun 4 viên ghém không khác gì rifle, chỉ là bắn chậm hơn. Cả bảng archetype trong <code>04</code> mục 5 chỉ là <strong>mô tả văn xuôi</strong>, chưa bao giờ có cơ chế nào đứng sau</td><td><code>balance.archetypeHit</code> trong data: <code>single</code> / <code>spread</code> (chia viên ghém ra nhiều con) / <code>pierce</code> (xuyên n con phía sau) / <code>aoe</code> (nổ theo bán kính). Đo cùng một cảnh 6 con: rifle trúng <strong>1</strong>, shotgun trúng <strong>4</strong>, nỏ xuyên <strong>3</strong></td></tr>
 <tr><td>34</td><td><strong>Bỏ quẹt dọc thì vùng chết 55–65° mất hết lý do tồn tại</strong>, nhưng nó vẫn nằm trong <code>controls.json</code> cùng hai tham số chết <code>meleeAngleMax</code> / <code>moveAngleMin</code>, và Chế độ Hai Vùng vẫn còn trong UI. Vùng chết sinh ra để tách &quot;quẹt để chém&quot; khỏi &quot;quẹt để di chuyển&quot; — bỏ vế sau thì vế trước chiếm trọn</td><td>Gỡ <code>gs_deadzone</code> + <code>gs_slide_up</code> + <code>gs_slide_down</code> + 2 tham số + Chế độ Hai Vùng. Gate CTRL viết lại: giờ nó <strong>kiểm rằng không còn</strong> vùng chết và gesture di chuyển. Kéo theo: đòn AoE của Ogre mất counter &quot;né&quot;, chỉ còn &quot;giết trước khi nó vung&quot;</td></tr>
 <tr><td>35</td><td><strong>Màn hình đầu vẫn dạy cơ chế đã bị thay.</strong> Nó ghi &quot;CHẠM vào quái để bắn&quot; (giờ tự nhắm), &quot;QUẸT DỌC XUỐNG = bước lùi&quot; (đã gỡ), &quot;Rựa Rừng — 3 mục tiêu&quot; (giờ mọi dao đều 8), và Chế độ Hai Vùng. Không có gate nào bắt được text UI lệch khỏi cơ chế</td><td>Viết lại toàn bộ. Cũng sửa 2 lỗi layout: thừa một <code>&lt;/div&gt;</code> làm dòng trạng thái văng ra ngoài khung, và <code>.screen</code> không cho cuộn nên nút XUỐNG HẦM bị cắt trên máy màn nhỏ</td></tr>
+<tr><td>36</td><td><strong>Mô hình &quot;mọi súng cùng DPS&quot; làm nhịp bắn thật không thể tồn tại.</strong> Muốn SMG bắn 700 nhịp/phút thì sát thương mỗi viên phải tụt xuống mức vô nghĩa; muốn viên đạn mạnh thì nhịp bắn phải xuống 155 (rifle) hay 48 (shotgun) — chậm hơn đời thật 4–5 lần. Không phải lỗi số, mà là <strong>mô hình cân bằng sai chỗ</strong></td><td>Đảo lại: sát thương suy từ <strong>cỡ đạn</strong> (<code>caliberMult</code> = số lần HP trash), nhịp bắn từ <strong>số liệu thật</strong>, và <strong>đạn</strong> là thứ cân bằng (mọi khẩu mang đủ cho <strong>7 wave</strong>). DPS giờ chạy từ 237 tới 1549 tuỳ archetype — đúng như đời thật</td></tr>
+<tr><td>37</td><td><strong><code>magClearRatio</code> đo sát thương thô, không đo số mạng.</strong> Một viên 120 dmg vào goblin 40 HP thì thừa 3 lần, nên metric cho ra con số sai gấp 3 — nó ép băng đạn SMG xuống <strong>7 viên</strong> trong khi MP5 thật có 30</td><td>Đổi sang <code>killsPerShot = pellets × min(1, dmg/trashHp) × (1+pierce) × aoeFactor × killEff</code>. Băng đạn về đúng cỡ thật (SMG 25, rifle 25, LMG 100). <code>killEff</code> có mặt vì đạn ghém tản theo góc nên <strong>không phải viên nào cũng trúng một con riêng</strong> — thiếu nó thì shotgun ra 45 mạng một băng</td></tr>
+<tr><td>38</td><td><strong>Chính <code>audit_gdd.ps1</code> bị nhân đôi một khối lớn</strong> do một lần splice sai của tôi, và nó <strong>vẫn chạy xanh</strong> — chỉ khác là in ra hai bản tóm tắt và báo 99 check thay vì 80. Một cái audit tự nhân đôi sẽ thổi phồng số PASS và che mất chỗ nào chưa được kiểm</td><td>Dựng lại file từ ba đoạn đúng. Bài học đã ghi: khi sửa audit bằng splice thì phải <strong>đếm lại số check</strong> và soi trùng tên, vì file này là lưới an toàn của cả dự án — nó hỏng thì không có gì bắt được nữa</td></tr>
 </tbody></table></div>
 <blockquote><strong>Lỗi #14 và #16 đã bị chính thiết kế vượt qua.</strong> Khi chuyển sang <strong>quái đứng yên</strong>, bài toán đón đầu của <code>pincer</code> (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó <strong>đã bị bỏ khỏi code</strong>. Lane spring (#16) thì vẫn giữ, nhưng giờ nó chỉ chống separation làm lệch làn khi quái spawn chồng nhau, không còn phải chống lực đẩy dồn theo suốt đường đi. Ghi lại ở đây vì hai lỗi đó <strong>là lỗi thật</strong> ở thời điểm phát hiện, và vì nó cho thấy giá của việc đổi mô hình di chuyển: mọi thứ suy ra từ tốc độ quái đều phải tính lại.</blockquote>
 <p>Ngoài ra prototype xác nhận <strong>công thức số quái phải tính theo <code>composition</code></strong>, không phải <code>tpCost</code> trung bình toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 lần. Đã ghi vào <code>16</code> mục 4.4.</p>
@@ -2621,6 +2648,12 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>Rifle bắn 1 phát vào 6 con</td><td>trúng <strong>1 con</strong></td><td>✓</td></tr>
 <tr><td>Nỏ bắn 1 phát vào 6 con</td><td><strong>xuyên 3 con</strong></td><td>✓</td></tr>
 <tr><td>Màn hình đầu</td><td>dòng trạng thái nằm trong khung, cuộn được (697px trên viewport 682px)</td><td>✓</td></tr>
+<tr><td>Nhịp bắn theo số liệu thật</td><td>SMG <strong>700</strong> · rifle <strong>600</strong> · pistol 150 · shotgun 55 · nỏ 51</td><td>✓ <code>04</code> mục 5d</td></tr>
+<tr><td>Băng đạn theo cỡ thật</td><td>SMG <strong>25</strong> · rifle <strong>25</strong> · LMG <strong>100</strong> · shotgun 5 · nỏ 4</td><td>✓</td></tr>
+<tr><td>Bắn hết một băng</td><td>SMG <strong>2.1s</strong> · pistol 4.0s · shotgun 5.5s</td><td>✓ cảm giác khác nhau</td></tr>
+<tr><td>Shotgun 1 phát vào 8 con</td><td><strong>9 viên bay ra</strong>, trúng <strong>5 con</strong>: 192/128/64/64/128</td><td>✓ đạn ghém tản theo góc</td></tr>
+<tr><td>Nỏ 1 phát</td><td>1 viên, <strong>xuyên 3 con</strong>, 824 mỗi con</td><td>✓</td></tr>
+<tr><td>Viên đạn trong scene</td><td>9 instance đang vẽ, tản ngang từ −0.14 đến +0.07</td><td>✓ <code>projectiles.js</code></td></tr>
 </tbody></table></div>
 <h4>Kiểm chứng súng và chém liên tục</h4>
 <div class="tw"><table>

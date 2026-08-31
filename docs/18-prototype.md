@@ -81,7 +81,7 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 
 ## 4. Prototype đã sửa GDD ở đâu
 
-Đây là phần quan trọng nhất của doc này: **prototype tìm ra 35 lỗi mà đọc doc không thấy.**
+Đây là phần quan trọng nhất của doc này: **prototype tìm ra 38 lỗi mà đọc doc không thấy.**
 
 | # | Phát hiện | Sửa |
 |---|---|---|
@@ -121,6 +121,9 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 | 33 | **Shotgun chỉ giết được 1 con.** Mọi súng đều tính `dmg × pellets` rồi **dồn hết vào một mục tiêu** — nên shotgun 4 viên ghém không khác gì rifle, chỉ là bắn chậm hơn. Cả bảng archetype trong `04` mục 5 chỉ là **mô tả văn xuôi**, chưa bao giờ có cơ chế nào đứng sau | `balance.archetypeHit` trong data: `single` / `spread` (chia viên ghém ra nhiều con) / `pierce` (xuyên n con phía sau) / `aoe` (nổ theo bán kính). Đo cùng một cảnh 6 con: rifle trúng **1**, shotgun trúng **4**, nỏ xuyên **3** |
 | 34 | **Bỏ quẹt dọc thì vùng chết 55–65° mất hết lý do tồn tại**, nhưng nó vẫn nằm trong `controls.json` cùng hai tham số chết `meleeAngleMax` / `moveAngleMin`, và Chế độ Hai Vùng vẫn còn trong UI. Vùng chết sinh ra để tách "quẹt để chém" khỏi "quẹt để di chuyển" — bỏ vế sau thì vế trước chiếm trọn | Gỡ `gs_deadzone` + `gs_slide_up` + `gs_slide_down` + 2 tham số + Chế độ Hai Vùng. Gate CTRL viết lại: giờ nó **kiểm rằng không còn** vùng chết và gesture di chuyển. Kéo theo: đòn AoE của Ogre mất counter "né", chỉ còn "giết trước khi nó vung" |
 | 35 | **Màn hình đầu vẫn dạy cơ chế đã bị thay.** Nó ghi "CHẠM vào quái để bắn" (giờ tự nhắm), "QUẸT DỌC XUỐNG = bước lùi" (đã gỡ), "Rựa Rừng — 3 mục tiêu" (giờ mọi dao đều 8), và Chế độ Hai Vùng. Không có gate nào bắt được text UI lệch khỏi cơ chế | Viết lại toàn bộ. Cũng sửa 2 lỗi layout: thừa một `</div>` làm dòng trạng thái văng ra ngoài khung, và `.screen` không cho cuộn nên nút XUỐNG HẦM bị cắt trên máy màn nhỏ |
+| 36 | **Mô hình "mọi súng cùng DPS" làm nhịp bắn thật không thể tồn tại.** Muốn SMG bắn 700 nhịp/phút thì sát thương mỗi viên phải tụt xuống mức vô nghĩa; muốn viên đạn mạnh thì nhịp bắn phải xuống 155 (rifle) hay 48 (shotgun) — chậm hơn đời thật 4–5 lần. Không phải lỗi số, mà là **mô hình cân bằng sai chỗ** | Đảo lại: sát thương suy từ **cỡ đạn** (`caliberMult` = số lần HP trash), nhịp bắn từ **số liệu thật**, và **đạn** là thứ cân bằng (mọi khẩu mang đủ cho **7 wave**). DPS giờ chạy từ 237 tới 1549 tuỳ archetype — đúng như đời thật |
+| 37 | **`magClearRatio` đo sát thương thô, không đo số mạng.** Một viên 120 dmg vào goblin 40 HP thì thừa 3 lần, nên metric cho ra con số sai gấp 3 — nó ép băng đạn SMG xuống **7 viên** trong khi MP5 thật có 30 | Đổi sang `killsPerShot = pellets × min(1, dmg/trashHp) × (1+pierce) × aoeFactor × killEff`. Băng đạn về đúng cỡ thật (SMG 25, rifle 25, LMG 100). `killEff` có mặt vì đạn ghém tản theo góc nên **không phải viên nào cũng trúng một con riêng** — thiếu nó thì shotgun ra 45 mạng một băng |
+| 38 | **Chính `audit_gdd.ps1` bị nhân đôi một khối lớn** do một lần splice sai của tôi, và nó **vẫn chạy xanh** — chỉ khác là in ra hai bản tóm tắt và báo 99 check thay vì 80. Một cái audit tự nhân đôi sẽ thổi phồng số PASS và che mất chỗ nào chưa được kiểm | Dựng lại file từ ba đoạn đúng. Bài học đã ghi: khi sửa audit bằng splice thì phải **đếm lại số check** và soi trùng tên, vì file này là lưới an toàn của cả dự án — nó hỏng thì không có gì bắt được nữa |
 
 > **Lỗi #14 và #16 đã bị chính thiết kế vượt qua.** Khi chuyển sang **quái đứng yên**, bài toán đón đầu của
 > `pincer` (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó **đã bị bỏ khỏi code**.
@@ -161,6 +164,12 @@ toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 l
 | Rifle bắn 1 phát vào 6 con | trúng **1 con** | ✓ |
 | Nỏ bắn 1 phát vào 6 con | **xuyên 3 con** | ✓ |
 | Màn hình đầu | dòng trạng thái nằm trong khung, cuộn được (697px trên viewport 682px) | ✓ |
+| Nhịp bắn theo số liệu thật | SMG **700** · rifle **600** · pistol 150 · shotgun 55 · nỏ 51 | ✓ `04` mục 5d |
+| Băng đạn theo cỡ thật | SMG **25** · rifle **25** · LMG **100** · shotgun 5 · nỏ 4 | ✓ |
+| Bắn hết một băng | SMG **2.1s** · pistol 4.0s · shotgun 5.5s | ✓ cảm giác khác nhau |
+| Shotgun 1 phát vào 8 con | **9 viên bay ra**, trúng **5 con**: 192/128/64/64/128 | ✓ đạn ghém tản theo góc |
+| Nỏ 1 phát | 1 viên, **xuyên 3 con**, 824 mỗi con | ✓ |
+| Viên đạn trong scene | 9 instance đang vẽ, tản ngang từ −0.14 đến +0.07 | ✓ `projectiles.js` |
 
 ### Kiểm chứng súng và chém liên tục
 

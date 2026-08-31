@@ -154,6 +154,54 @@ Trước đây **mọi** súng đều dùng `dmg × pellets` **dồn hết vào 
 > `dpsSustained` chỉ đo đơn mục tiêu. Đó là bản sắc của archetype, không phải lỗi; nhưng khi tinh chỉnh
 > `pierce`/`aoeRadiusM` thì phải nhớ chúng nằm **ngoài** ngân sách DPS.
 
+
+## 5d. Mô phỏng theo SỐ LIỆU VŨ KHÍ THẬT — và đảo ngược mô hình cân bằng
+
+Mô hình cũ ép **mọi súng có cùng DPS ở cùng tier**. Hệ quả: nhịp bắn thật **không thể tồn tại** — muốn SMG
+bắn 700 nhịp/phút thì sát thương mỗi viên phải tụt xuống mức vô nghĩa, còn muốn viên đạn mạnh thì phải kéo
+nhịp bắn xuống 48 (shotgun) hay 155 (rifle), tức chậm hơn đời thật 4–5 lần.
+
+**Đảo lại:** sát thương suy từ **cỡ đạn**, nhịp bắn lấy từ **số liệu thật**, và **ĐẠN mới là thứ cân bằng**.
+
+### Bảng đặc tả (`weapons.json` → `balance.archetypeSpec`)
+
+| Archetype | Tham chiếu thật | rpm | Băng | `caliberMult` | Cơ chế |
+|---|---|---|---|---|---|
+| pistol | Glock 17 / M1911 9mm, bắn đơn 120–200 | 150–260 | 10–17 | 3.2 | single |
+| **smg** | **MP5 / Uzi 9mm, 700–900** | **700–950** | 25–32 | 3.0 | single |
+| **rifle** | **M4 750–900 / AK-47 600** | **600–800** | 25–30 | 4.5 | single |
+| lmg | M249 750–1000 / PKM 650 | 650–900 | 100–200 | 4.2 | single |
+| minigun | M134 2000–6000 (hạ xuống cho chơi được) | 1800–3000 | 200–400 | 3.0 | single |
+| shotgun | Remington 870 12ga 00 buck, bơm tay ~65 | 55–95 | 5–8 | 1.6 | **9 viên ghém** |
+| marksman | SR-25 DMR bắn đơn 80–120 | 70–120 | 10–20 | 10.0 | xuyên 1 |
+| sniper | Barrett M82 .50, 30–50 | 30–50 | 5–10 | 24.0 | xuyên 3 |
+| crossbow | Nỏ nặng (thật 2–3 phát/phút, game hoá lên) | 30–60 | 1–5 | 13.0 | xuyên 2 |
+| launcher | M79 40mm bắn đơn 15–25 | 25–45 | 1–6 | 9.0 | nổ 3.2m |
+
+`caliberMult` = **số lần HP của trash cùng tier**. Đó là cách mô phỏng cỡ đạn: viên 9mm của SMG (3.0) yếu hơn
+viên 5.56 của rifle (4.5), và cả hai đều bé tí so với viên .50 của sniper (24.0). Nó thay cho sàn "120 cứng"
+— cái đó không diễn tả được sự khác nhau giữa các cỡ đạn.
+
+### DPS không còn là ràng buộc; số wave mà cơ đạn giải quyết được mới là
+
+SMG 700 nhịp/phút và sniper 40 nhịp/phút **không thể** có cùng DPS, và **không nên**. Thứ giữ chúng ngang
+nhau là: cơ số đạn mang theo giải quyết được **7 wave** cho mọi khẩu (`reserveWavesTarget`), và **một băng
+đạn không dọn nổi một wave** (trụ P2). Nên đối mặt là *bắn xối xả rồi hết đạn sớm* vs *bắn dè rồi đủ đạn lâu*.
+
+Đo được: Ổ Chuột (SMG) bắn hết băng 25 viên trong **2.1s**; Kèn Đồng 10 viên trong **4.0s**; Miệng Hang
+5 viên trong **5.5s**. Đó mới là cảm giác khác nhau giữa các khẩu.
+
+### Viên đạn bay ra thật (`projectiles.js`)
+
+Sát thương vẫn giải quyết ngay lúc bắn (hitscan) — viên đạn **chỉ là hình**. Làm vậy để không bao giờ lệch
+giữa "cái đã trúng" và "cái đang bay", và để tự nhắm không bắn trượt vì đạn bay chậm. Mỗi archetype có
+màu / cỡ / độ dài / tốc độ riêng, có gate kiểm.
+
+**Đạn ghém tản theo GÓC THẬT, không chia đều mục tiêu.** Mỗi viên lấy một góc ngẫu nhiên trong nón
+`spreadDeg` rồi tìm con gần tia đó nhất. Đo thực tế một phát vào 8 con: 9 viên bay ra, trúng **5 con** với
+sát thương **192 / 128 / 64 / 64 / 128** — có con ăn 3 viên, có con ăn 1, có viên trượt hẳn. Đó là lý do
+shotgun mạnh ở gần và vô dụng ở xa, mà **không cần luật riêng nào**.
+
 ## 6. Knockback từ đạn (docs: "quái chết thì bị đẩy lùi về phía sau")
 
 | | Công thức |

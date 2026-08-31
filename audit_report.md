@@ -2,7 +2,7 @@
 
 > File nay do `audit_gdd.ps1` sinh ra. KHONG sua tay.
 
-**PASS 81 / WARN 2 / FAIL 0** trong 83 check.
+**PASS 83 / WARN 1 / FAIL 0** trong 84 check.
 
 | Nhom | Trang thai | Check | Chi tiet |
 |---|---|---|---|
@@ -28,8 +28,8 @@
 | WPN | **PASS** | Luon con >=1 nhat chem trong 1.4s khi stamina can (regen*1.4 >= staminaCost) | vi pham: khong |
 | WPN | **PASS** | Co it nhat 1 vu khi T1 one-shot trash o Depth 1 | one-shot: rw_pistol_kendong, rw_shotgun_mienghang, rw_smg_ochuot |
 | WPN | **PASS** | GATE P2: khong bang dan nao don sach ca wave (magClearRatio <= 1.0) | vi pham: 0 |
-| WPN | **WARN** | magClearRatio trong [0.45, 0.70] (y do thiet ke) | ngoai khoang: rw_smg_ochuot T1 0.84, rw_crossbow_gaimuc T2 0.3, rw_shotgun_longmoc T2 0.81, rw_rifle_matcu T3 0.29, rw_launcher_noidat T4 0.2, rw_smg_muikim T4 0.21, rw_sniper_dinhsat T4 0.29, rw_shotgun_hamtoi T5 0.14, rw_acid_ruotdat T5 0.32, rw_launcher_ongsam T5 0.14, rw_deeptech_loino T6 0.06, rw_deeptech_miengmo T6 0.07, rw_minigun_ruotsat T6 0.22 |
-| WPN | **WARN** | Du tru du 6-9 wave neu khong melee | ngoai khoang: rw_shotgun_mienghang 5.4, rw_smg_ochuot 17.4, rw_rifle_gongsat 5.1, rw_crossbow_gaimuc 2.6, rw_shotgun_longmoc 9.3, rw_rifle_matcu 1.4, rw_lmg_trongdoi 2.8, rw_flamer_hoingam 3, rw_launcher_noidat 1, rw_smg_muikim 1.2, rw_sniper_dinhsat 1.4, rw_shotgun_hamtoi 0.8, rw_acid_ruotdat 1.6, rw_launcher_ongsam 0.7, rw_deeptech_loino 0.4, rw_deeptech_miengmo 0.4, rw_minigun_ruotsat 1.1 |
+| WPN | **WARN** | magClearRatio trong [0.45, 0.70] (y do thiet ke) | ngoai khoang: rw_pistol_kendong T1 0.32, rw_smg_ochuot T1 0.81, rw_rifle_gongsat T2 0.31, rw_crossbow_gaimuc T2 0.1, rw_shotgun_longmoc T2 0.25, rw_rifle_matcu T3 0.1, rw_flamer_hoingam T3 0.26, rw_launcher_noidat T4 0.04, rw_smg_muikim T4 0.13, rw_sniper_dinhsat T4 0.06, rw_shotgun_hamtoi T5 0.09, rw_acid_ruotdat T5 0.35, rw_launcher_ongsam T5 0.03, rw_deeptech_loino T6 0.06, rw_deeptech_miengmo T6 0.06, rw_minigun_ruotsat T6 0.44 |
+| WPN | **PASS** | Du tru du 6-9 wave neu khong melee | ngoai khoang: 0 |
 | WPN | **PASS** | Melee DPS THAP HON ranged DPS o cung tier (dao nguoc, docs/05 muc 8.3) | so sanh 6 tier; vi pham: 0 |
 | WPN | **PASS** | Moi Depth 1-5 mo it nhat 1 cong cu dan cach (kb >= 1.0) | thieu: khong |
 | WPN | **PASS** | Moi vu khi duoc mo o mot Depth nao do | khong co duong mo: khong |
@@ -71,9 +71,6 @@
 | RUN | **PASS** | Quai ranged o rangedStandoffM van trong dai man hinh | o 8.5m nam o 48.7%; cho phep 45-75% |
 | WEAPON | **PASS** | Moi vu khi can chien voi xa hon khoang quai dung (tapNearM + margin) | can >= 2.80m; ngan nhat hien tai = 6.00m |
 | WEAPON | **PASS** | Tam can chien ngan hon khoang quai ranged dung | tam dao 6.00m vs rangedStandoffM 8.50m |
-| WEAPON | **PASS** | Moi sung deu co sat thuong >= rangedMinDmg | nguong 120; thap nhat hien tai 120 |
-| WEAPON | **PASS** | Moi sung nam trong dai rpm cua archetype (feeling khac nhau) | 13 archetype co dai rpm; 0 vi pham |
-| WPN | **PASS** | So sung bi san sat thuong keo ra ngoai duong cong DPS khong qua nua | 6/18 sung bi san sat thuong toi thieu keo len tren duong cong DPS: rw_pistol_kendong, rw_shotgun_mienghang, rw_smg_ochuot, rw_rifle_gongsat, rw_shotgun_longmoc, rw_flamer_hoingam |
 | ENEMY | **PASS** | Don AoE trung duoc khi nguoi choi chay qua (khong con Buoc Lui de ne) | impact = max(contactM, attackRange - speed*telegraph) |
 | RUN | **PASS** | Lan giua rong hon moi lan ben (yeu cau thiet ke) | lan giua rong 3.60m, moi lan ben 1.45m; hanh lang 9m |
 | RUN | **PASS** | Quai lan giua spawn quanh truc, khong trai sat ranh lan | jitter +-0.90m trong lan +-1.80m -> vung 0.90m..1.80m khong co quai nao |
@@ -89,5 +86,9 @@
 | FEEL | **PASS** | Chem lien tuc co tran: giu toi da 2-5s roi het stamina | stamina 100 / 34 moi giay = 2.94s giu lien tuc; moi con an dmg toi da 1 lan moi 0.22s |
 | FEEL | **PASS** | Chem lien tuc yeu hon nhat chem don (khong thay the han) | slideTickDamageMult = 0.62 |
 | FEEL | **PASS** | Sung o ngoai du lau de doc duoc trang thai (gunHoldSec >= drawSec) | gunHoldSec 0.30s vs drawSec 0.14s + holsterSec 0.18s |
+| WEAPON | **PASS** | Moi archetype tam xa co dac ta so lieu vu khi that | 13 archetype co spec |
+| WEAPON | **PASS** | rpm / bang dan / co che khop dac ta vu khi that | kiem 18 sung; 0 lech |
+| WEAPON | **PASS** | Moi vien dan du giet trash cung tier (caliberMult >= 1.0) | caliberMult = so lan HP trash. 9mm cua SMG 3.0, 5.56 cua rifle 4.5, .50 cua sniper 24.0 |
+| FEEL | **PASS** | Moi archetype co hinh dang vien dan rieng (mau/co/toc do) | khong co vien dan bay ra thi shotgun va rifle nhin GIONG HET nhau du co che da khac; du ca 13 |
 
 WARN = lech y do thiet ke, can playtest quyet dinh. FAIL = vi pham bat bien, build phai dung.

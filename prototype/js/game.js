@@ -10,6 +10,7 @@ import { Juice } from './juice.js';
 import { World, ROOM_SPACING, HALL_W } from './world.js';
 import { GunModel } from './gun.js';
 import { Trail } from './trail.js';
+import { Projectiles } from './projectiles.js';
 import { InputRouter, GESTURE } from './input.js';
 
 /* Chi dua vao pool nhung the DA CAI DAT hieu ung that trong prototype.
@@ -38,6 +39,7 @@ export class Game {
     this.world = new World(this.renderer);
     this.canvas = canvas;
     this.trail = new Trail(document.getElementById('fxTrail'));
+    this.proj = new Projectiles(this.world.scene);
     this.gun = new GunModel(this.world.camera);
     this.gunWanted = false;
     this.gunTimer = 0;
@@ -212,6 +214,42 @@ export class Game {
   get chainMult() { return this.chain >= 15 ? 1.4 : this.chain >= 8 ? 1.25 : this.chain >= 4 ? 1.1 : 1; }
 
   /* ============================= BAN =============================== */
+  /** Diem ra dan trong the gioi (dau nong sung), de vien dan bay tu dung cho. */
+  muzzle() {
+    const G = GD.feel.gun, cam = this.world.camera;
+    return this._muz ? this._muz.set(G.offsetX, G.restY + 0.06, G.offsetZ - 0.35).applyMatrix4(cam.matrixWorld)
+                     : (this._muz = new THREE.Vector3(G.offsetX, G.restY + 0.06, G.offsetZ - 0.35)).applyMatrix4(cam.matrixWorld);
+  }
+
+  /** DAN GHEM TAN THEO GOC THAT (docs/04 muc 5c).
+      Moi vien lay mot goc ngau nhien trong non `spreadDeg` roi tim con gan tia do nhat.
+      Gan thi nhieu vien chum vao MOT con (thua sat thuong), xa thi tan ra hoac truot --
+      dung nhu shotgun that, va tu no can bang thay vi phai chia deu N muc tieu. */
+  spreadTargets(nPellets, spreadDeg, rnd = Math.random) {
+    const cand = [];
+    const far = GD.feel.run.tapFarM;
+    for (const e of this.pool.list) {
+      if (!e.alive) continue;
+      const zGap = this.playerZ - e.z;
+      if (zGap <= 0.3) continue;
+      const d = Math.hypot(e.x, zGap);
+      if (d > far) continue;
+      cand.push({ e, d, ang: Math.atan2(e.x, zGap) });
+    }
+    const half = (spreadDeg * Math.PI) / 180 / 2;
+    const out = [];
+    for (let i = 0; i < nPellets; i++) {
+      const a = (rnd() * 2 - 1) * half;
+      let best = null, bestErr = Infinity;
+      for (const c of cand) {
+        // sai lech NGANG cua vien dan tai do sau cua con do
+        const err = Math.abs(Math.tan(a - c.ang)) * c.d;
+        if (err < 0.42 + 0.3 * c.e.scale && err < bestErr) { bestErr = err; best = c.e; }
+      }
+      out.push(best);            // null = vien nay truot
+    }
+    return out;
+  }
   /** Danh sach muc tieu tu nham, gan nhat truoc, uu tien LAN GIUA (docs/04 muc 2b). */
   pickAutoList(n) {
     const LN = GD.feel.lanes, far = GD.feel.run.tapFarM;
@@ -276,7 +314,7 @@ export class Game {
     /* MOT PHAT DAN CHAM VAO DAM QUAI THEO DAC DIEM TUNG LOAI SUNG (docs/04 muc 5c).
        Truoc day moi sung deu dung `dmg * pellets` DON HET vao mot con -- nen shotgun
        4 vien ghem chi giet duoc 1 quai, khong khac gi khau rifle. Xem docs/18 loi #33. */
-    const hitCfg = (GD.weapons.balance.archetypeHit || {})[rw.archetype] || { style: 'single' };
+    const hitCfg = (GD.weapons.balance.archetypeSpec || {})[rw.archetype] || { style: 'single' };
     const crit = Math.random() < this.mods.crit;
     let unit = rw.dmg * this.mods.rangedDmg * this.dmgBuff * this.chainMult;
     if (this.perfectMag) unit *= 1.15;
@@ -284,16 +322,26 @@ export class Game {
     if (crit) unit *= this.mods.critMult;
 
     const pellets = Math.max(1, rw.pellets || 1);
+    const look = hitCfg.proj;
+    const mz = this.muzzle();
     let victims = [];          // { e, mult }
     if (hitCfg.style === 'spread') {
-      // chia vien ghem ra cac con gan nhat, chia deu vong tron
-      const maxT = Math.min(pellets, hitCfg.maxTargets || pellets);
-      const list = this.pickAutoList(maxT);
-      if (!list.length) list.push(target);
+      /* Moi vien ghem co goc rieng: nhieu vien co the chum vao MOT con, hoac truot han.
+         Day la ly do shotgun manh o gan va vo dung o xa -- khong can luat rieng nao. */
+      const shots = this.spreadTargets(pellets, rw.spreadDeg || 10);
       const per = new Map();
-      for (let i = 0; i < pellets; i++) {
-        const e = list[i % list.length];
-        per.set(e, (per.get(e) || 0) + 1);
+      const half = ((rw.spreadDeg || 10) * Math.PI) / 180 / 2;
+      for (let i = 0; i < shots.length; i++) {
+        const e = shots[i];
+        if (e) {
+          per.set(e, (per.get(e) || 0) + 1);
+          this.proj.fire(mz.x, mz.y, mz.z, e.x, 0.62 * e.scale, e.z, look);
+        } else {
+          // vien truot: van bay ra cho nguoi choi thay do tan
+          const a = (Math.random() * 2 - 1) * half;
+          const d = 9 + Math.random() * 5;
+          this.proj.fire(mz.x, mz.y, mz.z, Math.sin(a) * d, 0.5, this.playerZ - Math.cos(a) * d, look);
+        }
       }
       victims = [...per].map(([e, n]) => ({ e, mult: n }));
     } else if (hitCfg.style === 'pierce') {
@@ -317,6 +365,12 @@ export class Game {
       this.juice.addRing(target.x, target.z, r, 0.22, false);
     } else {
       victims = [{ e: target, mult: pellets }];
+    }
+
+    if (hitCfg.style !== "spread") {
+      // mot vien duy nhat bay toi muc tieu chinh; kieu pierce/aoe dung chung vien do
+      const t0 = victims[0] && victims[0].e;
+      if (t0) this.proj.fire(mz.x, mz.y, mz.z, t0.x, 0.62 * t0.scale, t0.z, look);
     }
 
     for (const v of victims) {
@@ -742,6 +796,7 @@ export class Game {
 
     this.world.update(this.playerZ, this.bob, this.juice.shake);
     this.renderer.render(this.world.scene, this.world.camera);
+    this.proj.update(dtRaw);
     this.trail.update(dtRaw);
     this.trail.draw();
 

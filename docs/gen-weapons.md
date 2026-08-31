@@ -6,24 +6,24 @@
 
 | Tên | ID | Kiểu | Tier | Mở ở | Damage | RPM | Viên | Băng | Dự trữ | Reload | Tầm | Xuyên | Knockback | Crit | DPS bền | Tag | Mô tả |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Kèn Đồng | rw_pistol_kendong | pistol | T1 | start | 120 | 115 | 1 | 8 | 84 | 1.4s | 22m | - | 0.35m | x2.5 | 172 | precision, starter | Ổ quay sáu viên han gỉ. Một phát một mạng goblin — nếu ngươi nhắm. |
-| Miệng Hang | rw_shotgun_mienghang | shotgun | T1 | start | 120 | 48 | 4 | 2 | 16 | 2.6s | 12m | - | 1.6m | x2.0 | 188 | spacing, crowd, starter | Nòng cưa ngắn. Công cụ dãn cách tốt nhất trong hầm: một phát là cả hàng đầu lùi lại. |
-| Ổ Chuột | rw_smg_ochuot | smg | T1 | depth1 | 120 | 230 | 1 | 10 | 206 | 1.8s | 16m | - | 0.15m | x2.0 | 272 | sustain, holddrag | Bắn như chuột gặm. Giữ và rê ngón — để dành nhắm cho khẩu khác. |
-| Gai Mực | rw_crossbow_gaimuc | crossbow | T2 | depth2 | 446 | 51 | 1 | 4 | 34 | 2.2s | 22m | 5 | 1.1m | x3.0 | 258 | pierce, precision | Một mũi xuyên năm cái đầu. Xếp hàng đi, lũ goblin. |
-| Gọng Sắt | rw_rifle_gongsat | rifle | T2 | depth2 | 120 | 155 | 1 | 26 | 253 | 2.0s | 22m | - | 0.4m | x2.5 | 259 | allround, midband | Khẩu không có nhược điểm và cũng không có gì đặc biệt. Đó là điểm mạnh của nó. |
-| Lồng Móc | rw_shotgun_longmoc | shotgun | T2 | boss1 | 120 | 48 | 10 | 4 | 46 | 3.0s | 14m | - | 1.9m | x2.0 | 600 | spacing, crowd | Lên quy lát nghe như xương gãy. Đẩy lùi cả một cửa vòm. |
-| Hơi Ngầm | rw_flamer_hoingam | flamer | T3 | boss2 | 120 | 349 | 1 | 109 | 540 | 2.8s | 7m | - | 0.0m | x1.0 | 607 | dot, areadenial, nokb | Không đẩy được ai. Nhưng lửa lan, và cả hành lang cháy theo. |
-| Trống Đôi | rw_lmg_trongdoi | lmg | T3 | depth3 | 167 | 265 | 1 | 73 | 360 | 3.6s | 18m | - | 0.2m | x1.8 | 606 | sustain, holddrag, crowd | Sáu mươi viên trong một băng trống. Rê ngón qua cả wave, đừng thả. |
-| Mắt Cú | rw_rifle_matcu | marksman | T3 | depth3 | 443 | 105 | 1 | 14 | 70 | 2.2s | 22m | 1 | 0.7m | x3.0 | 608 | precision, headshot | Dành cho kẻ thích tap từng phát. Headshot x3 và không tha ai. |
-| Nồi Đất | rw_launcher_noidat | launcher | T4 | depth4 | 2953 | 42 | 1 | 5 | 24 | 3.2s | 18m | - | 2.4m | x1.5 | 1428 | aoe, spacing, wavewipe | Nồi thuốc nổ ném bằng ống. Đạn cực ít — mỗi phát phải đáng. |
-| Mũi Kim | rw_smg_muikim | smg | T4 | depth4 | 327 | 320 | 1 | 48 | 280 | 2.0s | 18m | - | 0.1m | x2.2 | 1427 | sustain, crit | Nghìn mốt phát một phút. Băng đạn bay hơi trước khi ngươi kịp nghĩ. |
-| Đinh Sắt | rw_sniper_dinhsat | sniper | T4 | boss3 | 3049 | 34 | 1 | 7 | 35 | 2.6s | 22m | 8 | 1.4m | x4.0 | 1427 | pierce, precision, boss | Xuyên tám con một phát và ghim con cuối vào tường. |
-| Ruột Đất | rw_acid_ruotdat | acid | T5 | depth5 | 1077 | 210 | 1 | 85 | 420 | 3.0s | 9m | - | 0.05m | x1.0 | 3355 | dot, areadenial, armorbreak | Axit ăn qua giáp. Goblin Khiên không còn là vấn đề. |
-| Ống Sấm | rw_launcher_ongsam | launcher | T5 | boss4 | 5823 | 48 | 1 | 7 | 36 | 3.4s | 20m | - | 2.8m | x1.5 | 3355 | aoe, spacing, wavewipe | Bắn ra tiếng sấm. Xác bay hết về phía Dải Xa. |
-| Hàm Tối | rw_shotgun_hamtoi | shotgun | T5 | depth5 | 488 | 78 | 7 | 12 | 70 | 3.0s | 13m | - | 1.5m | x2.0 | 3352 | spacing, crowd, auto | Shotgun tự động. Giữ ngón và cả dải Cận chiến biến thành sương. |
-| Miệng Mỏ | rw_deeptech_miengmo | deeptech | T6 | depth7 | 570 | 102 | 12 | 10 | 56 | 2.8s | 15m | - | 2.2m | x2.0 | 7878 | gold, spacing, crowd | Nạp bằng vàng thay vì đạn. Bắn ra mười hai mảnh quặng nóng đỏ. |
-| Lõi Nổ | rw_deeptech_loino | deeptech | T6 | boss5 | 4280 | 150 | 1 | 14 | 84 | 2.0s | 20m | - | 1.2m | x2.5 | 7884 | depth, scaling | Mỗi Depth xuống sâu cho khẩu này +9% damage. Càng sâu càng dữ. |
-| Ruột Sắt | rw_minigun_ruotsat | minigun | T6 | boss6 | 1224 | 460 | 1 | 181 | 900 | 4.5s | 18m | - | 0.25m | x1.8 | 7882 | sustain, holddrag, crowd | Một trăm năm mươi viên. Bốn giây rưỡi reload — và đó là bốn giây rưỡi dùng dao. |
+| Kèn Đồng | rw_pistol_kendong | pistol | T1 | start | 128 | 150 | 1 | 10 | 217 | 1.4s | 22m | - | 0.35m | x2.5 | 237 | precision, starter | Ổ quay sáu viên han gỉ. Một phát một mạng goblin — nếu ngươi nhắm. |
+| Miệng Hang | rw_shotgun_mienghang | shotgun | T1 | start | 64 | 55 | 9 | 5 | 53 | 2.6s | 12m | - | 1.6m | x2.0 | 358 | spacing, crowd, starter | Nòng cưa ngắn. Công cụ dãn cách tốt nhất trong hầm: một phát là cả hàng đầu lùi lại. |
+| Ổ Chuột | rw_smg_ochuot | smg | T1 | depth1 | 120 | 700 | 1 | 25 | 217 | 1.9s | 16m | - | 0.15m | x2.0 | 742 | sustain, holddrag | Bắn như chuột gặm. Giữ và rê ngón — để dành nhắm cho khẩu khác. |
+| Gai Mực | rw_crossbow_gaimuc | crossbow | T2 | depth2 | 824 | 51 | 1 | 4 | 292 | 2.2s | 22m | 2 | 1.1m | x3.0 | 477 | pierce, precision | Một mũi xuyên năm cái đầu. Xếp hàng đi, lũ goblin. |
+| Gọng Sắt | rw_rifle_gongsat | rifle | T2 | depth2 | 285 | 600 | 1 | 25 | 569 | 2.1s | 22m | - | 0.4m | x2.5 | 1549 | allround, midband | Khẩu không có nhược điểm và cũng không có gì đặc biệt. Đó là điểm mạnh của nó. |
+| Lồng Móc | rw_shotgun_longmoc | shotgun | T2 | boss1 | 101 | 55 | 9 | 5 | 140 | 3s | 14m | - | 1.9m | x2.0 | 538 | spacing, crowd | Lên quy lát nghe như xương gãy. Đẩy lùi cả một cửa vòm. |
+| Hơi Ngầm | rw_flamer_hoingam | flamer | T3 | boss2 | 367 | 600 | 1 | 80 | 2144 | 3s | 7m | - | 0.0m | x1.0 | 2669 | dot, areadenial, nokb | Không đẩy được ai. Nhưng lửa lan, và cả hành lang cháy theo. |
+| Trống Đôi | rw_lmg_trongdoi | lmg | T3 | depth3 | 514 | 650 | 1 | 100 | 1072 | 4.4s | 18m | - | 0.2m | x1.8 | 3771 | sustain, holddrag, crowd | Sáu mươi viên trong một băng trống. Rê ngón qua cả wave, đừng thả. |
+| Mắt Cú | rw_rifle_matcu | marksman | T3 | depth3 | 1224 | 105 | 1 | 10 | 715 | 2.3s | 22m | 1 | 0.7m | x3.0 | 1527 | precision, headshot | Dành cho kẻ thích tap từng phát. Headshot x3 và không tha ai. |
+| Nồi Đất | rw_launcher_noidat | launcher | T4 | depth4 | 2426 | 42 | 1 | 6 | 958 | 3.2s | 18m | - | 2.4m | x1.5 | 1237 | aoe, spacing, wavewipe | Nồi thuốc nổ ném bằng ống. Đạn cực ít — mỗi phát phải đáng. |
+| Mũi Kim | rw_smg_muikim | smg | T4 | depth4 | 809 | 700 | 1 | 32 | 1676 | 2s | 18m | - | 0.1m | x2.2 | 5458 | sustain, crit | Nghìn mốt phát một phút. Băng đạn bay hơi trước khi ngươi kịp nghĩ. |
+| Đinh Sắt | rw_sniper_dinhsat | sniper | T4 | boss3 | 6469 | 34 | 1 | 6 | 698 | 3s | 22m | 3 | 1.4m | x4.0 | 2856 | pierce, precision, boss | Xuyên tám con một phát và ghim con cuối vào tường. |
+| Ruột Đất | rw_acid_ruotdat | acid | T5 | depth5 | 2314 | 210 | 1 | 69 | 1389 | 3s | 9m | - | 0.05m | x1.0 | 7029 | dot, areadenial, armorbreak | Axit ăn qua giáp. Goblin Khiên không còn là vấn đề. |
+| Ống Sấm | rw_launcher_ongsam | launcher | T5 | boss4 | 6508 | 45 | 1 | 6 | 1389 | 3.4s | 20m | - | 2.8m | x1.5 | 3425 | aoe, spacing, wavewipe | Bắn ra tiếng sấm. Xác bay hết về phía Dải Xa. |
+| Hàm Tối | rw_shotgun_hamtoi | shotgun | T5 | depth5 | 1157 | 78 | 9 | 8 | 600 | 3s | 13m | - | 1.5m | x2.0 | 9100 | spacing, crowd, auto | Shotgun tự động. Giữ ngón và cả dải Cận chiến biến thành sương. |
+| Miệng Mỏ | rw_deeptech_miengmo | deeptech | T6 | depth7 | 32977 | 102 | 1 | 16 | 1820 | 2.8s | 15m | - | 2.2m | x2.0 | 43207 | gold, spacing, crowd | Nạp bằng vàng thay vì đạn. Bắn ra mười hai mảnh quặng nóng đỏ. |
+| Lõi Nổ | rw_deeptech_loino | deeptech | T6 | boss5 | 32977 | 150 | 1 | 16 | 1820 | 2.8s | 20m | - | 1.2m | x2.5 | 57351 | depth, scaling | Mỗi Depth xuống sâu cho khẩu này +9% damage. Càng sâu càng dữ. |
+| Ruột Sắt | rw_minigun_ruotsat | minigun | T6 | boss6 | 5819 | 1800 | 1 | 200 | 3185 | 5s | 18m | - | 0.25m | x1.8 | 99754 | sustain, holddrag, crowd | Một trăm năm mươi viên. Bốn giây rưỡi reload — và đó là bốn giây rưỡi dùng dao. |
 
 ### Vũ khí
 
