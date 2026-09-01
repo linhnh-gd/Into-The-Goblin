@@ -35,6 +35,9 @@ function statTotalText(stat, kind, steps) {
   return kind === 'addpct' ? `+${pct(sum)} ${lbl}` : `+${Math.round(sum)} ${lbl}`;
 }
 
+/** Cach mot phat dan cua archetype nay cham vao dam quai: single / spread / pierce / aoe. */
+const hitCfgOf = (rw) => (GD.weapons.balance.archetypeSpec || {})[rw.archetype] || { style: 'single' };
+
 const P = () => ({
   hpBase: 100, staminaMax: 100, staminaRegen: 18, staminaRegenDelay: 0.6,
   staminaLow: 0.5, scavengePerMag: 6, advanceSpeed: 2.4,
@@ -252,7 +255,7 @@ export class Game {
       Moi vien lay mot goc ngau nhien trong non `spreadDeg` roi tim con gan tia do nhat.
       Gan thi nhieu vien chum vao MOT con (thua sat thuong), xa thi tan ra hoac truot --
       dung nhu shotgun that, va tu no can bang thay vi phai chia deu N muc tieu. */
-  spreadTargets(nPellets, spreadDeg, cfg = {}, rnd = Math.random) {
+  spreadTargets(nPellets, spreadDeg, cfg = {}, centerAng = 0, rnd = Math.random) {
     const cand = [];
     const far = GD.feel.run.tapFarM;
     const radius = cfg.pelletRadiusM != null ? cfg.pelletRadiusM : 0.42;
@@ -267,7 +270,8 @@ export class Game {
     const half = (spreadDeg * Math.PI) / 180 / 2;
     const out = [];
     for (let i = 0; i < nPellets; i++) {
-      const a = (rnd() * 2 - 1) * half;
+      // non dan ghem xoay theo huong NGAM (tap: diem cham; hold: con tu nham)
+      const a = centerAng + (rnd() * 2 - 1) * half;
       let best = null, bestErr = Infinity;
       for (const c of cand) {
         // sai lech NGANG cua vien dan tai do sau cua con do
@@ -306,13 +310,37 @@ export class Game {
     return mid.concat(side).slice(0, n).map((o) => o.e);
   }
 
-  /** TU NHAM: con gan nhat o LAN GIUA, khong can tap trung nguoi no (docs/04 muc 2b).
-      Neu lan giua trong thi lay con gan nhat bat ky -- de quai lan ben van giet duoc
-      lay vang, dung nhu "giet la vang them" o docs/09 muc 2c.
-      Vi tri tap van con nghia: tap nua DUOI man hinh = nham YEU DIEM (bung Ogre). */
-  pickAuto(sy) {
-    const LN = GD.feel.lanes;
+  /** Goc ngang (radian, so voi truc chay) ung voi mot diem cham tren man hinh.
+   *  Suy tu hinh hoc camera, khong hardcode: ndc ngang -> tang goc -> goc yaw. */
+  tapAngle(sx) {
+    const cam = this.world.camera;
+    const w = this.vw || window.innerWidth || 1;
+    const ndc = (sx / w) * 2 - 1;
+    return Math.atan(ndc * Math.tan((cam.fov * Math.PI) / 360) * cam.aspect);
+  }
+
+  /** TAP -> BAN DUNG CHO CHAM (docs/04 muc 2b).
+   *  Lay con nam duoi ngon trong non tro giup `aimCone`. Khong co con nao thi tra ve
+   *  null va vien dan van bay ra huong do -- tap la phat ban CO NHAM, tra gia bang
+   *  viec ban truot duoc. Doi lai: chi tap moi cham dung YEU DIEM (bung Ogre). */
+  pickAimed(sx, sy) {
+    const w = this.vw || window.innerWidth || 1;
     const h = this.vh || window.innerHeight || 1;
+    const hit = this.pool.pickByScreen(this.world.camera, sx, sy, w, h, this.mods.aimCone);
+    if (!hit) return null;
+    const zGap = this.playerZ - hit.e.z;
+    if (zGap <= 0.1) return null;                                  // da bi chay qua
+    if (Math.hypot(hit.e.x, zGap) > GD.feel.run.tapFarM) return null;
+    return hit;
+  }
+
+  /** HOLD -> TU NHAM: con gan nhat o LAN GIUA, khong can tap trung nguoi no.
+      Lan giua trong thi lay con gan nhat bat ky -- quai lan ben van giet duoc lay vang,
+      dung nhu "giet la vang them" o docs/09 muc 2c.
+      KHONG BAO GIO an yeu diem: yeu diem la phan thuong cua viec NHAM, ma tu nham thi
+      nguoi choi co nham gi dau. Muon x2 vao bung Ogre thi phai tap dung cho. */
+  pickAuto() {
+    const LN = GD.feel.lanes;
     let bestMid = null, bestMidD = Infinity, bestAny = null, bestAnyD = Infinity;
     for (const e of this.pool.list) {
       if (!e.alive) continue;
@@ -324,8 +352,7 @@ export class Game {
       if (Math.abs(e.x) <= LN.midHalfWidthM && d < bestMidD) { bestMidD = d; bestMid = e; }
     }
     const e = bestMid || bestAny;
-    if (!e) return null;
-    return { e, weakPoint: sy != null && sy > h * 0.55 };
+    return e ? { e, weakPoint: false } : null;
   }
 
   shootAt(sx, sy, single) {
@@ -353,14 +380,36 @@ export class Game {
     const fk = GD.feel.shake.find((s) => s.event.includes('súng lục')) || { amplitudePx: 3 };
     this.juice.addShake(rw.pellets > 1 ? 14 : fk.amplitudePx, 0, 1);
 
-    const picked = this.pickAuto(sy);
-    if (!picked) { this.chain = 0; if (this.mag <= 0) this.startReload(); return; }
-    const target = picked.e;
+    /* HAI CHE DO NGAM (docs/04 muc 2b):
+         TAP  -> ban DUNG CHO CHAM. Chon con nam duoi ngon (non tro giup `aimCone`),
+                 va vi biet chinh xac cham vao dau nen an duoc YEU DIEM.
+         HOLD -> TU NHAM con gan nhat o lan giua. Tien, nhung khong duoc chon muc tieu
+                 va KHONG bao gio an yeu diem.
+       Do la doi lay: tap = chinh xac va co quyen chon; hold = nhieu dan va khong phai nghi. */
+    const picked = single ? this.pickAimed(sx, sy) : this.pickAuto();
+    // Huong ban: tap thi theo diem cham THAT (ke ca khi khong co con nao o do),
+    // hold thi theo con da tu nham.
+    const aimAng = single
+      ? this.tapAngle(sx)
+      : (picked ? Math.atan2(picked.e.x, this.playerZ - picked.e.z) : 0);
+    if (single) this.ui.tapMark(sx, sy, !!picked);
+
+    if (!picked && hitCfgOf(rw).style !== 'spread') {
+      // BAN TRUOT: van cho vien dan bay ra huong da nham, khong im lang nuot mat phat ban
+      const m0 = this.muzzle();
+      const d0 = GD.feel.run.tapFarM;
+      this.proj.fire(m0.x, m0.y, m0.z, Math.sin(aimAng) * d0, 0.7,
+        this.playerZ - Math.cos(aimAng) * d0, hitCfgOf(rw).proj);
+      this.chain = 0;
+      if (this.mag <= 0) this.startReload();
+      return;
+    }
+    const target = picked ? picked.e : null;
 
     /* MOT PHAT DAN CHAM VAO DAM QUAI THEO DAC DIEM TUNG LOAI SUNG (docs/04 muc 5c).
        Truoc day moi sung deu dung `dmg * pellets` DON HET vao mot con -- nen shotgun
        4 vien ghem chi giet duoc 1 quai, khong khac gi khau rifle. Xem docs/18 loi #33. */
-    const hitCfg = (GD.weapons.balance.archetypeSpec || {})[rw.archetype] || { style: 'single' };
+    const hitCfg = hitCfgOf(rw);
     const crit = Math.random() < this.mods.crit;
     let unit = rw.dmg * this.mods.rangedDmg * this.dmgBuff * this.chainMult;
     if (this.perfectMag) unit *= 1.15;
@@ -374,7 +423,7 @@ export class Game {
     if (hitCfg.style === 'spread') {
       /* Moi vien ghem co goc rieng: nhieu vien co the chum vao MOT con, hoac truot han.
          Day la ly do shotgun manh o gan va vo dung o xa -- khong can luat rieng nao. */
-      const shots = this.spreadTargets(pellets, rw.spreadDeg || 10, hitCfg);
+      const shots = this.spreadTargets(pellets, rw.spreadDeg || 10, hitCfg, aimAng);
       const per = new Map();
       const half = ((rw.spreadDeg || 10) * Math.PI) / 180 / 2;
       for (let i = 0; i < shots.length; i++) {
@@ -384,7 +433,7 @@ export class Game {
           this.proj.fire(mz.x, mz.y, mz.z, e.x, 0.62 * e.scale, e.z, look);
         } else {
           // vien truot: van bay ra cho nguoi choi thay do tan
-          const a = (Math.random() * 2 - 1) * half;
+          const a = aimAng + (Math.random() * 2 - 1) * half;
           const d = 9 + Math.random() * 5;
           this.proj.fire(mz.x, mz.y, mz.z, Math.sin(a) * d, 0.5, this.playerZ - Math.cos(a) * d, look);
         }
@@ -429,7 +478,7 @@ export class Game {
       this.hitEnemy(v.e, Math.round(unit * v.mult), {
         kx: dx / len, kz: dz / len, kbForce: rw.knockback * this.mods.kb,
         source: 'ranged', archetype: rw.archetype, heavy: false,
-        weakPoint: v.e === target && picked.weakPoint, crit,
+        weakPoint: v.e === target && !!picked?.weakPoint, crit,
       });
     }
 

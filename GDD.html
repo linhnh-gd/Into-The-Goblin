@@ -536,9 +536,9 @@ footer{padding:34px 0 0;color:var(--muted);font-size:12.5px;border-top:1px solid
 <h3>1. Bảng gesture chính thức</h3>
 <div class="tw"><table>
 <thead><tr><th>Gesture</th><th>Điều kiện nhận (chuẩn hoá theo <code>S</code> = chiều rộng màn hình)</th><th>Hành động</th><th>Vũ khí</th></tr></thead><tbody>
-<tr><td><strong>Tap</strong></td><td>Ngón nhấc lên trong <code>&lt; 130ms</code> <strong>và</strong> tổng di chuyển <code>&lt; 0.05S</code></td><td>1 phát bắn nhắm vào điểm tap</td><td>Tầm xa</td></tr>
-<tr><td><strong>Hold</strong></td><td>Ngón giữ <code>&gt;= 130ms</code>, tốc độ <code>&lt; 520 px/s</code></td><td>Bắn liên tục vào điểm đang giữ (theo RPM)</td><td>Tầm xa</td></tr>
-<tr><td><strong>Hold &amp; Drag</strong></td><td>Đã ở trạng thái Hold rồi mới di chuyển, tốc độ <code>&lt; 520 px/s</code></td><td>Bắn liên tục, tâm ngắm đi theo ngón</td><td>Tầm xa</td></tr>
+<tr><td><strong>Tap</strong></td><td>Ngón nhấc lên trong <code>&lt; 130ms</code> <strong>và</strong> tổng di chuyển <code>&lt; 0.05S</code></td><td>1 phát bắn <strong>đúng chỗ chạm</strong> (nón trợ giúp 4°), ăn được yếu điểm, trượt được</td><td>Tầm xa</td></tr>
+<tr><td><strong>Hold</strong></td><td>Ngón giữ <code>&gt;= 130ms</code>, tốc độ <code>&lt; 520 px/s</code></td><td>Bắn liên tục, <strong>tự nhắm</strong> con gần nhất làn giữa. Không ăn yếu điểm</td><td>Tầm xa</td></tr>
+<tr><td><strong>Hold &amp; Drag</strong></td><td>Đã ở trạng thái Hold rồi mới di chuyển, tốc độ <code>&lt; 520 px/s</code></td><td>Bắn liên tục — vẫn <strong>tự nhắm</strong>, vị trí ngón không đổi mục tiêu</td><td>Tầm xa</td></tr>
 <tr><td><strong>Slide nhẹ</strong></td><td>Tốc độ đỉnh <code>&gt;= 520 px/s</code> trong <code>&lt;= 300ms</code> đầu, độ dài <code>0.12S–0.55S</code>, góc lệch khỏi ngang <code>&lt;= 55°</code></td><td>Chém nhẹ</td><td>Cận chiến</td></tr>
 <tr><td><strong>Slide nặng</strong></td><td>Như trên nhưng độ dài <code>&gt; 0.55S</code></td><td>Chém nặng: 2x stamina, 2.0x damage, 2.2x knockback, arc +30°</td><td>Cận chiến</td></tr>
 <tr><td><strong>Slide dọc xuống</strong></td><td>Tốc độ <code>&gt;= 520 px/s</code>, góc lệch khỏi <em>dọc</em> <code>&lt;= 25°</code>, hướng xuống</td><td><strong>Bước Lùi</strong>: lùi 1.2m, 0.15s bất tử, cooldown 2.5s</td><td>—</td></tr>
@@ -718,16 +718,20 @@ HOLD_FIRE
 <li>Trong lúc reload: <strong>súng bị khoá hoàn toàn</strong> (docs), chỉ chém được. Đây là lúc căng nhất của mỗi vòng giây.</li>
 <li><code>Auto-reload</code> bật mặc định; khi bật vẫn có thể tap để lấy Hoàn Hảo.</li>
 </ul>
-<h3>2b. TỰ NHẮM: tap ở đâu cũng bắn được</h3>
-<p>Bỏ hẳn cơ chế &quot;phải tap trúng con quái&quot;. <strong>Tap hoặc giữ ở bất kỳ đâu trên màn hình</strong> đều bắn, và mục tiêu được chọn tự động:</p>
-<ol>
-<li>Con <strong>gần nhất ở LÀN GIỮA</strong> trong <code>run.tapFarM</code> (14m) — đây là mối đe doạ thật.</li>
-<li>Nếu làn giữa trống → con <strong>gần nhất bất kỳ</strong>, để quái làn bên vẫn giết được lấy vàng</li>
-<span class="cont">(<code>09</code> mục 2c: &quot;giết là vàng thêm&quot;).</span>
-<li>Không có con nào trong tầm → không bắn, không tốn đạn.</li>
-</ol>
-<p><strong>Vị trí tap vẫn còn một nghĩa:</strong> tap ở <strong>nửa dưới màn hình</strong> = nhắm <strong>yếu điểm</strong> (bụng Ogre, ×2.0). Đây là thứ duy nhất còn phụ thuộc vào chỗ ngón tay chạm, và nó giữ lại cơ chế yếu điểm ở <code>09</code> mục 2b.</p>
-<p>Vì sao bỏ tap-vào-target: ở tốc độ chạy 4.2 m/s với 150+ quái mỗi phòng, việc bắt người chơi <strong>chạm chính xác</strong> vào một hình bóng nhỏ đang lùi dần về phía đáy màn hình biến súng thành bài kiểm tra độ chính xác của ngón tay, chứ không phải bài kiểm tra <strong>chọn mục tiêu nào</strong>. Tự nhắm trả quyết định về đúng chỗ: <em>bắn hay chém</em>, <em>bắn tiếp hay nhả tay nạp đạn</em>.</p>
+<h3>2b. HAI CHẾ ĐỘ NGẮM: chạm thì nhắm, giữ thì tự nhắm</h3>
+<p>Cùng một khẩu súng, hai cách chơi — và <strong>chính gesture chọn cách</strong>, không có nút chuyển:</p>
+<div class="tw"><table>
+<thead><tr><th></th><th><strong>CHẠM (tap)</strong></th><th><strong>GIỮ (hold)</strong></th></tr></thead><tbody>
+<tr><td>Nhắm</td><td><strong>Đúng chỗ ngón tay chạm</strong> — nón trợ giúp <code>aimCone</code> 4°</td><td><strong>Tự nhắm</strong> con gần nhất ở làn giữa</td></tr>
+<tr><td>Chọn mục tiêu</td><td><strong>Có</strong> — nhặt riêng con Thuốc Nổ trong đám, hay con Khiên đang hở</td><td>Không</td></tr>
+<tr><td>Yếu điểm (bụng Ogre ×2.0)</td><td><strong>Có</strong> — chạm nửa dưới hitbox của <strong>chính con đó</strong></td><td><strong>Không bao giờ</strong></td></tr>
+<tr><td>Bắn trượt</td><td><strong>Có</strong> — mất viên đạn, hiện vòng xám tại chỗ chạm</td><td>Không thể trượt</td></tr>
+<tr><td>Hướng đạn ghém (shotgun)</td><td>Nón xoay theo <strong>chỗ chạm</strong></td><td>Nón xoay theo con đã tự nhắm</td></tr>
+</tbody></table></div>
+<p>Auto-aim ở chế độ giữ vẫn theo thứ tự cũ: con <strong>gần nhất ở LÀN GIỮA</strong> trong <code>run.tapFarM</code> (14m) — mối đe doạ thật; làn giữa trống thì lấy con gần nhất bất kỳ, để quái làn bên vẫn giết được lấy vàng (<code>09</code> mục 2c).</p>
+<p><strong>Vì sao tách làm hai thay vì chọn một.</strong> Bản trước tự nhắm cho <em>cả hai</em>, với lý do đúng: ở 4.2 m/s giữa 150 con, bắt người chơi chạm chính xác vào một hình bóng nhỏ là bài kiểm tra <strong>ngón tay</strong>, không phải bài kiểm tra <strong>chọn mục tiêu nào</strong>. Nhưng hệ quả là <strong>không còn cách nào để chọn mục tiêu cả</strong> — thấy con Thuốc Nổ sắp nổ vào mặt cũng không bắn riêng nó được, và yếu điểm thành thứ tự động ăn.</p>
+<p>Tách hai chế độ trả lại cả hai: giữ ngón thì máy lo, <strong>chạm thì bạn lo</strong>. Cái giá của chế độ chính xác là <strong>bắn trượt được</strong> — và đó chính là thứ làm nó có giá trị. Một chế độ không thể trượt thì không thể gọi là ngắm.</p>
+<p><strong>Phải có phản hồi tại chỗ chạm.</strong> Không có nó thì &quot;bắn trượt&quot; và &quot;game không nhận input&quot; nhìn giống hệt nhau. Vòng <strong>vàng</strong> = trúng, vòng <strong>xám</strong> = trượt, 0.3s rồi biến. Và viên đạn <strong>vẫn bay ra</strong> theo hướng đã nhắm dù không trúng ai — im lặng nuốt mất phát bắn là lỗi, không phải luật.</p>
 <h3>3. Chuỗi Bắn (Accuracy chain)</h3>
 <div class="tw"><table>
 <thead><tr><th>Số phát trúng liên tiếp</th><th>Buff</th></tr></thead><tbody>
@@ -2810,6 +2814,9 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>49</td><td><strong><code>_separate</code> đẻ 240 chuỗi mỗi frame.</strong> Khoá lưới không gian dùng `<code> </code>${cx},${cz}<code> </code><code> — ở 60fps với 240 con là <strong>14.400 chuỗi/giây</strong> chỉ để vứt đi, và GC pause lộ ra <strong>đúng lúc đông quái</strong> (frame xấu nhất 3.9ms). Nó chiếm 56% thời gian của </code>pool.update`</td><td>Khoá thành số nguyên <code>(cx+512)*4096 + (cz+2048)</code>. Đo lại: <code>_separate</code> <strong>0.131ms → 0.028ms</strong>, frame xấu nhất 3.9 → 3.1ms, và hết hẳn rác chuỗi mỗi frame</td></tr>
 <tr><td>50</td><td><strong>Ngưỡng nhận quẹt 900 px/s là một cú BUNG tay, không phải cú quẹt.</strong> Trên màn 390px CSS đó là 2.3 chiều rộng màn hình mỗi giây. Quẹt bình thường bị đọc thành <code>HOLD</code> → rút súng, và <strong>luật khoá hai chiều</strong> thì từ đó không ra dao được nữa cho tới khi <strong>nhấc tay</strong>. Mỗi lần đổi bắn ↔ chém là một nhịp mất trắng — đó chính là &quot;chuyển đổi không mượt&quot;</td><td>Ngưỡng <strong>900 → 520 px/s</strong> (1.35 chiều rộng/giây), cửa sổ nhận 250 → 300ms. Và mở <strong>một lối thoát khoá một chiều</strong> <code>HOLD_FIRE → SLIDE</code>: quẹt dứt khoát (≥ 1.35× ngưỡng <strong>và</strong> đủ dài) ra dao ngay, không cần nhấc tay. Chiều ngược lại vẫn khoá vì lỡ tay bắn là mất đạn. Đo: giữ 220ms (súng ra) → quẹt → ra dao trong cùng một lần chạm</td></tr>
 <tr><td>51</td><td><strong>Shotgun tune sai hướng nên phản bội chính cơ chế <code>spread</code> của nó.</strong> Nón 12°, <code>caliberMult</code> 1.6 (mỗi viên ghém vừa đúng 1 lần HP trash — hết scaling là không giết nổi), dung sai bắt trúng 0.42m nên phần lớn viên ghém bay lọt khe giữa hai con. Đọc ra là &quot;yếu, vùng bắn nhỏ&quot;</td><td>Nón <strong>26°</strong> (phủ 3.7m ở cự ly 8m), <code>caliberMult</code> <strong>3.4</strong>, <code>pelletRadiusM</code> <strong>0.85</strong>, cộng <strong>tắt dần theo tầm</strong> 7m→13m còn 40% để nó vẫn là vũ khí cự ly gần. Đo: bắn vào đám 14 con ra <strong>6 / 2 / 4 / 3 mạng mỗi phát</strong> — mọi con trúng đều chết. Cái giá đi kèm không tách rời: 1.09s/phát, băng 5, nạp từng viên</td></tr>
+</tbody></table></div>
+<div class="tw"><table>
+<thead><tr><th>52</th><th><strong>Tự nhắm cho CẢ tap lẫn hold nên không còn cách nào chọn mục tiêu.</strong> Lý do bỏ tap-vào-target ở lỗi #24 vẫn đúng (chạm chính xác vào hình bóng nhỏ ở 4.2 m/s là bài kiểm tra ngón tay), nhưng nó bị áp cho <strong>cả hai</strong> gesture — hậu quả: thấy con Thuốc Nổ sắp nổ vào mặt cũng không bắn riêng nó được, và yếu điểm Ogre thành thứ <strong>tự động ăn</strong> chứ không phải phần thưởng của việc nhắm. <code>pickByScreen</code> đã có sẵn trong <code>enemies.js</code> nhưng <strong>không ai gọi</strong></th><th>Tách hai chế độ: <strong>tap = bắn đúng chỗ chạm</strong> (nón trợ giúp <code>aimCone</code> 4°, ăn yếu điểm khi chạm nửa dưới hitbox, và <strong>trượt được</strong> — trượt là thứ làm chế độ chính xác có giá trị); <strong>hold = tự nhắm</strong> như cũ nhưng <strong>không bao giờ</strong> ăn yếu điểm. Nón đạn ghém của shotgun cũng xoay theo hướng nhắm chứ không cố định thẳng trước mặt. Thêm dấu chạm tại chỗ (vàng = trúng / xám = trượt) vì nếu không thì &quot;bắn trượt&quot; và &quot;máy không nhận input&quot; nhìn giống hệt nhau</th></tr></thead><tbody>
 </tbody></table></div>
 <blockquote><strong>Lỗi #14 và #16 đã bị chính thiết kế vượt qua.</strong> Khi chuyển sang <strong>quái đứng yên</strong>, bài toán đón đầu của <code>pincer</code> (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó <strong>đã bị bỏ khỏi code</strong>. Lane spring (#16) thì vẫn giữ, nhưng giờ nó chỉ chống separation làm lệch làn khi quái spawn chồng nhau, không còn phải chống lực đẩy dồn theo suốt đường đi. Ghi lại ở đây vì hai lỗi đó <strong>là lỗi thật</strong> ở thời điểm phát hiện, và vì nó cho thấy giá của việc đổi mô hình di chuyển: mọi thứ suy ra từ tốc độ quái đều phải tính lại.</blockquote>
 <p>Ngoài ra prototype xác nhận <strong>công thức số quái phải tính theo <code>composition</code></strong>, không phải <code>tpCost</code> trung bình toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 lần. Đã ghi vào <code>16</code> mục 4.4.</p>

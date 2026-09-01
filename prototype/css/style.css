@@ -261,3 +261,13 @@ button.cta:active{transform:translateY(3px);box-shadow:0 3px 0 #8a4a00}
 /* dong trang thai khi dang nap: to hon va sang hon "HET BANG" vi day la trang thai
    nguoi choi dang KHONG BAN DUOC -- no phai doc duoc truoc moi thu khac trong cot. */
 #ammoState.rl{font-size:13px;color:var(--gold);letter-spacing:.2em}
+
+/* ---------- dau cham cua phat ban co nham ----------
+   Tap ban dung cho cham, nen phai co phan hoi TAI CHO CHAM: khong co no thi nguoi choi
+   khong phan biet duoc "minh ban truot" voi "game khong nhan input". Vong vang = trung,
+   vong xam = truot. Vien mong, 0.3s roi bien -- khong che gi lau. */
+#tapMark{position:absolute;left:0;top:0;width:44px;height:44px;margin:-22px 0 0 -22px;
+  border:2px solid var(--gold);border-radius:50%;opacity:0;pointer-events:none}
+#tapMark.miss{border-color:rgba(139,147,162,.85)}
+#tapMark.on{animation:tapPop .3s ease-out}
+@keyframes tapPop{0%{opacity:.95;transform:scale(.45)}100%{opacity:0;transform:scale(1.15)}}

@@ -23,7 +23,7 @@ export class UI {
       rlRing: $('rlRing'), rlSec: $('rlSec'),
       rlArc: $('rlRing')?.querySelector('.arc'), rlWin: $('rlRing')?.querySelector('.win'),
       ammoMag: $('ammoMag'), ammoRes: $('ammoRes'), ammoState: $('ammoState'),
-      hurtFlash: $('hurtFlash'), lowHp: $('lowHp'),
+      hurtFlash: $('hurtFlash'), lowHp: $('lowHp'), tapMark: $('tapMark'),
       btnReload: $('btnReload'), dbg: $('dbg'),
       cardRow: $('cardRow'), doorRow: $('doorRow'),
       gateLuck: $('gateLuck'), gateGold: $('gateGold'), gateEyebrow: $('gateEyebrow'),
@@ -88,6 +88,18 @@ export class UI {
     r.classList.remove('blip');
     void r.offsetWidth;
     r.classList.add('blip');
+  }
+
+  /** Dau cham cua phat ban CO NHAM (tap). Vang = trung, xam = truot.
+      Khong co dau nay thi "ban truot" va "game khong nhan input" nhin giong het nhau. */
+  tapMark(x, y, hit) {
+    const m = this.el.tapMark;
+    m.style.left = `${x}px`;
+    m.style.top = `${y}px`;
+    m.classList.toggle('miss', !hit);
+    m.classList.remove('on');
+    void m.offsetWidth;
+    m.classList.add('on');
   }
 
   showStamina() { this.el.stamWrap.classList.add('on'); this.stamHide = 2.0; }

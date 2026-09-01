@@ -46,23 +46,34 @@ thành vô dụng và P2 chết.
 - `Auto-reload` bật mặc định; khi bật vẫn có thể tap để lấy Hoàn Hảo.
 
 
-## 2b. TỰ NHẮM: tap ở đâu cũng bắn được
+## 2b. HAI CHẾ ĐỘ NGẮM: chạm thì nhắm, giữ thì tự nhắm
 
-Bỏ hẳn cơ chế "phải tap trúng con quái". **Tap hoặc giữ ở bất kỳ đâu trên màn hình** đều bắn, và mục tiêu
-được chọn tự động:
+Cùng một khẩu súng, hai cách chơi — và **chính gesture chọn cách**, không có nút chuyển:
 
-1. Con **gần nhất ở LÀN GIỮA** trong `run.tapFarM` (14m) — đây là mối đe doạ thật.
-2. Nếu làn giữa trống → con **gần nhất bất kỳ**, để quái làn bên vẫn giết được lấy vàng
-   (`09` mục 2c: "giết là vàng thêm").
-3. Không có con nào trong tầm → không bắn, không tốn đạn.
+| | **CHẠM (tap)** | **GIỮ (hold)** |
+|---|---|---|
+| Nhắm | **Đúng chỗ ngón tay chạm** — nón trợ giúp `aimCone` 4° | **Tự nhắm** con gần nhất ở làn giữa |
+| Chọn mục tiêu | **Có** — nhặt riêng con Thuốc Nổ trong đám, hay con Khiên đang hở | Không |
+| Yếu điểm (bụng Ogre ×2.0) | **Có** — chạm nửa dưới hitbox của **chính con đó** | **Không bao giờ** |
+| Bắn trượt | **Có** — mất viên đạn, hiện vòng xám tại chỗ chạm | Không thể trượt |
+| Hướng đạn ghém (shotgun) | Nón xoay theo **chỗ chạm** | Nón xoay theo con đã tự nhắm |
 
-**Vị trí tap vẫn còn một nghĩa:** tap ở **nửa dưới màn hình** = nhắm **yếu điểm** (bụng Ogre, ×2.0).
-Đây là thứ duy nhất còn phụ thuộc vào chỗ ngón tay chạm, và nó giữ lại cơ chế yếu điểm ở `09` mục 2b.
+Auto-aim ở chế độ giữ vẫn theo thứ tự cũ: con **gần nhất ở LÀN GIỮA** trong `run.tapFarM` (14m) — mối
+đe doạ thật; làn giữa trống thì lấy con gần nhất bất kỳ, để quái làn bên vẫn giết được lấy vàng
+(`09` mục 2c).
 
-Vì sao bỏ tap-vào-target: ở tốc độ chạy 4.2 m/s với 150+ quái mỗi phòng, việc bắt người chơi **chạm chính
-xác** vào một hình bóng nhỏ đang lùi dần về phía đáy màn hình biến súng thành bài kiểm tra độ chính xác của
-ngón tay, chứ không phải bài kiểm tra **chọn mục tiêu nào**. Tự nhắm trả quyết định về đúng chỗ: *bắn hay
-chém*, *bắn tiếp hay nhả tay nạp đạn*.
+**Vì sao tách làm hai thay vì chọn một.** Bản trước tự nhắm cho *cả hai*, với lý do đúng: ở 4.2 m/s
+giữa 150 con, bắt người chơi chạm chính xác vào một hình bóng nhỏ là bài kiểm tra **ngón tay**, không
+phải bài kiểm tra **chọn mục tiêu nào**. Nhưng hệ quả là **không còn cách nào để chọn mục tiêu cả** —
+thấy con Thuốc Nổ sắp nổ vào mặt cũng không bắn riêng nó được, và yếu điểm thành thứ tự động ăn.
+
+Tách hai chế độ trả lại cả hai: giữ ngón thì máy lo, **chạm thì bạn lo**. Cái giá của chế độ chính xác
+là **bắn trượt được** — và đó chính là thứ làm nó có giá trị. Một chế độ không thể trượt thì không thể
+gọi là ngắm.
+
+**Phải có phản hồi tại chỗ chạm.** Không có nó thì "bắn trượt" và "game không nhận input" nhìn giống hệt
+nhau. Vòng **vàng** = trúng, vòng **xám** = trượt, 0.3s rồi biến. Và viên đạn **vẫn bay ra** theo hướng đã
+nhắm dù không trúng ai — im lặng nuốt mất phát bắn là lỗi, không phải luật.
 
 ## 3. Chuỗi Bắn (Accuracy chain)
 

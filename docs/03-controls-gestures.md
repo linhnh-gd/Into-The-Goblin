@@ -12,9 +12,9 @@
 
 | Gesture | Điều kiện nhận (chuẩn hoá theo `S` = chiều rộng màn hình) | Hành động | Vũ khí |
 |---|---|---|---|
-| **Tap** | Ngón nhấc lên trong `< 130ms` **và** tổng di chuyển `< 0.05S` | 1 phát bắn nhắm vào điểm tap | Tầm xa |
-| **Hold** | Ngón giữ `>= 130ms`, tốc độ `< 520 px/s` | Bắn liên tục vào điểm đang giữ (theo RPM) | Tầm xa |
-| **Hold & Drag** | Đã ở trạng thái Hold rồi mới di chuyển, tốc độ `< 520 px/s` | Bắn liên tục, tâm ngắm đi theo ngón | Tầm xa |
+| **Tap** | Ngón nhấc lên trong `< 130ms` **và** tổng di chuyển `< 0.05S` | 1 phát bắn **đúng chỗ chạm** (nón trợ giúp 4°), ăn được yếu điểm, trượt được | Tầm xa |
+| **Hold** | Ngón giữ `>= 130ms`, tốc độ `< 520 px/s` | Bắn liên tục, **tự nhắm** con gần nhất làn giữa. Không ăn yếu điểm | Tầm xa |
+| **Hold & Drag** | Đã ở trạng thái Hold rồi mới di chuyển, tốc độ `< 520 px/s` | Bắn liên tục — vẫn **tự nhắm**, vị trí ngón không đổi mục tiêu | Tầm xa |
 | **Slide nhẹ** | Tốc độ đỉnh `>= 520 px/s` trong `<= 300ms` đầu, độ dài `0.12S–0.55S`, góc lệch khỏi ngang `<= 55°` | Chém nhẹ | Cận chiến |
 | **Slide nặng** | Như trên nhưng độ dài `> 0.55S` | Chém nặng: 2x stamina, 2.0x damage, 2.2x knockback, arc +30° | Cận chiến |
 | **Slide dọc xuống** | Tốc độ `>= 520 px/s`, góc lệch khỏi *dọc* `<= 25°`, hướng xuống | **Bước Lùi**: lùi 1.2m, 0.15s bất tử, cooldown 2.5s | — |
