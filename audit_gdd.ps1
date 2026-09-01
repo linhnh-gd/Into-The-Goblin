@@ -295,7 +295,13 @@ foreach ($itW in $gdWpn.weapons) {
         # khong bao gio "dung lai nap ca bang". Voi nhung khau do, don vi choi la NHIP BAN
         # chu khong phai bang dan, nen hai gate ve CO bang dan do sai vat.
         # Vi du: No (bang 1 mui, nap 0.55s, nhip 1.18s) -- xem docs/04 muc 6b.
-        $napKhongChan = ([double]$itW.reloadTime -lt (60.0 / [double]$itW.rpm))
+        # Bang 1 vien thi bang dan KHONG BAO GIO la don vi choi, du nap nhanh hay cham:
+        # khau do nap lai sau MOI phat, don vi choi la CHU KY ban-nap. Truoc day chi mien
+        # khi nap NHANH HON nhip ban -- keo dai nap cua no len 1.6s la no truot gate
+        # "bang ban duoc >= 1.2s" du chinh cai nap dai moi la thiet ke (docs/18 loi #77).
+        $magNhoTruoc = 4
+        if ($null -ne $gdWpn.balance.magSmallThreshold) { $magNhoTruoc = [double]$gdWpn.balance.magSmallThreshold }
+        $napKhongChan = ([double]$itW.reloadTime -lt (60.0 / [double]$itW.rpm)) -or ([double]$itW.mag -lt $magNhoTruoc)
         if ($magRatio -gt 1.0) { $magFail += "$($itW.id) $([Math]::Round($magRatio,2)) (>1.0)" }
         elseif ($napKhongChan) { }   # bang dan khong phai don vi choi -> bo qua san duoi
         # San duoi: mot bang dan phai lam duoc VIEC GI DO. 0.25 la nguong cho sung thuong;

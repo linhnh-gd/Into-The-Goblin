@@ -342,11 +342,44 @@ wave** (trụ P2). Nên đối mặt là *bắn xối xả rồi hết đạn s�
 Đo được: Ổ Chuột (SMG) bắn hết băng 25 viên trong **2.1s**; Kèn Đồng 10 viên trong **4.0s**; Miệng Hang
 5 viên trong **5.5s**. Đó mới là cảm giác khác nhau giữa các khẩu.
 
-### Viên đạn bay ra thật (`projectiles.js`)
+### Đây là TRACER, không phải viên đạn (`projectiles.js`)
 
 Sát thương vẫn giải quyết ngay lúc bắn (hitscan) — viên đạn **chỉ là hình**. Làm vậy để không bao giờ lệch
 giữa "cái đã trúng" và "cái đang bay", và để tự nhắm không bắn trượt vì đạn bay chậm. Mỗi archetype có
 màu / cỡ / độ dài / tốc độ riêng, có gate kiểm.
+
+Ban đầu nó được dựng **đúng tỉ lệ vật lý**: rộng 5cm, dài 42cm, bay 150 m/s. Đo lại thì nó sống đúng
+**6 frame (100ms)**, và bề ngang trên màn hình là 36px ở frame đầu rồi 9 / 5 / 3 / 2px — tức một cái chớp
+một frame ngay dưới tâm ngắm rồi biến mất. Đúng vật lý, và **vô hình đúng như đạn thật vô hình**.
+
+Hai thứ phải sửa, và cái thứ hai mới là cái quyết định:
+
+| | |
+|---|---|
+| **Thời gian sống** | Dài gấp 5, chậm lại 2.2 lần, cộng một cái đuôi nán lại `tailSec` 0.07s sau khi tới nơi → **26 frame (433ms)** |
+| **Bề ngang** | Tính **ngược lại từ cự ly tới camera** để giữ nguyên một tỉ lệ màn hình (1.4% ≈ 11px) |
+
+**Vì sao kéo dài viên đạn ra là vô ích.** Vệt bắn bay **thẳng ra xa**, nên nhìn từ đuôi — chiều dài của nó
+nằm dọc trục nhìn và **không đóng góp gì** vào kích thước trên màn hình. Kéo dài từ 0.42m lên 4.5m không
+làm nó to thêm một pixel nào. Thứ duy nhất đọc được là **bề ngang**, mà bề ngang cố định trong thế giới
+thì ở xa lại teo còn 2-3px. Neo bề ngang vào cự ly camera thì nó giữ **11.4px suốt đường bay** thay vì
+36 → 2px. Đó là cách mọi game vẽ tracer, và lý do là hình học chứ không phải thẩm mỹ.
+
+### 6d. Nỏ xuyên CẢ ĐƯỜNG BAY, không giới hạn
+
+Cách cũ lấy "con phía **sau** mục tiêu, lệch trục < 1.1m", tức vẫn là một danh sách quanh **một** mục
+tiêu — và bỏ qua hết những con đứng *trước* nó. Nhưng mũi tên thì không biết đâu là mục tiêu: nó đi
+thẳng, và mọi thứ nằm trên đường đi đều ăn. Nên phải kiểm theo **tia thật**: khoảng cách vuông góc từ
+tâm con quái tới đường bay, trong bán kính `pierceRadiusM` (0.6m). Không giới hạn số con.
+
+Cái giá là **NHỊP**: `reload` 0.26–0.38 → **0.95–1.30** (×`reloadGlobalMult` = **1.38s**), dài hơn khoảng
+giữa hai phát (1.18s). Từ đây chính cái nạp mới là thứ quyết định tốc độ bắn — bắn hụt một phát là mất
+gần hai giây. Đo: một mũi vào 6 con thẳng hàng → **cả 6 chết**.
+
+> `pierceBalance` (4) là số con mà **mô hình cân bằng** giả định thực tế có trên đường bay — quái hiếm khi
+> thẳng hàng quá 4 con. Nó chỉ dùng để tính dự trữ đạn (mục 1b); trong game thì không có trần. Vì dự trữ
+> neo vào **số mạng**, xuyên nhiều hơn tự động kéo số mũi tên **xuống** (21 → 16): đổi đạn lấy sức xuyên,
+> không được cả hai.
 
 **Đạn ghém tản theo GÓC THẬT, không chia đều mục tiêu.** Mỗi viên lấy một góc ngẫu nhiên trong nón
 `spreadDeg` rồi tìm con gần tia đó nhất. Đo thực tế một phát vào 8 con: 9 viên bay ra, trúng **5 con** với

@@ -486,17 +486,28 @@ export class Game {
       // dmgOut da tinh ca falloff va he so xuyen -> quy ve `mult` cua mot vien don vi
       victims = [...dmgOut].map(([e, dmg]) => ({ e, mult: unit > 0 ? dmg / unit : 0 }));
     } else if (hitCfg.style === 'pierce') {
-      // xuyen qua: con dau + n con phia sau no tren cung truc chay
-      const extra = [];
+      /* XUYEN CA DUONG BAY. Cach cu lay "con phia SAU muc tieu, lech truc < 1.1m" -- tuc
+         van la mot danh sach quanh MOT muc tieu, va bo qua het nhung con dung TRUOC no.
+         Mui ten thi khong biet dau la muc tieu: no di thang, va moi thu nam tren duong
+         di deu an. Nen phai kiem theo TIA that: khoang cach vuong goc tu tam con quai
+         toi duong bay (docs/04 muc 6d). */
+      const ux = Math.sin(aimAng), uz = -Math.cos(aimAng);
+      const R = hitCfg.pierceRadiusM ?? 0.6;
+      const tren = [];
       for (const e of this.pool.list) {
-        if (!e.alive || e === target) continue;
-        if (e.z >= target.z) continue;                        // phai o SAU muc tieu
-        if (Math.abs(e.x - target.x) > 1.1) continue;         // cung mot truc
-        extra.push({ e, d: target.z - e.z });
+        if (!e.alive) continue;
+        const rx = e.x, rz = e.z - this.playerZ;
+        const t = rx * ux + rz * uz;                 // chieu dai chieu len tia
+        if (t <= 0) continue;                        // phia sau lung thi khong tinh
+        const px = rx - ux * t, pz = rz - uz * t;    // phan vuong goc
+        if (Math.hypot(px, pz) > R + 0.26 * e.scale) continue;
+        tren.push({ e, t });
       }
-      extra.sort((a, b) => a.d - b.d);
-      victims = [{ e: target, mult: pellets }]
-        .concat(extra.slice(0, hitCfg.pierce || 0).map((o) => ({ e: o.e, mult: pellets })));
+      tren.sort((a, b) => a.t - b.t);
+      const gioiHan = hitCfg.pierceAll ? tren.length : 1 + (hitCfg.pierce || 0);
+      victims = tren.slice(0, gioiHan).map((o) => ({ e: o.e, mult: pellets }));
+      if (!victims.length) victims = [{ e: target, mult: pellets }];
+      this.xuyenQua = hitCfg.pierceAll;
     } else if (hitCfg.style === 'aoe') {
       const r = hitCfg.aoeRadiusM || 2.0;
       victims = this.pool.list
@@ -509,9 +520,19 @@ export class Game {
     }
 
     if (hitCfg.style !== "spread") {
-      // mot vien duy nhat bay toi muc tieu chinh; kieu pierce/aoe dung chung vien do
-      const t0 = victims[0] && victims[0].e;
-      if (t0) this.proj.fire(mz.x, mz.y, mz.z, t0.x, 0.62 * t0.scale, t0.z, look);
+      if (this.xuyenQua) {
+        /* Xuyen ca duong bay thi vet sang phai DI HET duong do roi moi tat. Dung o con
+           dau tien -- nhu ban cu -- thi nguoi choi thay mot mui ten cam vao con dau,
+           trong khi may con phia sau chet khong ro vi sao. */
+        this.xuyenQua = false;
+        const d = GD.feel.run.tapFarM;
+        this.proj.fire(mz.x, mz.y, mz.z, Math.sin(aimAng) * d, 0.7,
+          this.playerZ - Math.cos(aimAng) * d, look);
+      } else {
+        // mot vien duy nhat bay toi muc tieu chinh; kieu aoe dung chung vien do
+        const t0 = victims[0] && victims[0].e;
+        if (t0) this.proj.fire(mz.x, mz.y, mz.z, t0.x, 0.62 * t0.scale, t0.z, look);
+      }
     }
 
     for (const v of victims) {
@@ -1020,7 +1041,7 @@ export class Game {
 
     this.world.update(this.playerZ, this.bob, this.juice.shake);
     this.renderer.render(this.world.scene, this.world.camera);
-    this.proj.update(dtRaw);
+    this.proj.update(dtRaw, this.world.camera);
     this.trail.update(dtRaw);
     this.trail.draw();
 

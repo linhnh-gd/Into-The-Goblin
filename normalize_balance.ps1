@@ -147,7 +147,12 @@ foreach ($w in $data.weapons) {
             # thang hang hoan hao. Khong co he so nay thi shotgun ra 45 mang mot bang.
             $killEff = 1.0
             if ($null -ne $spec.killEff) { $killEff = [double]$spec.killEff }
-            $killsPerShot = $pellets * $killsPerProj * (1 + $pierce) * $aoeFactor * $killEff
+            # Khau xuyen KHONG GIOI HAN (no) thi "1 + pierce" la vo cuc -- mo hinh can
+            # bang phai dung SO CON THUC TE co tren duong bay, vi quai hiem khi thang
+            # hang qua vai con. pierceBalance la con so do (docs/18 loi #77).
+            $pierceModel = $pierce
+            if ($null -ne $spec.pierceBalance) { $pierceModel = [double]$spec.pierceBalance - 1 }
+            $killsPerShot = $pellets * $killsPerProj * (1 + $pierceModel) * $aoeFactor * $killEff
 
             # Co bang dan THAT cua khau do, roi ha xuong neu mot bang giet qua nhieu.
             $mag = [Math]::Max([double]$spec.mag[0], [Math]::Min([double]$spec.mag[1], [double]$w.mag))

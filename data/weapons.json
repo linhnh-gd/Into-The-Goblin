@@ -16,85 +16,86 @@
     "_archetypeSpecNote": "So lieu THAM CHIEU TU VU KHI THAT. rpm = nhip ban thuc te cua khau do; caliberMult = sat thuong moi vien tinh theo HP cua trash CUNG TIER (1.0 = vua du giet 1 con) -- day la cach mo phong co dan lon nho; pellets/pierce/aoeRadiusM = co che; proj = hinh dang vien dan ban ra. CHO Y: DPS gio KHAC NHAU giua cac archetype, dung nhu doi that. Can bang nam o DAN (mag + reserve), khong nam o DPS -- xem docs/04 muc 5d.",
     "archetypeSpec": {
       "pistol": {
-        "ref": "Glock 17 / M1911 9mm — ban don, thuc te 120-200 nhip/phut",
+        "ref": "Glock 17 / M1911 9mm â€” ban don, thuc te 120-200 nhip/phut",
         "rpm": [150, 260], "mag": [10, 17], "caliberMult": 3.2, "pellets": 1, "pierce": 0,
         "spreadDeg": 1.4, "reload": [1.3, 1.8], "style": "single",
-        "proj": { "color": "#ffd27a", "sizeM": 0.05, "lenM": 0.34, "speed": 130 }
+        "proj": { "color": "#ffd27a", "sizeM": 0.08, "lenM": 1.7, "speed": 59 }
       },
       "smg": {
-        "ref": "MP5 / Uzi 9mm — 700-900 nhip/phut, vien nho nen sat thuong thap nhat",
+        "ref": "MP5 / Uzi 9mm â€” 700-900 nhip/phut, vien nho nen sat thuong thap nhat",
         "rpm": [700, 950], "mag": [25, 32], "caliberMult": 3.0, "pellets": 1, "pierce": 0,
         "spreadDeg": 4.5, "reload": [1.9, 2.5], "style": "single",
-        "proj": { "color": "#ffe08a", "sizeM": 0.042, "lenM": 0.26, "speed": 120 }
+        "proj": { "color": "#ffe08a", "sizeM": 0.067, "lenM": 1.3, "speed": 55 }
       },
       "rifle": {
-        "ref": "M4 750-900 / AK-47 600 — dan 5.56-7.62, xuong song cua game",
+        "ref": "M4 750-900 / AK-47 600 â€” dan 5.56-7.62, xuong song cua game",
         "rpm": [600, 800], "mag": [25, 30], "caliberMult": 4.5, "pellets": 1, "pierce": 0,
         "spreadDeg": 2.0, "reload": [2.1, 2.7], "style": "single",
-        "proj": { "color": "#ffca5e", "sizeM": 0.055, "lenM": 0.42, "speed": 150 }
+        "proj": { "color": "#ffca5e", "sizeM": 0.088, "lenM": 2.1, "speed": 68 }
       },
       "lmg": {
-        "ref": "M249 750-1000 / PKM 650 — bang dan day, nap rat lau",
+        "ref": "M249 750-1000 / PKM 650 â€” bang dan day, nap rat lau",
         "rpm": [650, 900], "mag": [100, 200], "caliberMult": 4.2, "pellets": 1, "pierce": 0,
         "spreadDeg": 5.5, "reload": [4.4, 6.0], "style": "single",
-        "proj": { "color": "#ffbf4a", "sizeM": 0.06, "lenM": 0.46, "speed": 150 }
+        "proj": { "color": "#ffbf4a", "sizeM": 0.096, "lenM": 2.3, "speed": 68 }
       },
       "minigun": {
-        "ref": "M134 2000-6000 — ha xuong 1800-3000 cho choi duoc",
+        "ref": "M134 2000-6000 â€” ha xuong 1800-3000 cho choi duoc",
         "rpm": [1800, 3000], "mag": [200, 400], "caliberMult": 3.0, "pellets": 1, "pierce": 0,
         "spreadDeg": 6.0, "reload": [5.0, 7.0], "style": "single",
-        "proj": { "color": "#ffd166", "sizeM": 0.05, "lenM": 0.5, "speed": 165 }
+        "proj": { "color": "#ffd166", "sizeM": 0.08, "lenM": 2.5, "speed": 75 }
       },
       "shotgun": {
-        "ref": "Remington 870 12ga 00 buck — bom tay ~65 nhip/phut, 9 vien ghem moi phat. FANTASY: MOT PHAT DON SACH MOT VUNG. Doi lai: 1.09s giua 2 phat, bang 5 vien, nap tung vien 0.75s/vien -- ban truot mot phat la tra gia bang ca nhip. Non 26 do rong gan bang ca hanh lang o cu ly 8m, caliberMult 3.4 nghia la MOI VIEN GHEM du giet mot con trash (con du sau vai phong HP scaling).",
+        "ref": "Remington 870 12ga 00 buck â€” bom tay ~65 nhip/phut, 9 vien ghem moi phat. FANTASY: MOT PHAT DON SACH MOT VUNG. Doi lai: 1.09s giua 2 phat, bang 5 vien, nap tung vien 0.75s/vien -- ban truot mot phat la tra gia bang ca nhip. Non 26 do rong gan bang ca hanh lang o cu ly 8m, caliberMult 3.4 nghia la MOI VIEN GHEM du giet mot con trash (con du sau vai phong HP scaling).",
         "rpm": [55, 95], "mag": [5, 8], "killEff": 0.55, "caliberMult": 3.4, "pellets": 9, "pierce": 0,
         "shellReloadSec": 1.05,
         "spreadDeg": 26.0, "reload": [2.6, 3.6], "style": "spread", "reloadStyle": "shell",
         "pelletRadiusM": 0.6, "falloffStartM": 7.0, "falloffEndM": 13.0, "falloffMin": 0.4,
         "penetrateMax": 3, "penetrationMult": 0.6,
-        "proj": { "color": "#ffb14a", "sizeM": 0.038, "lenM": 0.18, "speed": 95 }
+        "proj": { "color": "#ffb14a", "sizeM": 0.061, "lenM": 0.9, "speed": 43 }
       },
       "marksman": {
-        "ref": "SR-25 DMR ban don — thuc te 80-120 nhip/phut",
+        "ref": "SR-25 DMR ban don â€” thuc te 80-120 nhip/phut",
         "rpm": [70, 120], "mag": [10, 20], "killEff": 0.75, "caliberMult": 10.0, "pellets": 1, "pierce": 1,
         "spreadDeg": 0.6, "reload": [2.3, 3.0], "style": "pierce",
-        "proj": { "color": "#9fe8ff", "sizeM": 0.05, "lenM": 0.8, "speed": 210 }
+        "proj": { "color": "#9fe8ff", "sizeM": 0.08, "lenM": 4, "speed": 95 }
       },
       "sniper": {
-        "ref": "Barrett M82 .50 — 30-50 nhip/phut, vien xuyen qua nhieu than",
+        "ref": "Barrett M82 .50 â€” 30-50 nhip/phut, vien xuyen qua nhieu than",
         "rpm": [30, 50], "mag": [5, 10], "killEff": 0.6, "caliberMult": 24.0, "pellets": 1, "pierce": 3,
         "spreadDeg": 0.2, "reload": [3.0, 4.2], "style": "pierce",
-        "proj": { "color": "#bfe9ff", "sizeM": 0.06, "lenM": 1.2, "speed": 260 }
+        "proj": { "color": "#bfe9ff", "sizeM": 0.096, "lenM": 6, "speed": 118 }
       },
       "crossbow": {
-        "ref": "No nang — that te chi 2-3 phat/phut; game hoa len 30-60 cho choi duoc. MOT mui ten moi bang: ban xong nap ngay, va vi nap (0.5s) NGAN HON khoang giua 2 phat (1.18s) nen nap khong bao gio chan tay -- no thanh vu khi theo NHIP, khong co luc nao dung lai nap ca bang",
+        "ref": "No nang â€” that te chi 2-3 phat/phut; game hoa len 30-60 cho choi duoc. MOT mui ten moi bang: ban xong nap ngay, va vi nap (0.5s) NGAN HON khoang giua 2 phat (1.18s) nen nap khong bao gio chan tay -- no thanh vu khi theo NHIP, khong co luc nao dung lai nap ca bang",
         "rpm": [30, 60], "mag": [1, 1], "killEff": 0.65, "caliberMult": 13.0, "pellets": 1, "pierce": 2,
-        "spreadDeg": 0.5, "reload": [0.26, 0.38], "style": "pierce",
-        "proj": { "color": "#c9b48a", "sizeM": 0.05, "lenM": 0.9, "speed": 85 }
+        "pierceAll": true, "pierceRadiusM": 0.6, "pierceBalance": 4,
+        "spreadDeg": 0.5, "reload": [0.95, 1.30], "style": "pierce",
+        "proj": { "color": "#c9b48a", "sizeM": 0.08, "lenM": 4.5, "speed": 39 }
       },
       "launcher": {
-        "ref": "M79 40mm ban don — thuc te 15-25 nhip/phut",
+        "ref": "M79 40mm ban don â€” thuc te 15-25 nhip/phut",
         "rpm": [25, 45], "mag": [1, 6], "killEff": 0.7, "caliberMult": 9.0, "pellets": 1, "pierce": 0,
         "spreadDeg": 1.0, "reload": [3.2, 4.4], "style": "aoe", "aoeRadiusM": 3.2,
-        "proj": { "color": "#ff8a3d", "sizeM": 0.13, "lenM": 0.22, "speed": 42 }
+        "proj": { "color": "#ff8a3d", "sizeM": 0.208, "lenM": 1.1, "speed": 19 }
       },
       "flamer": {
-        "ref": "Sung phun lua — dong lien tuc, mo phong bang nhip cao + sat thuong thap",
+        "ref": "Sung phun lua â€” dong lien tuc, mo phong bang nhip cao + sat thuong thap",
         "rpm": [600, 900], "mag": [80, 150], "killEff": 0.5, "caliberMult": 3.0, "pellets": 1, "pierce": 0,
         "spreadDeg": 11.0, "reload": [3.0, 4.0], "style": "spread", "maxTargets": 3,
-        "proj": { "color": "#ff7a2a", "sizeM": 0.16, "lenM": 0.3, "speed": 38 }
+        "proj": { "color": "#ff7a2a", "sizeM": 0.256, "lenM": 1.5, "speed": 17 }
       },
       "acid": {
-        "ref": "Vu khi hu cau — dan axit ban ra vung an mon nho",
+        "ref": "Vu khi hu cau â€” dan axit ban ra vung an mon nho",
         "rpm": [200, 350], "mag": [40, 80], "killEff": 0.7, "caliberMult": 3.2, "pellets": 1, "pierce": 0,
         "spreadDeg": 4.0, "reload": [2.6, 3.4], "style": "aoe", "aoeRadiusM": 1.8,
-        "proj": { "color": "#a8ff5e", "sizeM": 0.1, "lenM": 0.24, "speed": 55 }
+        "proj": { "color": "#a8ff5e", "sizeM": 0.16, "lenM": 1.2, "speed": 25 }
       },
       "deeptech": {
-        "ref": "Vu khi hu cau tang sau — mot phat rat manh, no theo vung",
+        "ref": "Vu khi hu cau tang sau â€” mot phat rat manh, no theo vung",
         "rpm": [90, 160], "mag": [8, 16], "killEff": 0.7, "caliberMult": 17.0, "pellets": 1, "pierce": 0,
         "spreadDeg": 2.0, "reload": [2.8, 3.6], "style": "aoe", "aoeRadiusM": 2.4,
-        "proj": { "color": "#d07bff", "sizeM": 0.12, "lenM": 0.5, "speed": 110 }
+        "proj": { "color": "#d07bff", "sizeM": 0.192, "lenM": 2.5, "speed": 50 }
       }
     },
     "rangedTolerance": 0.22,
@@ -103,215 +104,215 @@
   },
   "weapons": [
     {
-      "id": "rw_pistol_kendong", "name": "Kèn Đồng", "class": "ranged", "archetype": "pistol", "tier": 1,
+      "id": "rw_pistol_kendong", "name": "KÃ¨n Äá»“ng", "class": "ranged", "archetype": "pistol", "tier": 1,
       "unlock": "start", "dmg": 128, "rpm": 150, "pellets": 1, "mag": 10, "reserveMax": 15,
       "reloadTime": 1.88, "spreadDeg": 1.4, "rangeM": 22, "pierce": 0,
       "knockback": 0.35, "critMult": 2.5, "tags": ["precision", "starter"],
-      "desc": "Ổ quay sáu viên han gỉ. Một phát một mạng goblin — nếu ngươi nhắm."
+      "desc": "á»” quay sÃ¡u viÃªn han gá»‰. Má»™t phÃ¡t má»™t máº¡ng goblin â€” náº¿u ngÆ°Æ¡i nháº¯m."
     },
     {
-      "id": "rw_shotgun_mienghang", "name": "Miệng Hang", "class": "ranged", "archetype": "shotgun", "tier": 1,
+      "id": "rw_shotgun_mienghang", "name": "Miá»‡ng Hang", "class": "ranged", "archetype": "shotgun", "tier": 1,
       "unlock": "start", "dmg": 136, "rpm": 55, "pellets": 9, "mag": 5, "reserveMax": 8,
       "reloadTime": 3.77, "spreadDeg": 26, "rangeM": 12, "pierce": 0,
       "knockback": 1.6, "critMult": 2.0, "tags": ["spacing", "crowd", "starter"],
-      "desc": "Nòng cưa ngắn. Công cụ dãn cách tốt nhất trong hầm: một phát là cả hàng đầu lùi lại."
+      "desc": "NÃ²ng cÆ°a ngáº¯n. CÃ´ng cá»¥ dÃ£n cÃ¡ch tá»‘t nháº¥t trong háº§m: má»™t phÃ¡t lÃ  cáº£ hÃ ng Ä‘áº§u lÃ¹i láº¡i."
     },
     {
-      "id": "rw_smg_ochuot", "name": "Ổ Chuột", "class": "ranged", "archetype": "smg", "tier": 1,
+      "id": "rw_smg_ochuot", "name": "á»” Chuá»™t", "class": "ranged", "archetype": "smg", "tier": 1,
       "unlock": "depth1", "dmg": 120, "rpm": 700, "pellets": 1, "mag": 25, "reserveMax": 38,
       "reloadTime": 2.76, "spreadDeg": 4.5, "rangeM": 16, "pierce": 0,
       "knockback": 0.15, "critMult": 2.0, "tags": ["sustain", "holddrag"],
-      "desc": "Bắn như chuột gặm. Giữ và rê ngón — để dành nhắm cho khẩu khác."
+      "desc": "Báº¯n nhÆ° chuá»™t gáº·m. Giá»¯ vÃ  rÃª ngÃ³n â€” Ä‘á»ƒ dÃ nh nháº¯m cho kháº©u khÃ¡c."
     },
     {
-      "id": "rw_rifle_gongsat", "name": "Gọng Sắt", "class": "ranged", "archetype": "rifle", "tier": 2,
+      "id": "rw_rifle_gongsat", "name": "Gá»ng Sáº¯t", "class": "ranged", "archetype": "rifle", "tier": 2,
       "unlock": "depth2", "dmg": 285, "rpm": 600, "pellets": 1, "mag": 25, "reserveMax": 38,
       "reloadTime": 3.04, "spreadDeg": 2, "rangeM": 22, "pierce": 0,
       "knockback": 0.4, "critMult": 2.5, "tags": ["allround", "midband"],
-      "desc": "Khẩu không có nhược điểm và cũng không có gì đặc biệt. Đó là điểm mạnh của nó."
+      "desc": "Kháº©u khÃ´ng cÃ³ nhÆ°á»£c Ä‘iá»ƒm vÃ  cÅ©ng khÃ´ng cÃ³ gÃ¬ Ä‘áº·c biá»‡t. ÄÃ³ lÃ  Ä‘iá»ƒm máº¡nh cá»§a nÃ³."
     },
     {
-      "id": "rw_crossbow_gaimuc", "name": "Gai Mực", "class": "ranged", "archetype": "crossbow", "tier": 2,
-      "unlock": "depth2", "dmg": 824, "rpm": 51, "pellets": 1, "mag": 1, "reserveMax": 21,
-      "reloadTime": 0.55, "spreadDeg": 0.5, "rangeM": 22, "pierce": 2,
+      "id": "rw_crossbow_gaimuc", "name": "Gai Má»±c", "class": "ranged", "archetype": "crossbow", "tier": 2,
+      "unlock": "depth2", "dmg": 824, "rpm": 51, "pellets": 1, "mag": 1, "reserveMax": 16,
+      "reloadTime": 1.38, "spreadDeg": 0.5, "rangeM": 22, "pierce": 2,
       "knockback": 1.1, "critMult": 3.0, "tags": ["pierce", "precision"],
-      "desc": "Một mũi xuyên năm cái đầu. Xếp hàng đi, lũ goblin."
+      "desc": "Má»™t mÅ©i xuyÃªn nÄƒm cÃ¡i Ä‘áº§u. Xáº¿p hÃ ng Ä‘i, lÅ© goblin."
     },
     {
-      "id": "rw_shotgun_longmoc", "name": "Lồng Móc", "class": "ranged", "archetype": "shotgun", "tier": 2,
+      "id": "rw_shotgun_longmoc", "name": "Lá»“ng MÃ³c", "class": "ranged", "archetype": "shotgun", "tier": 2,
       "unlock": "boss1", "dmg": 216, "rpm": 55, "pellets": 9, "mag": 5, "reserveMax": 8,
       "reloadTime": 3.77, "spreadDeg": 26, "rangeM": 14, "pierce": 0,
       "knockback": 1.9, "critMult": 2.0, "tags": ["spacing", "crowd"],
-      "desc": "Lên quy lát nghe như xương gãy. Đẩy lùi cả một cửa vòm."
+      "desc": "LÃªn quy lÃ¡t nghe nhÆ° xÆ°Æ¡ng gÃ£y. Äáº©y lÃ¹i cáº£ má»™t cá»­a vÃ²m."
     },
     {
-      "id": "rw_rifle_matcu", "name": "Mắt Cú", "class": "ranged", "archetype": "marksman", "tier": 3,
+      "id": "rw_rifle_matcu", "name": "Máº¯t CÃº", "class": "ranged", "archetype": "marksman", "tier": 3,
       "unlock": "depth3", "dmg": 1224, "rpm": 105, "pellets": 1, "mag": 10, "reserveMax": 15,
       "reloadTime": 3.33, "spreadDeg": 0.6, "rangeM": 22, "pierce": 1,
       "knockback": 0.7, "critMult": 3.0, "tags": ["precision", "headshot"],
-      "desc": "Dành cho kẻ thích tap từng phát. Headshot x3 và không tha ai."
+      "desc": "DÃ nh cho káº» thÃ­ch tap tá»«ng phÃ¡t. Headshot x3 vÃ  khÃ´ng tha ai."
     },
     {
-      "id": "rw_lmg_trongdoi", "name": "Trống Đôi", "class": "ranged", "archetype": "lmg", "tier": 3,
+      "id": "rw_lmg_trongdoi", "name": "Trá»‘ng ÄÃ´i", "class": "ranged", "archetype": "lmg", "tier": 3,
       "unlock": "depth3", "dmg": 514, "rpm": 650, "pellets": 1, "mag": 100, "reserveMax": 150,
       "reloadTime": 6.38, "spreadDeg": 5.5, "rangeM": 18, "pierce": 0,
       "knockback": 0.2, "critMult": 1.8, "tags": ["sustain", "holddrag", "crowd"],
-      "desc": "Sáu mươi viên trong một băng trống. Rê ngón qua cả wave, đừng thả."
+      "desc": "SÃ¡u mÆ°Æ¡i viÃªn trong má»™t bÄƒng trá»‘ng. RÃª ngÃ³n qua cáº£ wave, Ä‘á»«ng tháº£."
     },
     {
-      "id": "rw_flamer_hoingam", "name": "Hơi Ngầm", "class": "ranged", "archetype": "flamer", "tier": 3,
+      "id": "rw_flamer_hoingam", "name": "HÆ¡i Ngáº§m", "class": "ranged", "archetype": "flamer", "tier": 3,
       "unlock": "boss2", "dmg": 367, "rpm": 600, "pellets": 1, "mag": 80, "reserveMax": 120,
       "reloadTime": 4.35, "spreadDeg": 11, "rangeM": 7, "pierce": 0,
       "knockback": 0.0, "critMult": 1.0, "tags": ["dot", "areadenial", "nokb"],
-      "desc": "Không đẩy được ai. Nhưng lửa lan, và cả hành lang cháy theo."
+      "desc": "KhÃ´ng Ä‘áº©y Ä‘Æ°á»£c ai. NhÆ°ng lá»­a lan, vÃ  cáº£ hÃ nh lang chÃ¡y theo."
     },
     {
-      "id": "rw_launcher_noidat", "name": "Nồi Đất", "class": "ranged", "archetype": "launcher", "tier": 4,
+      "id": "rw_launcher_noidat", "name": "Ná»“i Äáº¥t", "class": "ranged", "archetype": "launcher", "tier": 4,
       "unlock": "depth4", "dmg": 2426, "rpm": 42, "pellets": 1, "mag": 6, "reserveMax": 9,
       "reloadTime": 4.64, "spreadDeg": 1, "rangeM": 18, "pierce": 0,
       "knockback": 2.4, "critMult": 1.5, "tags": ["aoe", "spacing", "wavewipe"],
-      "desc": "Nồi thuốc nổ ném bằng ống. Đạn cực ít — mỗi phát phải đáng."
+      "desc": "Ná»“i thuá»‘c ná»• nÃ©m báº±ng á»‘ng. Äáº¡n cá»±c Ã­t â€” má»—i phÃ¡t pháº£i Ä‘Ã¡ng."
     },
     {
-      "id": "rw_smg_muikim", "name": "Mũi Kim", "class": "ranged", "archetype": "smg", "tier": 4,
+      "id": "rw_smg_muikim", "name": "MÅ©i Kim", "class": "ranged", "archetype": "smg", "tier": 4,
       "unlock": "depth4", "dmg": 809, "rpm": 700, "pellets": 1, "mag": 32, "reserveMax": 48,
       "reloadTime": 2.76, "spreadDeg": 4.5, "rangeM": 18, "pierce": 0,
       "knockback": 0.1, "critMult": 2.2, "tags": ["sustain", "crit"],
-      "desc": "Nghìn mốt phát một phút. Băng đạn bay hơi trước khi ngươi kịp nghĩ."
+      "desc": "NghÃ¬n má»‘t phÃ¡t má»™t phÃºt. BÄƒng Ä‘áº¡n bay hÆ¡i trÆ°á»›c khi ngÆ°Æ¡i ká»‹p nghÄ©."
     },
     {
-      "id": "rw_sniper_dinhsat", "name": "Đinh Sắt", "class": "ranged", "archetype": "sniper", "tier": 4,
+      "id": "rw_sniper_dinhsat", "name": "Äinh Sáº¯t", "class": "ranged", "archetype": "sniper", "tier": 4,
       "unlock": "boss3", "dmg": 6469, "rpm": 34, "pellets": 1, "mag": 6, "reserveMax": 9,
       "reloadTime": 4.35, "spreadDeg": 0.2, "rangeM": 22, "pierce": 3,
       "knockback": 1.4, "critMult": 4.0, "tags": ["pierce", "precision", "boss"],
-      "desc": "Xuyên tám con một phát và ghim con cuối vào tường."
+      "desc": "XuyÃªn tÃ¡m con má»™t phÃ¡t vÃ  ghim con cuá»‘i vÃ o tÆ°á»ng."
     },
     {
-      "id": "rw_shotgun_hamtoi", "name": "Hàm Tối", "class": "ranged", "archetype": "shotgun", "tier": 5,
+      "id": "rw_shotgun_hamtoi", "name": "HÃ m Tá»‘i", "class": "ranged", "archetype": "shotgun", "tier": 5,
       "unlock": "depth5", "dmg": 2459, "rpm": 78, "pellets": 9, "mag": 8, "reserveMax": 12,
       "reloadTime": 3.77, "spreadDeg": 26, "rangeM": 13, "pierce": 0,
       "knockback": 1.5, "critMult": 2.0, "tags": ["spacing", "crowd", "auto"],
-      "desc": "Shotgun tự động. Giữ ngón và cả dải Cận chiến biến thành sương."
+      "desc": "Shotgun tá»± Ä‘á»™ng. Giá»¯ ngÃ³n vÃ  cáº£ dáº£i Cáº­n chiáº¿n biáº¿n thÃ nh sÆ°Æ¡ng."
     },
     {
-      "id": "rw_acid_ruotdat", "name": "Ruột Đất", "class": "ranged", "archetype": "acid", "tier": 5,
+      "id": "rw_acid_ruotdat", "name": "Ruá»™t Äáº¥t", "class": "ranged", "archetype": "acid", "tier": 5,
       "unlock": "depth5", "dmg": 2314, "rpm": 210, "pellets": 1, "mag": 69, "reserveMax": 104,
       "reloadTime": 3.77, "spreadDeg": 4, "rangeM": 9, "pierce": 0,
       "knockback": 0.05, "critMult": 1.0, "tags": ["dot", "areadenial", "armorbreak"],
-      "desc": "Axit ăn qua giáp. Goblin Khiên không còn là vấn đề."
+      "desc": "Axit Äƒn qua giÃ¡p. Goblin KhiÃªn khÃ´ng cÃ²n lÃ  váº¥n Ä‘á»."
     },
     {
-      "id": "rw_launcher_ongsam", "name": "Ống Sấm", "class": "ranged", "archetype": "launcher", "tier": 5,
+      "id": "rw_launcher_ongsam", "name": "á»ng Sáº¥m", "class": "ranged", "archetype": "launcher", "tier": 5,
       "unlock": "boss4", "dmg": 6508, "rpm": 45, "pellets": 1, "mag": 6, "reserveMax": 9,
       "reloadTime": 4.64, "spreadDeg": 1, "rangeM": 20, "pierce": 0,
       "knockback": 2.8, "critMult": 1.5, "tags": ["aoe", "spacing", "wavewipe"],
-      "desc": "Bắn ra tiếng sấm. Xác bay hết về phía Dải Xa."
+      "desc": "Báº¯n ra tiáº¿ng sáº¥m. XÃ¡c bay háº¿t vá» phÃ­a Dáº£i Xa."
     },
     {
-      "id": "rw_deeptech_loino", "name": "Lõi Nổ", "class": "ranged", "archetype": "deeptech", "tier": 6,
+      "id": "rw_deeptech_loino", "name": "LÃµi Ná»•", "class": "ranged", "archetype": "deeptech", "tier": 6,
       "unlock": "boss5", "dmg": 32977, "rpm": 150, "pellets": 1, "mag": 16, "reserveMax": 24,
       "reloadTime": 4.06, "spreadDeg": 2, "rangeM": 20, "pierce": 0,
       "knockback": 1.2, "critMult": 2.5, "tags": ["depth", "scaling"],
-      "desc": "Mỗi Depth xuống sâu cho khẩu này +9% damage. Càng sâu càng dữ."
+      "desc": "Má»—i Depth xuá»‘ng sÃ¢u cho kháº©u nÃ y +9% damage. CÃ ng sÃ¢u cÃ ng dá»¯."
     },
     {
-      "id": "rw_deeptech_miengmo", "name": "Miệng Mỏ", "class": "ranged", "archetype": "deeptech", "tier": 6,
+      "id": "rw_deeptech_miengmo", "name": "Miá»‡ng Má»", "class": "ranged", "archetype": "deeptech", "tier": 6,
       "unlock": "depth7", "dmg": 32977, "rpm": 102, "pellets": 1, "mag": 16, "reserveMax": 24,
       "reloadTime": 4.06, "spreadDeg": 2, "rangeM": 15, "pierce": 0,
       "knockback": 2.2, "critMult": 2.0, "tags": ["gold", "spacing", "crowd"],
-      "desc": "Nạp bằng vàng thay vì đạn. Bắn ra mười hai mảnh quặng nóng đỏ."
+      "desc": "Náº¡p báº±ng vÃ ng thay vÃ¬ Ä‘áº¡n. Báº¯n ra mÆ°á»i hai máº£nh quáº·ng nÃ³ng Ä‘á»."
     },
     {
-      "id": "rw_minigun_ruotsat", "name": "Ruột Sắt", "class": "ranged", "archetype": "minigun", "tier": 6,
+      "id": "rw_minigun_ruotsat", "name": "Ruá»™t Sáº¯t", "class": "ranged", "archetype": "minigun", "tier": 6,
       "unlock": "boss6", "dmg": 5819, "rpm": 1800, "pellets": 1, "mag": 200, "reserveMax": 300,
       "reloadTime": 7.25, "spreadDeg": 6, "rangeM": 18, "pierce": 0,
       "knockback": 0.25, "critMult": 1.8, "tags": ["sustain", "holddrag", "crowd"],
-      "desc": "Một trăm năm mươi viên. Bốn giây rưỡi reload — và đó là bốn giây rưỡi dùng dao."
+      "desc": "Má»™t trÄƒm nÄƒm mÆ°Æ¡i viÃªn. Bá»‘n giÃ¢y rÆ°á»¡i reload â€” vÃ  Ä‘Ã³ lÃ  bá»‘n giÃ¢y rÆ°á»¡i dÃ¹ng dao."
     },
 
     {
-      "id": "mw_dagger_daogam", "name": "Dao Găm", "class": "melee", "archetype": "dagger", "tier": 1,
+      "id": "mw_dagger_daogam", "name": "Dao GÄƒm", "class": "melee", "archetype": "dagger", "tier": 1,
       "unlock": "start", "dmg": 30, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
       "reachM": 6.00, "targets": 8, "corpseLaunch": 4.0,
       "knockback": 1.0, "critMult": 2.5, "tags": ["cheap", "starter"],
-      "desc": "Rẻ stamina nhất. Chém được nhiều mạng nhất trên mỗi thanh stamina."
+      "desc": "Ráº» stamina nháº¥t. ChÃ©m Ä‘Æ°á»£c nhiá»u máº¡ng nháº¥t trÃªn má»—i thanh stamina."
     },
     {
-      "id": "mw_machete_ruarung", "name": "Rựa Rừng", "class": "melee", "archetype": "machete", "tier": 1,
+      "id": "mw_machete_ruarung", "name": "Rá»±a Rá»«ng", "class": "melee", "archetype": "machete", "tier": 1,
       "unlock": "depth1", "dmg": 30, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
       "reachM": 6.00, "targets": 8, "corpseLaunch": 4.0,
       "knockback": 1.0, "critMult": 2.5, "tags": ["allround", "perfectslash"],
-      "desc": "Ba con một nhát. Cửa vào của Chém Hoàn Hảo."
+      "desc": "Ba con má»™t nhÃ¡t. Cá»­a vÃ o cá»§a ChÃ©m HoÃ n Háº£o."
     },
     {
-      "id": "mw_hammer_buada", "name": "Búa Đá", "class": "melee", "archetype": "hammer", "tier": 2,
+      "id": "mw_hammer_buada", "name": "BÃºa ÄÃ¡", "class": "melee", "archetype": "hammer", "tier": 2,
       "unlock": "depth2", "dmg": 71, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
       "reachM": 6.00, "targets": 8, "corpseLaunch": 4.0,
       "knockback": 1.0, "critMult": 2.5, "tags": ["shieldbreak", "knockback"],
-      "desc": "Bỏ qua khiên. Goblin Khiên tồn tại để cái búa này có việc làm."
+      "desc": "Bá» qua khiÃªn. Goblin KhiÃªn tá»“n táº¡i Ä‘á»ƒ cÃ¡i bÃºa nÃ y cÃ³ viá»‡c lÃ m."
     },
     {
-      "id": "mw_spear_giaotre", "name": "Giáo Tre", "class": "melee", "archetype": "spear", "tier": 2,
+      "id": "mw_spear_giaotre", "name": "GiÃ¡o Tre", "class": "melee", "archetype": "spear", "tier": 2,
       "unlock": "depth2", "dmg": 71, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
       "reachM": 6.00, "targets": 8, "corpseLaunch": 4.0,
       "knockback": 1.0, "critMult": 2.5, "tags": ["reach", "safe", "pierce"],
-      "desc": "Tầm xa nhất trong các vũ khí cận chiến. Chém mà không phải vào hẳn dải Cận chiến."
+      "desc": "Táº§m xa nháº¥t trong cÃ¡c vÅ© khÃ­ cáº­n chiáº¿n. ChÃ©m mÃ  khÃ´ng pháº£i vÃ o háº³n dáº£i Cáº­n chiáº¿n."
     },
     {
-      "id": "mw_greatsword_daidao", "name": "Đại Đao", "class": "melee", "archetype": "greatsword", "tier": 3,
+      "id": "mw_greatsword_daidao", "name": "Äáº¡i Äao", "class": "melee", "archetype": "greatsword", "tier": 3,
       "unlock": "depth3", "dmg": 166, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
       "reachM": 6.00, "targets": 8, "corpseLaunch": 4.0,
       "knockback": 1.0, "critMult": 2.5, "tags": ["crowd", "perfectslash", "wavewipe"],
-      "desc": "Một nhát quẹt, sáu goblin đứt đôi, xác bay theo hướng ngón tay. Đây là cảnh trong trailer."
+      "desc": "Má»™t nhÃ¡t quáº¹t, sÃ¡u goblin Ä‘á»©t Ä‘Ã´i, xÃ¡c bay theo hÆ°á»›ng ngÃ³n tay. ÄÃ¢y lÃ  cáº£nh trong trailer."
     },
     {
-      "id": "mw_twinblade_songdao", "name": "Song Đao", "class": "melee", "archetype": "twinblade", "tier": 3,
+      "id": "mw_twinblade_songdao", "name": "Song Äao", "class": "melee", "archetype": "twinblade", "tier": 3,
       "unlock": "boss2", "dmg": 166, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
       "reachM": 6.00, "targets": 8, "corpseLaunch": 4.0,
       "knockback": 1.0, "critMult": 2.5, "tags": ["combo", "cheap"],
-      "desc": "Lên bậc combo nhanh gấp đôi. Nhịp tay quyết định damage."
+      "desc": "LÃªn báº­c combo nhanh gáº¥p Ä‘Ã´i. Nhá»‹p tay quyáº¿t Ä‘á»‹nh damage."
     },
     {
-      "id": "mw_chainsaw_cuamay", "name": "Cưa Máy", "class": "melee", "archetype": "chainsaw", "tier": 4,
+      "id": "mw_chainsaw_cuamay", "name": "CÆ°a MÃ¡y", "class": "melee", "archetype": "chainsaw", "tier": 4,
       "unlock": "depth4", "dmg": 390, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
       "reachM": 6.00, "targets": 8, "corpseLaunch": 4.0,
       "knockback": 1.0, "critMult": 2.5, "tags": ["hold", "sustain", "gore"],
-      "desc": "Không quẹt — giữ. Tiêu stamina theo giây, cắt liên tục, máu ngập màn hình."
+      "desc": "KhÃ´ng quáº¹t â€” giá»¯. TiÃªu stamina theo giÃ¢y, cáº¯t liÃªn tá»¥c, mÃ¡u ngáº­p mÃ n hÃ¬nh."
     },
     {
-      "id": "mw_axe_phunguyet", "name": "Phủ Nguyệt", "class": "melee", "archetype": "axe", "tier": 4,
+      "id": "mw_axe_phunguyet", "name": "Phá»§ Nguyá»‡t", "class": "melee", "archetype": "axe", "tier": 4,
       "unlock": "depth4", "dmg": 390, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
       "reachM": 6.00, "targets": 8, "corpseLaunch": 4.0,
       "knockback": 1.0, "critMult": 2.5, "tags": ["allround", "knockback", "crowd"],
-      "desc": "Lưỡi hình bán nguyệt. Cân bằng giữa quét và đẩy."
+      "desc": "LÆ°á»¡i hÃ¬nh bÃ¡n nguyá»‡t. CÃ¢n báº±ng giá»¯a quÃ©t vÃ  Ä‘áº©y."
     },
     {
-      "id": "mw_scythe_luoiliem", "name": "Lưỡi Liềm", "class": "melee", "archetype": "scythe", "tier": 5,
+      "id": "mw_scythe_luoiliem", "name": "LÆ°á»¡i Liá»m", "class": "melee", "archetype": "scythe", "tier": 5,
       "unlock": "depth5", "dmg": 915, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
       "reachM": 6.00, "targets": 8, "corpseLaunch": 4.0,
       "knockback": 1.0, "critMult": 2.5, "tags": ["crowd", "perfectslash", "wavewipe"],
-      "desc": "Gần như một vòng tròn. Chém Hoàn Hảo gần như mọi nhát."
+      "desc": "Gáº§n nhÆ° má»™t vÃ²ng trÃ²n. ChÃ©m HoÃ n Háº£o gáº§n nhÆ° má»i nhÃ¡t."
     },
     {
-      "id": "mw_hammer_chuytroi", "name": "Chuỳ Trời", "class": "melee", "archetype": "hammer", "tier": 5,
+      "id": "mw_hammer_chuytroi", "name": "Chuá»³ Trá»i", "class": "melee", "archetype": "hammer", "tier": 5,
       "unlock": "boss4", "dmg": 915, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
       "reachM": 6.00, "targets": 8, "corpseLaunch": 4.0,
       "knockback": 1.0, "critMult": 2.5, "tags": ["knockback", "shieldbreak", "burst"],
-      "desc": "Knockback mạnh nhất game. Xác bay mười một mét và kéo cả hàng sau theo."
+      "desc": "Knockback máº¡nh nháº¥t game. XÃ¡c bay mÆ°á»i má»™t mÃ©t vÃ  kÃ©o cáº£ hÃ ng sau theo."
     },
     {
-      "id": "mw_deeptech_luoiloi", "name": "Lưỡi Lõi", "class": "melee", "archetype": "deeptech", "tier": 6,
+      "id": "mw_deeptech_luoiloi", "name": "LÆ°á»¡i LÃµi", "class": "melee", "archetype": "deeptech", "tier": 6,
       "unlock": "boss5", "dmg": 2151, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
       "reachM": 6.00, "targets": 8, "corpseLaunch": 4.0,
       "knockback": 1.0, "critMult": 2.5, "tags": ["depth", "stamina", "scaling"],
-      "desc": "Từ Depth 5 trở xuống, mỗi mạng chém hồi 6 stamina. Càng sâu càng bền."
+      "desc": "Tá»« Depth 5 trá»Ÿ xuá»‘ng, má»—i máº¡ng chÃ©m há»“i 6 stamina. CÃ ng sÃ¢u cÃ ng bá»n."
     },
     {
-      "id": "mw_greatsword_xelong", "name": "Xẻ Long", "class": "melee", "archetype": "greatsword", "tier": 6,
+      "id": "mw_greatsword_xelong", "name": "Xáº» Long", "class": "melee", "archetype": "greatsword", "tier": 6,
       "unlock": "depth7", "dmg": 2151, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
       "reachM": 6.00, "targets": 8, "corpseLaunch": 4.0,
       "knockback": 1.0, "critMult": 2.5, "tags": ["crowd", "perfectslash", "wavewipe", "endgame"],
-      "desc": "Tám con một nhát. Hầm không đủ rộng cho đường quẹt của nó."
+      "desc": "TÃ¡m con má»™t nhÃ¡t. Háº§m khÃ´ng Ä‘á»§ rá»™ng cho Ä‘Æ°á»ng quáº¹t cá»§a nÃ³."
     }
   ]
 }
