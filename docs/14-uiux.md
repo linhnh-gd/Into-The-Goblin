@@ -85,7 +85,8 @@ Thông tin chỉ để đọc thì đặt trên. Đây là quy chuẩn mobile 20
 | 1 | Tap bắn | giây 0 |
 | 2 | Hold bắn | giây 2 |
 | 3 | Quẹt chém (súng bị khoá script) | giây 4 |
-| 4 | Chém Hoàn Hảo + Cướp Đạn | giây 7 |
+| 4 | Chém Hoàn Hảo | giây 7 |
+| 4b | **Goblin Vàng** đầu tiên (làn bên, lấp lánh) | giây 9 |
 | 5 | **Ngã Ba Hầm** (2 cửa có biển báo) | giây 12 (Cổng đầu) |
 | 6 | Thẻ nâng cấp | Cổng thứ 2 |
 | 7 | Shop | phòng 3 |

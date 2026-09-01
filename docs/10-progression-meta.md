@@ -61,7 +61,7 @@ Dữ liệu: `data/upgrades.json` → `gen-upgrades.md`.
 | **Túi Vàng Đáy Kép** | Vàng thu được x1.5, nhưng bị trúng đòn thì rơi 10% vàng đang giữ ra sàn — phải hút lại |
 | **Đồng Hồ Cát Nứt** | Thời gian chậm 40% khi HP < 25%, 3s, hồi mỗi phòng |
 | **Găng Thợ Rèn** | Nạp Hoàn Hảo có cửa sổ x2 rộng và cho +30% damage |
-| **Túi Đáy Rộng** | Đạn dự trữ +150%, nhưng không nhận vàng từ Cướp Đạn |
+| **Túi Đáy Rộng** | Đạn dự trữ +150%, nhưng Goblin Vàng không xuất hiện nữa |
 | **Lưỡi Ma** | Chém Hoàn Hảo hồi 8 HP |
 | **Mặt Nạ Tham** | Vàng x1.6, nhưng HP tối đa −20% |
 | ... | 6 relic còn lại trong `data/upgrades.json` (`kind: relic`) |

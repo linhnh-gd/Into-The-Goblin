@@ -10,54 +10,48 @@ reload không bắn được, chỉ dùng cận chiến* · *knockback tuỳ lo�
 | Tầng | Tên | Hồi bằng cách nào | Hiển thị |
 |---|---|---|---|
 | 1 | **Băng đạn** (`mag`) | Reload | Vòng tròn quanh tâm ngắm, mỗi viên là 1 vạch |
-| 2 | **Đạn dự trữ** (`reserve`) | Melee kill (Cướp Đạn), hòm, shop, card | Số dưới HUD phải: `24 / 60` |
-| 3 | **Cướp Đạn** (`scavenge`) | Mỗi melee kill = **0.8% kho đạn gốc**; **Chém Hoàn Hảo tính x2** | Số dự trữ nhích lên đều trong lúc chém |
+| 2 | **Đạn dự trữ** (`reserve`) | **Goblin Vàng**, hòm, shop, thẻ | Số dưới tâm ngắm: `24 / 60` |
+| 3 | **Goblin Vàng** | Giết = **nguyên 1 băng đạn**. Chỉ ở hai làn bên, không tấn công được | Người lấp lánh vàng — con duy nhất không phải bóng đen |
+> **Đây là pillar P2.** Súng không có đạn vô hạn, và đạn **không mua được giữa combat**. Đường duy nhất
+> để có đạn giữa trận là **Goblin Vàng** — và nó ở hai làn bên, tức mỗi viên bắn sang đó là một viên
+> không bắn vào đám đang tới ở làn giữa. Hết đạn thì chỉ còn dao, mà chém liên tục thì hết stamina.
 
-> **Đây là pillar P2.** Súng không có đạn vô hạn, và đạn **không mua được giữa combat** — đường duy nhất
-> để có đạn trong lúc đánh là **giết bằng dao**. Ngược lại chém liên tục thì hết stamina. Hai đồng hồ này
-> chạy ngược nhau và đó là toàn bộ chiều sâu của combat.
+### 1b. Goblin Vàng — nguồn đạn duy nhất trong combat
 
-### 1b. Tỉ giá Cướp Đạn neo vào KHO ĐẠN GỐC
+Cơ chế cũ là **Cướp Đạn**: mỗi mạng chém cho một ít đạn. Tỉ giá đó phải neo vào một con số nào đó, và
+nó **sai ba lần liên tiếp** (`18` lỗi #55, #62, #64):
 
-Tỉ giá này đã sai hai lần, mỗi lần vì neo vào một thứ **không** cùng thang đo với kho đạn.
+| Neo vào | Hỏng thế nào |
+|---|---|
+| `magMax` | Thẻ Băng Đạn ăn hai lần: vừa băng to hơn, vừa nhân số đạn cướp được |
+| Giây bắn | Đúng nguyên tắc, nhưng con số tính cho kho 569 viên; cắt kho xuống 38 thì 13 mạng chém đầy nguyên kho |
+| Kho đạn gốc | Đúng về mặt số học, nhưng vẫn là một **bộ đếm vô hình** |
 
-**Sai lần 1 — neo vào `magMax`** (*"16 mạng chém = 1 băng"*). "Một băng" không phải đơn vị cố định:
-thẻ Băng Đạn cộng tới +95% mỗi cấp, chồng 8 cấp — nên cuối run cùng 16 mạng chém đổi được gấp nhiều
-lần đạn so với đầu run. Thẻ đó **ăn hai lần**: vừa cho băng to hơn, vừa nhân số đạn cướp được.
+Gốc vấn đề không nằm ở con số nào cả: **một bộ đếm vô hình không thể tự nói cho người chơi biết nó
+đang ở đâu.** Người chơi không thấy nó, không nhắm được vào nó, không quyết định gì về nó. Nó chỉ là
+một cái vòi nước chảy ngầm mà nhà thiết kế phải liên tục vặn cho vừa.
 
-**Sai lần 2 — neo vào GIÂY BẮN** (`0.3s × rpm/60`). Đúng về nguyên tắc (rpm gốc không nâng cấp được)
-nhưng con số 0.3 được tính khi kho đạn còn **569 viên**. Sau khi cắt kho xuống **38** thì **13 mạng
-chém đã đầy nguyên kho** — đạn lại thành vô hạn lần nữa. Hai con số thôi nói chuyện với nhau.
+**Goblin Vàng thay cả cơ chế đó bằng một thứ NHÌN THẤY VÀ BẮN ĐƯỢC.**
 
-**Neo đúng: chính KHO ĐẠN GỐC của khẩu đó.**
+| | |
+|---|---|
+| Thưởng | Giết = **nguyên 1 băng đạn** vào kho dự trữ |
+| Vị trí | **Chỉ hai làn bên** — không bao giờ chạm được người chơi, `dmg` = 0 |
+| Tỉ lệ | `chancePerWave` 0.5, tối đa 1 con/wave → **~1.5 con mỗi phòng** |
+| Khoảng spawn | 13–20m: lúc mới hiện nó nằm gần giữa màn hình, càng chạy tới càng dạt ra rìa |
+| Ngân sách | **Ngoài** ngân sách TP của wave — nó là một món quà, không phải một mối đe doạ |
+| Hình | Vàng nguyên khối + lấp lánh lệch pha + phình nhẹ theo nhịp |
 
-```
-   viên/mạng chém = reserveMax GỐC × scavengeReserveFracPerKill
-                    ^^^^^^^^^^^^^^
-                    kho đạn GỐC trong data, KHÔNG phải kho đã nâng cấp:
-                    thẻ Đạn Dự Trữ nâng TRẦN chứa, không nâng TỐC ĐỘ HỒI
-```
+**Cái giá là ĐẠN và THỜI GIAN, không phải máu.** Nó không đánh được bạn, nên đối mặt không phải "sống
+hay chết" mà là *"có đáng bỏ mấy viên đạn và mấy giây ra không, trong khi đám ở làn giữa vẫn đang tới"*.
+Và vì nó dạt ra rìa màn hình khi bạn chạy tới gần, **quyết định đó có hạn chót**.
 
-Neo vào chính thứ nó nạp lại thì hai con số **không thể lệch nhau nữa**: đổi `reserveMagsTarget` bao
-nhiêu, tỉ giá cướp đạn tự động theo bấy nhiêu.
+Nó cũng vá một lỗ hổng thiết kế có sẵn: hai làn bên trước giờ chỉ có *"giết lấy vàng thêm"* — tức
+không có lý do gì đủ mạnh để bắn sang đó. Bây giờ thì có.
 
-| Khẩu | Kho gốc | viên/mạng | Mạng để được 1 băng | Mạng để đầy kho |
-|---|---|---|---|---|
-| Gọng Sắt (rifle) | 38 | 0.304 | 83 | **125** |
-| Ổ Chuột (SMG) | 38 | 0.304 | 83 | **125** |
-| Kèn Đồng (súng lục) | 15 | 0.12 | 84 | **125** |
-| Miệng Hang (shotgun) | 8 | 0.064 | 79 | **125** |
-| Gai Mực (nỏ) | 6 | 0.048 | 21 | **125** |
-
-Bất biến: **125 mạng chém mới nạp lại được cả kho đạn** — với mọi khẩu. Trước đó là 11–30 mạng.
-Đo kiểm: chồng 4 thẻ Đạn Dự Trữ (kho 38 → 797) làm tốc độ hồi đổi **0**.
-
-Đo trong trận (rifle, chơi thật — bắn khi còn đạn, chém khi hết): hết phòng R1 còn **12/38**, phòng
-R2 còn **23/38**. Đạn không còn tự đầy lại nữa.
-
-Và đạn được trả **từng viên** chứ không phải một cục: số dự trữ nhích lên đều trong lúc chém, có
-tiếng báo mỗi khi cộng đủ một băng gốc (~80 mạng, tức hiếm và đáng). Đó là *"hồi đều từ đầu đến
-cuối"* theo cả hai nghĩa — đều trong một trận, và đều suốt cả run.
+**Vì sao chính art direction làm cho nó đọc được ngay.** `15` đặt luật: quái là **bóng đen**, và
+**vàng là màu ấm duy nhất** trong game. Goblin Vàng là con duy nhất phá luật đó — một hình vàng sáng
+giữa hành lang toàn bóng đen thì không cần icon, không cần mũi tên, không cần dạy.
 
 Ràng buộc thiết kế (audit gate): với mọi vũ khí, `mag * dmgPerShot` phải giết được **ít hơn** số quái của
 một wave trung bình ở cùng Depth (mặc định: 45–70% wave). Nếu một băng đạn dọn sạch được wave thì melee

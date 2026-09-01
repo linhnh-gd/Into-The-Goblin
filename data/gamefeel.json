@@ -13,8 +13,6 @@
     "slideHitCooldownSec": 0.22,
     "slideTickDamageMult": 0.62,
     "slideKbMult": 0.55,
-    "_scavengeComment": "CUOP DAN do bang PHAN TRAM KHO DAN GOC moi mang chem. Neo vao chinh reserveMax GOC cua khau sung, nen no KHONG THE lech khoi co kho dan duoc nua: doi reserveMagsTarget bao nhieu thi ti gia cuop dan tu dong theo bay nhieu. Ban truoc neo vao GIAY BAN (0.30s/mang) -- dung ve nguyen tac (rpm goc khong nang cap duoc) nhung con so do duoc tinh khi kho dan con 569 vien; sau khi cat kho xuong 38 thi 13 MANG CHEM da day nguyen kho, tuc dan lai thanh vo han lan nua. Xem docs/18 loi #64. 0.008 = 125 mang chem moi day lai duoc ca kho, ~80 mang moi duoc mot bang -- voi MOI khau. Dung reserveMax GOC (khong phai da nang cap) nen the Dan Du Tru chi nang TRAN chua chu khong nang TOC DO HOI.",
-    "scavengeReserveFracPerKill": 0.008,
     "slideMinSegPx": 14,
     "bladeWidthFrac": 0.058,
     "trailFadeSec": 0.26,

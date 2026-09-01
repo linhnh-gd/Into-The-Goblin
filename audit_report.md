@@ -6,8 +6,8 @@
 
 | Nhom | Trang thai | Check | Chi tiet |
 |---|---|---|---|
-| LOAD | **PASS** | Moi dataset load duoc va khong rong | weapons=30, enemies=21, bosses=7, affixes=7, waves=19, depths=7, roomTypes=8, events=8, cards=48, relics=12, talents=24, currencies=6, shop=13, buildings=12 |
-| ID | **PASS** | Moi id la duy nhat (toan bo dataset) | 196 id; trung: khong |
+| LOAD | **PASS** | Moi dataset load duoc va khong rong | weapons=30, enemies=22, bosses=7, affixes=7, waves=19, depths=7, roomTypes=8, events=8, cards=48, relics=12, talents=24, currencies=6, shop=13, buildings=12 |
+| ID | **PASS** | Moi id la duy nhat (toan bo dataset) | 197 id; trung: khong |
 | ID | **PASS** | Quy uoc prefix id (docs/16 muc 2) | sai prefix: khong |
 | REF | **PASS** | waves.json: moi enemy id ton tai | 19 template; sai: 0 |
 | REF | **PASS** | depths.json: enemy/boss/weapon id ton tai | 7 depth; sai: 0 |
@@ -33,7 +33,7 @@
 | WPN | **PASS** | Melee DPS THAP HON ranged DPS o cung tier (dao nguoc, docs/05 muc 8.3) | so sanh 6 tier; vi pham: 0 |
 | WPN | **PASS** | Moi Depth 1-5 mo it nhat 1 cong cu dan cach (kb >= 1.0) | thieu: khong |
 | WPN | **PASS** | Moi vu khi duoc mo o mot Depth nao do | khong co duong mo: khong |
-| ENEMY | **PASS** | Moi quai co tpCost/goldDrop/hp/sfxSpawn/counters/mechanic | 21 quai; thieu: 0 |
+| ENEMY | **PASS** | Moi quai co tpCost/goldDrop/hp/sfxSpawn/counters/mechanic | 22 quai; thieu: 0 |
 | ENEMY | **PASS** | behavior block day du va hop le (shield / slam) | 2 quai co hanh vi rieng: en_special_khien=shield, en_heavy_ogreham=slam |
 | ENEMY | **PASS** | Depth 1-2: khong quai nao kbResist > 0.20 (day co che truoc khi pha) | vi pham: 0 |
 | ENEMY | **PASS** | Moi Depth gioi thieu 1-3 loai quai moi | sai: 0 |

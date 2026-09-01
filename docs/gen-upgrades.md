@@ -62,7 +62,7 @@
 | Túi Vàng Đáy Kép | rl_tuivangdoi | Vàng thu được x1.5 | Bị trúng đòn thì rơi 10% vàng đang giữ ra sàn — phải hút lại | boss1 |
 | Đồng Hồ Cát Nứt | rl_donghocatnut | Khi HP < 25%: thời gian chậm 40% trong 3s. Hồi lại mỗi phòng | — | boss2 |
 | Găng Thợ Rèn | rl_gangthoren | Cửa sổ Nạp Hoàn Hảo x2 và cho +30% damage cả băng | — | cuakhoa |
-| Túi Đáy Rộng | rl_tuidayrong | Đạn dự trữ +150% | Không nhận đạn từ Cướp Đạn nữa | shop |
+| Túi Đáy Rộng | rl_tuidayrong | Đạn dự trữ +150% | Goblin Vàng không còn xuất hiện nữa | shop |
 | Lưỡi Ma | rl_luoima | Chém Hoàn Hảo hồi 8 HP và +1 viên đạn | — | boss3 |
 | Mặt Nạ Tham | rl_matnhatham | Vàng x1.6 | HP tối đa -20% | cuakhoa |
 | Đèn Đầu | rl_dendau | Dải Xa sáng hơn 8m: thấy quái sớm hơn, aim assist +2° | — | shop |

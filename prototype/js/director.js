@@ -145,6 +145,20 @@ export class Director {
       [this.spawnQueue[i], this.spawnQueue[j]] = [this.spawnQueue[j], this.spawnQueue[i]];
     }
 
+    /* GOBLIN VANG duoc GAI THEM sau khi da xao tron, NGOAI ngan sach TP: no la mot
+       mon qua, khong phai mot moi de doa, nen no khong duoc an vao cho cua quai that.
+       Chen vao khoang giua hang doi de no khong ra ngay dau doan cung khong ra sat cuoi. */
+    const G = GD.waves.directorRules.golden;
+    if (G && G.enemy && GD.byId[G.enemy]) {
+      let n = 0;
+      while (n < (G.maxPerWave || 1) && rnd() < (G.chancePerWave ?? 0)) n++;
+      for (let i = 0; i < n; i++) {
+        const at = Math.floor(this.spawnQueue.length * (0.2 + rnd() * 0.5));
+        this.spawnQueue.splice(at, 0, G.enemy);
+      }
+      this.goldenThisWave = n;
+    }
+
     this.waveTargetCount = this.spawnQueue.length;
     this.waveQueueTotal = this.spawnQueue.length;
     this.waveStartDist = this.distRun;
@@ -229,16 +243,27 @@ export class Director {
       const side = rnd() < 0.5 ? -1 : 1;
       return px + side * (LN.midHalfWidthM + 0.3 + rnd() * Math.max(0.1, LN.sideWidthM - 0.6));
     };
+    /* GOBLIN VANG: LUON o lan ben, khong bao gio o lan giua. Do la ca thiet ke cua no --
+       o lan ben thi no khong cham duoc nguoi choi, nen doi mat khong phai "song hay chet"
+       ma la "co dang bo dan va thoi gian ra khong". Va no cung khong theo `_clumpZ`:
+       mot mon qua nam lan trong cum quai thi khong ai nhin thay. */
+    const G = GD.waves.directorRules.golden;
+    const laVang = G && id === G.enemy;
+
     // moi pattern co the ghi de ti le lan giua bang "midFrac" (pincer thap hon)
     const midFrac = pat.midFrac != null ? pat.midFrac : LN.midSpawnFrac;
-    const x = rnd() < midFrac ? px + (rnd() - 0.5) * 2 * LN.midSpawnJitterM : sideX();
+    const x = laVang ? sideX()
+      : rnd() < midFrac ? px + (rnd() - 0.5) * 2 * LN.midSpawnJitterM : sideX();
 
     /* CUM LAI, khong rai deu. Rai deu thi mat do 0.69 con/m nghia la trong tam dao
        4.5m luon chi co ~3 con -- mot nhat quet khong bao gio "da tay". Cum 2-5 con o
        gan cung mot z thi mot nhat bat duoc ca cum. Xem docs/05 muc 7c. */
     let z;
     const clumpZ = this._clumpZ;
-    if (clumpZ != null && rnd() < LN.clumpChance) {
+    if (laVang) {
+      const gd = G.spawnDistM || dist;
+      z = pz - (gd[0] + rnd() * Math.max(0, gd[1] - gd[0]));   // dung rieng, khong theo cum
+    } else if (clumpZ != null && rnd() < LN.clumpChance) {
       z = clumpZ + (rnd() - 0.5) * 2 * LN.clumpZJitterM;
     } else {
       z = pz - (dist[0] + rnd() * Math.max(0, dist[1] - dist[0]));

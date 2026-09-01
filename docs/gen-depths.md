@@ -6,7 +6,7 @@
 
 | Depth | Tên | Biome | Quái mới | Boss | Mở vũ khí | Vàng dự kiến | Dạy gì |
 |---|---|---|---|---|---|---|---|
-| D1 | Hầm Đá | hầm đá xám, đuốc vàng, nước nhỏ giọt | Goblin Cùi, Goblin Chạy, Goblin Bầy | Goblin Vương Béo | Kèn Đồng, Miệng Hang, Ổ Chuột, Dao Găm, Rựa Rừng | 3150 | tap, hold, quẹt chém, Chém Hoàn Hảo, Cướp Đạn, Ngã Ba Hầm lần đầu |
+| D1 | Hầm Đá | hầm đá xám, đuốc vàng, nước nhỏ giọt | Goblin Cùi, Goblin Chạy, Goblin Bầy | Goblin Vương Béo | Kèn Đồng, Miệng Hang, Ổ Chuột, Dao Găm, Rựa Rừng | 3150 | tap, hold, quẹt chém, Chém Hoàn Hảo, Goblin Vàng, Ngã Ba Hầm lần đầu |
 | D2 | Mỏ Cũ | đường ray, xe goòng, bụi than, đèn dầu | Goblin Ném Đá, Goblin Thuốc Nổ, Tướng Goblin | Đôi Song Sinh Rỉ | Gọng Sắt, Gai Mực, Lồng Móc, Búa Đá, Giáo Tre | 7250 | không được rùa (Ném Đá), knockback cứu mạng (Thuốc Nổ), Elite |
 | D3 | Hang Nấm | nấm phát quang xanh lam, bào tử bay, ẩm | Goblin Khiên, Ogre Hầm | Tường Khiên Sống | Mắt Cú, Trống Đôi, Hơi Ngầm, Đại Đao, Song Đao | 12900 | spam bắn thẳng không còn hiệu quả; kbResist tồn tại |
 | D4 | Xưởng Rèn | lò nung đỏ, đe sắt, tia lửa, nóng | Dơi Hầm, Goblin Đào Hầm, Tên Đồ Tể | Nhện Trần Hầm | Nồi Đất, Mũi Kim, Đinh Sắt, Cưa Máy, Phủ Nguyệt | 20350 | trục dọc (bay) và phía sau (đào hầm) — màn hình không chỉ có phía trước |

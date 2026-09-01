@@ -146,6 +146,8 @@ Assert-True 'REF' 'combo unlock tro dung ca hai chieu' ($badRefs.Count -eq 0) `
 
 $usedEnemies = @($gdWav.waveTemplates | ForEach-Object { $_.composition } | ForEach-Object { $_.enemy } | Sort-Object -Unique)
 $usedEnemies += $mistEnemy
+# Goblin Vang do director GAI THEM, khong nam trong composition cua template nao
+if ($gdWav.directorRules.golden.enemy) { $usedEnemies += $gdWav.directorRules.golden.enemy }
 $orphan = @($gdEne.enemies | Where-Object { $usedEnemies -notcontains $_.id } | ForEach-Object { $_.id })
 Assert-True 'REF' 'Khong co quai orphan (khong wave template nao dung)' ($orphan.Count -eq 0) `
     ("orphan: " + (Join-Or $orphan 'khong')) 'WARN'
@@ -190,8 +192,14 @@ $goldModel = @()
 $goldOff = @()
 foreach ($itD in $gdDep.depths) {
     $dNum = [int]$itD.depth
+    # Mo hinh vang tinh tu TP budget, nen chi duoc lay quai NAM TRONG ngan sach TP.
+    # Goblin Vang do director gai them ngoai ngan sach (toi da ~1.5 con moi phong), ma
+    # goldDrop cua no cao gap 10 lan trash -- de no vao pool thi trung binh vot len va
+    # mo hinh bao lech 2 lan. Cung ly do voi viec loai Bong Ham va Elite.
+    $goldenId = $gdWav.directorRules.golden.enemy
     $pool = @($gdEne.enemies | Where-Object {
-        [int]$_.introDepth -le $dNum -and (@($_.tags) -notcontains 'invulnerable') -and $_.role -ne 'elite'
+        [int]$_.introDepth -le $dNum -and (@($_.tags) -notcontains 'invulnerable') `
+            -and $_.role -ne 'elite' -and $_.id -ne $goldenId
     })
     $avgTp   = ($pool | Measure-Object -Property tpCost -Average).Average
     $avgGold = ($pool | Measure-Object -Property goldDrop -Average).Average

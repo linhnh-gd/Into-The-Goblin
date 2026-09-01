@@ -31,6 +31,10 @@ const TYPE_LOOK = {
   en_heavy_ogreham:     { s: 1.62, c: 0x241d16, eye: 0xff3b30 },
   en_special_bongham:   { s: 1.10, c: 0x0a0810, eye: 0xb14cff },
   en_elite_tuonggoblin: { s: 1.34, c: 0x2e1a38, eye: 0xd07bff },
+  /* GOBLIN VANG la con DUY NHAT khong phai bong den. Ca art direction (docs/15) dua tren
+     "quai la bong den, VANG la mau am duy nhat" -- nen mot con quai mau vang nguyen khoi
+     giua hanh lang toan bong den la thu choi ngay lap tuc, khong can icon hay mui ten. */
+  en_special_goblinvang: { s: 0.92, c: 0xffc53d, eye: 0xfff3c4 },
 };
 const DEFAULT_LOOK = { s: 1.0, c: 0x171c24, eye: 0xff3b30 };
 const D2R = Math.PI / 180;
@@ -55,6 +59,7 @@ export class EnemyPool {
         shieldUp: true, bcycle: 0, invuln: false, ringShown: false, committed: false,
         // giat nguoc khi trung don ma khong chet
         lurch: 0, lurchDur: 0, lurchAmt: 0, lurchX: 0, lurchZ: 0, kbBudget: 0,
+        shimmer: false, shimPhase: 0,
       });
     }
 
@@ -138,6 +143,9 @@ export class EnemyPool {
     slot.flash = 0;
     slot.lurch = 0; slot.lurchAmt = 0;
     slot.kbBudget = GD.feel.hitReaction.kbBudgetM;
+    // con nao co dropsMagazines thi LAP LANH -- luat o data, khong hardcode id o day
+    slot.shimmer = !!def.dropsMagazines;
+    slot.shimPhase = Math.random() * Math.PI * 2;
     slot.invuln = (def.tags || []).includes('invulnerable');
     slot.ringShown = false;
     slot.committed = false;
@@ -343,6 +351,7 @@ export class EnemyPool {
   }
 
   _writeInstances() {
+    this._t = (this._t || 0) + 1 / 60;        // dong ho rieng cho hieu ung lap lanh
     let k = 0, sh = 0;
     const bodyCol = this.bodies.instanceColor.array;
     const eyeCol = this.eyes.instanceColor.array;
@@ -357,6 +366,11 @@ export class EnemyPool {
          kem NEN NGUOI. Day la thu duy nhat doc duoc o cu ly xa, vi 0.35m o 12m chi la
          vai pixel ngang nhung mot cu GIAT trong 0.16s thi mat bat duoc ngay. */
       let lx = 0, lz = 0, sqX = 1, sqY = 1;
+      // Goblin Vang phinh nhe theo nhip lap lanh -- chuyen dong la thu ngoai vi bat duoc
+      if (e.shimmer) {
+        const p = 1 + 0.06 * Math.sin(this._t * 7.5 + e.shimPhase);
+        sqX *= p; sqY *= p;
+      }
       if (e.lurch > 0) {
         const HR = GD.feel.hitReaction;
         const p = e.lurch / (e.lurchDur || 1);            // 1 luc vua trung -> 0
@@ -373,6 +387,13 @@ export class EnemyPool {
       this.bodies.setMatrixAt(k, this._m);
 
       this._c.setHex(e.color);
+      /* LAP LANH: pha rieng cho tung con (`shimPhase`) nen ca dam khong nhap nhay cung
+         nhip -- nhap nhay dong bo doc ra la "loi render", nhap nhay lech pha doc ra la
+         "vang". Chi la lerp mau tren instanceColor, khong them draw call nao. */
+      if (e.shimmer) {
+        const s = 0.5 + 0.5 * Math.sin(this._t * 7.5 + e.shimPhase);
+        this._c.lerp(this._white, 0.18 + 0.42 * s);
+      }
       if (e.flash > 0) this._c.lerp(this._white, Math.min(1, e.flash));
       if (e.tele > 0.12) this._c.lerp(this._red, 0.5);
       bodyCol[k * 3] = this._c.r; bodyCol[k * 3 + 1] = this._c.g; bodyCol[k * 3 + 2] = this._c.b;

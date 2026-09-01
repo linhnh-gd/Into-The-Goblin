@@ -6,10 +6,11 @@
 
 | Tên | ID | Vai trò | Xuất hiện | HP | Damage | Tốc độ | Kháng KB | TP | Vàng | Cơ chế | Cách xử lý |
 |---|---|---|---|---|---|---|---|---|---|---|---|
+| Goblin Vàng | en_special_goblinvang | special | D1 | 46 | - | - | 0.10 | 1.5 | 26 | CHỈ spawn ở HAI LÀN BÊN nên không bao giờ chạm được người chơi, và không gây damage. Người lấp lánh vàng, nhìn thấy từ dải Xa. Giết được thì rụng ra MỘT BĂNG ĐẠN đầy — đây là nguồn đạn duy nhất trong combat không phải trả bằng stamina. | Không cần counter, nó không tấn công. Cái giá là ĐẠN và THỜI GIAN: mỗi viên bắn sang làn bên là một viên không bắn vào đám đang tới ở làn giữa, mà nó thì đang chạy tới. |
 | Bóng Hầm | en_special_bongham | special | D1 | - | 8 | 2.6 | 0.30 | - | - | Sinh ra bởi Sương Đen. KHÔNG GIẾT ĐƯỢC — chỉ knockback được. Chạm gây 8 damage + tối màn 0.3s | Dọn sạch phòng nhanh hơn. Đây không phải kẻ địch, đây là đồng hồ đếm |
 | Goblin Cùi | en_trash_goblincui | trash | D1 | 40 | 6 | 2.2 | - | 1.0 | 3 | Đi thẳng tới người chơi, vung tay ở 1.2m | Bất cứ gì. Đây là nền để nổ vàng và nuôi combo. |
-| Goblin Bầy | en_trash_goblinbay | trash | D1 | 18 | 4 | 2.8 | - | 0.8 | 2 | Luôn spawn theo cụm 8 con, đi sát nhau | Chém Hoàn Hảo — cụm này tồn tại để bị quẹt một nhát |
 | Goblin Chạy | en_trash_goblinchay | trash | D1 | 26 | 5 | 4.4 | 0.10 | 1.2 | 4 | Chạy rất nhanh, lao thẳng qua dải Giữa không dừng | Chém quét hoặc shotgun — không kịp nhắm từng con |
+| Goblin Bầy | en_trash_goblinbay | trash | D1 | 18 | 4 | 2.8 | - | 0.8 | 2 | Luôn spawn theo cụm 8 con, đi sát nhau | Chém Hoàn Hảo — cụm này tồn tại để bị quẹt một nhát |
 | Tướng Goblin | en_elite_tuonggoblin | elite | D2 | 700 | 30 | 2.2 | 0.70 | 12.0 | 60 | Có 2 affix ngẫu nhiên. Hô hào: mọi trash trong phòng +20% damage. Rơi Chìa Khoá | Dồn burst damage, dùng relic/ultimate |
 | Goblin Ném Đá | en_ranged_nemda | ranged | D2 | 34 | 12 | 1.8 | 0.15 | 2.0 | 6 | Đứng ở dải Xa ném đá theo đường vòng cung, tốc độ 11 m/s | Phải tiến lên hoặc bắn tỉa — không được rùa tại chỗ |
 | Goblin Thuốc Nổ | en_special_thuocno | special | D2 | 30 | 25 | 3.0 | 0.05 | 2.2 | 6 | Lao vào rồi tự nổ bán kính 3m. Bình nổ trên lưng bắn được — nổ sớm gây 25 damage lên đồng bọn | Knockback hoặc bắn bình nổ khi nó còn ở dải Giữa |
@@ -19,8 +20,8 @@
 | Dơi Hầm | en_special_doiham | special | D4 | 22 | 7 | 3.6 | 0.40 | 1.6 | 5 | Bay ở độ cao 2–4m, lao xuống theo đường chéo. Bị đẩy cả trục dọc (bay lên nhìn rất sướng) | Bắn, hoặc chém chéo lên — chém ngang không tới |
 | Goblin Đào Hầm | en_special_daoham | special | D4 | 45 | 14 | 3.4 | 0.20 | 2.4 | 8 | Trồi lên từ sàn PHÍA SAU người chơi sau 2.5s, có tiếng đất nứt báo trước 0.8s | Bước Lùi rồi quay chém — dạy người chơi rằng phía sau cũng tồn tại |
 | Ổ Vàng | en_elite_omvang | elite | D5 | 800 | 25 | 2.6 | 0.65 | 15.0 | 100 | Ăn mọi đồng vàng rơi trên sàn. Sau 25s nó bỏ chạy qua cửa và mang theo toàn bộ số vàng đã ăn. Giết được thì nhả ra x1.5 | Chọn: rượt nó (bỏ mặt trước) hay giữ hàng và chấp nhận mất vàng |
-| Goblin Trống | en_support_trong | support | D5 | 70 | 6 | 2.0 | 0.20 | 3.2 | 12 | Đứng ở dải Xa gõ trống: đồng bọn trong 12m được +35% tốc độ di chuyển | Ưu tiên giết — dạy người chơi chọn mục tiêu thay vì bắn con gần nhất |
 | Pháp Sư Xanh | en_support_phapsuxanh | support | D5 | 70 | 15 | 1.8 | 0.25 | 3.6 | 12 | Tạo khiên năng lượng cho 3 đồng bọn gần nhất (hấp thụ 60 damage). Khiên vỡ có tiếng riêng | Giết trước, hoặc dùng AoE để phá nhiều khiên cùng lúc |
+| Goblin Trống | en_support_trong | support | D5 | 70 | 6 | 2.0 | 0.20 | 3.2 | 12 | Đứng ở dải Xa gõ trống: đồng bọn trong 12m được +35% tốc độ di chuyển | Ưu tiên giết — dạy người chơi chọn mục tiêu thay vì bắn con gần nhất |
 | Đầu Bò Đá | en_heavy_daubo | heavy | D6 | 260 | 32 | 5.2 | 0.80 | 5.4 | 18 | Đứng gầm 1.2s rồi lao thẳng hết hành lang. Đâm tường thì choáng 2s | Bước Lùi sang bên và để nó đâm tường — rồi chém lúc nó choáng |
 | Goblin Béo | en_heavy_goblinbeo | heavy | D6 | 200 | 18 | 1.5 | 0.60 | 4.6 | 16 | Khi chết nổ ra 6 con Goblin Bầy tại chỗ | Giết khi nó còn ở dải Xa — giết ở gần là tự tạo ra một wave nữa |
 | Goblin Nỏ | en_ranged_no | ranged | D6 | 40 | 20 | 2.0 | 0.15 | 2.6 | 9 | Bắn thẳng, tốc độ 14 m/s, có tia laser đỏ báo trước 0.5s | Đổi mục tiêu ưu tiên khi thấy tia laser, hoặc dùng vật cản |

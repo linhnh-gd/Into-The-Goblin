@@ -24,6 +24,15 @@
       "sfxSpawn": "goblin_swarm_chatter", "tags": ["swarm", "perfectslash"]
     },
     {
+      "id": "en_special_goblinvang", "scale": 0.92, "name": "Goblin Vàng", "role": "special", "introDepth": 1,
+      "hp": 46, "dmg": 0, "speed": 0.0, "kbResist": 0.10, "tpCost": 1.5, "goldDrop": 26,
+      "attackType": "none",
+      "mechanic": "CHỈ spawn ở HAI LÀN BÊN nên không bao giờ chạm được người chơi, và không gây damage. Người lấp lánh vàng, nhìn thấy từ dải Xa. Giết được thì rụng ra MỘT BĂNG ĐẠN đầy — đây là nguồn đạn duy nhất trong combat không phải trả bằng stamina.",
+      "counters": "Không cần counter, nó không tấn công. Cái giá là ĐẠN và THỜI GIAN: mỗi viên bắn sang làn bên là một viên không bắn vào đám đang tới ở làn giữa, mà nó thì đang chạy tới.",
+      "sfxSpawn": "gold_chime_shimmer", "tags": ["golden", "ammo", "sidelane"],
+      "dropsMagazines": 1
+    },
+    {
       "id": "en_ranged_nemda", "scale": 0.95, "name": "Goblin Ném Đá", "role": "ranged", "introDepth": 2,
       "hp": 34, "dmg": 12, "speed": 1.8, "kbResist": 0.15, "tpCost": 2.0, "goldDrop": 6,
       "attackType": "ranged_arc", "mechanic": "Đứng ở dải Xa ném đá theo đường vòng cung, tốc độ 11 m/s",

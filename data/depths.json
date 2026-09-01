@@ -7,7 +7,7 @@
       "boss": "bs_d1_goblinvuongbeo",
       "loadoutUnlocks": ["rw_pistol_kendong", "rw_shotgun_mienghang", "rw_smg_ochuot", "mw_dagger_daogam", "mw_machete_ruarung"],
       "expectedGoldG0": 3150, "entryCost": null,
-      "teaches": "tap, hold, quẹt chém, Chém Hoàn Hảo, Cướp Đạn, Ngã Ba Hầm lần đầu",
+      "teaches": "tap, hold, quẹt chém, Chém Hoàn Hảo, Goblin Vàng, Ngã Ba Hầm lần đầu",
       "challenges": [
         { "id": "ch_d1_1", "name": "Clear Depth 1", "reward": "300 vàng + mở Trại Mỏ" },
         { "id": "ch_d1_2", "name": "Clear không dùng súng", "reward": "10 Mảnh Cốt" },

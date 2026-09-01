@@ -120,7 +120,7 @@ export class Game {
       magMult: 1, reloadMult: 1, reserveMult: 1, meleeDmg: 1, rangedDmg: 1,
       kb: 1, corpseLaunch: 1, gold: 1, hpAdd: 0, hpMult: 1, staminaAdd: 0, staminaRegenAdd: 0,
       staminaCostMult: 1, reachAdd: 0, arcAdd: 0, crit: 0.05, critMult: rw.critMult,
-      scavengeMult: 1, perfectNeed: 3, magnetMult: 1, dmgTakenMult: 1,
+      perfectNeed: 3, magnetMult: 1, dmgTakenMult: 1,
       aimCone: 4, dodgeCdMult: 1, heavyLen: null, noLowPenalty: false,
       dmgPerLuck4: 0, dmgPer1000Gold: 0, twoBlades: false, collapse: false, rofMult: 1,
     };
@@ -135,14 +135,6 @@ export class Game {
     this.staminaIdle = 0;
     this.mag = rw.mag; this.magMax = rw.mag;
     this.reserveMax = rw.reserveMax; this.reserve = rw.reserveMax;
-    this.scavenge = 0;          // so le vien dan da cuop duoc, chua du 1 vien
-    this.scavBanner = 0;        // da cuop bao nhieu vien ke tu lan bao gan nhat
-    /* Mot mang chem = scavengeReserveFracPerKill cua KHO DAN GOC cua khau dang cam.
-       Dung `rw.reserveMax` (GOC trong data, khong phai `this.reserveMax` da nang cap):
-         1. the Dan Du Tru chi nang TRAN chua, khong nang TOC DO HOI;
-         2. ti gia nay khong the lech khoi co kho dan -- doi `reserveMagsTarget` bao
-            nhieu thi no tu dong theo bay nhieu (docs/18 loi #64). */
-    this.scavPerKill = rw.reserveMax * GD.feel.melee.scavengeReserveFracPerKill;
     this.luck = 0;
     this.gold = 0;
     this.combo = 0; this.comboT = 0;
@@ -600,42 +592,33 @@ export class Game {
       this.perfectSlashes++;
       this.stam = Math.min(this.stamMax, this.stam + 12);
       this.combo = Math.min(5, this.combo + 1);
-      this.scavengeKills(killed);                           // tinh x2
       this.juice.addSlowmo(0.12, 0.35);
       this.juice.addShake(20, nx, ny);
       this.audio.duck(0.6, 0.12);
       this.audio.perfect();
-      this.ui.banner('CHÉM HOÀN HẢO', '+stamina +đạn');
+      this.ui.banner('CHÉM HOÀN HẢO', '+stamina');
       if (this.perfectSlashes % 10 === 0) this.addLuck(1, 'Chém Hoàn Hảo x10');
     }
 
-    this.scavengeKills(killed);
     if (this.mods.twoBlades) this.buffNextShot = 1;
   }
 
-  /* CUOP DAN — do bang GIAY BAN, khong bang "mot bang dan".
-     "Mot bang" khong phai mot don vi co dinh: the Bang Dan cong toi +95% `magMax`, nen
-     cung 16 mang chem ma cuoi run doi duoc gan gap doi dan so voi dau run. The do AN HAI
-     LAN -- vua cho bang to hon, vua nhan so dan cuop duoc (docs/18 loi #55).
-     Neo vao GIAY BAN thi khong the nao cham toi: no suy tu `rw.rpm` GOC, ma rpm goc
-     khong co the nao nang cap duoc (`rofMult` chi doi `fireInterval`, khong doi rw.rpm).
-     He qua: toc do hoi dan PHANG tu dau den cuoi run, va giong nhau giua moi khau.
-     Cong don theo SO LE roi tra tung vien -> thanh dan nhich len deu trong luc chem,
-     thay vi nhay mot cuc moi 16 mang. */
-  scavengeKills(killed) {
-    if (killed <= 0 || this.reserve >= this.reserveMax) return;
-    this.scavenge += killed * this.scavPerKill * (this.mods.scavengeMult || 1);
-    const whole = Math.floor(this.scavenge);
-    if (whole <= 0) return;
-    this.scavenge -= whole;
+  /* NGUON DAN DUY NHAT TRONG COMBAT: Goblin Vang (docs/04 muc 1b).
+     Truoc day la "Cuop Dan" -- moi mang chem cho mot it dan. Ti gia do phai neo vao mot
+     con so nao do, va no da sai BA LAN lien tiep (docs/18 loi #55, #62, #64): neo vao
+     magMax thi the Bang Dan an hai lan; neo vao giay ban thi lech khi kho dan doi; neo
+     vao kho dan thi lai phai tinh lai moi lan doi kho. Goc van de la mot bo dem VO HINH
+     khong the tu noi cho nguoi choi biet no dang o dau.
+     Goblin Vang thay ca co che do bang mot thu NHIN THAY VA BAN DUOC: dan khong con la
+     mot con so am tham chay len, ma la mot muc tieu tren man hinh -- co gia (dan + thoi
+     gian) va co lua chon (ban no hay ban dam dang toi o lan giua). */
+  grantMagazines(n) {
     const before = this.reserve;
-    this.reserve = Math.min(this.reserveMax, this.reserve + whole);
-    // moc bao: cu du MOT BANG GOC thi keu mot tieng, de nhip thuong van con
-    this.scavBanner += this.reserve - before;
-    if (this.scavBanner >= this.rw.mag) {
-      this.scavBanner = 0;
-      this.ui.banner('CƯỚP ĐẠN', `+${this.rw.mag} viên`);
-    }
+    this.reserve = Math.min(this.reserveMax, this.reserve + Math.round(this.magMax * n));
+    const them = this.reserve - before;
+    this.ui.banner('GOBLIN VÀNG', them > 0 ? `+${them} viên` : 'kho đạn đã đầy');
+    this.audio.perfect();
+    return them;
   }
 
   /** @param {object} o {kx,kz,kbForce,source,archetype,heavy,weakPoint,crit}
@@ -690,6 +673,12 @@ export class Game {
       }
     }
     if (def.role === 'elite') this.addLuck(2, 'Elite');
+    // GOBLIN VANG: rung ra nguyen mot bang dan -- nguon dan duy nhat trong combat
+    if (def.dropsMagazines) {
+      this.grantMagazines(def.dropsMagazines);
+      this.juice.addRing(res.x, res.z, 2.6, 0.35, false);
+      this.juice.addShake(12, 0, 1);
+    }
     return true;
   }
 

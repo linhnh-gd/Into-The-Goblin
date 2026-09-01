@@ -53,7 +53,7 @@
 | Lưỡi | Đường Quẹt Rộng | tl_luoi_arcrong | 5 | 52 | shards | +4% | Arc +40°, +1 mục tiêu |
 | Lưỡi | Mắt Đồ Tể | tl_luoi_hoanhao | 1 | 900 | gold | +5% | Chém Hoàn Hảo hồi 14 stamina (từ 12) |
 | Lưỡi | Mắt Đồ Tể | tl_luoi_hoanhao | 2 | 1395 | gold | +4% | Hồi 17 |
-| Lưỡi | Mắt Đồ Tể | tl_luoi_hoanhao | 3 | 2162 | gold | +4% | Hồi 20, Cướp Đạn tính x3 |
+| Lưỡi | Mắt Đồ Tể | tl_luoi_hoanhao | 3 | 2162 | gold | +4% | Hồi 20, và hồi thêm 2 viên đạn |
 | Lưỡi | Mắt Đồ Tể | tl_luoi_hoanhao | 4 | 3352 | gold | +4% | Hồi 24 |
 | Lưỡi | Mắt Đồ Tể | tl_luoi_hoanhao | 5 | 75 | shards | +4% | Chém Hoàn Hảo chỉ cần 2 kẻ địch |
 | Lưỡi | Nhịp Tay | tl_luoi_combo | 1 | 650 | gold | +4% | Cửa sổ combo 1.2s -> 1.35s |
@@ -61,11 +61,11 @@
 | Lưỡi | Nhịp Tay | tl_luoi_combo | 3 | 1562 | gold | +4% | -> 1.65s, bậc 5 cho x2.0 thay vì x1.8 |
 | Lưỡi | Nhịp Tay | tl_luoi_combo | 4 | 2421 | gold | +3% | -> 1.8s |
 | Lưỡi | Nhịp Tay | tl_luoi_combo | 5 | 55 | shards | +3% | Bị trúng đòn không reset combo nữa |
-| Lưỡi | Bàn Tay Cướp | tl_luoi_cuopdan | 1 | 800 | gold | +4% | Cướp Đạn cần 5.5 mạng |
-| Lưỡi | Bàn Tay Cướp | tl_luoi_cuopdan | 2 | 1240 | gold | +4% | 5 mạng |
-| Lưỡi | Bàn Tay Cướp | tl_luoi_cuopdan | 3 | 1922 | gold | +4% | 4.5 mạng |
-| Lưỡi | Bàn Tay Cướp | tl_luoi_cuopdan | 4 | 2979 | gold | +4% | 4 mạng |
-| Lưỡi | Bàn Tay Cướp | tl_luoi_cuopdan | 5 | 80 | shards | +4% | 3 mạng, và mỗi băng cướp được +10% damage |
+| Lưỡi | Mắt Thấy Vàng | tl_luoi_cuopdan | 1 | 800 | gold | +4% | Tỉ lệ Goblin Vàng mỗi wave 50% -> 60% |
+| Lưỡi | Mắt Thấy Vàng | tl_luoi_cuopdan | 2 | 1240 | gold | +4% | -> 70% |
+| Lưỡi | Mắt Thấy Vàng | tl_luoi_cuopdan | 3 | 1922 | gold | +4% | -> 80%, và nó hiện sáng hơn từ xa |
+| Lưỡi | Mắt Thấy Vàng | tl_luoi_cuopdan | 4 | 2979 | gold | +4% | -> 90% |
+| Lưỡi | Mắt Thấy Vàng | tl_luoi_cuopdan | 5 | 80 | shards | +4% | Giết Goblin Vàng cho 2 băng thay vì 1 |
 | Da | Thịt Dày | tl_da_thitday | 1 | 500 | gold | +4% | HP tối đa +15 |
 | Da | Thịt Dày | tl_da_thitday | 2 | 775 | gold | +4% | +32 |
 | Da | Thịt Dày | tl_da_thitday | 3 | 1201 | gold | +4% | +50 |

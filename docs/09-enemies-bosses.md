@@ -14,7 +14,7 @@ Dữ liệu số: `data/enemies.json` → `gen-enemies.md`. Doc này là **tri�
 | 3 | **Một con quái, một cơ chế.** Không con nào vừa tàng hình vừa hồi máu vừa triệu hồi |
 | 4 | **Trash phải chết trong 1 phát / 1 nhát** ở Depth tương ứng. Trash dai = game nhão |
 | 5 | Mỗi loại có **âm thanh riêng khi spawn** — nghe là biết phải làm gì, không cần nhìn |
-| 6 | Quái phải "đáng chém": máu ít, đông, bay đẹp → nuôi Chém Hoàn Hảo và Cướp Đạn |
+| 6 | Quái phải "đáng chém": máu ít, đông, bay đẹp → nuôi Chém Hoàn Hảo và chuỗi combo |
 
 ## 2. Bảng vai trò (chống chiến thuật gì)
 
@@ -152,6 +152,35 @@ Hai loại quái vẫn khác nhau ở chỗ **có đánh chủ động hay khôn
 | **Chỉ chặn đường** | mọi loại còn lại | Đứng yên hoàn toàn. Chỉ gây damage nếu người chơi **chạy vào** nó, và chỉ khi nó ở làn giữa |
 
 Đó là khác biệt thật giữa hai nhóm: **quái ranged đe doạ từ mọi làn, quái thường chỉ đe doạ ở làn giữa.**
+
+## 2d. Goblin Vàng — quái không đánh, chỉ để lựa chọn
+
+`en_special_goblinvang`. Con quái duy nhất trong game **không thể làm bạn mất máu**: `dmg` 0, `speed` 0,
+và nó **chỉ spawn ở hai làn bên** (`_spawnOne` ép `sideX()` bất kể template). Giết nó cho **nguyên một
+băng đạn** vào kho dự trữ — và sau khi bỏ Cướp Đạn, đây là **nguồn đạn duy nhất giữa combat** (`04` mục 1b).
+
+| Thông số | Giá trị | Vì sao |
+|---|---|---|
+| `hp` | 46 | Chết trong 1 phát shotgun gần, 2 phát xa, ~4 nhát dao |
+| `tpCost` | 1.5 | **Không tính vào ngân sách TP** — director chèn nó vào sau khi chia bài |
+| `chancePerWave` | 0.5, tối đa 1 con | ~1.5 con mỗi phòng 3 wave — đủ để trông cậy, không đủ để ỷ lại |
+| `spawnDistM` | 13–20m | Lúc hiện ra nó ở gần giữa màn hình; chạy tới gần thì dạt ra rìa |
+| `goldDrop` | 26 | Cao, nhưng **loại khỏi model vàng của audit** — nếu tính vào thì nó kéo lệch trung bình D1 |
+
+**Vì sao nó không được đánh.** Nếu Goblin Vàng gây damage thì nó thành một cái bẫy: người chơi vừa
+phải bắn nó vừa phải né nó, và quyết định biến thành phản xạ. Bỏ damage đi thì cái giá còn lại là thứ
+duy nhất đáng cân nhắc: **đạn và giây**. Bắn sang làn bên là những viên không bắn vào đám ở làn giữa
+đang đi tới, và mỗi giây chần chừ là một giây nó trôi ra rìa màn hình. Đó là một quyết định có hạn chót
+mà không cần một cơ chế trừng phạt nào.
+
+**Nó là lý do tồn tại của hai làn bên.** Trước đó hai làn bên chỉ có *"giết lấy vàng thêm"* — mà vàng
+tiêu được sau trận, nên không đủ mạnh để kéo nòng súng ra khỏi làn giữa. Bây giờ chúng có một thứ
+tiêu được **ngay trong trận**.
+
+**Đọc được nhờ art direction có sẵn.** `15` đặt luật: quái là **bóng đen**, vàng là **màu ấm duy nhất**.
+Goblin Vàng là con duy nhất phá luật đó, nên nó không cần icon hay mũi tên. Cài đặt: `slot.shimmer` bật
+theo `def.dropsMagazines`, mỗi con có `shimPhase` riêng nên chúng nhấp nháy lệch pha nhau, cộng phình
+6% theo nhịp — chuyển động là thứ mắt ngoại vi bắt được, không phải màu.
 
 ## 3. Affix (chỉ từ Depth 4)
 

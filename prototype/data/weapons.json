@@ -231,8 +231,8 @@
       "id": "mw_dagger_daogam", "name": "Dao Găm", "class": "melee", "archetype": "dagger", "tier": 1,
       "unlock": "start", "dmg": 30, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
       "reachM": 6.00, "targets": 8, "corpseLaunch": 4.0,
-      "knockback": 1.0, "critMult": 2.5, "tags": ["cheap", "scavenge", "starter"],
-      "desc": "Rẻ stamina nhất. Máy nạp đạn tốt nhất trong game: chém nhiều, đạn nhiều."
+      "knockback": 1.0, "critMult": 2.5, "tags": ["cheap", "starter"],
+      "desc": "Rẻ stamina nhất. Chém được nhiều mạng nhất trên mỗi thanh stamina."
     },
     {
       "id": "mw_machete_ruarung", "name": "Rựa Rừng", "class": "melee", "archetype": "machete", "tier": 1,
@@ -266,7 +266,7 @@
       "id": "mw_twinblade_songdao", "name": "Song Đao", "class": "melee", "archetype": "twinblade", "tier": 3,
       "unlock": "boss2", "dmg": 166, "staminaCost": 16, "swingTime": 0.34, "arcDeg": 110,
       "reachM": 6.00, "targets": 8, "corpseLaunch": 4.0,
-      "knockback": 1.0, "critMult": 2.5, "tags": ["combo", "cheap", "scavenge"],
+      "knockback": 1.0, "critMult": 2.5, "tags": ["combo", "cheap"],
       "desc": "Lên bậc combo nhanh gấp đôi. Nhịp tay quyết định damage."
     },
     {

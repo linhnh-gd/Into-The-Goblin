@@ -66,7 +66,7 @@
     { "id": "tl_luoi_hoanhao", "name": "Mắt Đồ Tể", "branch": "luoi", "ranks": [
       { "rank": 1, "cost": 900, "currency": "gold", "powerDelta": 0.05, "effect": "Chém Hoàn Hảo hồi 14 stamina (từ 12)" },
       { "rank": 2, "cost": 1395, "currency": "gold", "powerDelta": 0.045, "effect": "Hồi 17" },
-      { "rank": 3, "cost": 2162, "currency": "gold", "powerDelta": 0.045, "effect": "Hồi 20, Cướp Đạn tính x3" },
+      { "rank": 3, "cost": 2162, "currency": "gold", "powerDelta": 0.045, "effect": "Hồi 20, và hồi thêm 2 viên đạn" },
       { "rank": 4, "cost": 3352, "currency": "gold", "powerDelta": 0.04, "effect": "Hồi 24" },
       { "rank": 5, "cost": 75, "currency": "shards", "powerDelta": 0.04, "effect": "Chém Hoàn Hảo chỉ cần 2 kẻ địch" } ] },
     { "id": "tl_luoi_combo", "name": "Nhịp Tay", "branch": "luoi", "ranks": [
@@ -75,12 +75,12 @@
       { "rank": 3, "cost": 1562, "currency": "gold", "powerDelta": 0.035, "effect": "-> 1.65s, bậc 5 cho x2.0 thay vì x1.8" },
       { "rank": 4, "cost": 2421, "currency": "gold", "powerDelta": 0.03, "effect": "-> 1.8s" },
       { "rank": 5, "cost": 55, "currency": "shards", "powerDelta": 0.03, "effect": "Bị trúng đòn không reset combo nữa" } ] },
-    { "id": "tl_luoi_cuopdan", "name": "Bàn Tay Cướp", "branch": "luoi", "ranks": [
-      { "rank": 1, "cost": 800, "currency": "gold", "powerDelta": 0.045, "effect": "Cướp Đạn cần 5.5 mạng" },
-      { "rank": 2, "cost": 1240, "currency": "gold", "powerDelta": 0.04, "effect": "5 mạng" },
-      { "rank": 3, "cost": 1922, "currency": "gold", "powerDelta": 0.04, "effect": "4.5 mạng" },
-      { "rank": 4, "cost": 2979, "currency": "gold", "powerDelta": 0.04, "effect": "4 mạng" },
-      { "rank": 5, "cost": 80, "currency": "shards", "powerDelta": 0.04, "effect": "3 mạng, và mỗi băng cướp được +10% damage" } ] },
+    { "id": "tl_luoi_cuopdan", "name": "Mắt Thấy Vàng", "branch": "luoi", "ranks": [
+      { "rank": 1, "cost": 800, "currency": "gold", "powerDelta": 0.045, "effect": "Tỉ lệ Goblin Vàng mỗi wave 50% -> 60%" },
+      { "rank": 2, "cost": 1240, "currency": "gold", "powerDelta": 0.04, "effect": "-> 70%" },
+      { "rank": 3, "cost": 1922, "currency": "gold", "powerDelta": 0.04, "effect": "-> 80%, và nó hiện sáng hơn từ xa" },
+      { "rank": 4, "cost": 2979, "currency": "gold", "powerDelta": 0.04, "effect": "-> 90%" },
+      { "rank": 5, "cost": 80, "currency": "shards", "powerDelta": 0.04, "effect": "Giết Goblin Vàng cho 2 băng thay vì 1" } ] },
 
     { "id": "tl_da_thitday", "name": "Thịt Dày", "branch": "da", "ranks": [
       { "rank": 1, "cost": 500, "currency": "gold", "powerDelta": 0.04, "effect": "HP tối đa +15" },

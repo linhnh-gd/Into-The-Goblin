@@ -22,7 +22,7 @@ lại công thức. Mọi giá trị thực nằm trong `data/*.json`. **Không 
 | Ngã Ba Hầm | The Fork | `fork` |
 | Lộc | Luck | `luck` |
 | Trại Mỏ | Mine Camp | `camp` |
-| Cướp Đạn | Scavenge | `scavenge` |
+| Goblin Vàng | Golden Goblin | `golden` |
 | Nạp Hoàn Hảo | Perfect Reload | `perfectReload` |
 | Chém Hoàn Hảo | Perfect Slash | `perfectSlash` |
 | Sương Đen | Black Mist | `blackMist` |
@@ -60,7 +60,6 @@ lại công thức. Mọi giá trị thực nằm trong `data/*.json`. **Không 
 | `staminaRegenDelay` | 0.6 s | |
 | `staminaLowThreshold` | 0.50 | **dưới mức này: melee attack speed x0.5** (docs) |
 | `staminaBarFadeDelay` | 2.0 s | (docs) |
-| `scavengeKillsPerMag` | 6 | Chém Hoàn Hảo tính x2 |
 | `advanceSpeed` | 2.4 m/s | ngoài combat |
 | `dodgeDistance` / `cooldown` | 1.2 m / 2.5 s | Bước Lùi, 0.15s bất tử |
 | `dashDistance` / `cooldown` | 2.0 m / 4.0 s | Xốc Tới |

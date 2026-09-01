@@ -39,7 +39,6 @@ Không có "combo bấm nút". Chiều sâu đến từ **độ dài và hướn
 |---|---|
 | Stamina | **+12** (hoàn lại phần lớn chi phí → chém giỏi là tự nuôi được) |
 | Chuỗi chém | **+1 bậc** thay vì +1 hit (chỉ để tới mốc hút vàng) |
-| Cướp Đạn | **tính x2** (mỗi mạng = 2 điểm) |
 | Feel | slow-mo 0.12s @ 0.35x, flash trắng 1 frame, tiếng "shiiing" cao vút, chữ **CHÉM HOÀN HẢO** bay lên |
 
 Đây là **money shot** của game — cảnh dùng cho video quảng cáo (UA creative): một nhát quẹt, 5 goblin đứt
@@ -105,7 +104,7 @@ Bắn súng **không** reset chuỗi (khuyến khích trộn hai loại vũ khí
 
 | Archetype | Vai trò | Đặc trưng | Ghi chú |
 |---|---|---|---|
-| **Dao găm** | Khởi đầu, rẻ stamina | stam 12, swing 0.30s, arc 60°, 2 mục tiêu | Nuôi Cướp Đạn tốt nhất |
+| **Dao găm** | Khởi đầu, rẻ stamina | stam 12, swing 0.30s, arc 60°, 2 mục tiêu | Nhiều mạng nhất trên mỗi thanh stamina |
 | **Rựa / Dao rừng** | Cân bằng | stam 18, swing 0.38s, arc 90°, 3 mục tiêu | Mặc định tốt |
 | **Đại đao** | Xoá hàng | stam 24, swing 0.62s, arc 150°, 6 mục tiêu, launch 8m | Chém Hoàn Hảo dễ nhất |
 | **Búa / Chuỳ** | Phá khiên | stam 23–25, swing 0.55–0.70s, kb x2.5–3.2, bỏ qua khiên | Chống Goblin Khiên |
@@ -196,8 +195,8 @@ Sửa: bỏ `targets` khỏi ngân sách (`dpsMeleeEff = dmg / interval`), và t
 `meleeAdvantage` **1.45 → 0.80**. Melee DPS giờ **thấp hơn** ranged DPS ở mọi tier, và audit gate đã đảo
 chiều theo (`WPN: Melee DPS THAP HON ranged DPS o cung tier`).
 
-Doc cũ ghi lý do ngược lại: *"melee phải mạnh hơn, nếu không thì không ai dám vào gần và cơ chế Cướp Đạn
-chết"*. Lý do đó **không còn đúng** trong mô hình chạy X mét, vì người chơi **không chọn** vào gần hay
+Doc cũ ghi lý do ngược lại: *"melee phải mạnh hơn, nếu không thì không ai dám vào gần và cơ chế cướp
+đạn từ melee chết"*. Lý do đó **không còn đúng** trong mô hình chạy X mét, vì người chơi **không chọn** vào gần hay
 không — quái làn giữa tự đến trước mặt. "Vào gần" không còn là rủi ro phải trả giá.
 
 Đối mặt thật bây giờ là **đạn**:
@@ -207,7 +206,7 @@ không — quái làn giữa tự đến trước mặt. "Vào gần" không cò
 | Sát thương | **cao hơn** | thấp hơn |
 | Chi phí | **tốn đạn** (băng + dự trữ hữu hạn) | miễn phí, chỉ tốn stamina (tự hồi) |
 | Nạp lại | phải nhả tay, mất nhịp | không |
-| Cướp Đạn | — | 1 mạng chém = **0.8% kho đạn gốc** — 125 mạng mới đầy lại cả kho (`gamefeel.json` → `melee.scavengeReserveFracPerKill`) |
+| Hồi đạn | — | **Không**. Chém không còn cho đạn nữa — nguồn đạn duy nhất giữa trận là **Goblin Vàng** (`04` mục 1b) |
 
 Nên quyết định mỗi giây là: *bắn để giết nhanh mà tốn đạn*, hay *chém để giữ đạn mà chậm hơn*. Nếu dao vừa
 mạnh hơn vừa miễn phí thì không ai bắn cả — đó mới là điều phá vòng lặp, chứ không phải chuyện dám vào gần.
@@ -226,6 +225,6 @@ mạnh hơn vừa miễn phí thì không ai bắn cả — đó mới là đi�
 3. `dpsMeleeEff` = `dmg / max(swingTime, staminaCost/staminaRegen)` — **không** tính `targets` (mục 7c) — nằm trong **±25%** đường cong
    `dpsTarget(tier) × 1.45` — xem `16` mục 4.1.
 4. Melee DPS **phải THẤP HƠN** ranged DPS ở cùng tier — xem mục 7d. Súng mạnh hơn nhưng tốn đạn;
-   dao yếu hơn nhưng miễn phí và còn nạp đạn lại qua Cướp Đạn. Audit so trung bình theo từng tier.
+   dao yếu hơn nhưng miễn phí. Audit so trung bình theo từng tier.
 5. **Sàn one-shot thắng khi xung đột**: `dmg ≥ trashHp(tier) × meleeOneShotFactor` — kể cả khi nó đẩy DPS lên trên đường cong.
 6. Không vũ khí cận chiến nào one-shot được Elite ở cùng Depth (giữ đất cho boss/elite fight).

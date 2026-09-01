@@ -29,12 +29,12 @@
 
 | Tên | ID | Kiểu | Tier | Mở ở | Damage | Stamina | Swing | Arc | Reach | Mục tiêu | Xác bay | Knockback | Crit | DPS bền | Tag | Mô tả |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Dao Găm | mw_dagger_daogam | dagger | T1 | start | 30 | 16 | 0.34s | 110° | 6.00m | 8 | 4.0m | 1.0m | x2.5 | 116 | cheap, scavenge, starter | Rẻ stamina nhất. Máy nạp đạn tốt nhất trong game: chém nhiều, đạn nhiều. |
+| Dao Găm | mw_dagger_daogam | dagger | T1 | start | 30 | 16 | 0.34s | 110° | 6.00m | 8 | 4.0m | 1.0m | x2.5 | 116 | cheap, starter | Rẻ stamina nhất. Chém được nhiều mạng nhất trên mỗi thanh stamina. |
 | Rựa Rừng | mw_machete_ruarung | machete | T1 | depth1 | 30 | 16 | 0.34s | 110° | 6.00m | 8 | 4.0m | 1.0m | x2.5 | 116 | allround, perfectslash | Ba con một nhát. Cửa vào của Chém Hoàn Hảo. |
 | Búa Đá | mw_hammer_buada | hammer | T2 | depth2 | 71 | 16 | 0.34s | 110° | 6.00m | 8 | 4.0m | 1.0m | x2.5 | 276 | shieldbreak, knockback | Bỏ qua khiên. Goblin Khiên tồn tại để cái búa này có việc làm. |
 | Giáo Tre | mw_spear_giaotre | spear | T2 | depth2 | 71 | 16 | 0.34s | 110° | 6.00m | 8 | 4.0m | 1.0m | x2.5 | 276 | reach, safe, pierce | Tầm xa nhất trong các vũ khí cận chiến. Chém mà không phải vào hẳn dải Cận chiến. |
 | Đại Đao | mw_greatsword_daidao | greatsword | T3 | depth3 | 166 | 16 | 0.34s | 110° | 6.00m | 8 | 4.0m | 1.0m | x2.5 | 644 | crowd, perfectslash, wavewipe | Một nhát quẹt, sáu goblin đứt đôi, xác bay theo hướng ngón tay. Đây là cảnh trong trailer. |
-| Song Đao | mw_twinblade_songdao | twinblade | T3 | boss2 | 166 | 16 | 0.34s | 110° | 6.00m | 8 | 4.0m | 1.0m | x2.5 | 644 | combo, cheap, scavenge | Lên bậc combo nhanh gấp đôi. Nhịp tay quyết định damage. |
+| Song Đao | mw_twinblade_songdao | twinblade | T3 | boss2 | 166 | 16 | 0.34s | 110° | 6.00m | 8 | 4.0m | 1.0m | x2.5 | 644 | combo, cheap | Lên bậc combo nhanh gấp đôi. Nhịp tay quyết định damage. |
 | Phủ Nguyệt | mw_axe_phunguyet | axe | T4 | depth4 | 390 | 16 | 0.34s | 110° | 6.00m | 8 | 4.0m | 1.0m | x2.5 | 1514 | allround, knockback, crowd | Lưỡi hình bán nguyệt. Cân bằng giữa quét và đẩy. |
 | Cưa Máy | mw_chainsaw_cuamay | chainsaw | T4 | depth4 | 390 | 16 | 0.34s | 110° | 6.00m | 8 | 4.0m | 1.0m | x2.5 | 1514 | hold, sustain, gore | Không quẹt — giữ. Tiêu stamina theo giây, cắt liên tục, máu ngập màn hình. |
 | Chuỳ Trời | mw_hammer_chuytroi | hammer | T5 | boss4 | 915 | 16 | 0.34s | 110° | 6.00m | 8 | 4.0m | 1.0m | x2.5 | 3551 | knockback, shieldbreak, burst | Knockback mạnh nhất game. Xác bay mười một mét và kéo cả hàng sau theo. |
