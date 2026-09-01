@@ -23,7 +23,7 @@ lại công thức. Mọi giá trị thực nằm trong `data/*.json`. **Không 
 | Lộc | Luck | `luck` |
 | Trại Mỏ | Mine Camp | `camp` |
 | Goblin Vàng | Golden Goblin | `golden` |
-| Nạp Hoàn Hảo | Perfect Reload | `perfectReload` |
+| Nạp từng viên | Shell reload | `shellReloadSec` |
 | Chém Hoàn Hảo | Perfect Slash | `perfectSlash` |
 | Sương Đen | Black Mist | `blackMist` |
 | Mảnh Cốt | Bone Shard | `shards` |
@@ -202,13 +202,15 @@ talentCost(n) = baseCost * (powerDelta_n / powerDelta_1) ^ 1.15 * 1.55 ^ (n - 1)
 Bất biến: `powerDelta_n >= 0.02` (không talent rác) · `cost` tăng đơn điệu ·
 `powerDelta_n >= 0.5 * powerDelta_(n-1)`.
 
-### 4.8 Nạp Hoàn Hảo
+### 4.8 Reload
 
 ```
-reloadTimeActual = reloadTime * (0.55 nếu perfect | 1.00 nếu không tap | 1.30 nếu trượt)
-dmgNextMag       = dmg * (1.15 nếu perfect | 1.00)
-perfectWindow    = 0.25 s, vị trí ngẫu nhiên trong [0.45, 0.80] của thanh (seed)
+reloadTimeActual = reloadTime * reloadMult                  -- nạp cả băng
+reloadTimeActual = shellReloadSec * reloadMult              -- nạp từng viên (shotgun)
 ```
+
+Nạp từng viên KHÔNG chia cho `magMax`: chia thì thẻ Băng Đạn làm mỗi viên vào nhanh hơn.
+Nạp Hoàn Hảo đã bỏ — xem `04` mục 2.
 
 ### 4.9 Knockback
 
@@ -248,7 +250,6 @@ seed_run  = hash(playerId, runIndex, patchVersion)
 seed_room = hash(seed_run, D, r)
 seed_wave = hash(seed_room, w)
 seed_card = hash(seed_room, "card")
-seed_reload = hash(seed_room, shotCount)      -- vị trí vùng Nạp Hoàn Hảo
 ```
 Cùng seed → cùng kết quả. Cần cho replay, preview phòng, QA và báo bug.
 

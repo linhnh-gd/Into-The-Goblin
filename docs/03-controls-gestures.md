@@ -20,7 +20,7 @@
 | **Slide dọc xuống** | Tốc độ `>= 360 px/s`, góc lệch khỏi *dọc* `<= 25°`, hướng xuống | **Bước Lùi**: lùi 1.2m, 0.15s bất tử, cooldown 2.5s | — |
 | **Slide dọc lên** | Như trên, hướng lên | **Xốc Tới**: tiến 2.0m, đẩy văng quái trên đường, cooldown 4s | — |
 | **Two-finger tap** | 2 ngón chạm trong `120ms` | Kích Bảo Vật / Ultimate | — |
-| **Tap nút góc phải-dưới** | — | Reload thủ công / Nạp Hoàn Hảo | Tầm xa |
+| **Tap nút góc phải-dưới** | — | Reload thủ công (đường tắt, không bắt buộc) | Tầm xa |
 
 ### Vùng chết (dead zone) — quy tắc bất khả xâm phạm
 
@@ -283,7 +283,7 @@ Quẹt dọc lên (Xốc Tới) và quẹt dọc xuống (Bước Lùi) **đã b
 |---|---|---|
 | **Chế độ Hai Vùng** | Nửa dưới màn hình = chỉ chém, nửa trên = chỉ bắn | Cứu người chơi không quẹt được dứt khoát. Bật được từ Settings và được gợi ý tự động nếu tỉ lệ input bị huỷ > 15% trong 2 run |
 | **Nút Chém** | Hiện 1 nút chém ở góc trái-dưới (chém tự động vào con gần nhất) | Accessibility / tay yếu |
-| **Auto-reload** | Bật mặc định. Tắt để chơi Nạp Hoàn Hảo thủ công | |
+| **Auto-reload** | Bật mặc định. Hết băng là tự nạp, không phải bấm gì | |
 | **Aim assist** | Hút tâm 4° tới đầu quái gần nhất trong dải Giữa/Xa, giảm còn 1.5° ở Depth 5+ | Portrait FPS ngón tay to, không có aim assist là không chơi được |
 | **Rung** | 3 mức + tắt | |
 | **Nhạy độ dài slide** | Kéo `heavySlideLength` từ 0.40S đến 0.70S | Người tay nhỏ / màn hình lớn |

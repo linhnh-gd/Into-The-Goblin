@@ -31,7 +31,7 @@
 | D3 | Clear Depth 3 | 1500 vàng |
 | D3 | Giết 20 Goblin Khiên bằng cận chiến | 15 Mảnh Cốt |
 | D3 | Clear không để Sương Đen kích hoạt lần nào | 3 Phôi Rèn |
-| D3 | Clear với Nạp Hoàn Hảo >= 80% | 1 Bảo Vật |
+| D3 | Clear không để hết sạch băng đạn lần nào | 1 Bảo Vật |
 | D3 | Clear dùng đúng 1 vũ khí | mở Elite Depth 3 |
 | D4 | Clear Depth 4 | 3200 vàng |
 | D4 | Giết 15 Dơi Hầm bằng cận chiến | 20 Mảnh Cốt |

@@ -18,7 +18,6 @@ Ba tầng vòng lặp. Tầng nào cũng phải có **quyết định**, không 
         |                   [RELOAD 1.4-4.5s]               |
         |                   chỉ được chém                    |
         |                          |                        |
-        |                    Nạp Hoàn Hảo? --> -45% thời gian|
         |                          |          +15% dmg băng  |
         v                          v                        |
    [Quái vào dải Cận chiến] <------+                        |

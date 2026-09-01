@@ -161,7 +161,6 @@
     { "event": "Shotgun", "pattern": "heavy impact" },
     { "event": "Chém trúng", "pattern": "medium impact" },
     { "event": "Chém Hoàn Hảo", "pattern": "success (2 nhịp)" },
-    { "event": "Nạp Hoàn Hảo", "pattern": "selection click giòn" },
     { "event": "Nạp trượt (kẹt đạn)", "pattern": "error" },
     { "event": "Bị trúng", "pattern": "heavy + 40ms" },
     { "event": "Mở cửa ở Ngã Ba", "pattern": "rung 0.35s một nhịp nặng" },

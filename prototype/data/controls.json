@@ -7,7 +7,7 @@
     { "id": "gs_slide_light", "name": "Slide nhẹ", "condition": "tốc độ đỉnh >= 900 px/s trong <=250ms đầu, dài 0.12S–0.55S, góc lệch khỏi ngang <= 55°", "action": "Chém nhẹ", "weapon": "melee" },
     { "id": "gs_slide_heavy", "name": "Slide nặng", "condition": "như slide nhẹ nhưng dài > 0.55S", "action": "Chém nặng: 2x stamina, 2.0x damage, 2.2x knockback, arc +30°", "weapon": "melee" },
     { "id": "gs_twofinger", "name": "Two-finger tap", "condition": "2 ngón chạm trong 120ms", "action": "Kích Bảo Vật / Ultimate", "weapon": "none" },
-    { "id": "gs_reload", "name": "Nút Reload", "condition": "tap nút góc phải-dưới", "action": "Reload thủ công / bắt cửa sổ Nạp Hoàn Hảo", "weapon": "ranged" }
+    { "id": "gs_reload", "name": "Nút Reload", "condition": "tap nút góc phải-dưới", "action": "Reload thủ công", "weapon": "ranged" }
   ],
   "params": [
     { "key": "tapMaxDuration", "value": 130, "unit": "ms", "note": "Do TRE truoc khi sung bat dau ban lien tuc. Tang neu tester muon ban ma ra dao" },
@@ -35,7 +35,7 @@
   "accessibility": [
     { "id": "ac_haivung", "name": "Chế độ Hai Vùng", "desc": "Nửa dưới màn hình = chỉ chém, nửa trên = chỉ bắn. TU DONG goi y neu ti le input bi huy > 15% trong 2 run. Mac dinh BAT cho nguoi moi trong 3 run dau (A/B test)" },
     { "id": "ac_nutchem", "name": "Nút Chém", "desc": "Hiện 1 nút chém góc trái-dưới, tự chém con gần nhất" },
-    { "id": "ac_autoreload", "name": "Auto-reload", "desc": "Bật mặc định. Vẫn tap được để lấy Nạp Hoàn Hảo" },
+    { "id": "ac_autoreload", "name": "Auto-reload", "desc": "Bật mặc định. Hết băng là tự nạp, không phải bấm gì" },
     { "id": "ac_aimassist", "name": "Aim assist", "desc": "Hút tâm 4° tới đầu quái gần nhất ở dải Giữa/Xa, giảm còn 1.5° từ Depth 5" },
     { "id": "ac_haptic", "name": "Rung", "desc": "3 mức + tắt" },
     { "id": "ac_slidelen", "name": "Nhạy độ dài slide", "desc": "Kéo heavySlideLength từ 0.40S đến 0.70S" }

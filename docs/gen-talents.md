@@ -21,11 +21,11 @@
 | Nòng | Tay Thép | tl_nong_taythep | 3 | 1441 | gold | +3% | Reload -18% |
 | Nòng | Tay Thép | tl_nong_taythep | 4 | 2234 | gold | +3% | Reload -24% |
 | Nòng | Tay Thép | tl_nong_taythep | 5 | 48 | shards | +3% | Reload -30% |
-| Nòng | Cò Vàng | tl_nong_covang | 1 | 800 | gold | +4% | Cửa sổ Nạp Hoàn Hảo +15% |
-| Nòng | Cò Vàng | tl_nong_covang | 2 | 1240 | gold | +4% | Cửa sổ +30% |
-| Nòng | Cò Vàng | tl_nong_covang | 3 | 1922 | gold | +4% | Cửa sổ +50%, buff damage +18% |
-| Nòng | Cò Vàng | tl_nong_covang | 4 | 2979 | gold | +4% | Cửa sổ +70%, buff +22% |
-| Nòng | Cò Vàng | tl_nong_covang | 5 | 60 | shards | +4% | Nạp trượt không còn bị phạt 1.30x |
+| Nòng | Cò Vàng | tl_nong_covang | 1 | 800 | gold | +4% | Viên đầu tiên sau mỗi lần nạp +25% damage |
+| Nòng | Cò Vàng | tl_nong_covang | 2 | 1240 | gold | +4% | +40% |
+| Nòng | Cò Vàng | tl_nong_covang | 3 | 1922 | gold | +4% | +55% |
+| Nòng | Cò Vàng | tl_nong_covang | 4 | 2979 | gold | +4% | +70% |
+| Nòng | Cò Vàng | tl_nong_covang | 5 | 60 | shards | +4% | Hai viên đầu, không phải một |
 | Nòng | Chuỗi Bắn | tl_nong_chuoiban | 1 | 700 | gold | +3% | Chuỗi Bắn cộng thêm +6% |
 | Nòng | Chuỗi Bắn | tl_nong_chuoiban | 2 | 1085 | gold | +3% | +12% |
 | Nòng | Chuỗi Bắn | tl_nong_chuoiban | 3 | 1682 | gold | +3% | +18% |

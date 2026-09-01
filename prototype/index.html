@@ -61,7 +61,6 @@
         <svg id="rlRing" viewBox="0 0 64 64" aria-hidden="true">
           <circle class="trk" cx="32" cy="32" r="26" />
           <circle class="spin" cx="32" cy="32" r="26" />
-          <circle class="win" cx="32" cy="32" r="26" />
           <circle class="arc" cx="32" cy="32" r="26" />
         </svg>
         <b id="rlSec">0.0</b>
@@ -106,17 +105,15 @@
       <h1>INTO THE <em>GOBLIN</em></h1>
       <p class="tag">Xuống sâu nữa. Vàng ở dưới đó.</p>
       <ul class="how">
-        <li><b>CHẠM</b> = bắn <b>đúng chỗ chạm</b>. Chọn được mục tiêu, và là cách duy nhất trúng <b>yếu điểm</b> (bụng Ogre = x2) — nhưng chạm hụt là mất viên đạn</li>
-        <li><b>GIỮ</b> = bắn liên tục, súng <b>tự nhắm</b> con gần nhất ở làn giữa. Không phải nghĩ, đổi lại không chọn được mục tiêu và không ăn yếu điểm</li>
-        <li><b>Nhả tay</b> = cất súng, nạp đạn. Còn đạn thì chạm tiếp huỷ nạp; hết sạch thì chạm đúng <b>vạch xanh</b> dưới tâm ngắm = <b>Nạp Hoàn Hảo</b></li>
-        <li>Băng đạn, thời gian nạp và <b>nhịp bắn</b> đều hiện <b>ngay dưới tâm ngắm</b> — không phải nhìn xuống góc</li>
-        <li><b>QUẸT</b> = chém. Rê tiếp thì <b>chém liên tục</b>, tốn stamina</li>
-        <li><b>3 làn</b>: chỉ quái <b>làn giữa</b> đụng được bạn. Hai bên giết là <b>vàng thêm</b></li>
-        <li>Tự chạy 4.2 m/s · hết <b>150m</b> là xong phòng · chém hồi đạn: <b>1 mạng = 0.3 giây bắn</b>, không đổi cả run</li>
+        <li><b>CHẠM</b> = bắn đúng chỗ chạm. Cách duy nhất trúng <b>yếu điểm</b> (bụng Ogre = x2) — nhưng chạm hụt là mất viên đạn</li>
+        <li><b>GIỮ</b> = bắn liên tục, súng <b>tự nhắm</b>. Không phải nghĩ, đổi lại không ăn yếu điểm</li>
+        <li><b>QUẸT</b> = chém. Rê tiếp thì chém liên tục, tốn stamina</li>
+        <li>Ngón tay <b>ĐI</b> là dao, <b>DỪNG</b> là súng — đổi qua lại ngay trong một cú chạm, không cần nhấc tay</li>
+        <li>Chỉ quái <b>làn giữa</b> đụng được bạn. Hai bên là vàng thêm — và là chỗ <b>Goblin Vàng</b> hiện ra</li>
+        <li>Giết <b>Goblin Vàng</b> = <b>1 băng đạn</b>. Giữa trận không còn cách nào khác để có đạn</li>
       </ul>
       <button class="cta" id="btnStart" disabled>XUỐNG HẦM</button>
       <div class="opts">
-        <label><input type="checkbox" id="optDbg" /> Hiện đo input (Sprint 0)</label>
         <label class="sel">Bắt đầu ở
           <select id="optDepth">
             <option value="1" selected>Depth 1 — Hầm Đá (goblin thường)</option>
@@ -137,8 +134,6 @@
             <option value="mw_hammer_buada">Búa Đá — <b>BỎ QUA KHIÊN</b> Goblin Khiên</option>
           </select>
         </label>
-        <p class="foot">Mọi dao đều chém <b>8 mục tiêu</b>, tầm <b>6m</b>, cùng nhịp — tier chỉ tăng sát thương.
-          Dao <b>không còn bonus sát thương theo chuỗi chém</b>: sát thương phẳng, đổi lại nó miễn phí và nạp đạn hộ bạn.</p>
       </div>
       <p class="foot" id="loadNote">Đang tải dữ liệu cân bằng từ <code>data/*.json</code>…</p>
     </div>

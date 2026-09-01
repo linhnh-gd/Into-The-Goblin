@@ -29,7 +29,7 @@ Nếu **có** → mọi thứ còn lại chỉ là công việc.
 - 1 Depth (10 phòng), 6 loại quái, 1 boss, 3 súng, 3 dao.
 - Wave director theo TP, wave delay 1.5–2.0s, Sương Đen.
 - **Ngã Ba Hầm đầy đủ** (2 cửa, biển báo, 4 ràng buộc ẩn) + hệ **Lộc**.
-- Vòng khoá Đạn ↔ Stamina (Goblin Vàng là nguồn đạn duy nhất giữa trận) + Nạp Hoàn Hảo + Chém Hoàn Hảo.
+- Vòng khoá Đạn ↔ Stamina (Goblin Vàng là nguồn đạn duy nhất giữa trận) + Chém Hoàn Hảo.
 - Juice: hitstop, shake, gold burst, coin chime ladder, xác bay theo slide.
 - Chưa cần: meta, Trại Mỏ, IAP, art cuối.
 
@@ -69,7 +69,6 @@ Nếu **có** → mọi thứ còn lại chỉ là công việc.
 | Số quái tối đa thấy được trong 1 wave | >= 60 trước Depth 2 | `tpMult` của wave flood, `tpCost` của trash |
 | Tỉ lệ thời gian dùng melee | 25–45% | `directorRules.golden.chancePerWave`, `reserveMax` |
 | Số lần Chém Hoàn Hảo / run | 8–20 | `arcDeg`, `targets`, mật độ spawn |
-| Tỉ lệ Nạp Hoàn Hảo thành công | 45–70% | độ rộng cửa sổ |
 | Run kết thúc vì chết (không phải quit) | > 80% | nếu quit nhiều → nhàm hoặc quá dài |
 | Độ dài run | 4–6 phút | số phòng / Depth |
 | Frame time p95 | < 18 ms | cap crowd agent, hạt |

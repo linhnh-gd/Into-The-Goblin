@@ -136,7 +136,7 @@ hiểm tăng vọt.
 | Leo thang độ khó | **docs gốc của dự án** | Tự tăng theo phòng và theo wave — không có dial cho người chơi |
 | Hook quyết định | Slay the Spire / Archero node map + docs gốc | **Ngã Ba Hầm**: mỗi Cổng chọn 1 trong 2 cửa có biển báo |
 | Cấu trúc run | Archero + CoH Final Stand | Room graph, wave → Cổng → 3 thẻ → wave |
-| Combat tay | docs + ZOMBIE SLASH + Gears | Tap bắn / Slide chém / Nạp Hoàn Hảo |
+| Combat tay | docs + ZOMBIE SLASH + Gears | Tap bắn / Slide chém / ngón đi là dao, dừng là súng |
 | Đánh đổi mỗi giây | Biến thể của Archero (move-vs-shoot) | **Đạn vs Stamina**: hết đạn phải vào gần chém, chém đủ thì có đạn |
 | Meta | Into the Dead 2 | Weapon XP + Talent + Trại Mỏ |
 | Juice | Vampire Survivors + lý thuyết game feel | Hitstop 3–5 frame, shake có hướng, gold burst, coin chime ladder |

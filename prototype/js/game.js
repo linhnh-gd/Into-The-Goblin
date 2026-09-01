@@ -147,7 +147,6 @@ export class Game {
     this.buffNextSlash = 0;
 
     this.reloading = false; this.reloadT = 0; this.reloadDur = 0;
-    this.reloadWin = [0, 0]; this.reloadTapped = false; this.perfectMag = false;
     this.fireCd = 0;
     /* NHIP BAN: giay giua 2 phat. HUD doc thang tu day de ve dong ho quanh tam ngam
        (shotgun 48 nhip/phut = 1.25s -- khong hien thi thi nguoi choi tuong sung ket). */
@@ -461,7 +460,6 @@ export class Game {
     const hitCfg = hitCfgOf(rw);
     const crit = Math.random() < this.mods.crit;
     let unit = rw.dmg * this.mods.rangedDmg * this.dmgBuff * this.chainMult;
-    if (this.perfectMag) unit *= 1.15;
     if (this.buffNextShot > 0) { unit *= 1.6; this.buffNextShot = 0; }
     if (crit) unit *= this.mods.critMult;
 
@@ -725,7 +723,7 @@ export class Game {
         /* Het sach dan: khong huy reload duoc, nhung cai cham do KHONG bi vut di --
            no thanh cu NAP HOAN HAO. Truoc day muon nap hoan hao phai bam trung nut
            o goc duoi ben phai, tuc phai roi mat khoi dam quai dung luc dong nhat. */
-        this.tryPerfectReload();
+        this._dryClick();
         return false;
       }
     }
@@ -777,7 +775,6 @@ export class Game {
     if (!this.reloading) return;
     this.reloading = false;
     this.reloadT = 0;
-    this.reloadTapped = false;
     this.ui.reloadEnd();
     this.audio.reloadClick(false);
   }
@@ -825,39 +822,24 @@ export class Game {
   }
   /* NAP DAN. Hai kieu, doc tu archetypeSpec[archetype].reloadStyle:
        "mag"   (mac dinh) — thay ca bang, xong het mot lan.
-       "shell" (shotgun)  — NAP TUNG VIEN. Moi vien mat reloadTime/magMax giay; nap
-                 xong mot vien la co ngay mot vien de ban. Nap day ca bang van ton
-                 dung reloadTime -- khong nhanh hon -- nhung nguoi choi duoc quyen
-                 CAT NGANG bat cu luc nao: con 1 vien trong o ma dam quai toi sat thi
-                 ban luon, khong phai dung im cho het bang. Do la ca tinh cua shotgun.
+       "shell" (shotgun)  — NAP TUNG VIEN. Nap xong mot vien la co ngay mot vien de
+                 ban, nen nguoi choi duoc quyen CAT NGANG bat cu luc nao: con 1 vien
+                 trong o ma dam quai toi sat thi ban luon, khong phai dung im cho het
+                 bang. Do la ca tinh cua shotgun.
      @param {boolean} continuing true = vien tiep theo cua chuoi nap tung vien */
   startReload(continuing = false) {
     if (this.reloading || this.mag >= this.magMax || this.reserve <= 0) return;
     this.reloading = true;
-    const full = this.rw.reloadTime * this.mods.reloadMult;
-    this.reloadDur = this.shellReload ? full / Math.max(1, this.magMax) : full;
+    /* MOI VIEN TON MOT KHOANG CO DINH, khong phai `reloadTime / magMax`.
+       Chia cho `magMax` nghia la the Bang Dan lam moi vien vao NHANH HON -- bang to
+       gap doi thi moi vien nhanh gap doi, dung nguoc voi thuc te va dung lai kieu loi
+       neo vao mot con so nang cap duoc (nhu Cuop Dan cu, loi #55). Gio bang to hon thi
+       nap lau hon vi co nhieu vien hon phai vao -- con NHIP thi khong doi ca run. */
+    this.reloadDur = this.shellReload
+      ? (GD.weapons.balance.archetypeSpec[this.rw.archetype].shellReloadSec) * this.mods.reloadMult
+      : this.rw.reloadTime * this.mods.reloadMult;
     this.reloadT = 0;
-    this.reloadTapped = false;
-    // Nap Hoan Hao tinh lai tu dau moi lan nap MOI (khong phai moi vien ghem)
-    if (!continuing) this.perfectMag = false;
-    const start = 0.45 + Math.random() * 0.35;
-    this.reloadWin = [start, Math.min(0.97, start + 0.25 / this.reloadDur)];
-    this.ui.reloadStart(this.reloadWin);
-  }
-  tryPerfectReload() {
-    if (!this.reloading || this.reloadTapped) return;
-    const p = this.reloadT / this.reloadDur;
-    /* 20% dau bang dan chua ra khoi sung -- cham trong khoang do la cai cham cuoi cua
-       loat ban vua roi, khong phai y dinh nap. Vi cham o dau la bam BAT KY DAU tren
-       man hinh nen phai bo qua, neu khong moi lan het dan la an phat +30% thoi gian. */
-    if (p < 0.2) return;
-    this.reloadTapped = true;
-    const ok = p >= this.reloadWin[0] && p <= this.reloadWin[1];
-    this.audio.reloadClick(ok);
-    if (ok) { this.reloadDur *= 0.55; this.perfectMag = true; this.ui.banner('NẠP HOÀN HẢO', '+15% damage'); }
-    else { this.reloadDur *= 1.3; this.juice.addShake(8, 0, 1); }
-    this.reloadStats = this.reloadStats || { ok: 0, total: 0 };
-    this.reloadStats.total++; if (ok) this.reloadStats.ok++;
+    this.ui.reloadStart();
   }
   _finishReload() {
     if (this.shellReload) {
@@ -1061,7 +1043,23 @@ export class Game {
   }
 
   /* ======================= CHUYEN PHONG ======================= */
+
+  /** DUNG MOI THAO TAC DANG GIU.
+      Man hinh Cong la mot khoanh khac KHONG CHIEN DAU, nhung `step()` van chay va
+      `holdPt` / `slicing` van con nguyen -- sung ban het ca bang lan kho du tru vao
+      khoang khong trong luc nguoi choi dang doc the nang cap, con stamina thi tut ve 0.
+      Do duoc: giu ban roi don sach phong -> bang 22 vien can sach sau 3.7 giay, van con
+      `holdPt`. Va khong the trong cho `pointerup` don dep ho: ngon tay nhac len TREN LOP
+      UI chu khong phai tren canvas nen router khong bao gio nhan duoc (docs/18 loi #70). */
+  stopCombatInput() {
+    this.holdPt = null;
+    this.slicing = false;
+    this.gunRelease();
+    this.input.reset();
+  }
+
   _roomCleared() {
+    this.stopCombatInput();
     if (this.roomNoHit) this.addLuck(1, 'phòng không mất máu');
     // docs/11: don sach phong -> ban kinh hut vang x3, "tat ca bay ve"
     this.roomClearSweep = 1.4;
@@ -1128,7 +1126,7 @@ export class Game {
 
   endRun(won) {
     this.running = false;
-    this.holdPt = null;
+    this.stopCombatInput();
     const secs = (performance.now() - this.startedAt) / 1000;
     this.ui.showEnd({
       won,
@@ -1142,7 +1140,6 @@ export class Game {
       secs,
       cancelRate: this.input.cancelRate(),
       inputs: this.input.stats,
-      reload: this.reloadStats || { ok: 0, total: 0 },
       fps: this.perf.fps,
       alive: this.pool.aliveCount,
     });

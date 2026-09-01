@@ -21,7 +21,7 @@ export class UI {
       cdTime: $('cdTime'),
       ammoHud: $('ammoHud'), ammoStrip: $('ammoStrip'), ammoPips: $('ammoPips'),
       rlRing: $('rlRing'), rlSec: $('rlSec'),
-      rlArc: $('rlRing')?.querySelector('.arc'), rlWin: $('rlRing')?.querySelector('.win'),
+      rlArc: $('rlRing')?.querySelector('.arc'),
       ammoMag: $('ammoMag'), ammoRes: $('ammoRes'), ammoState: $('ammoState'),
       hurtFlash: $('hurtFlash'), lowHp: $('lowHp'), tapMark: $('tapMark'),
       btnReload: $('btnReload'), dbg: $('dbg'),
@@ -107,18 +107,12 @@ export class UI {
   mist(level) { this.el.mist.style.opacity = String(level); }
 
   /* ---------------- reload ----------------
-     Thanh nap chay NGAY DUOI TAM NGAM chu khong o nut goc phai: nguoi choi phai cham
-     dung cua so xanh de "Nap Hoan Hao", ma cua so do chi rong ~0.25s -- bat ho nhin
-     xuong goc man hinh dung luc dam quai dang toi la bat ho chon giua hai thu. */
-  reloadStart(win) {
-    const C = this.RL_CIRC;
+     Thanh nap chay NGAY DUOI TAM NGAM chu khong o nut goc phai: het dan la luc cang
+     nhat, bat nguoi choi nhin xuong goc man hinh dung luc do la bat ho chon giua nhin
+     dam quai va nhin thanh nap. */
+  reloadStart() {
     this.el.ammoHud.classList.add('rl');
-    // vach xanh = cua so Nap Hoan Hao, ve dung doan [win0, win1] tren vong tron
-    const w0 = Math.max(0, Math.min(1, win[0]));
-    const w1 = Math.max(w0, Math.min(1, win[1]));
-    this.el.rlWin.style.strokeDasharray = `${C * (w1 - w0)} ${C}`;
-    this.el.rlWin.style.strokeDashoffset = String(-C * w0);
-    this.el.rlArc.style.strokeDasharray = `0 ${C}`;
+    this.el.rlArc.style.strokeDasharray = `0 ${this.RL_CIRC}`;
   }
   reloadProgress(p) {
     const C = this.RL_CIRC;
@@ -343,7 +337,6 @@ export class UI {
       ['PHÒNG (R)', r.globalRoom],
       ['THỜI GIAN', `${r.secs.toFixed(0)}s`],
       ['INPUT HUỶ', `${(r.cancelRate * 100).toFixed(1)}%`],
-      ['NẠP HOÀN HẢO', r.reload.total ? `${Math.round((r.reload.ok / r.reload.total) * 100)}%` : '—'],
     ];
     e.endStats.innerHTML = cells.map(([k, v]) => `<div><b>${v}</b><span>${k}</span></div>`).join('');
 

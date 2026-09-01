@@ -59,28 +59,35 @@ thành vô dụng và P2 chết.
 
 ---
 
-## 2. Reload & Nạp Hoàn Hảo (Perfect Reload)
+## 2. Reload — không còn Nạp Hoàn Hảo
 
-```
-   Hết đạn (hoặc tap nút Reload)
-        |
-        v
-   [======== thanh reload ========]
-             ^          ^
-             |          +-- vùng THƯỜNG
-             +-- vùng HOÀN HẢO (0.25s, vị trí ngẫu nhiên trong 45%-80% thanh)
-```
+Nạp Hoàn Hảo (chạm đúng cửa sổ 0.25s trên thanh nạp = 55% thời gian + 15% damage cả băng)
+**đã bỏ**. Lý do nằm ở chỗ nó đòi một thứ mà chính game này không cho phép: **nhìn xuống thanh
+nạp**. `14` mục 7 đã phải chuyển thanh nạp lên sát tâm ngắm vì hết đạn là lúc căng nhất, không
+được bắt người chơi rời mắt khỏi đám quái. Nhưng dời chỗ chỉ chữa được triệu chứng — bản thân cơ
+chế **vẫn** là "canh một cửa sổ hẹp bằng mắt, đúng lúc mắt đang bận". Một cơ chế mà cách chơi tối
+ưu là *phớt lờ nó đi* thì nó không phải chiều sâu, nó là thuế.
 
-| | Không tap | Tap trong vùng Hoàn Hảo | Tap ngoài vùng |
-|---|---|---|---|
-| Thời gian reload | 100% | **55%** | **130%** (kẹt đạn, rung mạnh) |
-| Băng đạn kế tiếp | thường | **+15% damage** cả băng | thường |
-| VFX | — | Vòng vàng loé + tiếng lên quy lát giòn | Tia lửa đỏ + tiếng kẹt |
+| Trước | Bây giờ |
+|---|---|
+| Hết đạn → thanh nạp có vạch xanh → chạm đúng vạch = 55% thời gian + 15% damage | Hết đạn → **tự nạp**, không phải bấm gì |
+| Chạm trượt = 130% thời gian (phạt) | Không còn phạt |
+| Còn đạn thì chạm huỷ nạp, bắn tiếp | **Giữ nguyên** — đây mới là quyết định thật |
 
-- Vị trí vùng Hoàn Hảo **ngẫu nhiên có seed** (xem quy tắc 6 ở `16`) → không học vẹt được.
-- Trong lúc reload: **súng bị khoá hoàn toàn** (docs), chỉ chém được. Đây là lúc căng nhất của mỗi vòng giây.
-- `Auto-reload` bật mặc định; khi bật vẫn có thể tap để lấy Hoàn Hảo.
+Cái quyết định **được giữ lại** là cái duy nhất không cần nhìn xuống: *nạp nốt cho đầy, hay cắt
+ngang để bắn ngay bằng số đạn đang có*. Nó nhìn vào **đám quái** để quyết, không nhìn vào thanh nạp.
 
+### 2a. Shotgun nạp TỪNG VIÊN — và nhịp đó là hằng số
+
+`archetypeSpec.shotgun.reloadStyle = "shell"`. Nạp xong một viên là có ngay một viên để bắn, nên
+người chơi cắt ngang được bất cứ lúc nào: còn 1 viên trong ổ mà đám quái tới sát thì bắn luôn.
+
+Nhịp mỗi viên đọc từ `archetypeSpec.shotgun.shellReloadSec` = **1.05s**, và nó **không** phải
+`reloadTime / magMax` như bản cũ. Chia cho `magMax` nghĩa là thẻ Băng Đạn làm **mỗi viên vào nhanh
+hơn**: đo được băng 5 → 0.75s/viên, băng 10 → 0.38s, băng 20 → 0.19s. Băng to gấp bốn thì nạp mỗi
+viên nhanh gấp bốn — đúng ngược với thực tế, và đúng kiểu lỗi **neo vào một con số nâng cấp được**
+đã gặp ở Cướp Đạn (`18` lỗi #55). Neo vào hằng số thì băng to hơn = nạp lâu hơn vì có nhiều viên
+hơn phải vào, còn **nhịp thì không đổi cả run**.
 
 ## 2b. HAI CHẾ ĐỘ NGẮM: chạm thì nhắm, giữ thì tự nhắm
 

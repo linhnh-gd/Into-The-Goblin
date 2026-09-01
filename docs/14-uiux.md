@@ -35,11 +35,11 @@ vùng ngón tay hoạt động và ngoài vùng quái xuất hiện.
 | Vùng chiến đấu | 8–75% | Chỉ game | Tâm ngắm ở **62%** (thấp hơn giữa, vì ngón tay đến từ dưới) |
 | Vòng nhịp bắn | quanh tâm ngắm | Vòng tròn đường kính 48px, viền 2.6px | Chỉ hiện khi nhịp ≥ 0.25s. Số giây chỉ hiện khi nhịp ≥ 0.5s |
 | **Băng đạn** | **77–83%** | Vạch đạn + số đạn + `ĐANG NẠP`/`HẾT BĂNG` | **Ngay dưới dải cận chiến**: không che quái, vẫn trong tầm liếc mắt |
-| **Đang nạp** | thay chỗ băng đạn | Vòng tròn 64px **xoay** + cung tiến độ + vạch xanh Nạp Hoàn Hảo | Nạp = không bắn được: phải là thứ to nhất trong cột, xem mục 7c |
+| **Đang nạp** | thay chỗ băng đạn | Vòng tròn 64px **xoay** + cung tiến độ | Nạp = không bắn được: phải là thứ to nhất trong cột, xem mục 7c |
 | **Stamina** | **84–88%** | Hiện khi chém, fade 2s | **Cùng cột với đạn**, không ở góc: nó gác việc còn chém được hay không |
 | Viền màn hình | rìa | Chớp đỏ khi trúng đòn · đập đỏ khi HP < 35% · tím khi Sương Đen | Kênh riêng cho **sinh tồn**, xem mục 7e |
 | Vàng | 90–96% | | Thông tin **không** cần trong lúc đánh — góc dưới là đúng chỗ của nó |
-| Nút | 96–100% | Chỉ 1 nút `NẠP`, và chỉ là đường tắt | Nạp Hoàn Hảo chạm được ở **bất kỳ đâu** trên màn hình |
+| Nút | 96–100% | Chỉ 1 nút `NẠP`, và chỉ là đường tắt | Hết băng là **tự nạp** — nút này không bắt buộc bấm |
 
 **Camera chúi 8°** để quái ở dải Cận chiến rơi vào 45–75% chiều cao — trên vùng ngón tay che.
 
@@ -90,7 +90,6 @@ Thông tin chỉ để đọc thì đặt trên. Đây là quy chuẩn mobile 20
 | 5 | **Ngã Ba Hầm** (2 cửa có biển báo) | giây 12 (Cổng đầu) |
 | 6 | Thẻ nâng cấp | Cổng thứ 2 |
 | 7 | Shop | phòng 3 |
-| 8 | Nạp Hoàn Hảo | phòng 4 (khi reload lần thứ 5) |
 | 9 | Trại Mỏ | sau khi clear Depth 1 |
 | 10 | Talent | đầu session 2 (D1) |
 
@@ -159,15 +158,13 @@ sáng** — làm tròn xuống 0 là nói dối người chơi đúng lúc họ 
 |---|---|---|
 | Vòng đứt nét **xoay liên tục** | tín hiệu | "đang chờ" — ký hiệu ai cũng đọc được, và **xoay** thì thị giác ngoại vi bắt được ngay cả khi mắt đang khoá vào đám quái |
 | Cung vàng chạy | số liệu | còn bao nhiêu phần |
-| Vạch xanh trên vòng | mục tiêu | cửa sổ **Nạp Hoàn Hảo** — chạm khi cung vàng chạm vạch xanh |
 | Số ở giữa vòng | chính xác | giây còn lại |
 | Chữ dưới vòng | trạng thái | `ĐANG NẠP`, hoặc `ĐANG NẠP VIÊN 3/5` với súng nạp từng viên |
 
 Một thanh mảnh 13px **không đủ**: nạp là trạng thái người chơi **không bắn được**, nó phải hét lên,
-không phải thì thầm. Và vì cửa sổ xanh chỉ rộng ~0.25s nên nó **bắt buộc** phải nằm trong tầm liếc:
-bắt người chơi canh 0.25s ở góc màn hình là bắt họ chọn giữa nạp giỏi và sống sót. Kéo theo một
-thay đổi điều khiển: **chạm bất kỳ đâu trên màn hình** đều tính là cú Nạp Hoàn Hảo (20% đầu bỏ qua,
-vì đó là cú chạm cuối của loạt bắn vừa rồi chứ không phải ý định nạp).
+không phải thì thầm. Hết đạn là lúc căng nhất của mỗi vòng giây, và thứ người chơi cần biết lúc đó
+chỉ có một: **bao lâu nữa thì bắn lại được**. (Cửa sổ xanh Nạp Hoàn Hảo từng nằm trên vòng này; nó
+đã bị bỏ — xem `04` mục 2.)
 
 **3. Nhịp bắn / delay giữa 2 phát** — vòng tròn quanh tâm ngắm chạy đầy dần; đầy = bắn được.
 Đây là thông tin *chỉ có nghĩa ngay tại điểm ngắm*, nên nó đi theo tâm ngắm.

@@ -75,7 +75,7 @@ Trên portrait FPS, viewmodel chiếm nhiều màn hình hơn landscape. Luật:
 | Súng đặt **lệch phải, thấp**, chiếm ≤ 22% chiều cao màn hình | Không che dải Cận chiến |
 | Dao **không hiện** khi đang bắn; chỉ hiện trong 0.4s của nhát chém | Giữ màn hình sạch |
 | Nhát chém vẽ thêm **vệt sáng (slash trail)** theo đúng đường ngón tay | Người chơi thấy chính xác mình đã quẹt gì |
-| Reload animation phải nhìn thấy rõ, có vòng tiến trình quanh tâm ngắm | Nạp Hoàn Hảo cần đọc timing |
+| Reload animation phải nhìn thấy rõ, có vòng tiến trình quanh tâm ngắm | Nạp = không bắn được, phải đọc ra ngay |
 | Không có animation "kiểm tra súng" idle | Portrait không có chỗ cho flavour animation |
 
 ## 6. Audio direction

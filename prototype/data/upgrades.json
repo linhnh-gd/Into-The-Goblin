@@ -63,7 +63,7 @@
   "relics": [
     { "id": "rl_tuivangdoi", "name": "Túi Vàng Đáy Kép", "effect": "Vàng thu được x1.5", "source": "boss1", "drawback": "Bị trúng đòn thì rơi 10% vàng đang giữ ra sàn — phải hút lại" },
     { "id": "rl_donghocatnut", "name": "Đồng Hồ Cát Nứt", "effect": "Khi HP < 25%: thời gian chậm 40% trong 3s. Hồi lại mỗi phòng", "source": "boss2" },
-    { "id": "rl_gangthoren", "name": "Găng Thợ Rèn", "effect": "Cửa sổ Nạp Hoàn Hảo x2 và cho +30% damage cả băng", "source": "cuakhoa" },
+    { "id": "rl_gangthoren", "name": "Găng Thợ Rèn", "effect": "Nạp đạn nhanh hơn 35% và viên đầu mỗi băng +30% damage", "source": "cuakhoa" },
     { "id": "rl_tuidayrong", "name": "Túi Đáy Rộng", "effect": "Đạn dự trữ +150%", "source": "shop", "drawback": "Goblin Vàng không còn xuất hiện nữa" },
     { "id": "rl_luoima", "name": "Lưỡi Ma", "effect": "Chém Hoàn Hảo hồi 8 HP và +1 viên đạn", "source": "boss3" },
     { "id": "rl_matnhatham", "name": "Mặt Nạ Tham", "effect": "Vàng x1.6", "source": "cuakhoa", "drawback": "HP tối đa -20%" },

@@ -153,7 +153,6 @@ nếu quẹt chéo mà xác đứt ngang thì cảm giác "game rẻ tiền".
 | Shotgun | heavy impact |
 | Chém trúng | medium impact |
 | Chém Hoàn Hảo | success pattern (2 nhịp) |
-| Nạp Hoàn Hảo | selection click giòn |
 | Nạp thất bại (kẹt) | error pattern |
 | Bị trúng | heavy + 40ms |
 | Mở cửa ở Ngã Ba | rung 0.35s một nhịp nặng |

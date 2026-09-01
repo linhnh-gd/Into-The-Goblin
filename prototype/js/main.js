@@ -63,7 +63,7 @@ function buildGunPicker(gd) {
 
   const start = () => {
     audio.unlock();
-    ui.showDbg = document.getElementById('optDbg').checked;
+    ui.showDbg = false;
     document.getElementById('dbg').classList.toggle('hidden', !ui.showDbg);
     if (!game) game = new Game(canvas, hud, audio, ui);
     const depth = parseInt(document.getElementById('optDepth').value, 10) || 1;
@@ -77,8 +77,7 @@ function buildGunPicker(gd) {
   document.getElementById('btnReload').onclick = (ev) => {
     ev.stopPropagation();
     if (!game) return;
-    if (game.reloading) game.tryPerfectReload();
-    else game.startReload();
+    game.startReload();
   };
   document.getElementById('btnPause').onclick = () => {
     if (game?.running) game.endRun(false);
@@ -87,7 +86,7 @@ function buildGunPicker(gd) {
   // ban phim de test tren desktop
   window.addEventListener('keydown', (e) => {
     if (!game?.running) return;
-    if (e.code === 'KeyR') game.reloading ? game.tryPerfectReload() : game.startReload();
+    if (e.code === 'KeyR') game.startReload();
   });
 
   /* ---- vong lap ----

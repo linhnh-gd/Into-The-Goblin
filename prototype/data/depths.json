@@ -42,7 +42,7 @@
         { "id": "ch_d3_1", "name": "Clear Depth 3", "reward": "1500 vàng" },
         { "id": "ch_d3_2", "name": "Giết 20 Goblin Khiên bằng cận chiến", "reward": "15 Mảnh Cốt" },
         { "id": "ch_d3_3", "name": "Clear không để Sương Đen kích hoạt lần nào", "reward": "3 Phôi Rèn" },
-        { "id": "ch_d3_4", "name": "Clear với Nạp Hoàn Hảo >= 80%", "reward": "1 Bảo Vật" },
+        { "id": "ch_d3_4", "name": "Clear không để hết sạch băng đạn lần nào", "reward": "1 Bảo Vật" },
         { "id": "ch_d3_5", "name": "Clear dùng đúng 1 vũ khí", "reward": "mở Elite Depth 3" }
       ]
     },

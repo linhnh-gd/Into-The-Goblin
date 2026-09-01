@@ -23,7 +23,7 @@ Pipeline: `data/*.json` → `normalize_balance.ps1` → `audit_gdd.ps1` (GATE) �
 | 01 | [01-overview.md](01-overview.md) | Pitch, design pillars, target player, platform, session |
 | 02 | [02-core-loop.md](02-core-loop.md) | Vòng lặp 3 tầng: giây / phút / ngày |
 | 03 | [03-controls-gestures.md](03-controls-gestures.md) | **Bảng phân giải gesture** tap / hold / hold-drag / slide |
-| 04 | [04-combat-ranged.md](04-combat-ranged.md) | Đạn, băng đạn, reload, Nạp Hoàn Hảo, Chuỗi Bắn |
+| 04 | [04-combat-ranged.md](04-combat-ranged.md) | Đạn, băng đạn, reload, Goblin Vàng, hai chế độ ngắm |
 | 05 | [05-combat-melee.md](05-combat-melee.md) | Slide, stamina, combo, Chém Hoàn Hảo, đòn nặng |
 | 06 | [06-spacing-threat-bands.md](06-spacing-threat-bands.md) | 3 dải cự ly, knockback = tài nguyên phòng thủ, Sương Đen |
 | 07 | [07-wave-room-director.md](07-wave-room-director.md) | Wave director, threat points, room graph, pacing |

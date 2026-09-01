@@ -398,6 +398,18 @@ export class InputRouter {
     return this.stats.total ? this.stats.cancelled / this.stats.total : 0;
   }
 
+  /** QUEN cu cham dang theo doi, khong phat gesture nao va khong goi handler nao.
+      Dung khi mot lop UI che len giua chung (man hinh Cong, ket run): ngon tay se nhac
+      len TREN LOP DO chu khong phai tren canvas, nen `pointerup` khong bao gio toi noi
+      -- khong quen thi router ket o HOLD_FIRE vinh vien (docs/18 loi #70). */
+  reset() {
+    clearTimeout(this._holdTimer);
+    clearTimeout(this._stillTimer);
+    this.slicingActive = false;
+    this.state = ST.IDLE;
+    this.id = null;
+  }
+
   isHolding() { return this.state === ST.HOLD_FIRE; }
   isSlicing() { return this.state === ST.SLIDE_CONT; }
   holdPoint() { return this.p; }

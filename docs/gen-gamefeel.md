@@ -63,7 +63,6 @@
 | Shotgun | heavy impact |
 | Chém trúng | medium impact |
 | Chém Hoàn Hảo | success (2 nhịp) |
-| Nạp Hoàn Hảo | selection click giòn |
 | Nạp trượt (kẹt đạn) | error |
 | Bị trúng | heavy + 40ms |
 | Mở cửa ở Ngã Ba | rung 0.35s một nhịp nặng |
@@ -79,7 +78,7 @@
 | Slide nhẹ | gs_slide_light | tốc độ đỉnh >= 900 px/s trong <=250ms đầu, dài 0.12S–0.55S, góc lệch khỏi ngang <= 55° | Chém nhẹ | melee |
 | Slide nặng | gs_slide_heavy | như slide nhẹ nhưng dài > 0.55S | Chém nặng: 2x stamina, 2.0x damage, 2.2x knockback, arc +30° | melee |
 | Two-finger tap | gs_twofinger | 2 ngón chạm trong 120ms | Kích Bảo Vật / Ultimate | none |
-| Nút Reload | gs_reload | tap nút góc phải-dưới | Reload thủ công / bắt cửa sổ Nạp Hoàn Hảo | ranged |
+| Nút Reload | gs_reload | tap nút góc phải-dưới | Reload thủ công | ranged |
 
 ### Game Feel & Điều khiển
 

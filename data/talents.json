@@ -27,11 +27,11 @@
       { "rank": 4, "cost": 2234, "currency": "gold", "powerDelta": 0.03, "effect": "Reload -24%" },
       { "rank": 5, "cost": 48, "currency": "shards", "powerDelta": 0.03, "effect": "Reload -30%" } ] },
     { "id": "tl_nong_covang", "name": "Cò Vàng", "branch": "nong", "ranks": [
-      { "rank": 1, "cost": 800, "currency": "gold", "powerDelta": 0.04, "effect": "Cửa sổ Nạp Hoàn Hảo +15%" },
-      { "rank": 2, "cost": 1240, "currency": "gold", "powerDelta": 0.04, "effect": "Cửa sổ +30%" },
-      { "rank": 3, "cost": 1922, "currency": "gold", "powerDelta": 0.04, "effect": "Cửa sổ +50%, buff damage +18%" },
-      { "rank": 4, "cost": 2979, "currency": "gold", "powerDelta": 0.035, "effect": "Cửa sổ +70%, buff +22%" },
-      { "rank": 5, "cost": 60, "currency": "shards", "powerDelta": 0.035, "effect": "Nạp trượt không còn bị phạt 1.30x" } ] },
+      { "rank": 1, "cost": 800, "currency": "gold", "powerDelta": 0.04, "effect": "Viên đầu tiên sau mỗi lần nạp +25% damage" },
+      { "rank": 2, "cost": 1240, "currency": "gold", "powerDelta": 0.04, "effect": "+40%" },
+      { "rank": 3, "cost": 1922, "currency": "gold", "powerDelta": 0.04, "effect": "+55%" },
+      { "rank": 4, "cost": 2979, "currency": "gold", "powerDelta": 0.035, "effect": "+70%" },
+      { "rank": 5, "cost": 60, "currency": "shards", "powerDelta": 0.035, "effect": "Hai viên đầu, không phải một" } ] },
     { "id": "tl_nong_chuoiban", "name": "Chuỗi Bắn", "branch": "nong", "ranks": [
       { "rank": 1, "cost": 700, "currency": "gold", "powerDelta": 0.03, "effect": "Chuỗi Bắn cộng thêm +6%" },
       { "rank": 2, "cost": 1085, "currency": "gold", "powerDelta": 0.03, "effect": "+12%" },

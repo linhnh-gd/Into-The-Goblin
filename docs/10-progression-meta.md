@@ -60,7 +60,7 @@ Dữ liệu: `data/upgrades.json` → `gen-upgrades.md`.
 |---|---|
 | **Túi Vàng Đáy Kép** | Vàng thu được x1.5, nhưng bị trúng đòn thì rơi 10% vàng đang giữ ra sàn — phải hút lại |
 | **Đồng Hồ Cát Nứt** | Thời gian chậm 40% khi HP < 25%, 3s, hồi mỗi phòng |
-| **Găng Thợ Rèn** | Nạp Hoàn Hảo có cửa sổ x2 rộng và cho +30% damage |
+| **Găng Thợ Rèn** | Nạp đạn nhanh hơn 35%, và viên đầu mỗi băng +30% damage |
 | **Túi Đáy Rộng** | Đạn dự trữ +150%, nhưng Goblin Vàng không xuất hiện nữa |
 | **Lưỡi Ma** | Chém Hoàn Hảo hồi 8 HP |
 | **Mặt Nạ Tham** | Vàng x1.6, nhưng HP tối đa −20% |
@@ -95,7 +95,7 @@ một lý do rất mạnh để chơi thêm run: *"còn 400 XP nữa là nâng �
 
 | Nhánh | Chủ đề | Ví dụ |
 |---|---|---|
-| **Nòng** (ranged) | Đạn, mag, reload | +reserve, Nạp Hoàn Hảo cửa sổ rộng hơn |
+| **Nòng** (ranged) | Đạn, mag, reload | +reserve, viên đầu mỗi băng mạnh hơn |
 | **Lưỡi** (melee) | Stamina, arc, combo | Chém Hoàn Hảo cần 2 con thay vì 3 |
 | **Da** (survival) | HP, giáp, revive | +HP, giảm damage khi < 30% HP |
 | **Đèn** (`den`) | Kinh tế, Lộc và tầm nhìn | Bắt đầu run với +2..+10 Lộc; biển báo ở Ngã Ba hiện thêm thông tin |
