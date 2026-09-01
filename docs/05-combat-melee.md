@@ -38,26 +38,32 @@ Không có "combo bấm nút". Chiều sâu đến từ **độ dài và hướn
 | Thưởng | Giá trị |
 |---|---|
 | Stamina | **+12** (hoàn lại phần lớn chi phí → chém giỏi là tự nuôi được) |
-| Combo | **+1 bậc** thay vì +1 hit |
+| Chuỗi chém | **+1 bậc** thay vì +1 hit (chỉ để tới mốc hút vàng) |
 | Cướp Đạn | **tính x2** (mỗi mạng = 2 điểm) |
 | Feel | slow-mo 0.12s @ 0.35x, flash trắng 1 frame, tiếng "shiiing" cao vút, chữ **CHÉM HOÀN HẢO** bay lên |
 
 Đây là **money shot** của game — cảnh dùng cho video quảng cáo (UA creative): một nhát quẹt, 5 goblin đứt
 đôi, xác bay theo hướng ngón tay, vàng nổ đầy màn hình.
 
-## 4. Combo cận chiến
+## 4. Chuỗi chém — KHÔNG còn nhân sát thương
 
-| Bậc | Điều kiện | Nhân damage | Feel |
-|---|---|---|---|
-| 0 | — | x1.00 | |
-| 1 | 1 nhát trúng | x1.15 | tiếng trầm |
-| 2 | nhát tiếp trong 1.2s | x1.30 | tiếng cao hơn |
-| 3 | | x1.50 | camera FOV +2° |
-| 4 | | x1.80 | viền màn hình sáng vàng |
-| 5+ | | x1.80 + **hút vàng bán kính x2** | trống dồn |
+> **Đã bỏ bonus sát thương của cận chiến.** Bảng cũ cho chuỗi chém nhân damage tới **x1.80**.
+> Nó mâu thuẫn trực tiếp với chính quyết định ở mục 7d: dao **phải yếu hơn súng**
+> (`meleeAdvantage` = 0.307), vì đối mặt thật của game là **đạn**, không phải DPS. Một cái nhân
+> x1.8 ẩn ở chuỗi chém xoá gần hết khoảng cách đó chỉ sau 4 nhát — mà 4 nhát thì trong đám
+> đông là chuyện 2 giây. Kết quả: người chơi giỏi cận chiến gần như không cần bắn nữa, và cả
+> vòng khoá ĐẠN ↔ STAMINA (trụ P2) mất lý do tồn tại.
+
+Sát thương một nhát giờ là **phẳng**: `dmg vũ khí × thẻ nâng cấp` (chém nặng vẫn x2 — đó là
+cơ chế, không phải bonus tích luỹ). Chuỗi chém vẫn được đếm, nhưng chỉ còn hai tác dụng:
+
+| Bậc | Điều kiện | Được gì |
+|---|---|---|
+| 0–4 | mỗi nhát trúng lên 1 bậc | Chỉ hiển thị + âm thanh lên tông |
+| 5+ | | **Hút vàng bán kính x2** — phần thưởng duy nhất còn lại |
 
 Reset khi: quẹt trượt (không trúng ai), hoặc **1.2s không có nhát trúng nào**, hoặc bị trúng đòn.
-Bắn súng **không** reset combo (khuyến khích trộn hai loại vũ khí — đúng ý P2).
+Bắn súng **không** reset chuỗi (khuyến khích trộn hai loại vũ khí — đúng ý P2).
 
 ## 5. Hitbox của một nhát slide (spec code)
 
@@ -104,7 +110,7 @@ Bắn súng **không** reset combo (khuyến khích trộn hai loại vũ khí �
 | **Đại đao** | Xoá hàng | stam 24, swing 0.62s, arc 150°, 6 mục tiêu, launch 8m | Chém Hoàn Hảo dễ nhất |
 | **Búa / Chuỳ** | Phá khiên | stam 23–25, swing 0.55–0.70s, kb x2.5–3.2, bỏ qua khiên | Chống Goblin Khiên |
 | **Giáo** | Tầm xa nhất | stam 16, reach 3.4m, arc 40°, xuyên 3 con theo đường thẳng | An toàn nhất |
-| **Song đao** | Combo | stam 9, swing 0.22s, arc 55°, combo lên bậc nhanh gấp đôi | Build combo |
+| **Song đao** | Nhịp nhanh nhất | stam 9, swing 0.22s, arc 55°, lên bậc chuỗi nhanh gấp đôi | Chạm mốc hút vàng x2 sớm nhất |
 | **Cưa máy** | Giữ để cắt | stam 22, tiêu theo giây, không dùng slide đơn | Nod tới Into the Dead |
 | **Lưỡi Lõi** | Late | hồi 6 stamina mỗi mạng chém khi ở Depth ≥ 5 | End-game |
 

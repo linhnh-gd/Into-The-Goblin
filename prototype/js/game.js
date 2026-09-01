@@ -13,16 +13,27 @@ import { Trail } from './trail.js';
 import { Projectiles } from './projectiles.js';
 import { InputRouter, GESTURE } from './input.js';
 
-/* Chi dua vao pool nhung the DA CAI DAT hieu ung that trong prototype.
-   The chua cai dat khong duoc phat -> tranh "the ma" khong lam gi. */
-export const IMPLEMENTED_CARDS = [
-  'cd_ranged_bangdoi', 'cd_ranged_taynhanh', 'cd_ranged_notdai', 'cd_melee_luoidai',
-  'cd_melee_taynhe', 'cd_melee_luoisac', 'cd_stamina_hoidai', 'cd_ammo_tuisau',
-  'cd_kb_vaikhoe', 'cd_gold_tuirach', 'cd_survival_datrau', 'cd_crit_diemyeu',
-  'cd_ammo_kecuop', 'cd_melee_hoanhaode', 'cd_kb_songxung', 'cd_stamina_thothau',
-  'cd_gold_namtu', 'cd_survival_giapxac', 'cd_luck_ketimloc', 'cd_gold_taitham',
-  'cd_epic_hailuoi', 'cd_legend_saptham', 'cd_survival_chandai', 'cd_melee_chemsau',
-];
+/* THE NANG CAP TRONG RUN — doc thang tu data/upgrades.json khoi `cards`.
+   Yeu cau nguoi choi: KHONG co the nao co logic. Moi the la MOT con so cong vao mot
+   chi so (`stat` + `step` + `kind`), khong dieu kien, khong danh doi, khong co che
+   rieng. Nho vay applyCard() la mot bang tra cuu phang -- them the moi trong data
+   khong phai sua mot dong code nao. */
+const CARD_STAT_LABEL = {
+  dmg: 'sát thương', mag: 'băng đạn', reload: 'thời gian nạp', rof: 'nhịp bắn',
+  crit: 'chí mạng', reserve: 'đạn dự trữ', gold: 'vàng', magnet: 'hút vàng',
+  stamRegen: 'hồi stamina', stamMax: 'stamina', hp: 'máu', kb: 'sức đẩy',
+};
+
+/** Tong hieu ung sau `n` the cung stat -- de in "dang co +39% sat thuong". */
+function statTotalText(stat, kind, steps) {
+  if (!steps.length) return '';
+  const pct = (v) => `${Math.round(v * 100)}%`;
+  const lbl = CARD_STAT_LABEL[stat] || stat;
+  if (kind === 'mult') return `+${pct(steps.reduce((a, s) => a * (1 + s), 1) - 1)} ${lbl}`;
+  if (kind === 'less') return `-${pct(1 - steps.reduce((a, s) => a * (1 - s), 1))} ${lbl}`;
+  const sum = steps.reduce((a, s) => a + s, 0);
+  return kind === 'addpct' ? `+${pct(sum)} ${lbl}` : `+${Math.round(sum)} ${lbl}`;
+}
 
 const P = () => ({
   hpBase: 100, staminaMax: 100, staminaRegen: 18, staminaRegenDelay: 0.6,
@@ -55,7 +66,7 @@ export class Game {
       onHoldEnd: () => { this.holdPt = null; this.gunRelease(); },
       onMelee: (s) => this.slash(s),
       // CHEM LIEN TUC: moi doan quet la mot nhat nua, giu ngon tay thi drain stamina
-      onSlideStart: () => { this.slicing = true; this.holdPt = null; this.gunRelease(); },
+      onSlideStart: () => { this.slicing = true; this.holdPt = null; this.gunAway(); },
       onSlideMove: (s) => this.sliceTick(s),
       onSlideEnd: () => { this.slicing = false; },
       onCancelled: () => { if (navigator.vibrate) navigator.vibrate(8); },
@@ -98,9 +109,11 @@ export class Game {
       staminaCostMult: 1, reachAdd: 0, arcAdd: 0, crit: 0.05, critMult: rw.critMult,
       scavengeNeed: c.scavengePerMag, perfectNeed: 3, magnetMult: 1, dmgTakenMult: 1,
       aimCone: 4, dodgeCdMult: 1, heavyLen: null, noLowPenalty: false,
-      dmgPerLuck4: 0, dmgPer1000Gold: 0, twoBlades: false, collapse: false,
+      dmgPerLuck4: 0, dmgPer1000Gold: 0, twoBlades: false, collapse: false, rofMult: 1,
     };
     this.cards = [];
+    this.statLv = {};               // chi so -> so the da lay (chan boi maxStackPerStat)
+    this.statSteps = {};            // chi so -> danh sach step, de in tong dang co
 
     this.hpMax = c.hpBase;
     this.hp = this.hpMax;
@@ -123,6 +136,12 @@ export class Game {
     this.reloading = false; this.reloadT = 0; this.reloadDur = 0;
     this.reloadWin = [0, 0]; this.reloadTapped = false; this.perfectMag = false;
     this.fireCd = 0;
+    /* NHIP BAN: giay giua 2 phat. HUD doc thang tu day de ve dong ho quanh tam ngam
+       (shotgun 48 nhip/phut = 1.25s -- khong hien thi thi nguoi choi tuong sung ket). */
+    this.fireInterval = 60 / rw.rpm;
+    // shotgun nap TUNG VIEN (archetypeSpec.reloadStyle) -- xem startReload()
+    this.shellReload =
+      ((GD.weapons.balance.archetypeSpec || {})[rw.archetype] || {}).reloadStyle === 'shell';
     this.swingCd = 0;
 
     this.dodgeCd = 0; this.dashCd = 0; this.iframe = 0;
@@ -149,57 +168,63 @@ export class Game {
     this.ui.banner(`D${startDepth} · PHÒNG 1`, startDepth > 1 ? 'có quái phá chiến thuật' : 'chạm vào nó');
   }
 
-  /* =============================== THE =============================== */
+  /* ========================= NANG CAP TRONG RUN ========================= */
+  /** 3 lua chon o moi Cong. Bac the do LOC keo len (rarityWeights), khong phai do
+   *  so lan da lay. Mot chi so da chong du maxStackPerStat lan thi thoi khong roll. */
   rollCards() {
     const rnd = rngFrom(hashSeed('card', this.director.runIndex, this.director.depth, this.director.room));
-    const pool = GD.upgrades.cards.filter((c) => IMPLEMENTED_CARDS.includes(c.id) && !this.cards.includes(c.id));
+    const maxStack = GD.upgrades.stackRules?.maxStackPerStat ?? 8;
+    const pool = GD.upgrades.cards.filter((c) => (this.statLv[c.stat] || 0) < maxStack);
+    const taken = new Set();
     const out = [];
-    for (let i = 0; i < 3 && pool.length; i++) {
+    for (let i = 0; i < 3; i++) {
       const rar = rollRarity(this.luck, rnd);
-      let bucket = pool.filter((c) => c.rarity === rar && !out.includes(c));
-      if (!bucket.length) bucket = pool.filter((c) => !out.includes(c));
-      out.push(bucket[Math.floor(rnd() * bucket.length)]);
+      let bucket = pool.filter((c) => c.rarity === rar && !taken.has(c.id) && !taken.has(c.stat));
+      if (!bucket.length) bucket = pool.filter((c) => !taken.has(c.id) && !taken.has(c.stat));
+      if (!bucket.length) break;
+      const c = bucket[Math.floor(rnd() * bucket.length)];
+      taken.add(c.id); taken.add(c.stat);        // khong bay 2 the cung chi so
+      out.push({ ...c, total: statTotalText(c.stat, c.kind, this.statSteps[c.stat] || []) });
     }
     return out;
   }
 
-  applyCard(card) {
-    this.cards.push(card.id);
+  /** Ap mot the. Bang tra cuu PHANG theo `stat` — khong the nao co nhanh rieng. */
+  applyCard(u) {
     const m = this.mods;
-    switch (card.id) {
-      case 'cd_ranged_bangdoi': m.magMult *= 2; m.reloadMult *= 1.3; break;
-      case 'cd_ranged_taynhanh': m.reloadMult *= 0.78; break;
-      case 'cd_ranged_notdai': m.aimCone += 2.5; break;
-      case 'cd_melee_luoidai': m.reachAdd += 0.8; m.arcAdd += 20; break;
-      case 'cd_melee_taynhe': m.staminaCostMult *= 0.8; break;
-      case 'cd_melee_luoisac': m.meleeDmg *= 1.18; break;
-      case 'cd_stamina_hoidai': m.staminaAdd += 40; m.staminaRegenAdd += 6; break;
-      case 'cd_ammo_tuisau': m.reserveMult *= 1.6; break;
-      case 'cd_kb_vaikhoe': m.kb *= 1.35; break;
-      case 'cd_gold_tuirach': m.gold *= 1.4; m.hpMult *= 0.85; break;
-      case 'cd_survival_datrau': m.hpAdd += 50; break;
-      case 'cd_crit_diemyeu': m.crit += 0.18; break;
-      case 'cd_ammo_kecuop': m.scavengeNeed = 4; break;
-      case 'cd_melee_hoanhaode': m.perfectNeed = 2; break;
-      case 'cd_kb_songxung': m.kb *= 1.6; m.corpseLaunch *= 2; break;
-      case 'cd_stamina_thothau': m.noLowPenalty = true; m.staminaAdd -= 20; break;
-      case 'cd_gold_namtu': m.magnetMult *= 3; break;
-      case 'cd_survival_giapxac': m.dmgTakenMult *= 0.75; break;
-      case 'cd_luck_ketimloc': m.dmgPerLuck4 += 0.06; break;
-      case 'cd_gold_taitham': m.dmgPer1000Gold += 0.04; break;
-      case 'cd_epic_hailuoi': m.twoBlades = true; break;
-      case 'cd_legend_saptham': m.collapse = true; this.director.mistBoost = true; m.gold *= 1.5; break;
-      case 'cd_survival_chandai': m.dodgeCdMult *= 0.65; break;
-      case 'cd_melee_chemsau': m.heavyLen = 0.35; this.input.P.heavyLen = 0.35; break;
+    this.cards.push(u.id);
+    this.statLv[u.stat] = (this.statLv[u.stat] || 0) + 1;
+    (this.statSteps[u.stat] = this.statSteps[u.stat] || []).push(u.step);
+    switch (u.stat) {
+      case 'dmg': m.rangedDmg *= 1 + u.step; m.meleeDmg *= 1 + u.step; break;
+      case 'mag': m.magMult *= 1 + u.step; break;
+      case 'reload': m.reloadMult *= 1 - u.step; break;
+      case 'rof': m.rofMult *= 1 + u.step; break;
+      case 'crit': m.crit += u.step; break;
+      case 'reserve': m.reserveMult *= 1 + u.step; break;
+      case 'gold': m.gold *= 1 + u.step; break;
+      case 'magnet': m.magnetMult *= 1 + u.step; break;
+      case 'stamRegen': m.staminaRegenAdd += u.step; break;
+      case 'stamMax': m.staminaAdd += u.step; break;
+      case 'hp': m.hpAdd += u.step; break;
+      case 'kb': m.kb *= 1 + u.step; break;
     }
-    // ap lai cac tran
-    const oldMax = this.hpMax;
-    this.hpMax = Math.max(20, Math.round((P().hpBase + m.hpAdd) * m.hpMult));
-    this.hp = Math.max(1, Math.min(this.hpMax, this.hp + (this.hpMax - oldMax)));
+    // ap lai cac tran; phan tang them duoc CONG THANG vao chi so hien tai
     this.stamMax = Math.max(30, P().staminaMax + m.staminaAdd);
-    this.stam = Math.min(this.stam, this.stamMax);
+    this.stam = Math.min(this.stamMax, this.stam + Math.max(0, u.stat === 'stamMax' ? u.step : 0));
+    const oldHpMax = this.hpMax;
+    this.hpMax = Math.max(20, Math.round((P().hpBase + m.hpAdd) * m.hpMult));
+    this.hp = Math.max(1, Math.min(this.hpMax, this.hp + (this.hpMax - oldHpMax)));
+
+    const oldMag = this.magMax;
     this.magMax = Math.max(1, Math.round(this.rw.mag * m.magMult));
+    this.mag = Math.min(this.magMax, this.mag + Math.max(0, this.magMax - oldMag));
+
+    const oldRes = this.reserveMax;
     this.reserveMax = Math.round(this.rw.reserveMax * m.reserveMult);
+    this.reserve = Math.min(this.reserveMax, this.reserve + Math.max(0, this.reserveMax - oldRes));
+
+    this.fireInterval = 60 / this.rw.rpm / m.rofMult;
   }
 
   /* =========================== BUFF TONG HOP =========================== */
@@ -210,7 +235,9 @@ export class Game {
     b += Math.min(0.4, m.dmgPer1000Gold * Math.floor(this.gold / 1000));
     return b;
   }
-  get comboMult() { return [1.0, 1.15, 1.3, 1.5, 1.8, 1.8][Math.min(5, this.combo)]; }
+  /* CHUOI CHEM khong con NHAN SAT THUONG (yeu cau nguoi choi: bo bonus dmg can chien).
+     Dao gio la sat thuong PHANG: mw.dmg x the nang cap, khong co bac thang an theo
+     so nhat lien tiep. Bien `combo` chi con dung cho ban kinh hut vang (combo >= 5). */
   get chainMult() { return this.chain >= 15 ? 1.4 : this.chain >= 8 ? 1.25 : this.chain >= 4 ? 1.1 : 1; }
 
   /* ============================= BAN =============================== */
@@ -297,12 +324,19 @@ export class Game {
       else return;
     }
     if (this.mag <= 0) { this.startReload(); return; }
-    if (this.fireCd > 0) return;
+    /* CHUA LEN DAN XONG. Truoc day day la `return` cam lang: nguoi choi cam shotgun cham
+       lien tuc, khong ra vien nao, khong tieng nao, khong gi nhuc nhich -- doc ra nhu
+       sung hong hoac may nuot input. Gio no tra ve mot tieng CO KHAN. */
+    if (this.fireCd > 0) { if (single) this._dryClick(); return; }
 
     const rw = this.rw;
-    this.fireCd = 60 / rw.rpm;
+    this.fireCd = this.fireInterval;
     this.mag--;
     this.gun.flash();
+    /* LEN DAN: animation chay dung bang khoang cach that giua 2 phat, khong phai mot con
+       so rieng. Chi voi sung cham -- rifle 0.1s thi cai thoi rung 10 lan/giay, thanh
+       nhieu chu khong thanh thong tin. */
+    if (this.fireInterval >= (GD.feel.gun.rackMinIntervalSec ?? 0.35)) this.gun.rack(this.fireInterval);
     this.audio.shot(rw.pellets > 1);
     const fk = GD.feel.shake.find((s) => s.event.includes('súng lục')) || { amplitudePx: 3 };
     this.juice.addShake(rw.pellets > 1 ? 14 : fk.amplitudePx, 0, 1);
@@ -420,7 +454,7 @@ export class Game {
 
     if (!hits.length) { this.combo = 0; this.comboT = 0; return; }
 
-    let dmg = mw.dmg * this.mods.meleeDmg * this.dmgBuff * this.comboMult * (heavy ? 2 : 1);
+    let dmg = mw.dmg * this.mods.meleeDmg * this.dmgBuff * (heavy ? 2 : 1);
     if (this.buffNextSlash > 0) { dmg *= 1.6; this.buffNextSlash = 0; }
     dmg = Math.round(dmg);
 
@@ -560,7 +594,13 @@ export class Game {
     if (!this.running) return false;
     if (this.reloading) {
       if (this.mag > 0) this.cancelReload();      // con dan -> huy reload, ban tiep
-      else { this.ui.flashStamina(); return false; }   // het sach -> phai doi
+      else {
+        /* Het sach dan: khong huy reload duoc, nhung cai cham do KHONG bi vut di --
+           no thanh cu NAP HOAN HAO. Truoc day muon nap hoan hao phai bam trung nut
+           o goc duoi ben phai, tuc phai roi mat khoi dam quai dung luc dong nhat. */
+        this.tryPerfectReload();
+        return false;
+      }
     }
     this.slicing = false;
     this.gunWanted = true;
@@ -571,6 +611,29 @@ export class Game {
 
   /** Nha tay: bat dau dem nguoc roi cat sung + reload. */
   gunRelease() { this.gunWanted = false; }
+
+  /** Cham nhung sung chua len dan xong. Khong phat gi ca, chi TRA LOI: mot tieng co khan
+      + nhay vong nhip ban quanh tam ngam. Co cooldown rieng vi nguoi choi hoang loan se
+      cham 5 lan mot giay, ma 5 tieng co chong len nhau thi thanh tieng ken ket. */
+  _dryClick() {
+    if (this.fireInterval < (GD.feel.gun.rackMinIntervalSec ?? 0.35)) return;
+    if ((this.dryClickCd || 0) > 0) return;
+    this.dryClickCd = GD.feel.gun.dryClickCooldownSec ?? 0.28;
+    this.audio.reloadClick(false);
+    this.ui.pulseCooldown();
+  }
+
+  /* CHUYEN SANG CHEM GIUA CHUNG (yeu cau nguoi choi):
+       - nhat chem ra NGAY, khong doi gi ca
+       - sung cat di NGAY va animation len dan bi bo -> khong con hai thu tranh man hinh
+       - nhung fireCd VAN CHAY: delay giua 2 phat la delay THAT cua khau sung, khong phai
+         do animation quyet dinh. Rut dao ra khong lam sung len dan nhanh hon. */
+  gunAway() {
+    this.gunWanted = false;
+    this.gunTimer = 0;
+    this.gun.cancelRack();
+    this._holsterAndReload();
+  }
 
   _holsterAndReload() {
     this.gun.setOut(false);
@@ -608,7 +671,7 @@ export class Game {
     this.juice.addShake(4, nx, ny);
     if (!hits.length) return;
 
-    let dmg = Math.round(mw.dmg * this.mods.meleeDmg * this.dmgBuff * this.comboMult * M.slideTickDamageMult);
+    let dmg = Math.round(mw.dmg * this.mods.meleeDmg * this.dmgBuff * M.slideTickDamageMult);
     let killed = 0;
     for (const e of hits) {
       e.sliceCd = M.slideHitCooldownSec;
@@ -616,7 +679,8 @@ export class Game {
       const d = crit ? Math.round(dmg * this.mods.critMult) : dmg;
       if (this.hitEnemy(e, d, {
         kx: nx, kz: dirZ * 0.6 + (ny < 0 ? 0.25 : -0.25),
-        kbForce: mw.knockback * this.mods.kb * 0.7,
+        // nhat slide yeu hon nhat dau (slideKbMult); tran that su nam o ngan sach day trong enemies._push
+        kbForce: mw.knockback * this.mods.kb * M.slideKbMult,
         source: 'melee', archetype: mw.archetype, heavy: false, weakPoint: false, crit,
       })) killed++;
     }
@@ -624,20 +688,35 @@ export class Game {
     this.audio.hitFlesh();
     if (killed) { this.combo = Math.min(5, this.combo + 1); this.comboT = 1.2; this.ui.combo(this.combo); }
   }
-  startReload() {
+  /* NAP DAN. Hai kieu, doc tu archetypeSpec[archetype].reloadStyle:
+       "mag"   (mac dinh) — thay ca bang, xong het mot lan.
+       "shell" (shotgun)  — NAP TUNG VIEN. Moi vien mat reloadTime/magMax giay; nap
+                 xong mot vien la co ngay mot vien de ban. Nap day ca bang van ton
+                 dung reloadTime -- khong nhanh hon -- nhung nguoi choi duoc quyen
+                 CAT NGANG bat cu luc nao: con 1 vien trong o ma dam quai toi sat thi
+                 ban luon, khong phai dung im cho het bang. Do la ca tinh cua shotgun.
+     @param {boolean} continuing true = vien tiep theo cua chuoi nap tung vien */
+  startReload(continuing = false) {
     if (this.reloading || this.mag >= this.magMax || this.reserve <= 0) return;
     this.reloading = true;
-    this.reloadDur = this.rw.reloadTime * this.mods.reloadMult;
+    const full = this.rw.reloadTime * this.mods.reloadMult;
+    this.reloadDur = this.shellReload ? full / Math.max(1, this.magMax) : full;
     this.reloadT = 0;
     this.reloadTapped = false;
+    // Nap Hoan Hao tinh lai tu dau moi lan nap MOI (khong phai moi vien ghem)
+    if (!continuing) this.perfectMag = false;
     const start = 0.45 + Math.random() * 0.35;
     this.reloadWin = [start, Math.min(0.97, start + 0.25 / this.reloadDur)];
     this.ui.reloadStart(this.reloadWin);
   }
   tryPerfectReload() {
     if (!this.reloading || this.reloadTapped) return;
-    this.reloadTapped = true;
     const p = this.reloadT / this.reloadDur;
+    /* 20% dau bang dan chua ra khoi sung -- cham trong khoang do la cai cham cuoi cua
+       loat ban vua roi, khong phai y dinh nap. Vi cham o dau la bam BAT KY DAU tren
+       man hinh nen phai bo qua, neu khong moi lan het dan la an phat +30% thoi gian. */
+    if (p < 0.2) return;
+    this.reloadTapped = true;
     const ok = p >= this.reloadWin[0] && p <= this.reloadWin[1];
     this.audio.reloadClick(ok);
     if (ok) { this.reloadDur *= 0.55; this.perfectMag = true; this.ui.banner('NẠP HOÀN HẢO', '+15% damage'); }
@@ -646,6 +725,16 @@ export class Game {
     this.reloadStats.total++; if (ok) this.reloadStats.ok++;
   }
   _finishReload() {
+    if (this.shellReload) {
+      this.mag += 1;
+      this.reserve -= 1;
+      this.reloading = false;
+      this.ui.reloadEnd();
+      this.audio.reloadClick(true);                 // tieng "cach" moi vien vao o
+      // con cho va con dan du tru -> nap tiep vien nua; nguoi choi cham la cat ngang
+      if (this.mag < this.magMax && this.reserve > 0) this.startReload(true);
+      return;
+    }
     const need = this.magMax - this.mag;
     const take = Math.min(need, this.reserve);
     this.mag += take;
@@ -689,6 +778,7 @@ export class Game {
       this.fireCd = Math.max(0, this.fireCd - dt);
       this.swingCd = Math.max(0, this.swingCd - dt);
       this.dodgeCd = Math.max(0, this.dodgeCd - dt);
+      this.dryClickCd = Math.max(0, (this.dryClickCd || 0) - dt);
       this.dashCd = Math.max(0, this.dashCd - dt);
       this.iframe = Math.max(0, this.iframe - dt);
 
@@ -818,6 +908,7 @@ export class Game {
       this.juice.addShake(12, (Math.random() - 0.5) * 2, -1);
       this.juice.addHitstop(3);
       this.audio.hurt();
+      this.ui.hurt();
       if (navigator.vibrate) navigator.vibrate(40);
     }
     if (this.hp <= 0) { this.hp = 0; this.endRun(false); }

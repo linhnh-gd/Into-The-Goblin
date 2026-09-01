@@ -48,6 +48,10 @@ $flooredIds = @()
 $archSpec        = $B.archetypeSpec
 $magClearTarget  = [double]$B.magClearTarget
 $reserveWavesTarget = [double]$B.reserveWavesTarget
+# Nhan chung vao dai reload cua MOI archetype. Clamp vao dai DA NHAN chu khong nhan
+# thang vao reloadTime cu -> chay lai nhieu lan van ra cung ket qua (idempotent).
+$reloadMult = 1.0
+if ($null -ne $B.reloadGlobalMult) { $reloadMult = [double]$B.reloadGlobalMult }
 $newReserve = @{}
 $newReload = @{}
 $newPellets = @{}
@@ -114,7 +118,9 @@ foreach ($w in $data.weapons) {
         else {
             # 1. NHIP BAN tu dai THUC TE cua khau do (MP5 800, M4 700-900, Remington 65...).
             $rpm = [Math]::Round([Math]::Max([double]$spec.rpm[0], [Math]::Min([double]$spec.rpm[1], [double]$w.rpm)))
-            $reload = [Math]::Round([Math]::Max([double]$spec.reload[0], [Math]::Min([double]$spec.reload[1], [double]$w.reloadTime)), 2)
+            $rLo = [Math]::Round([double]$spec.reload[0] * $reloadMult, 2)
+            $rHi = [Math]::Round([double]$spec.reload[1] * $reloadMult, 2)
+            $reload = [Math]::Round([Math]::Max($rLo, [Math]::Min($rHi, [double]$w.reloadTime)), 2)
             $pellets = [double]$spec.pellets
             $pierce  = [int]$spec.pierce
             $spread  = [double]$spec.spreadDeg

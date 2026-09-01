@@ -19,12 +19,45 @@ function fail(err) {
     `<br />Prototype cần chạy qua HTTP (không mở bằng file://). Xem prototype/README.md.`;
 }
 
+/* Danh sach sung sinh TU data: rpm/bang/co che deu doc thang tu weapons.json, va
+   moi dong noi ro DELAY GIUA 2 PHAT (60/rpm) -- cau hoi dau tien nguoi choi hoi khi
+   cam khau shotgun la "sao no ban cham the". Viet tay danh sach nay thi no lech ngay
+   lan tune ke tiep. */
+const GUN_IDS = [
+  'rw_rifle_gongsat', 'rw_shotgun_mienghang', 'rw_smg_ochuot',
+  'rw_pistol_kendong', 'rw_crossbow_gaimuc',
+];
+const ARCH_VI = {
+  rifle: 'súng trường', shotgun: 'súng ghém', smg: 'tiểu liên',
+  pistol: 'súng lục', crossbow: 'nỏ', marksman: 'bắn tỉa nhẹ', sniper: 'bắn tỉa',
+  launcher: 'phóng lựu', lmg: 'trung liên', minigun: 'minigun',
+};
+
+function buildGunPicker(gd) {
+  const sel = document.getElementById('optRanged');
+  const spec = gd.weapons.balance.archetypeSpec || {};
+  sel.innerHTML = GUN_IDS.map((id) => {
+    const w = gd.byId[id];
+    if (!w) return '';
+    const gap = 60 / w.rpm;                       // giay giua 2 phat
+    const st = spec[w.archetype] || {};
+    const how = st.style === 'spread' ? `${w.pellets} viên ghém tản`
+      : st.style === 'pierce' ? `xuyên ${1 + (st.pierce || 0)} con`
+      : st.style === 'aoe' ? `nổ ${st.aoeRadiusM}m` : '1 mục tiêu';
+    const rate = gap >= 0.25 ? `${gap.toFixed(2)}s giữa 2 phát` : 'bắn liên thanh';
+    return `<option value="${id}">${w.name} · ${ARCH_VI[w.archetype] || w.archetype}` +
+      ` — ${rate}, băng ${w.mag}, ${how}</option>`;
+  }).join('');
+  sel.value = 'rw_rifle_gongsat';
+}
+
 (async () => {
   try {
     const gd = await loadData();
     note.textContent =
       `Đã nạp ${gd.weapons.weapons.length} vũ khí · ${gd.enemies.enemies.length} loại quái · ` +
       `${gd.upgrades.cards.length} thẻ · ${gd.waves.waveTemplates.length} wave template từ data/*.json`;
+    buildGunPicker(gd);
     document.getElementById('btnStart').disabled = false;
   } catch (e) { fail(e); return; }
 

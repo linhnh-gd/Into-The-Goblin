@@ -33,22 +33,63 @@
     </div>
 
     <div id="mistVignette"></div>
-    <div id="crosshair"><i></i></div>
+
+    <!-- Tam ngam + DONG HO NHIP BAN. Vong tron chay quanh tam ngam = "bao gio ban duoc
+         phat nua". Voi shotgun (48 nhip/phut = 1.25s giua 2 phat) day la thong tin
+         quan trong nhat man hinh, nen no nam DUNG cho mat dang nhin. Vien mong 2.5px
+         nen khong che quai. -->
+    <div id="crosshair">
+      <svg id="cdRing" viewBox="0 0 48 48" aria-hidden="true">
+        <circle class="trk" cx="24" cy="24" r="20" />
+        <circle class="arc" cx="24" cy="24" r="20" />
+      </svg>
+      <i></i>
+    </div>
+    <div id="cdTime" aria-hidden="true"></div>
+
+    <!-- DAN: dai ngang ngay duoi dai can chien (78% chieu cao), khong phai goc man hinh.
+         Mat dang nhin quai o 45-75% chieu cao -> liec xuong 1cm la doc duoc, khong phai
+         roi mat khoi dam quai nhu khi phai nhin xuong goc duoi. -->
+    <div id="ammoHud">
+      <!-- ĐANG NẠP: vòng tròn xoay + chữ, thay chỗ băng đạn. Vòng ngoài xoay liên tục
+           (tín hiệu ngoại vi bắt được mà không cần đọc), vòng trong là tiến độ thật,
+           vạch xanh là cửa sổ Nạp Hoàn Hảo. -->
+      <div id="reloadBadge">
+        <svg id="rlRing" viewBox="0 0 64 64" aria-hidden="true">
+          <circle class="trk" cx="32" cy="32" r="26" />
+          <circle class="spin" cx="32" cy="32" r="26" />
+          <circle class="win" cx="32" cy="32" r="26" />
+          <circle class="arc" cx="32" cy="32" r="26" />
+        </svg>
+        <b id="rlSec">0.0</b>
+      </div>
+
+      <div id="ammoStrip">
+        <span id="ammoPips" aria-hidden="true"></span>
+      </div>
+      <div id="ammoLine">
+        <b id="ammoMag">7</b><span id="ammoRes">/ 63</span>
+        <em id="ammoState"></em>
+      </div>
+      <!-- Stamina ở ĐÂY chứ không phải góc dưới: nó quyết định có chém được nữa không,
+           tức là thông tin của giây tiếp theo. Cùng cột với đạn, cùng tầm liếc mắt. -->
+      <div id="staminaWrap"><i id="staminaFill"></i></div>
+    </div>
+
     <div id="banner"></div>
     <div id="comboTag"></div>
 
     <div id="distBar"><i id="distFill"></i></div>
+    <div id="hurtFlash"></div>
+    <div id="lowHp"></div>
     <div class="hud-bot">
-      <div id="staminaWrap"><i id="staminaFill"></i></div>
       <div class="row">
         <div class="gold"><span class="coin">◆</span><b id="goldVal">0</b></div>
-        <div class="ammo">
-          <span id="magPips" aria-hidden="true"></span>
-          <b id="ammoVal">7 / 63</b>
-        </div>
       </div>
       <div class="row btns">
-        <button id="btnReload" class="act">NẠP<i id="reloadBar"><u id="reloadPerfect"></u><s id="reloadFill"></s></i></button>
+        <!-- Nut nay chi con la duong TAT. Nap Hoan Hao gio bam duoc o BAT KY dau tren
+             man hinh khi dang nap -- khong bat nguoi choi nhin xuong goc phai. -->
+        <button id="btnReload" class="act">NẠP</button>
       </div>
     </div>
 
@@ -63,7 +104,8 @@
       <p class="tag">Xuống sâu nữa. Vàng ở dưới đó.</p>
       <ul class="how">
         <li><b>CHẠM / GIỮ</b> bất kỳ đâu — súng <b>tự nhắm</b> con gần nhất ở làn giữa</li>
-        <li><b>Nhả tay</b> = cất súng, nạp đạn. Còn đạn thì chạm tiếp huỷ nạp; <b>hết sạch phải đợi</b></li>
+        <li><b>Nhả tay</b> = cất súng, nạp đạn. Còn đạn thì chạm tiếp huỷ nạp; hết sạch thì chạm đúng <b>vạch xanh</b> dưới tâm ngắm = <b>Nạp Hoàn Hảo</b></li>
+        <li>Băng đạn, thời gian nạp và <b>nhịp bắn</b> đều hiện <b>ngay dưới tâm ngắm</b> — không phải nhìn xuống góc</li>
         <li><b>QUẸT</b> = chém. Rê tiếp thì <b>chém liên tục</b>, tốn stamina</li>
         <li><b>3 làn</b>: chỉ quái <b>làn giữa</b> đụng được bạn. Hai bên giết là <b>vàng thêm</b></li>
         <li>Tự chạy 4.2 m/s · hết <b>150m</b> là xong phòng · <b>6 mạng chém = 1 băng đạn</b></li>
@@ -78,14 +120,11 @@
             <option value="5">Depth 5 — Nhà Tù</option>
           </select>
         </label>
+        <!-- Danh sach nay do main.js sinh TU data/weapons.json: viet tay thi no lech
+             ngay lan tune ke tiep (da tung lech: nhan ghi 155 nhip/phut trong khi data
+             la 600). Moi dong co ghi ro DELAY GIUA 2 PHAT. -->
         <label class="sel">Súng
-          <select id="optRanged">
-            <option value="rw_rifle_gongsat">Gọng Sắt · assault rifle — 155 nhịp/phút, băng 26, 1 mục tiêu</option>
-            <option value="rw_shotgun_mienghang">Miệng Hang · shotgun — 48 nhịp/phút, 4 viên ghém chia ra <b>4 con</b></option>
-            <option value="rw_smg_ochuot">Ổ Chuột · SMG — 230 nhịp/phút, băng 10, 1 mục tiêu</option>
-            <option value="rw_pistol_kendong">Kèn Đồng · súng lục — 115 nhịp/phút, băng 8, 1 mục tiêu</option>
-            <option value="rw_crossbow_gaimuc">Gai Mực · nỏ — 51 nhịp/phút, <b>xuyên 3 con</b>, 446 sát thương</option>
-          </select>
+          <select id="optRanged"></select>
         </label>
         <label class="sel">Dao
           <select id="optMelee">
@@ -94,7 +133,8 @@
             <option value="mw_hammer_buada">Búa Đá — <b>BỎ QUA KHIÊN</b> Goblin Khiên</option>
           </select>
         </label>
-        <p class="foot">Mọi dao đều chém <b>8 mục tiêu</b>, tầm <b>6m</b>, cùng nhịp — tier chỉ tăng sát thương.</p>
+        <p class="foot">Mọi dao đều chém <b>8 mục tiêu</b>, tầm <b>6m</b>, cùng nhịp — tier chỉ tăng sát thương.
+          Dao <b>không còn bonus sát thương theo chuỗi chém</b>: sát thương phẳng, đổi lại nó miễn phí và nạp đạn hộ bạn.</p>
       </div>
       <p class="foot" id="loadNote">Đang tải dữ liệu cân bằng từ <code>data/*.json</code>…</p>
     </div>

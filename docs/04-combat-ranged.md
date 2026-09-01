@@ -206,12 +206,87 @@ shotgun mạnh ở gần và vô dụng ở xa, mà **không cần luật riêng
 
 | | Công thức |
 |---|---|
-| Khi trúng (còn sống) | `push = kb_weapon * (1 - kbResist_enemy) * (0.6 nếu heavy-class)` theo **vector đạn** |
+| Khi trúng (còn sống) | `push = kb_weapon * (1 - kbResist_enemy) * hitReaction.impulseMult` theo **vector đạn** |
+| **Giật ngược (lurch)** | `lurchDistM * max(lurchMinFrac, 1 - kbResist)` trong `lurchSec`, kèm **nén người** |
 | Khi chết | `launch = kb_weapon * 2.2 * (1 - kbResist)` — xác bay ngược về phía sau, đổ vào đồng bọn |
 | Va chạm xác | Xác đang bay đẩy lùi quái nó chạm, truyền 35% lực (**domino**) |
-| Shotgun ở dải Cận chiến | Nhân thêm x1.5 (thưởng cho việc dám để nó vào gần) |
 
 Domino là thứ khiến shotgun "sướng": một phát vào đám 6 con ở cửa hẹp thì cả 6 lùi lại.
+
+> **`impulseMult` và `lurch` không phải trang trí.** Xung gốc (`kb_weapon` = 0.4 với rifle, 1.6 với
+> shotgun) tắt theo hàm mũ và chỉ đi được **~0.4m** — ở cự ly 10m đó là *vài pixel*, tức là bắn vào
+> một con không chết thì màn hình **không có gì thay đổi** ngoài một cái nháy trắng 0.17s. Đo lại sau
+> khi sửa: một phát shotgun vào 6 con đẩy mỗi con **2.5–2.8m**. Lurch thì độc lập với `kbResist`, có
+> sàn `lurchMinFrac` — nên **Quỷ Hầm** (`kbResist` 0.90) bị đẩy rất ít nhưng vẫn **giật thấy được**:
+> *"không đẩy được"* phải khác *"không phản ứng"*, nếu không người chơi tưởng đạn không trúng.
+
+### 6a. Ngân sách đẩy — thứ giữ cho knockback mạnh mà không phá game
+
+Knockback mạnh đặt ra ngay một câu hỏi: **chém slide liên tục có biến thành tường chắn không?**
+Có, nếu không có gì chặn. Một nhát mỗi `slideHitCooldownSec` (0.22s) × ~1.8m/nhát = **8 m/s**, gần
+gấp đôi tốc độ chạy 4.2 m/s — quái sẽ không bao giờ chạm được vào người chơi nữa.
+
+Cách chặn **không phải** là giảm lực mỗi nhát (làm vậy thì nhát đầu tiên cũng yếu đi, mất hết cảm
+giác "nảy"). Cách chặn là **ngân sách tính bằng mét**:
+
+| Tham số (`gamefeel.json` → `hitReaction`) | Giá trị | Ý nghĩa |
+|---|---|---|
+| `kbBudgetM` | **4.0** | Mỗi con có sẵn 4m để bị đẩy. Cú đánh đầu tiên ăn **nguyên lực** |
+| `kbRefillMps` | **1.2** | Hồi 1.2m mỗi giây — **thấp hơn hẳn** `run.speedMps` = 4.2 |
+
+Hệ quả là một bất biến, không phải một con số cần tinh chỉnh: **tốc độ lùi bền vững của quái luôn
+thấp hơn tốc độ chạy của người chơi**, nên dù bắn/chém liên tục thế nào, khoảng cách vẫn *rút ngắn*.
+Đo thực tế (chém slide liên tục, stamina vô hạn, vào một con): khoảng cách 8m → 6.87 → 5.97 → 5.17
+→ 3.83 → 2.31 → **chạm nhau sau 2.9 giây**. Hết ngân sách thì quái vẫn **giật** (lurch), chỉ không
+lùi nữa — phản hồi còn nguyên, lợi thế thì không.
+
+## 6b. Nạp đạn: thời gian dài hơn, và shotgun nạp TỪNG VIÊN
+
+`balance.reloadGlobalMult` = **1.45** nhân vào dải reload của mọi archetype. Lý do: reload phải là
+một **quyết định** (rút súng hay rút dao) chứ không phải một cái chớp mắt — nó là bản lề của trụ P2
+(vòng khoá ĐẠN ↔ STAMINA). Sau khi nhân:
+
+| Khẩu | Băng | Nạp | Kiểu nạp | Nhịp |
+|---|---|---|---|---|
+| Kèn Đồng (súng lục) | 10 | 1.88s | cả băng | 0.40s/phát |
+| Ổ Chuột (tiểu liên) | 25 | 2.76s | cả băng | liên thanh |
+| Gọng Sắt (súng trường) | 25 | 3.04s | cả băng | liên thanh |
+| **Miệng Hang (súng ghém)** | 5 | 3.77s | **từng viên (0.75s/viên)** | 1.09s/phát |
+| **Gai Mực (nỏ)** | **1** | **0.55s** | cả băng | 1.18s/phát |
+
+**Shotgun — `reloadStyle: "shell"`.** Nạp từng viên một: mỗi viên mất `reloadTime / mag` giây, và
+nạp xong một viên là **có ngay một viên để bắn**. Nạp đầy cả băng vẫn tốn đúng `reloadTime` — không
+nhanh hơn — nhưng người chơi được quyền **cắt ngang bất cứ lúc nào**: đám quái tới sát mà trong ổ
+đã có 2 viên thì bắn luôn. Đây là cá tính duy nhất mà một khẩu shotgun cần, và nó không phải là
+một cơ chế mới: nó chỉ là *chia nhỏ* thứ vốn đã có.
+
+**Nỏ — một mũi tên mỗi băng, nạp 0.55s.** Vì `0.55s` **ngắn hơn** khoảng giữa hai phát (`1.18s`),
+việc nạp **không bao giờ chặn tay**: bắn → nạp xong trong lúc còn đang chờ nhịp → bắn tiếp. Nỏ
+thành vũ khí theo **nhịp**, không có lúc nào phải dừng lại nạp cả băng. Đổi lại nó chỉ có đúng một
+mũi tên: bắn trượt là mất trọn một nhịp.
+
+## 6c. Lên đạn: cái khoảng giữa hai phát phải có gì đó xảy ra
+
+Với súng nhịp chậm (shotgun **1.09s**, nỏ **1.18s**, phóng lựu **1.33s**) khoảng giữa hai phát dài hơn
+cả thời gian phản ứng của người chơi. Trước đây khoảng đó **rỗng hoàn toàn**: chạm màn hình → không ra
+đạn, không tiếng, không cử động nào. Đọc ra như súng hỏng hoặc máy nuốt input, chứ không đọc ra là "đang
+lên đạn".
+
+| Lớp | Cái gì | Khi nào |
+|---|---|---|
+| Vũ khí | **Thoi trượt về sau rồi đẩy lên trước**, cả khẩu ngửa lên `rackKickDeg` | nhịp ≥ `rackMinIntervalSec` (0.35s) |
+| HUD | Vòng tròn quanh tâm ngắm chạy đầy (xem `14` mục 7c) | nhịp ≥ 0.25s |
+| HUD | Số giây đếm ngược dưới tâm ngắm | nhịp ≥ 0.5s |
+| Phản hồi | Chạm lúc chưa xong → **tiếng cò khan** + vòng nhịp nảy một cái | có `dryClickCooldownSec` chống spam |
+
+Ba luật của lớp này:
+
+1. **Animation dài đúng bằng `60/rpm`.** Nó là *cái vẻ* của delay đã có, không phải một delay thứ hai.
+   Nếu animation dài hơn nhịp thì nó đang nói dối; ngắn hơn thì lại có một khoảng rỗng nữa.
+2. **Chuyển sang chém thì bỏ animation NGAY, nhưng delay giữ nguyên.** Nhát chém ra tức thì, súng cất
+   đi, thoi ngừng chạy — nhưng `fireCd` vẫn đếm hết. Rút dao ra không làm súng lên đạn nhanh hơn.
+3. **Không bao giờ nuốt im lặng một cú chạm.** Một input không có phản hồi bị đọc là *lỗi*, không phải
+   là *luật chơi*.
 
 ## 7. Ràng buộc cân bằng (audit)
 

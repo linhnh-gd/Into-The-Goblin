@@ -53,6 +53,8 @@ export class EnemyPool {
         face: 0, turnRate: 6, behav: null, atkRange: ATTACK_RANGE, teleTime: TELEGRAPH,
         holds: false, acquired: false, sliceCd: 0, hx: 0, hz: 1, lane: 0,
         shieldUp: true, bcycle: 0, invuln: false, ringShown: false, committed: false,
+        // giat nguoc khi trung don ma khong chet
+        lurch: 0, lurchDur: 0, lurchAmt: 0, lurchX: 0, lurchZ: 0, kbBudget: 0,
       });
     }
 
@@ -134,6 +136,8 @@ export class EnemyPool {
     slot.eye = look.eye;
     slot.tele = 0;
     slot.flash = 0;
+    slot.lurch = 0; slot.lurchAmt = 0;
+    slot.kbBudget = GD.feel.hitReaction.kbBudgetM;
     slot.invuln = (def.tags || []).includes('invulnerable');
     slot.ringShown = false;
     slot.committed = false;
@@ -218,11 +222,15 @@ export class EnemyPool {
     for (const e of this.list) {
       if (!e.alive) continue;
 
-      // knockback decay
+      // knockback decay + dem nguoc cu giat nguoc khi trung don
+      const HR = GD.feel.hitReaction;
       e.x += e.vx * dt;
       e.z += e.vz * dt;
-      e.vx *= Math.pow(0.02, dt);
-      e.vz *= Math.pow(0.02, dt);
+      const decay = Math.pow(HR ? HR.decayPerSec : 0.02, dt);
+      e.vx *= decay;
+      e.vz *= decay;
+      if (e.lurch > 0) e.lurch = Math.max(0, e.lurch - dt);
+      e.kbBudget = Math.min(HR.kbBudgetM, (e.kbBudget ?? HR.kbBudgetM) + HR.kbRefillMps * dt);
 
       const dx = px - e.x;
       const dzp = pz - e.z;
@@ -341,9 +349,22 @@ export class EnemyPool {
       const fwdX = Math.sin(e.face), fwdZ = Math.cos(e.face);
       this._q.setFromAxisAngle(this._axisY, e.face);
 
+      /* GIAT NGUOC khi trung don: dich ca than theo huong vien dan/luoi dao roi ve cho,
+         kem NEN NGUOI. Day la thu duy nhat doc duoc o cu ly xa, vi 0.35m o 12m chi la
+         vai pixel ngang nhung mot cu GIAT trong 0.16s thi mat bat duoc ngay. */
+      let lx = 0, lz = 0, sqX = 1, sqY = 1;
+      if (e.lurch > 0) {
+        const HR = GD.feel.hitReaction;
+        const p = e.lurch / (e.lurchDur || 1);            // 1 luc vua trung -> 0
+        lx = (e.lurchX || 0) * (e.lurchAmt || 0) * p;
+        lz = (e.lurchZ || 0) * (e.lurchAmt || 0) * p;
+        sqY = 1 - HR.squash * p;
+        sqX = 1 + HR.squash * 0.5 * p;
+      }
+
       this._m.compose(
-        this._v.set(e.x, 0.51 * s - lean * 0.08, e.z),
-        this._q, { x: s, y: s * (1 - lean * 0.3), z: s }
+        this._v.set(e.x + lx, (0.51 * s - lean * 0.08) * sqY, e.z + lz),
+        this._q, { x: s * sqX, y: s * (1 - lean * 0.3) * sqY, z: s * sqX }
       );
       this.bodies.setMatrixAt(k, this._m);
 
@@ -353,7 +374,7 @@ export class EnemyPool {
       bodyCol[k * 3] = this._c.r; bodyCol[k * 3 + 1] = this._c.g; bodyCol[k * 3 + 2] = this._c.b;
 
       this._m.compose(
-        this._v.set(e.x + fwdX * 0.23 * s, 0.86 * s, e.z + fwdZ * 0.23 * s),
+        this._v.set(e.x + lx + fwdX * 0.23 * s, 0.86 * s * sqY, e.z + lz + fwdZ * 0.23 * s),
         this._q, { x: s, y: s, z: s }
       );
       this.eyes.setMatrixAt(k, this._m);
@@ -366,7 +387,7 @@ export class EnemyPool {
 
       if (e.behav && e.behav.kind === 'shield' && e.shieldUp && sh < this.shieldCap) {
         this._m.compose(
-          this._v.set(e.x + fwdX * 0.34 * s, 0.55 * s, e.z + fwdZ * 0.34 * s),
+          this._v.set(e.x + lx + fwdX * 0.34 * s, 0.55 * s * sqY, e.z + lz + fwdZ * 0.34 * s),
           this._q, { x: s, y: s, z: s }
         );
         this.shields.setMatrixAt(sh++, this._m);
@@ -382,6 +403,29 @@ export class EnemyPool {
     this.eyes.instanceColor.needsUpdate = true;
   }
 
+  /* DAY QUAI, CO TRAN TOC DO.
+     Knockback manh thi doi mot cau hoi: chem slide lien tuc co bien thanh tuong chan
+     giu quai o ngoai tam mai mai khong? Co, neu khong co gi chan -- 1 nhat moi 0.22s
+     x ~1.8m/nhat = 8 m/s, gap doi toc do chay 4.2 m/s.
+     Tran o day KHONG phai la giam luc moi nhat (lam vay thi nhat dau tien cung yeu di,
+     mat het cam giac "nay"), ma la NGAN SACH tinh bang MET: con quai co san kbBudgetM
+     met de bi day, hoi lai kbRefillMps met/giay. Cu danh dau tien an nguyen luc; day
+     lien tuc thi toc do lui bi keo ve dung kbRefillMps -- thap hon han toc do chay,
+     nen nguoi choi LUON duoi kip. Het ngan sach thi van GIAT (lurch), chi khong lui. */
+  _push(e, kx, kz, force) {
+    const HR = GD.feel.hitReaction;
+    const speed = force * HR.impulseMult;
+    if (speed <= 0) return;
+    // quang duong mot xung di duoc voi decay mu: v / ln(1/decay)
+    const travel = speed / Math.log(1 / HR.decayPerSec);
+    if (e.kbBudget == null) e.kbBudget = HR.kbBudgetM;
+    const k = travel > 0 ? Math.min(1, e.kbBudget / travel) : 0;
+    if (k <= 0) return;
+    e.kbBudget = Math.max(0, e.kbBudget - travel * k);
+    e.vx += kx * speed * k;
+    e.vz += kz * speed * k;
+  }
+
   /**
    * Gay damage.
    * @param {object} o {kx,kz,kbForce,source:'ranged'|'melee',archetype,heavy,weakPoint,px,pz}
@@ -394,8 +438,11 @@ export class EnemyPool {
     if (e.invuln) {
       // Bong Ham: khong giet duoc, chi day duoc (docs/09)
       const r = 1 - e.kbResist;
-      e.vx += kx * kbForce * r * 2.4;
-      e.vz += kz * kbForce * r * 2.4;
+      const HRi = GD.feel.hitReaction;
+      this._push(e, kx, kz, kbForce * r * 2.4);
+      e.lurchDur = e.lurch = HRi.lurchSec;
+      e.lurchAmt = HRi.lurchDistM * Math.max(HRi.lurchMinFrac, r);
+      e.lurchX = kx; e.lurchZ = kz;
       e.flash = 0.5;
       return { alive: true, dmgDealt: 0, blocked: true, invuln: true };
     }
@@ -434,18 +481,30 @@ export class EnemyPool {
     e.flash = 1;
     const r = 1 - kbResist;
 
-    if (e.hp <= 0) {
-      e.alive = false;
-      // launch = kb * 2.2 * (1 - kbResist)  (docs/16 muc 4.9)
-      return {
-        x: e.x, z: e.z, scale: e.scale, color: e.color, gold: e.gold, role: e.role,
-        maxHp: e.maxHp, id: e.id, dmgDealt: dmg, blocked, weak, flanked, killed: true,
-        lx: kx * kbForce * 2.2 * r, lz: kz * kbForce * 2.2 * r,
-      };
+    if (e.hp > 0) {
+      /* TRUNG NHUNG KHONG CHET -- day la truong hop hay gap nhat va truoc day gan nhu
+         khong co phan hoi nao ngoai flash trang. Hai lop:
+           1. XUNG DAY THAT: nhan them impulseMult, vi xung goc (kbForce ~ 0.4-1.6) chi
+              di duoc ~0.4m truoc khi tat, ma o cu ly 10m thi 0.4m la vai pixel.
+           2. GIAT NGUOC (lurch): mot cu dich nguoi ngan 0.16s, doc lap voi decay va
+              voi lane spring. Co san toi thieu lurchMinFrac nen ke ca Quy Ham
+              (kbResist 0.90) van GIAT -- "khong day duoc" khac "khong phan ung". */
+      const HR = GD.feel.hitReaction;
+      e.lurchDur = HR.lurchSec;
+      e.lurch = HR.lurchSec;
+      e.lurchAmt = HR.lurchDistM * Math.max(HR.lurchMinFrac, r);
+      e.lurchX = kx; e.lurchZ = kz;
+      this._push(e, kx, kz, kbForce * r);
+      return { alive: true, dmgDealt: dmg, blocked, weak, flanked };
     }
-    e.vx += kx * kbForce * r;
-    e.vz += kz * kbForce * r;
-    return { alive: true, dmgDealt: dmg, blocked, weak, flanked };
+
+    // CHET: xac bay theo launch = kb * 2.2 * (1 - kbResist)  (docs/16 muc 4.9)
+    e.alive = false;
+    return {
+      x: e.x, z: e.z, scale: e.scale, color: e.color, gold: e.gold, role: e.role,
+      maxHp: e.maxHp, id: e.id, dmgDealt: dmg, blocked, weak, flanked, killed: true,
+      lx: kx * kbForce * 2.2 * r, lz: kz * kbForce * 2.2 * r,
+    };
   }
 
   /** Nhat quai gan diem tap nhat trong hinh non aim-assist (do bang goc).

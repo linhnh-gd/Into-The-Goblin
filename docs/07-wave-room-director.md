@@ -128,7 +128,21 @@ Phòng **không** kết thúc khi diệt hết quái. Phòng kết thúc khi ng�
 | `tapNearM` | 2.4 | Khoảng gần nhất mà quái còn **tap được** (xem mục dưới) |
 
 **Wave sau dồn dập hơn mà không cần dial:** số wave suy ra từ quãng đường, và `tpBudget(R, w)` đã tăng theo `w`
-(`×1.18` mỗi wave). Nên một phòng 90m tự động là ba đợt tăng dần — không có tham số "độ khó" nào phải tinh chỉnh tay.
+(`×1.18` mỗi wave). Nên một phòng 150m tự động là ba đợt tăng dần — không có tham số "độ khó" nào phải tinh chỉnh tay.
+
+**Ba luật bất biến của mô hình này** (cả ba đều đã bị vi phạm một lần, xem `18` lỗi #39):
+
+1. **Không phòng nào được có ít wave hơn `roomDistanceM / waveSegmentM`** — kể cả phòng Elite và Boss.
+   Đặt "một wave lớn trải dài cả quãng đường" là bẫy: vòng spawn rải hàng đợi theo **một đoạn**, nên
+   quái hết ở mét 50 còn người chơi vẫn phải chạy nốt 100m trong hành lang trống. Elite/Boss ra ở
+   **wave 1**, các wave sau vẫn là wave thường.
+2. **Không cắt số quái của wave theo `hardCaps.maxTotalAlive`.** Đó là trần **số con sống cùng lúc**
+   (giới hạn perf của instanced mesh), không phải trần **tổng số con** của một wave. Quái đứng yên, bị
+   bỏ lại phía sau rồi despawn (`despawnBehindM`) — nên tổng của một wave **được phép** lớn hơn trần đó
+   nhiều lần. Cái trần chỉ được phép **làm chậm nhịp ra quái**, không được phép **xoá bớt quái**.
+3. **Mỗi wave phải có loại quái chưa gặp trong phòng đó.** Director ưu tiên template chưa dùng và có ít
+   nhất một `enemy` chưa xuất hiện; hết cái mới thì mới cho lặp. Đây là vế "loại quái mới khoẻ hơn" của
+   docs gốc — leo thang không chỉ là **đông hơn**, mà còn là **khác đi**.
 
 **Quái ở làn giữa mà không giết kịp thì người chơi VA phải:** mất máu **một lần**, quái **biến mất**, và
 **không rơi vàng**. Quái ở hai làn bên thì chạy qua vô hại — giết chúng là **vàng thêm**. Đây là áp lực

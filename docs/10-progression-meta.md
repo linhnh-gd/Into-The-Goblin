@@ -12,29 +12,43 @@ Ba trục tách biệt, không được trộn lẫn:
 
 ## 1. Thẻ Nâng Cấp (in-run cards) — engine replayability
 
-Lấy trực tiếp từ Archero: **chọn 1 trong 3 ở mỗi Cổng**. 48 thẻ, chia theo tag để tạo synergy.
+**Chọn 1 trong 3 ở mỗi Cổng.** 48 thẻ = **12 chỉ số × 4 bậc**. Mỗi thẻ là **một con số cộng vào
+một chỉ số** — không điều kiện, không đánh đổi, không cơ chế riêng.
 
-| Tag | Ý đồ | Ví dụ thẻ |
+| Chỉ số | Tag | Bậc I → IV |
 |---|---|---|
-| `ranged` | Buff súng | "Băng Đôi": mag x2, reload +30% thời gian |
-| `melee` | Buff dao | "Lưỡi Dài": reach +0.8m, arc +20° |
-| `stamina` | Kinh tế stamina | "Hơi Dài": stamina tối đa +40, hồi +6/s |
-| `ammo` | Kinh tế đạn | "Kẻ Cướp": Cướp Đạn cần 4 mạng thay vì 6 |
-| `knockback` | Dãn cách | "Sóng Xung": mọi knockback x1.6, xác bay xa x2 |
-| `gold` | Tham | "Túi Rách": vàng x1.4 nhưng −15% HP tối đa |
-| `luck` | Tương tác Lộc | "Kẻ Tìm Lộc": mỗi 4 Lộc cho +6% damage và +3% tốc độ chém |
-| `survival` | Trụ | "Da Trâu": +50 HP, hồi 2 HP mỗi kill cận chiến |
-| `crit` | Burst | "Điểm Yếu": crit +18%, crit x3.0 |
-| `aoe` | Xoá wave | "Nổ Đầu": kill bằng headshot nổ AoE 30 |
+| Sát Thương | `ranged` | +15% → +26% → +39% → **+57%** sát thương mọi vũ khí |
+| Băng Đạn | `ammo` | +25% → +42% → +65% → **+95%** số đạn một băng |
+| Nạp Nhanh | `ammo` | −12% → −20% → −31% → **−46%** thời gian nạp |
+| Nhịp Bắn | `ranged` | +10% → +17% → +26% → **+38%** tốc độ bắn |
+| Chí Mạng | `crit` | +6% → +10% → +16% → **+23%** tỉ lệ chí mạng |
+| Đạn Dự Trữ | `ammo` | +30% → +51% → +78% → **+114%** |
+| Vàng | `gold` | +20% → +34% → +52% → **+76%** vàng nhặt được |
+| Hút Vàng | `gold` | +35% → +59% → +91% → **+133%** bán kính |
+| Hồi Sức | `stamina` | +5 → +9 → +13 → **+19** stamina/giây |
+| Sức Bền | `stamina` | +25 → +43 → +65 → **+95** stamina tối đa |
+| Máu | `survival` | +25 → +43 → +65 → **+95** HP tối đa |
+| Sức Đẩy | `knockback` | +25% → +43% → +65% → **+95%** lực đẩy lùi |
 
 ### Luật thiết kế thẻ
 
-1. **Mọi thẻ mạnh phải có giá.** ("vàng x1.4 nhưng −15% HP") — thẻ toàn mặt tốt làm chết quyết định.
-2. **Không thẻ nào +5% damage đơn thuần.** Thẻ phải đổi *cách chơi*, không chỉ đổi *số*.
-3. **Có combo ẩn**: 3 thẻ cùng tag `melee` → mở thẻ Legendary "Đồ Tể" (chém hồi đạn, không cần Cướp Đạn).
-   Người chơi tự phát hiện = chất liệu để bàn luận trên cộng đồng.
-4. **Rarity theo Lộc** (xem `08`): chơi giỏi (Elite, không mất máu, Chém Hoàn Hảo) là cách duy nhất thấy thẻ Legendary sớm.
+1. **Không thẻ nào có logic.** Không điều kiện ("khi HP < 30%"), không đánh đổi ("nhưng −15% HP"),
+   không cơ chế riêng ("chém trúng thì phát bắn sau +60%"). Lý do: người chơi đọc thẻ ngay sau khi
+   vừa chạy hết 50m và đang thở — ba thẻ có điều kiện là **ba bài toán** đặt vào đúng lúc họ ít khả
+   năng giải nhất. Chỗ dành cho cơ chế là **Bảo Vật** (mục 2) và **Talent** (mục 4), nơi người chơi
+   ngồi đọc ngoài trận.
+2. **Bậc thẻ chỉ đổi CON SỐ, không đổi công dụng.** "Sát Thương I" và "Sát Thương IV" cùng làm một
+   việc, chỉ khác 15% với 57%. Không phải học lại gì khi lên bậc.
+3. **Cùng chỉ số thì cộng dồn**, tối đa `maxStackPerStat` = 8 lần. Nhân kiểu `mult` cộng dồn theo
+   tích `(1+step)`, `add` cộng thẳng. Ở Cổng không bao giờ bày 2 thẻ cùng chỉ số.
+4. **Rarity theo Lộc** (xem `08`): chơi giỏi (Elite, không mất máu, Chém Hoàn Hảo) là cách duy nhất
+   thấy thẻ bậc IV sớm. Đây là chỗ duy nhất còn "quyết định" trong hệ thẻ — và nó nằm ở **cách chơi**,
+   không nằm ở việc đọc thẻ.
 5. Có thể **đổi 3 thẻ** (reroll): 1 lần miễn phí / Depth, sau đó 80 vàng hoặc xem 1 ad.
+
+> **Cái đã bỏ:** bộ 50 thẻ cũ có drawback, có điều kiện, và có **combo ẩn** (3 thẻ cùng tag mở một
+> thẻ Legendary có cơ chế riêng). Combo ẩn là ý tưởng tốt cho một game người chơi ngồi đọc; nó sai
+> chỗ trong một game người chơi đang chạy 4.2 m/s giữa 40 con goblin.
 
 Dữ liệu: `data/upgrades.json` → `gen-upgrades.md`.
 

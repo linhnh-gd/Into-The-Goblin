@@ -68,13 +68,19 @@ export class Director {
     this.roomStartZ = null;      // gan o lan update dau tien
     this._clumpZ = null;
     this.distRun = 0;
-    const note = this.layout.note || '';
     if (!this.isCombatRoom) { this.wavesInRoom = 0; this.phase = 'cleared'; return; }
-    // elite/boss: MOT wave lon trai dai ca quang duong. Con lai: chia theo doan.
-    this.wavesInRoom = (this.roomType === 'elite' || this.roomType === 'boss')
-      ? 1
-      : Math.max(1, Math.round(this.roomDist / this.waveSegM));
-    if (note.includes('3 wave')) this.wavesInRoom = Math.max(3, this.wavesInRoom);
+    /* KHONG phong nao chi co MOT wave nua -- ke ca Elite/Boss.
+       LOI CU (docs/18 loi #39): phong Elite dat wavesInRoom = 1 "mot wave trai dai ca
+       quang duong", nhung vong spawn lai rai het hang doi trong doan waveSegmentM dau
+       tien. D1-R5: spawn xong o met thu 50, con 100m sau chay giua hanh lang RONG KHONG.
+       Dung mo hinh: quang duong chia deu thanh doan waveSegmentM, MOI doan la mot wave
+       moi -- dong hon doan truoc (tpPerWave) va co it nhat mot loai quai chua xuat hien
+       trong phong nay. Khong cap so quai; chi cap so con SONG CUNG LUC (perf). */
+    this.wavesInRoom = Math.max(1, Math.round(this.roomDist / this.waveSegM));
+    // phong Elite/Boss: con Elite ra o wave dau, cac wave sau van la wave thuong
+    this.eliteWave = (this.roomType === 'elite' || this.roomType === 'boss') ? 1 : 0;
+    this.seenTypes = new Set();
+    this.lastTemplateId = null;
     this.nextWave();
   }
 
@@ -84,24 +90,43 @@ export class Director {
     const seed = hashSeed('itg', this.runIndex, this.depth, this.room, w);
     const rnd = rngFrom(seed);
 
+    const eliteNow = this.eliteWave === w;
+    const hasElite = (t) => t.composition.some((c) => GD.byId[c.enemy]?.role === 'elite');
     const pool = GD.waves.waveTemplates.filter((t) => {
       if (t.minDepth > this.depth) return false;
-      // Phong 1-2 cua moi Depth la WARM-UP (docs/07 muc 3.4): khong cho roll wave dong.
-      // Prototype cho thay D1-R1 roll ra "Thuy Trieu" 29 con -> nguoi moi chet ngay.
-      if (this.room <= 2 && t.tpMult > 1.05) return false;
-      if (this.roomType === 'elite') return t.tpMult >= 1.4 && t.composition.some((c) => GD.byId[c.enemy]?.role === 'elite');
+      if (eliteNow) return t.tpMult >= 1.4 && hasElite(t);
+      if (hasElite(t)) return false;
       if (this.roomType === 'gauntlet') return t.spawnPattern === 'flood' && t.tpMult >= 2;
-      return t.tpMult < 1.4 && !t.composition.some((c) => GD.byId[c.enemy]?.role === 'elite');
+      // WARM-UP (docs/07 muc 3.4) chi con ap cho LAN CHAM MAT DAU cua phong 1-2 moi Depth.
+      // Prototype cho thay D1-R1 roll ra "Thuy Trieu" 29 con -> nguoi moi chet ngay.
+      // Tu wave 2 tro di thi thoi: do kho phai leo, khong duoc phang ca phong.
+      if (this.room <= 2 && w === 1 && t.tpMult > 1.05) return false;
+      return t.tpMult < 1.4;
     });
-    let tpl = pool.length ? pickWeighted(pool, () => 1, rnd) : GD.waves.waveTemplates[0];
+
+    /* "Wave sau co quai moi" (docs goc: "loai quai moi khoe hon").
+       Uu tien template CHUA choi trong phong nay va co it nhat mot loai quai
+       chua tung xuat hien o phong nay. Het cai moi thi moi cho lap lai. */
+    let cand = pool.filter((t) => t.id !== this.lastTemplateId);
+    if (!cand.length) cand = pool;
+    const fresh = cand.filter((t) => t.composition.some((c) => !this.seenTypes.has(c.enemy)));
+    const from = fresh.length ? fresh : cand;
+    let tpl = from.length ? pickWeighted(from, () => 1, rnd) : GD.waves.waveTemplates[0];
     // wave dau tien cua ca run: luon la wave day nham co ban
     if (this.depth === 1 && this.room === 1 && w === 1) {
       tpl = GD.waves.waveTemplates.find((t) => t.id === 'wv_dongchay') || tpl;
     }
     this.template = tpl;
+    this.lastTemplateId = tpl.id;
+    for (const c of tpl.composition) this.seenTypes.add(c.enemy);
 
     const tp = tpBudget(this.R, w, this.roomType, this.doorTag?.tag === 'đông');
-    const target = Math.min(HARD().maxTotalAlive, Math.round(tp * countPerTP(tpl)));
+    /* KHONG cat so quai cua wave theo maxTotalAlive nua. maxTotalAlive la tran so con
+       SONG CUNG LUC (gioi han perf cua instanced mesh), khong phai tran TONG so con
+       cua ca wave: quai dung yen, bi bo lai phia sau roi despawn, nen mot wave co the
+       de ra nhieu hon tran do rat nhieu. Cat o day chinh la thu lam wave "het hang"
+       som roi de nguoi choi chay tiep giua hanh lang trong. */
+    const target = Math.max(1, Math.round(tp * countPerTP(tpl)));
 
     // phan bo so luong theo weight/tpCost, giu thu tu de gioi thieu 1 loai moi/phong
     this.spawnQueue = [];
@@ -127,7 +152,7 @@ export class Director {
     this.spawnRnd = rnd;
     this.phase = 'spawning';
     this.audio?.crowd(this.waveTargetCount);
-    return { name: tpl.name, count: this.waveTargetCount, wave: w, of: this.wavesInRoom };
+    return { name: tpl.name, count: this.waveTargetCount, wave: w, of: Math.max(this.wavesInRoom, w) };
   }
 
   /* ---------------- update ---------------- */
@@ -157,10 +182,9 @@ export class Director {
         this.mistOn = false;
         return { cleared: true, dist: this.distRun };
       }
-      // sang doan sau
-      if (f >= 1 && this.waveIdx < this.wavesInRoom) {
-        return { newWave: this.nextWave() };
-      }
+      /* Sang doan sau. KHONG kiem tra waveIdx < wavesInRoom nua: chung nao chua chay
+         het roomDist thi van con wave moi. wavesInRoom chi la con so HIEN THI. */
+      if (f >= 1) return { newWave: this.nextWave() };
     }
 
     /* ---- Suong Den ----
@@ -266,8 +290,14 @@ export class Director {
     for (const o of [a, b]) {
       if (o.type === 'combat' || o.type === 'elite' || o.type === 'gauntlet') {
         const tpl = GD.waves.waveTemplates.find((t) => t.minDepth <= this.depth && t.tpMult < 1.4) || GD.waves.waveTemplates[0];
-        const tp = tpBudget((this.depth - 1) * 10 + nextRoom, 1, o.type, o.tag === 'đông');
-        o.est = Math.min(HARD().maxTotalAlive, Math.round(tp * countPerTP(tpl)));
+        // du bao cho CA PHONG (moi doan waveSegmentM la mot wave, wave sau dong hon)
+        const R = (this.depth - 1) * 10 + nextRoom;
+        const waves = Math.max(1, Math.round(GD.feel.run.roomDistanceM / GD.feel.run.waveSegmentM));
+        let est = 0;
+        for (let w = 1; w <= waves; w++) {
+          est += Math.round(tpBudget(R, w, o.type, o.tag === 'đông') * countPerTP(tpl));
+        }
+        o.est = est;
       }
       o.goldMult = o.tag === 'đông' ? 1.25 : o.tag === 'tối' ? 1.3 : 1.0;
       o.hot = ['đông', 'tối', 'hẹp', 'có Elite'].includes(o.tag);

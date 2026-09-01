@@ -164,7 +164,7 @@ footer{padding:34px 0 0;color:var(--muted);font-size:12.5px;border-top:1px solid
 <h1>INTO THE <em>GOBLIN</em></h1>
 <p class="sub">FPS màn hình dọc, chơi một tay — lối di chuyển của Into the Dead, cộng cảm giác mật độ quái đông của Guns 'n Goblins (chỉ lấy feel, không lấy cơ chế)</p>
 <p class="quote">Xuống sâu nữa. Vàng ở dưới đó.</p>
-<ul class="chips"><li><b>30</b><span>vũ khí</span></li><li><b>21</b><span>loại quái</span></li><li><b>7</b><span>boss</span></li><li><b>50</b><span>thẻ nâng cấp</span></li><li><b>12</b><span>bảo vật</span></li><li><b>24</b><span>talent</span></li><li><b>19</b><span>wave template</span></li><li><b>7</b><span>tầng hầm</span></li><li><b>12</b><span>công trình</span></li></ul>
+<ul class="chips"><li><b>30</b><span>vũ khí</span></li><li><b>21</b><span>loại quái</span></li><li><b>7</b><span>boss</span></li><li><b>48</b><span>thẻ nâng cấp</span></li><li><b>12</b><span>bảo vật</span></li><li><b>24</b><span>talent</span></li><li><b>19</b><span>wave template</span></li><li><b>7</b><span>tầng hầm</span></li><li><b>12</b><span>công trình</span></li></ul>
 </header>
 <section class="doc" id="escal"><p class="docnum">HOOK</p><h2>Nhịp leo thang &amp; mật độ quái</h2><div class="rule"></div><div class="body">
 <p>Không có nút nào cho người chơi tự bơm độ khó. Hầm tự đông dần và tự khoẻ dần theo từng phòng — đúng dòng docs gốc &quot;độ khó mỗi wave sẽ tăng dần, có thể là tăng số lượng, loại quái mới khoẻ hơn&quot;. Cột vàng bên dưới là số quái mỗi wave; cột tím là HP mỗi con. Chỗ hai cột doãng ra xa nhau chính là chỗ cảm giác &quot;một mình giữa cả hầm&quot; xuất hiện.</p>
@@ -811,12 +811,52 @@ HOLD_FIRE
 <h3>6. Knockback từ đạn (docs: &quot;quái chết thì bị đẩy lùi về phía sau&quot;)</h3>
 <div class="tw"><table>
 <thead><tr><th></th><th>Công thức</th></tr></thead><tbody>
-<tr><td>Khi trúng (còn sống)</td><td><code>push = kb_weapon <em> (1 - kbResist_enemy) </em> (0.6 nếu heavy-class)</code> theo <strong>vector đạn</strong></td></tr>
+<tr><td>Khi trúng (còn sống)</td><td><code>push = kb_weapon <em> (1 - kbResist_enemy) </em> hitReaction.impulseMult</code> theo <strong>vector đạn</strong></td></tr>
+<tr><td><strong>Giật ngược (lurch)</strong></td><td><code>lurchDistM * max(lurchMinFrac, 1 - kbResist)</code> trong <code>lurchSec</code>, kèm <strong>nén người</strong></td></tr>
 <tr><td>Khi chết</td><td><code>launch = kb_weapon <em> 2.2 </em> (1 - kbResist)</code> — xác bay ngược về phía sau, đổ vào đồng bọn</td></tr>
 <tr><td>Va chạm xác</td><td>Xác đang bay đẩy lùi quái nó chạm, truyền 35% lực (<strong>domino</strong>)</td></tr>
-<tr><td>Shotgun ở dải Cận chiến</td><td>Nhân thêm x1.5 (thưởng cho việc dám để nó vào gần)</td></tr>
 </tbody></table></div>
 <p>Domino là thứ khiến shotgun &quot;sướng&quot;: một phát vào đám 6 con ở cửa hẹp thì cả 6 lùi lại.</p>
+<blockquote><strong><code>impulseMult</code> và <code>lurch</code> không phải trang trí.</strong> Xung gốc (<code>kb_weapon</code> = 0.4 với rifle, 1.6 với shotgun) tắt theo hàm mũ và chỉ đi được <strong>~0.4m</strong> — ở cự ly 10m đó là <em>vài pixel</em>, tức là bắn vào một con không chết thì màn hình <strong>không có gì thay đổi</strong> ngoài một cái nháy trắng 0.17s. Đo lại sau khi sửa: một phát shotgun vào 6 con đẩy mỗi con <strong>2.5–2.8m</strong>. Lurch thì độc lập với <code>kbResist</code>, có sàn <code>lurchMinFrac</code> — nên <strong>Quỷ Hầm</strong> (<code>kbResist</code> 0.90) bị đẩy rất ít nhưng vẫn <strong>giật thấy được</strong>: <em>&quot;không đẩy được&quot;</em> phải khác <em>&quot;không phản ứng&quot;</em>, nếu không người chơi tưởng đạn không trúng.</blockquote>
+<h4>6a. Ngân sách đẩy — thứ giữ cho knockback mạnh mà không phá game</h4>
+<p>Knockback mạnh đặt ra ngay một câu hỏi: <strong>chém slide liên tục có biến thành tường chắn không?</strong> Có, nếu không có gì chặn. Một nhát mỗi <code>slideHitCooldownSec</code> (0.22s) × ~1.8m/nhát = <strong>8 m/s</strong>, gần gấp đôi tốc độ chạy 4.2 m/s — quái sẽ không bao giờ chạm được vào người chơi nữa.</p>
+<p>Cách chặn <strong>không phải</strong> là giảm lực mỗi nhát (làm vậy thì nhát đầu tiên cũng yếu đi, mất hết cảm giác &quot;nảy&quot;). Cách chặn là <strong>ngân sách tính bằng mét</strong>:</p>
+<div class="tw"><table>
+<thead><tr><th>Tham số (<code>gamefeel.json</code> → <code>hitReaction</code>)</th><th>Giá trị</th><th>Ý nghĩa</th></tr></thead><tbody>
+<tr><td><code>kbBudgetM</code></td><td><strong>4.0</strong></td><td>Mỗi con có sẵn 4m để bị đẩy. Cú đánh đầu tiên ăn <strong>nguyên lực</strong></td></tr>
+<tr><td><code>kbRefillMps</code></td><td><strong>1.2</strong></td><td>Hồi 1.2m mỗi giây — <strong>thấp hơn hẳn</strong> <code>run.speedMps</code> = 4.2</td></tr>
+</tbody></table></div>
+<p>Hệ quả là một bất biến, không phải một con số cần tinh chỉnh: <strong>tốc độ lùi bền vững của quái luôn thấp hơn tốc độ chạy của người chơi</strong>, nên dù bắn/chém liên tục thế nào, khoảng cách vẫn <em>rút ngắn</em>. Đo thực tế (chém slide liên tục, stamina vô hạn, vào một con): khoảng cách 8m → 6.87 → 5.97 → 5.17 → 3.83 → 2.31 → <strong>chạm nhau sau 2.9 giây</strong>. Hết ngân sách thì quái vẫn <strong>giật</strong> (lurch), chỉ không lùi nữa — phản hồi còn nguyên, lợi thế thì không.</p>
+<h3>6b. Nạp đạn: thời gian dài hơn, và shotgun nạp TỪNG VIÊN</h3>
+<p><code>balance.reloadGlobalMult</code> = <strong>1.45</strong> nhân vào dải reload của mọi archetype. Lý do: reload phải là một <strong>quyết định</strong> (rút súng hay rút dao) chứ không phải một cái chớp mắt — nó là bản lề của trụ P2 (vòng khoá ĐẠN ↔ STAMINA). Sau khi nhân:</p>
+<div class="tw"><table>
+<thead><tr><th>Khẩu</th><th>Băng</th><th>Nạp</th><th>Kiểu nạp</th><th>Nhịp</th></tr></thead><tbody>
+<tr><td>Kèn Đồng (súng lục)</td><td>10</td><td>1.88s</td><td>cả băng</td><td>0.40s/phát</td></tr>
+<tr><td>Ổ Chuột (tiểu liên)</td><td>25</td><td>2.76s</td><td>cả băng</td><td>liên thanh</td></tr>
+<tr><td>Gọng Sắt (súng trường)</td><td>25</td><td>3.04s</td><td>cả băng</td><td>liên thanh</td></tr>
+<tr><td><strong>Miệng Hang (súng ghém)</strong></td><td>5</td><td>3.77s</td><td><strong>từng viên (0.75s/viên)</strong></td><td>1.09s/phát</td></tr>
+<tr><td><strong>Gai Mực (nỏ)</strong></td><td><strong>1</strong></td><td><strong>0.55s</strong></td><td>cả băng</td><td>1.18s/phát</td></tr>
+</tbody></table></div>
+<p><strong>Shotgun — <code>reloadStyle: &quot;shell&quot;</code>.</strong> Nạp từng viên một: mỗi viên mất <code>reloadTime / mag</code> giây, và nạp xong một viên là <strong>có ngay một viên để bắn</strong>. Nạp đầy cả băng vẫn tốn đúng <code>reloadTime</code> — không nhanh hơn — nhưng người chơi được quyền <strong>cắt ngang bất cứ lúc nào</strong>: đám quái tới sát mà trong ổ đã có 2 viên thì bắn luôn. Đây là cá tính duy nhất mà một khẩu shotgun cần, và nó không phải là một cơ chế mới: nó chỉ là <em>chia nhỏ</em> thứ vốn đã có.</p>
+<p><strong>Nỏ — một mũi tên mỗi băng, nạp 0.55s.</strong> Vì <code>0.55s</code> <strong>ngắn hơn</strong> khoảng giữa hai phát (<code>1.18s</code>), việc nạp <strong>không bao giờ chặn tay</strong>: bắn → nạp xong trong lúc còn đang chờ nhịp → bắn tiếp. Nỏ thành vũ khí theo <strong>nhịp</strong>, không có lúc nào phải dừng lại nạp cả băng. Đổi lại nó chỉ có đúng một mũi tên: bắn trượt là mất trọn một nhịp.</p>
+<h3>6c. Lên đạn: cái khoảng giữa hai phát phải có gì đó xảy ra</h3>
+<p>Với súng nhịp chậm (shotgun <strong>1.09s</strong>, nỏ <strong>1.18s</strong>, phóng lựu <strong>1.33s</strong>) khoảng giữa hai phát dài hơn cả thời gian phản ứng của người chơi. Trước đây khoảng đó <strong>rỗng hoàn toàn</strong>: chạm màn hình → không ra đạn, không tiếng, không cử động nào. Đọc ra như súng hỏng hoặc máy nuốt input, chứ không đọc ra là &quot;đang lên đạn&quot;.</p>
+<div class="tw"><table>
+<thead><tr><th>Lớp</th><th>Cái gì</th><th>Khi nào</th></tr></thead><tbody>
+<tr><td>Vũ khí</td><td><strong>Thoi trượt về sau rồi đẩy lên trước</strong>, cả khẩu ngửa lên <code>rackKickDeg</code></td><td>nhịp ≥ <code>rackMinIntervalSec</code> (0.35s)</td></tr>
+<tr><td>HUD</td><td>Vòng tròn quanh tâm ngắm chạy đầy (xem <code>14</code> mục 7c)</td><td>nhịp ≥ 0.25s</td></tr>
+<tr><td>HUD</td><td>Số giây đếm ngược dưới tâm ngắm</td><td>nhịp ≥ 0.5s</td></tr>
+<tr><td>Phản hồi</td><td>Chạm lúc chưa xong → <strong>tiếng cò khan</strong> + vòng nhịp nảy một cái</td><td>có <code>dryClickCooldownSec</code> chống spam</td></tr>
+</tbody></table></div>
+<p>Ba luật của lớp này:</p>
+<ol>
+<li><strong>Animation dài đúng bằng <code>60/rpm</code>.</strong> Nó là <em>cái vẻ</em> của delay đã có, không phải một delay thứ hai.</li>
+<span class="cont">Nếu animation dài hơn nhịp thì nó đang nói dối; ngắn hơn thì lại có một khoảng rỗng nữa.</span>
+<li><strong>Chuyển sang chém thì bỏ animation NGAY, nhưng delay giữ nguyên.</strong> Nhát chém ra tức thì, súng cất</li>
+<span class="cont">đi, thoi ngừng chạy — nhưng <code>fireCd</code> vẫn đếm hết. Rút dao ra không làm súng lên đạn nhanh hơn.</span>
+<li><strong>Không bao giờ nuốt im lặng một cú chạm.</strong> Một input không có phản hồi bị đọc là <em>lỗi</em>, không phải</li>
+<span class="cont">là <em>luật chơi</em>.</span>
+</ol>
 <h3>7. Ràng buộc cân bằng (audit)</h3>
 <ol>
 <li><strong>TTK trên trash ≤ 0.60s</strong> với <em>mọi</em> vũ khí tầm xa, và phải có <strong>ít nhất một</strong> khẩu T1 one-shot goblin</li>
@@ -860,22 +900,20 @@ HOLD_FIRE
 <div class="tw"><table>
 <thead><tr><th>Thưởng</th><th>Giá trị</th></tr></thead><tbody>
 <tr><td>Stamina</td><td><strong>+12</strong> (hoàn lại phần lớn chi phí → chém giỏi là tự nuôi được)</td></tr>
-<tr><td>Combo</td><td><strong>+1 bậc</strong> thay vì +1 hit</td></tr>
+<tr><td>Chuỗi chém</td><td><strong>+1 bậc</strong> thay vì +1 hit (chỉ để tới mốc hút vàng)</td></tr>
 <tr><td>Cướp Đạn</td><td><strong>tính x2</strong> (mỗi mạng = 2 điểm)</td></tr>
 <tr><td>Feel</td><td>slow-mo 0.12s @ 0.35x, flash trắng 1 frame, tiếng &quot;shiiing&quot; cao vút, chữ <strong>CHÉM HOÀN HẢO</strong> bay lên</td></tr>
 </tbody></table></div>
 <p>Đây là <strong>money shot</strong> của game — cảnh dùng cho video quảng cáo (UA creative): một nhát quẹt, 5 goblin đứt đôi, xác bay theo hướng ngón tay, vàng nổ đầy màn hình.</p>
-<h3>4. Combo cận chiến</h3>
+<h3>4. Chuỗi chém — KHÔNG còn nhân sát thương</h3>
+<blockquote><strong>Đã bỏ bonus sát thương của cận chiến.</strong> Bảng cũ cho chuỗi chém nhân damage tới <strong>x1.80</strong>. Nó mâu thuẫn trực tiếp với chính quyết định ở mục 7d: dao <strong>phải yếu hơn súng</strong> (<code>meleeAdvantage</code> = 0.307), vì đối mặt thật của game là <strong>đạn</strong>, không phải DPS. Một cái nhân x1.8 ẩn ở chuỗi chém xoá gần hết khoảng cách đó chỉ sau 4 nhát — mà 4 nhát thì trong đám đông là chuyện 2 giây. Kết quả: người chơi giỏi cận chiến gần như không cần bắn nữa, và cả vòng khoá ĐẠN ↔ STAMINA (trụ P2) mất lý do tồn tại.</blockquote>
+<p>Sát thương một nhát giờ là <strong>phẳng</strong>: <code>dmg vũ khí × thẻ nâng cấp</code> (chém nặng vẫn x2 — đó là cơ chế, không phải bonus tích luỹ). Chuỗi chém vẫn được đếm, nhưng chỉ còn hai tác dụng:</p>
 <div class="tw"><table>
-<thead><tr><th>Bậc</th><th>Điều kiện</th><th>Nhân damage</th><th>Feel</th></tr></thead><tbody>
-<tr><td>0</td><td>—</td><td>x1.00</td><td></td></tr>
-<tr><td>1</td><td>1 nhát trúng</td><td>x1.15</td><td>tiếng trầm</td></tr>
-<tr><td>2</td><td>nhát tiếp trong 1.2s</td><td>x1.30</td><td>tiếng cao hơn</td></tr>
-<tr><td>3</td><td></td><td>x1.50</td><td>camera FOV +2°</td></tr>
-<tr><td>4</td><td></td><td>x1.80</td><td>viền màn hình sáng vàng</td></tr>
-<tr><td>5+</td><td></td><td>x1.80 + <strong>hút vàng bán kính x2</strong></td><td>trống dồn</td></tr>
+<thead><tr><th>Bậc</th><th>Điều kiện</th><th>Được gì</th></tr></thead><tbody>
+<tr><td>0–4</td><td>mỗi nhát trúng lên 1 bậc</td><td>Chỉ hiển thị + âm thanh lên tông</td></tr>
+<tr><td>5+</td><td></td><td><strong>Hút vàng bán kính x2</strong> — phần thưởng duy nhất còn lại</td></tr>
 </tbody></table></div>
-<p>Reset khi: quẹt trượt (không trúng ai), hoặc <strong>1.2s không có nhát trúng nào</strong>, hoặc bị trúng đòn. Bắn súng <strong>không</strong> reset combo (khuyến khích trộn hai loại vũ khí — đúng ý P2).</p>
+<p>Reset khi: quẹt trượt (không trúng ai), hoặc <strong>1.2s không có nhát trúng nào</strong>, hoặc bị trúng đòn. Bắn súng <strong>không</strong> reset chuỗi (khuyến khích trộn hai loại vũ khí — đúng ý P2).</p>
 <h3>5. Hitbox của một nhát slide (spec code)</h3>
 <pre class="ascii"><code>
    Đường quẹt trên màn hình  -&gt;  chiếu vào không gian thế giới
@@ -916,7 +954,7 @@ HOLD_FIRE
 <tr><td><strong>Đại đao</strong></td><td>Xoá hàng</td><td>stam 24, swing 0.62s, arc 150°, 6 mục tiêu, launch 8m</td><td>Chém Hoàn Hảo dễ nhất</td></tr>
 <tr><td><strong>Búa / Chuỳ</strong></td><td>Phá khiên</td><td>stam 23–25, swing 0.55–0.70s, kb x2.5–3.2, bỏ qua khiên</td><td>Chống Goblin Khiên</td></tr>
 <tr><td><strong>Giáo</strong></td><td>Tầm xa nhất</td><td>stam 16, reach 3.4m, arc 40°, xuyên 3 con theo đường thẳng</td><td>An toàn nhất</td></tr>
-<tr><td><strong>Song đao</strong></td><td>Combo</td><td>stam 9, swing 0.22s, arc 55°, combo lên bậc nhanh gấp đôi</td><td>Build combo</td></tr>
+<tr><td><strong>Song đao</strong></td><td>Nhịp nhanh nhất</td><td>stam 9, swing 0.22s, arc 55°, lên bậc chuỗi nhanh gấp đôi</td><td>Chạm mốc hút vàng x2 sớm nhất</td></tr>
 <tr><td><strong>Cưa máy</strong></td><td>Giữ để cắt</td><td>stam 22, tiêu theo giây, không dùng slide đơn</td><td>Nod tới Into the Dead</td></tr>
 <tr><td><strong>Lưỡi Lõi</strong></td><td>Late</td><td>hồi 6 stamina mỗi mạng chém khi ở Depth ≥ 5</td><td>End-game</td></tr>
 </tbody></table></div>
@@ -1178,7 +1216,21 @@ TP_budget(R, G) = round( (14 + 4.2 * R) * (1 + 0.35 * G) * roomTypeMult )
 <tr><td><code>lanes.midHalfWidthM</code></td><td>2.0</td><td><strong>Làn giữa (±2.0m) là làn duy nhất gây damage</strong> — xem <code>09</code> mục 2c</td></tr>
 <tr><td><code>tapNearM</code></td><td>2.4</td><td>Khoảng gần nhất mà quái còn <strong>tap được</strong> (xem mục dưới)</td></tr>
 </tbody></table></div>
-<p><strong>Wave sau dồn dập hơn mà không cần dial:</strong> số wave suy ra từ quãng đường, và <code>tpBudget(R, w)</code> đã tăng theo <code>w</code> (<code>×1.18</code> mỗi wave). Nên một phòng 90m tự động là ba đợt tăng dần — không có tham số &quot;độ khó&quot; nào phải tinh chỉnh tay.</p>
+<p><strong>Wave sau dồn dập hơn mà không cần dial:</strong> số wave suy ra từ quãng đường, và <code>tpBudget(R, w)</code> đã tăng theo <code>w</code> (<code>×1.18</code> mỗi wave). Nên một phòng 150m tự động là ba đợt tăng dần — không có tham số &quot;độ khó&quot; nào phải tinh chỉnh tay.</p>
+<p><strong>Ba luật bất biến của mô hình này</strong> (cả ba đều đã bị vi phạm một lần, xem <code>18</code> lỗi #39):</p>
+<ol>
+<li><strong>Không phòng nào được có ít wave hơn <code>roomDistanceM / waveSegmentM</code></strong> — kể cả phòng Elite và Boss.</li>
+<span class="cont">Đặt &quot;một wave lớn trải dài cả quãng đường&quot; là bẫy: vòng spawn rải hàng đợi theo <strong>một đoạn</strong>, nên</span>
+<span class="cont">quái hết ở mét 50 còn người chơi vẫn phải chạy nốt 100m trong hành lang trống. Elite/Boss ra ở</span>
+<span class="cont"><strong>wave 1</strong>, các wave sau vẫn là wave thường.</span>
+<li><strong>Không cắt số quái của wave theo <code>hardCaps.maxTotalAlive</code>.</strong> Đó là trần <strong>số con sống cùng lúc</strong></li>
+<span class="cont">(giới hạn perf của instanced mesh), không phải trần <strong>tổng số con</strong> của một wave. Quái đứng yên, bị</span>
+<span class="cont">bỏ lại phía sau rồi despawn (<code>despawnBehindM</code>) — nên tổng của một wave <strong>được phép</strong> lớn hơn trần đó</span>
+<span class="cont">nhiều lần. Cái trần chỉ được phép <strong>làm chậm nhịp ra quái</strong>, không được phép <strong>xoá bớt quái</strong>.</span>
+<li><strong>Mỗi wave phải có loại quái chưa gặp trong phòng đó.</strong> Director ưu tiên template chưa dùng và có ít</li>
+<span class="cont">nhất một <code>enemy</code> chưa xuất hiện; hết cái mới thì mới cho lặp. Đây là vế &quot;loại quái mới khoẻ hơn&quot; của</span>
+<span class="cont">docs gốc — leo thang không chỉ là <strong>đông hơn</strong>, mà còn là <strong>khác đi</strong>.</span>
+</ol>
 <p><strong>Quái ở làn giữa mà không giết kịp thì người chơi VA phải:</strong> mất máu <strong>một lần</strong>, quái <strong>biến mất</strong>, và <strong>không rơi vàng</strong>. Quái ở hai làn bên thì chạy qua vô hại — giết chúng là <strong>vàng thêm</strong>. Đây là áp lực thay thế cho &quot;diệt hết&quot;: bỏ qua làn giữa thì mất máu, bỏ qua làn bên thì chỉ mất bonus.</p>
 <blockquote><strong>Sương Đen mất lý do tồn tại ở phòng thường.</strong> Nó được thiết kế để chống cắm phòng (<code>08</code>). Trong mô hình quãng đường người chơi <strong>không thể</strong> cắm phòng — luôn bị đẩy về phía trước. Áp lực chống thụ động giờ là chính đám quái tích tụ. Sương Đen chỉ còn hiệu lực ở phòng <strong>boss</strong> (nơi người chơi đứng lại). Số liệu vẫn giữ trong <code>waves.json</code> để dùng cho boss.</blockquote>
 <h4>Vì sao <code>tapNearM</code> phải tồn tại</h4>
@@ -1557,29 +1609,39 @@ ne duoc bang 1 Buoc Lui  : impact + dodgeBackM &gt; aoeRadiusM  -&gt; 1.96 + 1.8
 </tbody></table></div>
 <hr />
 <h3>1. Thẻ Nâng Cấp (in-run cards) — engine replayability</h3>
-<p>Lấy trực tiếp từ Archero: <strong>chọn 1 trong 3 ở mỗi Cổng</strong>. 48 thẻ, chia theo tag để tạo synergy.</p>
+<p><strong>Chọn 1 trong 3 ở mỗi Cổng.</strong> 48 thẻ = <strong>12 chỉ số × 4 bậc</strong>. Mỗi thẻ là <strong>một con số cộng vào một chỉ số</strong> — không điều kiện, không đánh đổi, không cơ chế riêng.</p>
 <div class="tw"><table>
-<thead><tr><th>Tag</th><th>Ý đồ</th><th>Ví dụ thẻ</th></tr></thead><tbody>
-<tr><td><code>ranged</code></td><td>Buff súng</td><td>&quot;Băng Đôi&quot;: mag x2, reload +30% thời gian</td></tr>
-<tr><td><code>melee</code></td><td>Buff dao</td><td>&quot;Lưỡi Dài&quot;: reach +0.8m, arc +20°</td></tr>
-<tr><td><code>stamina</code></td><td>Kinh tế stamina</td><td>&quot;Hơi Dài&quot;: stamina tối đa +40, hồi +6/s</td></tr>
-<tr><td><code>ammo</code></td><td>Kinh tế đạn</td><td>&quot;Kẻ Cướp&quot;: Cướp Đạn cần 4 mạng thay vì 6</td></tr>
-<tr><td><code>knockback</code></td><td>Dãn cách</td><td>&quot;Sóng Xung&quot;: mọi knockback x1.6, xác bay xa x2</td></tr>
-<tr><td><code>gold</code></td><td>Tham</td><td>&quot;Túi Rách&quot;: vàng x1.4 nhưng −15% HP tối đa</td></tr>
-<tr><td><code>luck</code></td><td>Tương tác Lộc</td><td>&quot;Kẻ Tìm Lộc&quot;: mỗi 4 Lộc cho +6% damage và +3% tốc độ chém</td></tr>
-<tr><td><code>survival</code></td><td>Trụ</td><td>&quot;Da Trâu&quot;: +50 HP, hồi 2 HP mỗi kill cận chiến</td></tr>
-<tr><td><code>crit</code></td><td>Burst</td><td>&quot;Điểm Yếu&quot;: crit +18%, crit x3.0</td></tr>
-<tr><td><code>aoe</code></td><td>Xoá wave</td><td>&quot;Nổ Đầu&quot;: kill bằng headshot nổ AoE 30</td></tr>
+<thead><tr><th>Chỉ số</th><th>Tag</th><th>Bậc I → IV</th></tr></thead><tbody>
+<tr><td>Sát Thương</td><td><code>ranged</code></td><td>+15% → +26% → +39% → <strong>+57%</strong> sát thương mọi vũ khí</td></tr>
+<tr><td>Băng Đạn</td><td><code>ammo</code></td><td>+25% → +42% → +65% → <strong>+95%</strong> số đạn một băng</td></tr>
+<tr><td>Nạp Nhanh</td><td><code>ammo</code></td><td>−12% → −20% → −31% → <strong>−46%</strong> thời gian nạp</td></tr>
+<tr><td>Nhịp Bắn</td><td><code>ranged</code></td><td>+10% → +17% → +26% → <strong>+38%</strong> tốc độ bắn</td></tr>
+<tr><td>Chí Mạng</td><td><code>crit</code></td><td>+6% → +10% → +16% → <strong>+23%</strong> tỉ lệ chí mạng</td></tr>
+<tr><td>Đạn Dự Trữ</td><td><code>ammo</code></td><td>+30% → +51% → +78% → <strong>+114%</strong></td></tr>
+<tr><td>Vàng</td><td><code>gold</code></td><td>+20% → +34% → +52% → <strong>+76%</strong> vàng nhặt được</td></tr>
+<tr><td>Hút Vàng</td><td><code>gold</code></td><td>+35% → +59% → +91% → <strong>+133%</strong> bán kính</td></tr>
+<tr><td>Hồi Sức</td><td><code>stamina</code></td><td>+5 → +9 → +13 → <strong>+19</strong> stamina/giây</td></tr>
+<tr><td>Sức Bền</td><td><code>stamina</code></td><td>+25 → +43 → +65 → <strong>+95</strong> stamina tối đa</td></tr>
+<tr><td>Máu</td><td><code>survival</code></td><td>+25 → +43 → +65 → <strong>+95</strong> HP tối đa</td></tr>
+<tr><td>Sức Đẩy</td><td><code>knockback</code></td><td>+25% → +43% → +65% → <strong>+95%</strong> lực đẩy lùi</td></tr>
 </tbody></table></div>
 <h4>Luật thiết kế thẻ</h4>
 <ol>
-<li><strong>Mọi thẻ mạnh phải có giá.</strong> (&quot;vàng x1.4 nhưng −15% HP&quot;) — thẻ toàn mặt tốt làm chết quyết định.</li>
-<li><strong>Không thẻ nào +5% damage đơn thuần.</strong> Thẻ phải đổi <em>cách chơi</em>, không chỉ đổi <em>số</em>.</li>
-<li><strong>Có combo ẩn</strong>: 3 thẻ cùng tag <code>melee</code> → mở thẻ Legendary &quot;Đồ Tể&quot; (chém hồi đạn, không cần Cướp Đạn).</li>
-<span class="cont">Người chơi tự phát hiện = chất liệu để bàn luận trên cộng đồng.</span>
-<li><strong>Rarity theo Lộc</strong> (xem <code>08</code>): chơi giỏi (Elite, không mất máu, Chém Hoàn Hảo) là cách duy nhất thấy thẻ Legendary sớm.</li>
+<li><strong>Không thẻ nào có logic.</strong> Không điều kiện (&quot;khi HP &lt; 30%&quot;), không đánh đổi (&quot;nhưng −15% HP&quot;),</li>
+<span class="cont">không cơ chế riêng (&quot;chém trúng thì phát bắn sau +60%&quot;). Lý do: người chơi đọc thẻ ngay sau khi</span>
+<span class="cont">vừa chạy hết 50m và đang thở — ba thẻ có điều kiện là <strong>ba bài toán</strong> đặt vào đúng lúc họ ít khả</span>
+<span class="cont">năng giải nhất. Chỗ dành cho cơ chế là <strong>Bảo Vật</strong> (mục 2) và <strong>Talent</strong> (mục 4), nơi người chơi</span>
+<span class="cont">ngồi đọc ngoài trận.</span>
+<li><strong>Bậc thẻ chỉ đổi CON SỐ, không đổi công dụng.</strong> &quot;Sát Thương I&quot; và &quot;Sát Thương IV&quot; cùng làm một</li>
+<span class="cont">việc, chỉ khác 15% với 57%. Không phải học lại gì khi lên bậc.</span>
+<li><strong>Cùng chỉ số thì cộng dồn</strong>, tối đa <code>maxStackPerStat</code> = 8 lần. Nhân kiểu <code>mult</code> cộng dồn theo</li>
+<span class="cont">tích <code>(1+step)</code>, <code>add</code> cộng thẳng. Ở Cổng không bao giờ bày 2 thẻ cùng chỉ số.</span>
+<li><strong>Rarity theo Lộc</strong> (xem <code>08</code>): chơi giỏi (Elite, không mất máu, Chém Hoàn Hảo) là cách duy nhất</li>
+<span class="cont">thấy thẻ bậc IV sớm. Đây là chỗ duy nhất còn &quot;quyết định&quot; trong hệ thẻ — và nó nằm ở <strong>cách chơi</strong>,</span>
+<span class="cont">không nằm ở việc đọc thẻ.</span>
 <li>Có thể <strong>đổi 3 thẻ</strong> (reroll): 1 lần miễn phí / Depth, sau đó 80 vàng hoặc xem 1 ad.</li>
 </ol>
+<blockquote><strong>Cái đã bỏ:</strong> bộ 50 thẻ cũ có drawback, có điều kiện, và có <strong>combo ẩn</strong> (3 thẻ cùng tag mở một thẻ Legendary có cơ chế riêng). Combo ẩn là ý tưởng tốt cho một game người chơi ngồi đọc; nó sai chỗ trong một game người chơi đang chạy 4.2 m/s giữa 40 con goblin.</blockquote>
 <p>Dữ liệu: <code>data/upgrades.json</code> → <code>gen-upgrades.md</code>.</p>
 <h3>2. Bảo Vật (relic)</h3>
 <p>12 relic, mỗi run mang tối đa 3. Mạnh, đổi luật chơi:</p>
@@ -1929,7 +1991,7 @@ goldPerKill(enemy, D) = enemy.goldDrop
 <h3>1. Layout HUD trong combat</h3>
 <pre class="ascii"><code>
 +---------------------------------------+  &lt;- safe area top
-| [LỘC 8]  [D3-R7]   HP ####----   [||] |  0-8%   : Lộc + vị trí + HP + pause
+| [LỘC 8]  [D3-R7] [MÉT 73/150] HP [||] |  0-8%   : Lộc + vị trí + quãng đường + HP
 |                                       |
 |                                       |
 |          DẢI XA (quái silhouette)     |  8-40%  : không đặt UI gì ở đây
@@ -1937,24 +1999,28 @@ goldPerKill(enemy, D) = enemy.goldDrop
 |                                       |
 |- - - - - - - - - - - - - - - - - - - -|
 |                                       |
-|         DẢI GIỮA / CẬN CHIẾN          |  40-78% : vùng quái tới gần
-|            (tâm ngắm ở 62%)           |           NGÓN TAY HOẠT ĐỘNG Ở ĐÂY
-|                                       |
+|         DẢI GIỮA / CẬN CHIẾN          |  40-75% : vùng quái tới gần
+|              ( O )  &lt;- tâm ngắm 62%   |           NGÓN TAY HOẠT ĐỘNG Ở ĐÂY
+|               0.8s     + vòng nhịp bắn|
 |- - - - - - - - - - - - - - - - - - - -|
-|   [stamina ====     ]  (fade sau 2s)  |  78-86% : stamina (chỉ khi chém)
-|                                       |
-| VÀNG 1,240        (o o o o o - - -)   |  86-94% : vàng + vòng đạn
-|                              24/60    |
-| [RELOAD]                       [ULT]  |  94-100%: 2 nút duy nhất của game
+|      ||||||||||||-----                |  77-83% : BĂNG ĐẠN (mỗi vạch = 1 viên)
+|            12 / 48  ĐANG NẠP         |           + số đạn + trạng thái
+|          [====        ]              |  84-88% : STAMINA (cùng cột, không ở góc)
+| VÀNG 1,240                            |  90-96% : vàng (đọc lúc rảnh)
+| [NẠP]                                 |  96-100%: nút phụ (đường tắt)
 +---------------------------------------+  &lt;- safe area bottom
 </code></pre>
 <div class="tw"><table>
 <thead><tr><th>Vùng</th><th>% chiều cao</th><th>Nội dung</th><th>Luật</th></tr></thead><tbody>
-<tr><td>Top bar</td><td>0–8%</td><td>Lộc, vị trí <code>D3-R7</code>, HP, pause</td><td>Không bao giờ che bởi hiệu ứng</td></tr>
-<tr><td>Vùng chiến đấu</td><td>8–78%</td><td>Chỉ game, không UI</td><td>Tâm ngắm ở <strong>62%</strong> (thấp hơn giữa, vì ngón tay đến từ dưới)</td></tr>
-<tr><td>Stamina</td><td>78–86%</td><td>Hiện khi chém, fade 2s</td><td>Đúng docs</td></tr>
-<tr><td>Vàng + đạn</td><td>86–94%</td><td></td><td>Vàng bên trái (đọc trước), đạn bên phải (gần ngón)</td></tr>
-<tr><td>Nút</td><td>94–100%</td><td><strong>Chỉ 2 nút</strong>: Reload (phải), Ultimate (phải ngoài)</td><td>Cả hai trong vùng ngón cái</td></tr>
+<tr><td>Top bar</td><td>0–8%</td><td>Lộc, vị trí <code>D3-R7</code>, mét đã chạy, HP, pause</td><td>Không bao giờ che bởi hiệu ứng</td></tr>
+<tr><td>Vùng chiến đấu</td><td>8–75%</td><td>Chỉ game</td><td>Tâm ngắm ở <strong>62%</strong> (thấp hơn giữa, vì ngón tay đến từ dưới)</td></tr>
+<tr><td>Vòng nhịp bắn</td><td>quanh tâm ngắm</td><td>Vòng tròn đường kính 48px, viền 2.6px</td><td>Chỉ hiện khi nhịp ≥ 0.25s. Số giây chỉ hiện khi nhịp ≥ 0.5s</td></tr>
+<tr><td><strong>Băng đạn</strong></td><td><strong>77–83%</strong></td><td>Vạch đạn + số đạn + <code>ĐANG NẠP</code>/<code>HẾT BĂNG</code></td><td><strong>Ngay dưới dải cận chiến</strong>: không che quái, vẫn trong tầm liếc mắt</td></tr>
+<tr><td><strong>Đang nạp</strong></td><td>thay chỗ băng đạn</td><td>Vòng tròn 64px <strong>xoay</strong> + cung tiến độ + vạch xanh Nạp Hoàn Hảo</td><td>Nạp = không bắn được: phải là thứ to nhất trong cột, xem mục 7c</td></tr>
+<tr><td><strong>Stamina</strong></td><td><strong>84–88%</strong></td><td>Hiện khi chém, fade 2s</td><td><strong>Cùng cột với đạn</strong>, không ở góc: nó gác việc còn chém được hay không</td></tr>
+<tr><td>Viền màn hình</td><td>rìa</td><td>Chớp đỏ khi trúng đòn · đập đỏ khi HP &lt; 35% · tím khi Sương Đen</td><td>Kênh riêng cho <strong>sinh tồn</strong>, xem mục 7e</td></tr>
+<tr><td>Vàng</td><td>90–96%</td><td></td><td>Thông tin <strong>không</strong> cần trong lúc đánh — góc dưới là đúng chỗ của nó</td></tr>
+<tr><td>Nút</td><td>96–100%</td><td>Chỉ 1 nút <code>NẠP</code>, và chỉ là đường tắt</td><td>Nạp Hoàn Hảo chạm được ở <strong>bất kỳ đâu</strong> trên màn hình</td></tr>
 </tbody></table></div>
 <p><strong>Camera chúi 8°</strong> để quái ở dải Cận chiến rơi vào 45–75% chiều cao — trên vùng ngón tay che.</p>
 <h3>2. Màn hình Cổng (xem <code>08</code> mục 3)</h3>
@@ -2007,6 +2073,77 @@ goldPerKill(enemy, D) = enemy.goldDrop
 <tr><td>Người chơi chết</td><td>Không popup ngay. Slow-mo 1.2s cảnh chết → <strong>màn hình kết run</strong> (vàng, Lộc cuối, phòng sâu nhất, weapon XP) → nút &quot;Hồi sinh (ad)&quot; và &quot;Về Cổng Hầm&quot;</td></tr>
 <tr><td>Chết ở Depth ≥ 4</td><td>Có thêm dòng chữ nhỏ ghi lại &quot;câu chuyện&quot;: <em>&quot;Ngươi xuống tới phòng 37. Xác ngươi giờ là mốc cho kẻ sau.&quot;</em></td></tr>
 </tbody></table></div>
+<hr />
+<h3>7. Đọc được số trong lúc mắt đang khoá vào quái</h3>
+<p>Đây là mục sinh ra từ một lời phàn nàn cụ thể: <em>&quot;2 góc dưới mù mắt không đọc nổi khi đang phải nhìn chằm chằm vào đống quái đang đến.&quot;</em> Nó đúng, và lý do là sinh học chứ không phải thẩm mỹ.</p>
+<h4>7a. Vì sao góc màn hình không đọc được</h4>
+<p>Mắt chỉ nhìn <strong>sắc nét</strong> trong khoảng 2° quanh điểm đang nhìn (vùng fovea), và chỉ còn <strong>đọc được chữ</strong> tới khoảng 5° (vùng parafovea). Ra ngoài đó, thị giác ngoại vi vẫn rất nhạy với <strong>chuyển động, tương phản và thay đổi hình dạng</strong> — nhưng gần như <strong>không đọc được ký tự</strong>.</p>
+<p>Trong game này điểm mắt đang nhìn là <strong>tâm ngắm ở 62% chiều cao</strong>, vì đó là chỗ quái làn giữa đi tới. Trên điện thoại dọc cầm cách mắt ~30cm, màn hình cao ~13cm phủ khoảng 24° thị trường:</p>
+<div class="tw"><table>
+<thead><tr><th>Vị trí HUD</th><th>Cách tâm ngắm</th><th>Đọc được không</th></tr></thead><tbody>
+<tr><td>Góc dưới trái/phải (cũ)</td><td>~14–18°</td><td><strong>Không.</strong> Phải <em>chuyển ánh mắt</em>, mất 0.2–0.3s và mất luôn cảnh quái đang tới</td></tr>
+<tr><td>Ngay dưới tâm ngắm (78% cao)</td><td>~3–4°</td><td>Đọc được bằng cách <strong>liếc</strong>, không cần rời mắt khỏi đám quái</td></tr>
+<tr><td>Sát tâm ngắm (vòng 48px)</td><td>~1.5°</td><td>Đọc được bằng <strong>thị giác trung tâm</strong>, không tốn gì cả</td></tr>
+</tbody></table></div>
+<p>Một cú liếc xuống góc màn hình trong game này tốn khoảng <strong>nửa giây</strong> cả đi lẫn về. Ở tốc độ chạy 4.2 m/s thì nửa giây là <strong>2.1 mét</strong> — đủ để một con goblin từ ngoài tầm dao đi vào tận mặt. Nói cách khác: HUD ở góc màn hình không phải &quot;khó đọc&quot;, nó là <strong>một đòn sát thương</strong>.</p>
+<h4>7b. Ba kênh, ba loại thông tin</h4>
+<p>Không phải thứ gì cũng cần đặt gần tâm ngắm. Luật phân loại:</p>
+<div class="tw"><table>
+<thead><tr><th>Kênh</th><th>Đọc bằng gì</th><th>Dùng cho</th><th>Đặt ở đâu</th></tr></thead><tbody>
+<tr><td><strong>Hình dạng</strong></td><td>Ngoại vi cũng thấy</td><td>Còn nhiều / sắp hết</td><td>Dải vạch đạn — mỗi vạch là 1 viên</td></tr>
+<tr><td><strong>Chuyển động</strong></td><td>Ngoại vi rất nhạy</td><td>Bao giờ bắn được phát nữa</td><td>Vòng tròn quanh tâm ngắm</td></tr>
+<tr><td><strong>Con số</strong></td><td>Chỉ đọc được ở trung tâm</td><td>Chính xác bao nhiêu viên, còn mấy giây</td><td>Ngay dưới tâm ngắm, cỡ chữ ≥ 24px</td></tr>
+</tbody></table></div>
+<p>Hệ quả trực tiếp: <strong>vàng ở góc dưới là đúng</strong> (không ai cần biết chính xác 1.240 hay 1.260 giữa lúc đánh), còn <strong>đạn ở góc dưới là sai</strong> — đạn quyết định hành động của chính giây tiếp theo.</p>
+<h4>7c. Ba thứ phải hiển thị, và cách hiển thị</h4>
+<p><strong>1. Số đạn còn lại</strong> — dải vạch ở 78% chiều cao, mỗi vạch một viên (trên 24 viên thì vẽ thành thanh liền, vì quá số đó mắt không đếm được nữa). Vàng → cam khi dưới 30% → đỏ + nhấp nháy khi hết. Ngay dưới là số to <code>12 / 48</code> (băng / dự trữ). Còn 1 viên thì <strong>luôn còn ít nhất 1 vạch sáng</strong> — làm tròn xuống 0 là nói dối người chơi đúng lúc họ cần tin nhất.</p>
+<p><strong>2. Đang nạp</strong> — <strong>vòng tròn 64px thay chỗ dải vạch</strong>, ba lớp trên cùng một vòng:</p>
+<div class="tw"><table>
+<thead><tr><th>Lớp</th><th>Là gì</th><th>Nói gì</th></tr></thead><tbody>
+<tr><td>Vòng đứt nét <strong>xoay liên tục</strong></td><td>tín hiệu</td><td>&quot;đang chờ&quot; — ký hiệu ai cũng đọc được, và <strong>xoay</strong> thì thị giác ngoại vi bắt được ngay cả khi mắt đang khoá vào đám quái</td></tr>
+<tr><td>Cung vàng chạy</td><td>số liệu</td><td>còn bao nhiêu phần</td></tr>
+<tr><td>Vạch xanh trên vòng</td><td>mục tiêu</td><td>cửa sổ <strong>Nạp Hoàn Hảo</strong> — chạm khi cung vàng chạm vạch xanh</td></tr>
+<tr><td>Số ở giữa vòng</td><td>chính xác</td><td>giây còn lại</td></tr>
+<tr><td>Chữ dưới vòng</td><td>trạng thái</td><td><code>ĐANG NẠP</code>, hoặc <code>ĐANG NẠP VIÊN 3/5</code> với súng nạp từng viên</td></tr>
+</tbody></table></div>
+<p>Một thanh mảnh 13px <strong>không đủ</strong>: nạp là trạng thái người chơi <strong>không bắn được</strong>, nó phải hét lên, không phải thì thầm. Và vì cửa sổ xanh chỉ rộng ~0.25s nên nó <strong>bắt buộc</strong> phải nằm trong tầm liếc: bắt người chơi canh 0.25s ở góc màn hình là bắt họ chọn giữa nạp giỏi và sống sót. Kéo theo một thay đổi điều khiển: <strong>chạm bất kỳ đâu trên màn hình</strong> đều tính là cú Nạp Hoàn Hảo (20% đầu bỏ qua, vì đó là cú chạm cuối của loạt bắn vừa rồi chứ không phải ý định nạp).</p>
+<p><strong>3. Nhịp bắn / delay giữa 2 phát</strong> — vòng tròn quanh tâm ngắm chạy đầy dần; đầy = bắn được. Đây là thông tin <em>chỉ có nghĩa ngay tại điểm ngắm</em>, nên nó đi theo tâm ngắm.</p>
+<div class="tw"><table>
+<thead><tr><th>Súng</th><th>Nhịp/phút</th><th>Delay giữa 2 phát</th><th>HUD hiện gì</th></tr></thead><tbody>
+<tr><td>Ổ Chuột (SMG)</td><td>700</td><td>0.09s</td><td>Không gì — bắn liên thanh, vòng quay sẽ thành nhiễu</td></tr>
+<tr><td>Gọng Sắt (rifle)</td><td>600</td><td>0.10s</td><td>Không gì</td></tr>
+<tr><td>Kèn Đồng (súng lục)</td><td>150</td><td>0.40s</td><td>Vòng tròn</td></tr>
+<tr><td><strong>Miệng Hang (shotgun)</strong></td><td><strong>55</strong></td><td><strong>1.09s</strong></td><td>Vòng tròn <strong>+ số giây đếm ngược</strong></td></tr>
+<tr><td>Gai Mực (nỏ)</td><td>51</td><td>1.18s</td><td>Vòng tròn + số giây</td></tr>
+</tbody></table></div>
+<p>Ngưỡng: vòng tròn từ <strong>0.25s</strong>, số giây từ <strong>0.5s</strong>. Dưới ngưỡng thì HUD nhấp nháy nhanh hơn tốc độ mắt xử lý, thành nhiễu chứ không thành thông tin. Khi vòng chạy hết, tâm ngắm <strong>nảy một cái</strong> — với súng chậm, cái nảy đó là tín hiệu quan trọng hơn cả con số, vì ngoại vi bắt được nó.</p>
+<h4>7d. Cột trạng thái, và những gì KHÔNG được ở góc</h4>
+<p>Áp cùng một câu hỏi cho từng thứ trên HUD — <em>&quot;nó có quyết định hành động của giây tiếp theo không?&quot;</em> — thì ra một cột duy nhất chạy dọc giữa màn hình ngay dưới dải cận chiến:</p>
+<pre class="ascii"><code>
+                ( O )  0.8s        &lt;- tâm ngắm + vòng nhịp bắn (62%)
+             ||||||||-----          &lt;- băng đạn  (77%)      ] cột
+                12 / 48             &lt;- số đạn + trạng thái   ] trạng
+             [====      ]           &lt;- STAMINA               ] thái
+</code></pre>
+<p><strong>Stamina chuyển từ góc dưới lên cột này.</strong> Nó gác việc <em>có chém được nữa hay không</em> — đúng loại thông tin của giây tiếp theo, y như đạn. Ở góc dưới nó chỉ là một vệt sáng người chơi không bao giờ đọc. Vàng thì ngược lại: ở lại góc dưới, vì không ai cần biết chính xác 1.240 hay 1.260 giữa trận.</p>
+<h4>7e. Máu: nói bằng màu ở rìa, không bằng số ở góc</h4>
+<p>Thanh HP cao 10px nằm trong thanh trên, cách tâm ngắm ~20° — <strong>không đọc được giữa trận</strong>, đúng cùng một lỗi với đạn ở góc dưới. Nhưng máu không thể dời vào giữa màn hình (nó sẽ đè lên quái). Nên nó đổi <strong>kênh</strong> thay vì đổi <strong>chỗ</strong>:</p>
+<div class="tw"><table>
+<thead><tr><th>Trạng thái</th><th>Tín hiệu</th><th>Vì sao đọc được</th></tr></thead><tbody>
+<tr><td>Vừa trúng đòn</td><td><strong>Chớp đỏ 0.18s ở viền màn hình</strong></td><td>Rung tay không nói được &quot;mất bao nhiêu&quot;; một viền đỏ thì ngoại vi bắt ngay</td></tr>
+<tr><td>HP &lt; 35%</td><td><strong>Viền đỏ đập theo nhịp 1.15s</strong>, không tắt</td><td>Trạng thái kéo dài phải có tín hiệu kéo dài. Nhịp đập = &quot;đang chảy máu&quot;, không cần chữ</td></tr>
+<tr><td>Sương Đen</td><td>Viền tím tối dần</td><td>Cùng kênh, khác màu — hai thứ không lẫn nhau</td></tr>
+</tbody></table></div>
+<p>Luật: <strong>viền màn hình là kênh của trạng thái sinh tồn.</strong> Không dùng nó cho bất cứ thứ gì khác, vì một kênh mang hai nghĩa là một kênh không mang nghĩa nào.</p>
+<h4>7f. Luật chung rút ra</h4>
+<ol>
+<li>Thông tin quyết định hành động <strong>của giây tiếp theo</strong> thì đặt trong 5° quanh tâm ngắm.</li>
+<li>Thông tin tổng kết (vàng, Lộc, mét) đặt ở rìa — ở đó nó <strong>không</strong> cạnh tranh với quái.</li>
+<li>Không đặt gì đặc (nền mờ, khối lớn) trong dải <strong>45–75% chiều cao</strong>: đó là chỗ quái cận chiến</li>
+<span class="cont">đứng. HUD trong vùng đó chỉ được là <strong>đường viền mảnh</strong> (vòng nhịp bắn 2.6px).</span>
+<li>Mọi chữ trên HUD phải có <code>text-shadow</code> đen: nền hầm gần như đen nhưng có lúc loé sáng</li>
+<span class="cont">(nổ, vàng, muzzle flash), không có viền tối thì chữ vàng biến mất đúng lúc đông nhất.</span>
+</ol>
 </div></section>
 <section class="doc" id="doc-15"><p class="docnum">15 &middot; docs/15-art-audio.md</p><h2>Art Direction &amp; Audio</h2><div class="rule"></div>
 <div class="body wide"><h3>1. Art direction một câu</h3>
@@ -2616,6 +2753,21 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>36</td><td><strong>Mô hình &quot;mọi súng cùng DPS&quot; làm nhịp bắn thật không thể tồn tại.</strong> Muốn SMG bắn 700 nhịp/phút thì sát thương mỗi viên phải tụt xuống mức vô nghĩa; muốn viên đạn mạnh thì nhịp bắn phải xuống 155 (rifle) hay 48 (shotgun) — chậm hơn đời thật 4–5 lần. Không phải lỗi số, mà là <strong>mô hình cân bằng sai chỗ</strong></td><td>Đảo lại: sát thương suy từ <strong>cỡ đạn</strong> (<code>caliberMult</code> = số lần HP trash), nhịp bắn từ <strong>số liệu thật</strong>, và <strong>đạn</strong> là thứ cân bằng (mọi khẩu mang đủ cho <strong>7 wave</strong>). DPS giờ chạy từ 237 tới 1549 tuỳ archetype — đúng như đời thật</td></tr>
 <tr><td>37</td><td><strong><code>magClearRatio</code> đo sát thương thô, không đo số mạng.</strong> Một viên 120 dmg vào goblin 40 HP thì thừa 3 lần, nên metric cho ra con số sai gấp 3 — nó ép băng đạn SMG xuống <strong>7 viên</strong> trong khi MP5 thật có 30</td><td>Đổi sang <code>killsPerShot = pellets × min(1, dmg/trashHp) × (1+pierce) × aoeFactor × killEff</code>. Băng đạn về đúng cỡ thật (SMG 25, rifle 25, LMG 100). <code>killEff</code> có mặt vì đạn ghém tản theo góc nên <strong>không phải viên nào cũng trúng một con riêng</strong> — thiếu nó thì shotgun ra 45 mạng một băng</td></tr>
 <tr><td>38</td><td><strong>Chính <code>audit_gdd.ps1</code> bị nhân đôi một khối lớn</strong> do một lần splice sai của tôi, và nó <strong>vẫn chạy xanh</strong> — chỉ khác là in ra hai bản tóm tắt và báo 99 check thay vì 80. Một cái audit tự nhân đôi sẽ thổi phồng số PASS và che mất chỗ nào chưa được kiểm</td><td>Dựng lại file từ ba đoạn đúng. Bài học đã ghi: khi sửa audit bằng splice thì phải <strong>đếm lại số check</strong> và soi trùng tên, vì file này là lưới an toàn của cả dự án — nó hỏng thì không có gì bắt được nữa</td></tr>
+</tbody></table></div>
+<div class="tw"><table>
+<thead><tr><th>39</th><th><strong>Chạy được ~70m ở D1-R5 là hết sạch quái, 80m còn lại chạy giữa hành lang trống.</strong> Phòng Elite (và Boss) đặt <code>wavesInRoom = 1</code> với ghi chú &quot;một wave lớn trải dài cả quãng đường&quot;, nhưng vòng spawn lại rải hết hàng đợi trong đúng <strong>một đoạn <code>waveSegmentM</code> = 50m</strong>. Cộng thêm <code>target = min(maxTotalAlive, ...)</code> cắt số quái của wave theo trần <strong>số con sống cùng lúc</strong> — hai thứ khác hẳn nhau, vì quái đứng yên và bị bỏ lại phía sau rồi despawn</th><th>Bỏ cả hai. Mọi phòng chia đều thành đoạn 50m, <strong>mỗi đoạn là một wave mới</strong>, wave sau đông hơn theo <code>tpPerWave</code> và ưu tiên template có <strong>loại quái chưa xuất hiện trong phòng</strong>. Elite giờ ra ở wave 1 của phòng Elite, các wave sau vẫn chạy bình thường. Đo lại D1-R5: số con phía trước 37 → 60 → 109 suốt 150m thay vì về 0 ở mét 70</th></tr></thead><tbody>
+<tr><td>40</td><td><strong>Nạp Hoàn Hảo bắt nhìn xuống góc dưới bên phải đúng lúc không được phép nhìn.</strong> Cửa sổ xanh rộng ~0.25s nằm trên nút <code>NẠP</code> ở góc màn hình — cách tâm ngắm 14–18°, tức <strong>ngoài vùng đọc được của mắt</strong>. Người chơi phải chọn giữa nạp giỏi và thấy đám quái đang tới. Cùng lý do đó, số đạn ở góc dưới cũng vô dụng trong lúc đánh</td><td>HUD đạn dời lên <strong>78% chiều cao</strong> (ngay dưới dải cận chiến, không che quái), nhịp bắn vẽ thành <strong>vòng tròn quanh tâm ngắm</strong>, và Nạp Hoàn Hảo <strong>chạm được ở bất kỳ đâu</strong> trên màn hình (20% đầu bỏ qua vì đó là cú chạm cuối của loạt bắn). Nghiên cứu + số đo ở <code>14</code> mục 7</td></tr>
+<tr><td>41</td><td><strong>Nhãn chọn súng ở màn hình đầu viết tay nên lệch hẳn với data.</strong> Nó ghi &quot;Gọng Sắt 155 nhịp/phút&quot; trong khi <code>weapons.json</code> là <strong>600</strong>, &quot;Miệng Hang 48&quot; trong khi thật là <strong>55</strong>. Sai từ lần tune trước và không có gate nào bắt được, vì audit chỉ kiểm data chứ không kiểm text UI</td><td>Sinh danh sách súng <strong>từ data</strong> trong <code>main.js</code>, và mỗi dòng ghi thẳng <strong>delay giữa 2 phát</strong> (<code>60/rpm</code>) thay vì nhịp/phút — đó mới là con số người chơi cảm thấy. Nguyên tắc: <strong>không viết tay bất kỳ con số nào đã có trong <code>data/</code></strong></td></tr>
+</tbody></table></div>
+<div class="tw"><table>
+<thead><tr><th>42</th><th><strong>Bắn trúng con không chết thì màn hình không có gì thay đổi.</strong> Xung knockback <em>có</em> chạy, nhưng <code>kb_weapon</code> chỉ 0.4–1.6 và tắt theo hàm mũ → đi được ~0.4m, mà ở cự ly 10m thì 0.4m là <strong>vài pixel</strong>; phần đẩy ngang lại bị lane spring kéo về ngay. Còn lại đúng một cái nháy trắng 0.17s. Người chơi đọc ra là &quot;đạn không trúng&quot;</th><th>Ba lớp chồng lên nhau trong <code>gamefeel.json</code> khối <code>hitReaction</code>: <code>impulseMult</code> 3.5 (một phát shotgun đẩy 5 con lùi <strong>1.35m</strong>), <strong>giật ngược</strong> 0.16s có sàn <code>lurchMinFrac</code> nên Quỷ Hầm <code>kbResist</code> 0.90 chỉ lùi 0.14m nhưng <strong>vẫn giật</strong>, và <strong>nén người</strong> trong lúc giật. &quot;Không đẩy được&quot; phải khác &quot;không phản ứng&quot;</th></tr></thead><tbody>
+<tr><td>43</td><td><strong>Shotgun: chạm liên tục mà không ra đạn, và không có gì báo vì sao.</strong> <code>if (this.fireCd &gt; 0) return;</code> — một <code>return</code> câm lặng. Với nhịp 1.09s thì có tới hơn một giây người chơi bấm mà máy không trả lời gì. Một input không có phản hồi bị đọc là <strong>lỗi máy</strong>, không phải luật chơi</td><td>Lấp khoảng đó bằng <strong>animation lên đạn</strong> (thoi trượt về sau rồi đẩy lên trước) chạy <strong>đúng bằng <code>60/rpm</code></strong> — nó là cái vẻ của delay đã có, không phải delay thứ hai. Cộng tiếng <strong>cò khan</strong> + vòng nhịp bắn nảy khi chạm sớm (có cooldown chống spam). Chuyển sang chém thì bỏ animation ngay nhưng <code>fireCd</code> <strong>giữ nguyên</strong>: rút dao ra không làm súng lên đạn nhanh hơn</td></tr>
+</tbody></table></div>
+<div class="tw"><table>
+<thead><tr><th>44</th><th><strong>Knockback vẫn nhẹ, mà tăng lực lên thì vỡ game theo hướng khác.</strong> <code>impulseMult</code> 3.5 cho ra 1.35m — vẫn chưa &quot;nảy&quot;. Nhưng nâng thẳng lên thì chém slide liên tục (1 nhát / 0.22s × ~1.8m) đẩy quái <strong>8 m/s</strong>, gần gấp đôi tốc độ chạy 4.2 m/s → quái <strong>không bao giờ chạm được</strong> vào người chơi nữa. Giảm lực mỗi nhát để chữa thì nhát ĐẦU TIÊN cũng yếu đi, tức là chữa đúng cái đang muốn giữ</th><th><code>impulseMult</code> → <strong>7.0</strong> (một phát shotgun đẩy 6 con <strong>2.5–2.8m</strong>), và thêm <strong>ngân sách đẩy tính bằng mét</strong>: mỗi con có <code>kbBudgetM</code> 4.0m, hồi <code>kbRefillMps</code> 1.2 m/s. Cú đầu ăn nguyên lực; đẩy liên tục thì tốc độ lùi bị kẹp về 1.2 m/s — <strong>thấp hơn hẳn</strong> tốc độ chạy, nên người chơi luôn đuổi kịp. Đo: chém liên tục vào một con, khoảng cách 8m → chạm nhau sau <strong>2.9 giây</strong></th></tr></thead><tbody>
+<tr><td>45</td><td><strong>Nạp đạn nhanh quá và shotgun nạp cả băng cùng lúc.</strong> Reload 1.4–2.6s là một cái chớp mắt, không phải một quyết định — trụ P2 (vòng khoá ĐẠN ↔ STAMINA) mất bản lề. Riêng shotgun nạp cả 5 viên một lần thì mất luôn cá tính đặc trưng nhất của nó</td><td><code>balance.reloadGlobalMult</code> = <strong>1.45</strong> nhân vào dải reload mọi archetype (normalize clamp vào dải ĐÃ nhân nên idempotent). Shotgun <code>reloadStyle: &quot;shell&quot;</code> — <strong>nạp từng viên</strong> 0.75s/viên, nạp đủ vẫn tốn 3.77s nhưng <strong>cắt ngang được bất cứ lúc nào</strong>. Nỏ đi hướng ngược lại: băng <strong>1 mũi tên</strong>, nạp <strong>0.55s</strong> — ngắn hơn nhịp bắn 1.18s nên nạp không bao giờ chặn tay</td></tr>
+<tr><td>46</td><td><strong>&quot;Đang nạp&quot; nói bằng một thanh mảnh 13px.</strong> Nạp là trạng thái người chơi <strong>không bắn được</strong> — trạng thái nặng nhất trong trận — mà tín hiệu của nó nhỏ hơn cả dãy vạch đạn bình thường. Ngoại vi không bắt được, và cửa sổ Nạp Hoàn Hảo rộng 0.25s thì càng không</td><td>Vòng tròn 64px thay chỗ dãy vạch: <strong>vòng đứt nét XOAY</strong> (ngoại vi bắt chuyển động ngay cả khi mắt khoá vào quái) + cung vàng tiến độ + vạch xanh cửa sổ + số giây ở giữa + chữ <code>ĐANG NẠP</code> / <code>ĐANG NẠP VIÊN 3/5</code>. Cùng lúc dời <strong>stamina</strong> từ góc dưới lên cột trạng thái, và cho <strong>viền màn hình</strong> thành kênh sinh tồn (chớp đỏ khi trúng, đập đỏ khi HP &lt; 35%). Xem <code>14</code> mục 7c–7e</td></tr>
+<tr><td>47</td><td><strong>Bộ 50 thẻ nâng cấp toàn logic.</strong> Điều kiện (&quot;khi HP &lt; 30%&quot;), đánh đổi (&quot;vàng x1.4 nhưng −15% HP&quot;), cơ chế riêng (&quot;chém trúng thì phát bắn sau +60%&quot;), combo ẩn mở thẻ Legendary. Người chơi đọc ba thẻ này ngay sau khi vừa chạy 50m và đang thở — đó là <strong>ba bài toán</strong> đặt vào đúng lúc họ ít khả năng giải nhất</td><td>Viết lại thành <strong>12 chỉ số × 4 bậc</strong>: mỗi thẻ là MỘT con số cộng vào MỘT chỉ số, không điều kiện, không drawback. Bậc chỉ đổi con số (Sát Thương I/IV = +15%/+57%), Lộc kéo bậc lên. <code>applyCard()</code> thành bảng tra cứu phẳng theo <code>stat</code> — thêm thẻ mới trong data không phải sửa dòng code nào. Cơ chế riêng dời hẳn về <strong>Bảo Vật</strong> và <strong>Talent</strong>, nơi người chơi ngồi đọc ngoài trận</td></tr>
 </tbody></table></div>
 <blockquote><strong>Lỗi #14 và #16 đã bị chính thiết kế vượt qua.</strong> Khi chuyển sang <strong>quái đứng yên</strong>, bài toán đón đầu của <code>pincer</code> (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó <strong>đã bị bỏ khỏi code</strong>. Lane spring (#16) thì vẫn giữ, nhưng giờ nó chỉ chống separation làm lệch làn khi quái spawn chồng nhau, không còn phải chống lực đẩy dồn theo suốt đường đi. Ghi lại ở đây vì hai lỗi đó <strong>là lỗi thật</strong> ở thời điểm phát hiện, và vì nó cho thấy giá của việc đổi mô hình di chuyển: mọi thứ suy ra từ tốc độ quái đều phải tính lại.</blockquote>
 <p>Ngoài ra prototype xác nhận <strong>công thức số quái phải tính theo <code>composition</code></strong>, không phải <code>tpCost</code> trung bình toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 lần. Đã ghi vào <code>16</code> mục 4.4.</p>

@@ -6,56 +6,54 @@
 
 | Tên | ID | Bậc | Tag | Hiệu ứng | Sức mạnh | Giá phải trả | Combo mở |
 |---|---|---|---|---|---|---|---|
-| Băng Đôi | cd_ranged_bangdoi | common | ranged, ammo | Băng đạn x2 | +14% | Thời gian reload +30% | — |
-| Nòng Dài | cd_ranged_notdai | common | ranged | Tầm bắn +6m, spread -35% | +8% | — | — |
-| Tay Nhanh | cd_ranged_taynhanh | common | ranged | Reload -22% | +9% | — | — |
-| Đầu Đạn Nhọn | cd_ranged_dandau | common | ranged | Xuyên thêm 1 mục tiêu | +11% | — | — |
-| Lưỡi Dài | cd_melee_luoidai | common | melee | Reach +0.8m, arc +20° | +12% | — | — |
-| Tay Nhẹ | cd_melee_taynhe | common | melee, stamina | Chi phí stamina -20% | +13% | — | — |
-| Lưỡi Sắc | cd_melee_luoisac | common | melee | Damage cận chiến +18% | +18% | — | — |
-| Hơi Dài | cd_stamina_hoidai | common | stamina | Stamina tối đa +40, hồi +6/s | +15% | — | — |
-| Túi Sâu | cd_ammo_tuisau | common | ammo | Đạn dự trữ +60% | +10% | — | — |
-| Vai Khoẻ | cd_kb_vaikhoe | common | knockback | Mọi knockback x1.35 | +10% | — | — |
-| Túi Rách | cd_gold_tuirach | common | gold | Vàng x1.40 | +6% | HP tối đa -15% | — |
-| Da Trâu | cd_survival_datrau | common | survival | HP tối đa +50 | +14% | — | — |
-| Điểm Yếu | cd_crit_diemyeu | common | crit | Tỉ lệ crit +18% | +16% | — | — |
-| Mảnh Vụn | cd_aoe_manhvun | common | aoe | Kill bằng súng gây 12 damage AoE 1.5m | +12% | — | — |
-| Tai Tham | cd_gold_taitham | common | gold | +4% damage cho mỗi 1.000 vàng đang giữ trong túi (cap +40%) | +9% | Tiêu vàng ở shop là mất buff | — |
-| Chân Dài | cd_survival_chandai | common | survival | Bước Lùi cooldown -35%, đi xa hơn 0.6m | +11% | — | — |
-| Cò Vàng | cd_ranged_naphoanhao | rare | ranged | Cửa sổ Nạp Hoàn Hảo rộng x2, buff lên +25% | +22% | — | — |
-| Chuỗi Sắt | cd_ranged_chuoiban | rare | ranged, crit | Chuỗi Bắn cộng dồn tới +80% thay vì +40% | +26% | Bắn trượt 2 phát thì mất hết chuỗi | — |
-| Ổ Đạn Đôi | cd_ranged_odandoi | rare | ranged, ammo | Bắn 2 viên mỗi lần bắn, tiêu 1 viên | +34% | Spread +60% | — |
-| Chém Sâu | cd_melee_chemsau | rare | melee | Chém nặng chỉ cần slide 0.35S thay vì 0.55S | +24% | — | — |
-| Lưỡi Xoáy | cd_melee_luoixoay | rare | melee | +3 mục tiêu mỗi nhát | +28% | Damage cận chiến -12% | — |
-| Mắt Đồ Tể | cd_melee_hoanhaode | rare | melee, stamina | Chém Hoàn Hảo chỉ cần 2 kẻ địch | +30% | — | — |
-| Thở Thấu | cd_stamina_thothau | rare | stamina | Không còn bị phạt tốc độ khi stamina < 50% | +32% | Stamina tối đa -20 | — |
-| Máu Nuôi Hơi | cd_stamina_maunuoi | rare | stamina, survival | Mỗi mạng cận chiến hồi 4 stamina và 2 HP | +25% | — | — |
-| Kẻ Cướp | cd_ammo_kecuop | rare | ammo | Cướp Đạn chỉ cần 4 mạng thay vì 6 | +27% | — | — |
-| Đạn Sắt Vụn | cd_ammo_dansat | rare | ammo, gold | Cứ 50 vàng thu được thì +1 viên đạn dự trữ | +20% | — | — |
-| Sóng Xung | cd_kb_songxung | rare | knockback | Knockback x1.6, xác bay xa x2, domino truyền 60% lực | +24% | — | — |
-| Chân Đạp | cd_kb_chandap | rare | knockback, survival | Quái vào dưới 1.5m tự bị đẩy ra 1.2m mỗi 2s | +22% | — | — |
-| Nam Từ | cd_gold_namtu | rare | gold | Bán kính hút vàng x3, vàng tự bay ngay không chờ 0.35s | +8% | — | — |
-| Giáp Xác | cd_survival_giapxac | rare | survival | Giảm 25% damage nhận; dưới 30% HP thì giảm 45% | +28% | — | — |
-| Máu Lạnh | cd_crit_maulanh | rare | crit | Crit x3.2 (từ x2.5) | +26% | — | — |
-| Nổ Đầu | cd_aoe_nodau | rare | aoe, crit | Headshot kill nổ AoE 30 damage bán kính 3m | +30% | — | — |
-| Kẻ Tìm Lộc | cd_luck_ketimloc | rare | luck | Mỗi 4 Lộc cho +6% damage và +3% tốc độ chém | +24% | — | — |
-| Hàng Rẻ | cd_gold_hangre | rare | gold, luck | Giá shop -35%, giá đổi Lộc ở Miếu Mỏ -50% | +10% | — | — |
-| Hai Lưỡi | cd_epic_hailuoi | epic | melee, ranged | Chém trúng thì phát bắn tiếp theo +60% damage, và ngược lại | +42% | — | — |
-| Băng Vô Hạn | cd_epic_bangvohan | epic | ranged, ammo | Không cần reload trong 4 giây sau mỗi Chém Hoàn Hảo | +48% | — | — |
-| Lưỡi Cắt Gió | cd_epic_luoicat | epic | melee, aoe | Mỗi nhát chém bắn ra một lưỡi gió bay 8m gây 60% damage | +52% | — | — |
-| Thời Gian Chảy | cd_epic_thoigianchay | epic | survival | Khi có quái trong 1.5m, thời gian chậm 25% | +45% | Damage nhận +15% | — |
-| Vàng Máu | cd_epic_vangmaudo | epic | gold, survival | Mỗi 200 vàng thu được hồi 5 HP | +36% | — | — |
-| Hồi Bom Nổ | cd_epic_hoibonoi | epic | aoe, knockback | Kill bằng cận chiến nổ AoE 45 và đẩy mọi thứ trong 4m | +50% | Nổ cũng gây 8 damage cho chính mình | — |
-| Tay Đôi | cd_epic_taydoi | epic | ranged | Mang được 2 vũ khí tầm xa, tự đổi khi hết đạn (không reload) | +55% | Đạn dự trữ chia đôi cho 2 khẩu | — |
-| Giáp Vàng | cd_epic_giapvang | epic | gold, survival | Mỗi 2.000 vàng đang giữ cho +12 HP tối đa và +2% giảm damage | +40% | Tiêu vàng là mất HP đó ngay | — |
-| Hơi Hồi Hồi | cd_epic_hoihoiho | epic | stamina, melee | Stamina hồi 60/s trong 2 giây sau khi dọn sạch một wave | +38% | — | — |
-| Mắt Báo | cd_epic_matbao | epic | crit | 3 phát đầu của mỗi băng đạn luôn crit | +44% | — | — |
-| Xác Nổi | cd_epic_xacnoi | epic | knockback, aoe | Xác đang bay gây 40 damage cho mọi thứ nó chạm và không tan trong 3s | +46% | — | — |
-| ĐỒ TỂ | cd_legend_dote | legendary | melee, ammo | Mỗi mạng cận chiến nạp thẳng 1 viên vào băng đạn — không cần Cướp Đạn, không cần reload nữa | +85% | Băng đạn -40% (ổ nhỏ hơn, phải chém liên tục mới giữ được nhịp bắn) | combo_melee3 |
-| KHO ĐẠN SỐNG | cd_legend_khodan | legendary | ammo, ranged | Đạn dự trữ vô hạn, nhưng reload +60% thời gian và không hồi được stamina khi đang reload | +90% | reload +60% | combo_ammo3 |
-| SẬP HẦM | cd_legend_saptham | legendary | gold | Mọi kill nổ AoE bằng 15% HP tối đa của con đó, và vàng rơi ra x1.5 | +95% | Sương Đen kích hoạt sau 20s thay vì 35s — hầm không chịu được ngươi nữa | combo_gold3 |
-| SÓNG THẦN | cd_legend_songthan | legendary | knockback, aoe | Chém nặng tạo sóng xung đẩy toàn bộ phòng lùi 6m và gây 200% damage cận chiến | +88% | cooldown 6s | combo_kb3 |
-| MẮT THẦN | cd_legend_matthan | legendary | crit | Mọi phát bắn đều là headshot crit, nhưng băng đạn chỉ còn 3 viên | +110% | mag = 3 | combo_crit3 |
+| Sát Thương I | cd_dmg_common | common | ranged | +15% sát thương mọi vũ khí | +16% | — | — |
+| Sát Thương II | cd_dmg_rare | rare | ranged | +26% sát thương mọi vũ khí | +27% | — | — |
+| Sát Thương III | cd_dmg_epic | epic | ranged | +39% sát thương mọi vũ khí | +42% | — | — |
+| Sát Thương IV | cd_dmg_legendary | legendary | ranged | +57% sát thương mọi vũ khí | +61% | — | — |
+| Băng Đạn I | cd_mag_common | common | ammo | +25% số đạn trong một băng | +12% | — | — |
+| Băng Đạn II | cd_mag_rare | rare | ammo | +42% số đạn trong một băng | +20% | — | — |
+| Băng Đạn III | cd_mag_epic | epic | ammo | +65% số đạn trong một băng | +31% | — | — |
+| Băng Đạn IV | cd_mag_legendary | legendary | ammo | +95% số đạn trong một băng | +46% | — | — |
+| Nạp Nhanh I | cd_reload_common | common | ammo | -12% thời gian nạp đạn | +11% | — | — |
+| Nạp Nhanh II | cd_reload_rare | rare | ammo | -20% thời gian nạp đạn | +19% | — | — |
+| Nạp Nhanh III | cd_reload_epic | epic | ammo | -31% thời gian nạp đạn | +29% | — | — |
+| Nạp Nhanh IV | cd_reload_legendary | legendary | ammo | -46% thời gian nạp đạn | +42% | — | — |
+| Nhịp Bắn I | cd_rof_common | common | ranged | +10% tốc độ bắn | +15% | — | — |
+| Nhịp Bắn II | cd_rof_rare | rare | ranged | +17% tốc độ bắn | +26% | — | — |
+| Nhịp Bắn III | cd_rof_epic | epic | ranged | +26% tốc độ bắn | +39% | — | — |
+| Nhịp Bắn IV | cd_rof_legendary | legendary | ranged | +38% tốc độ bắn | +57% | — | — |
+| Chí Mạng I | cd_crit_common | common | crit | +6% tỉ lệ chí mạng | +14% | — | — |
+| Chí Mạng II | cd_crit_rare | rare | crit | +10% tỉ lệ chí mạng | +24% | — | — |
+| Chí Mạng III | cd_crit_epic | epic | crit | +16% tỉ lệ chí mạng | +36% | — | — |
+| Chí Mạng IV | cd_crit_legendary | legendary | crit | +23% tỉ lệ chí mạng | +53% | — | — |
+| Đạn Dự Trữ I | cd_reserve_common | common | ammo | +30% đạn dự trữ | +9% | — | — |
+| Đạn Dự Trữ II | cd_reserve_rare | rare | ammo | +51% đạn dự trữ | +15% | — | — |
+| Đạn Dự Trữ III | cd_reserve_epic | epic | ammo | +78% đạn dự trữ | +23% | — | — |
+| Đạn Dự Trữ IV | cd_reserve_legendary | legendary | ammo | +114% đạn dự trữ | +34% | — | — |
+| Vàng I | cd_gold_common | common | gold | +20% vàng nhặt được | +7% | — | — |
+| Vàng II | cd_gold_rare | rare | gold | +34% vàng nhặt được | +12% | — | — |
+| Vàng III | cd_gold_epic | epic | gold | +52% vàng nhặt được | +18% | — | — |
+| Vàng IV | cd_gold_legendary | legendary | gold | +76% vàng nhặt được | +27% | — | — |
+| Hút Vàng I | cd_magnet_common | common | gold | +35% bán kính hút vàng | +6% | — | — |
+| Hút Vàng II | cd_magnet_rare | rare | gold | +59% bán kính hút vàng | +10% | — | — |
+| Hút Vàng III | cd_magnet_epic | epic | gold | +91% bán kính hút vàng | +16% | — | — |
+| Hút Vàng IV | cd_magnet_legendary | legendary | gold | +133% bán kính hút vàng | +23% | — | — |
+| Hồi Sức I | cd_stamRegen_common | common | stamina | +5 stamina hồi mỗi giây | +12% | — | — |
+| Hồi Sức II | cd_stamRegen_rare | rare | stamina | +9 stamina hồi mỗi giây | +20% | — | — |
+| Hồi Sức III | cd_stamRegen_epic | epic | stamina | +13 stamina hồi mỗi giây | +31% | — | — |
+| Hồi Sức IV | cd_stamRegen_legendary | legendary | stamina | +19 stamina hồi mỗi giây | +46% | — | — |
+| Sức Bền I | cd_stamMax_common | common | stamina | +25 stamina tối đa | +10% | — | — |
+| Sức Bền II | cd_stamMax_rare | rare | stamina | +43 stamina tối đa | +17% | — | — |
+| Sức Bền III | cd_stamMax_epic | epic | stamina | +65 stamina tối đa | +26% | — | — |
+| Sức Bền IV | cd_stamMax_legendary | legendary | stamina | +95 stamina tối đa | +38% | — | — |
+| Máu I | cd_hp_common | common | survival | +25 máu tối đa | +13% | — | — |
+| Máu II | cd_hp_rare | rare | survival | +43 máu tối đa | +22% | — | — |
+| Máu III | cd_hp_epic | epic | survival | +65 máu tối đa | +34% | — | — |
+| Máu IV | cd_hp_legendary | legendary | survival | +95 máu tối đa | +49% | — | — |
+| Sức Đẩy I | cd_kb_common | common | knockback | +25% lực đẩy lùi quái | +9% | — | — |
+| Sức Đẩy II | cd_kb_rare | rare | knockback | +42% lực đẩy lùi quái | +15% | — | — |
+| Sức Đẩy III | cd_kb_epic | epic | knockback | +65% lực đẩy lùi quái | +23% | — | — |
+| Sức Đẩy IV | cd_kb_legendary | legendary | knockback | +95% lực đẩy lùi quái | +34% | — | — |
 
 ### Thẻ · Bảo vật · Talent · Trại Mỏ
 

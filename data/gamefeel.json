@@ -12,20 +12,40 @@
     "slideStaminaPerSec": 34,
     "slideHitCooldownSec": 0.22,
     "slideTickDamageMult": 0.62,
+    "slideKbMult": 0.55,
     "slideMinSegPx": 14,
     "bladeWidthFrac": 0.058,
     "trailFadeSec": 0.26,
     "trailWidthFrac": 0.028
   },
   "gun": {
-    "_comment": "Sung rut ra khi tap/hold, cat di khi nha tay roi reload.",
+    "_comment": "Sung rut ra khi tap/hold, cat di khi nha tay roi reload. LEN DAN (rack): voi sung co nhip cham (shotgun 1.09s, no 1.18s) cai khoang giua 2 phat truoc day KHONG co gi xay ra -- nguoi choi cham lien tuc ma khong ra dan, doc ra nhu sung hong. Gio khoang do duoc lap bang animation len dan chay dung bang fireInterval.",
     "drawSec": 0.14,
     "holsterSec": 0.18,
     "gunHoldSec": 0.30,
     "restY": -0.30,
     "holsterDropY": -0.46,
     "offsetX": 0.26,
-    "offsetZ": -0.42
+    "offsetZ": -0.42,
+    "rackMinIntervalSec": 0.35,
+    "rackTravelM": 0.15,
+    "rackBackFrac": 0.42,
+    "rackKickDeg": 9,
+    "dryClickCooldownSec": 0.28
+  },
+
+  "hitReaction": {
+    "_comment": "Phan ung khi quai TRUNG DON ma KHONG chet. Ba lop: (1) xung day THAT theo kbForce, (2) GIAT NGUOC (lurch) ngan, co san toi thieu nen quai kbResist 0.9 van thay duoc, (3) NEN NGUOI (squash) trong luc giat. NGAN SACH DAY (kbBudget) la thu giu cho knockback manh ma khong pha game: xem ghi chu duoi.",
+    "impulseMult": 7.0,
+    "decayPerSec": 0.02,
+    "lurchSec": 0.16,
+    "lurchDistM": 0.45,
+    "lurchMinFrac": 0.35,
+    "squash": 0.20,
+
+    "_kbBudgetComment": "MOI con co mot ngan sach day tinh bang MET. Cu day het bao nhieu met thi tru bay nhieu; ngan sach hoi lai kbRefillMps met/giay. Vi kbRefillMps (1.2) THAP HON HAN toc do chay cua nguoi choi (speedMps 4.2), mot con bi ban/chem lien tuc van CHAC CHAN bi nguoi choi duoi kip -- chem slide lien tuc KHONG the bien thanh tuong chan giu quai ngoai tam vinh vien. Cu danh dau tien van an nguyen luc (ngan sach day), nen cam giac 'nay' khong mat.",
+    "kbBudgetM": 4.0,
+    "kbRefillMps": 1.2
   },
   "lanes": {
     "_comment": "BA LAN. Lan giua LON nhat va la lan DUY NHAT gay dmg cho nguoi choi. Hai lan ben nho hon: quai dung o day khong cham duoc, giet la vang THEM.",
