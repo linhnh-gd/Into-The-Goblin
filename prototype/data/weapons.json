@@ -43,9 +43,10 @@
         "proj": { "color": "#ffd166", "sizeM": 0.05, "lenM": 0.5, "speed": 165 }
       },
       "shotgun": {
-        "ref": "Remington 870 12ga 00 buck — bom tay ~65 nhip/phut, 9 vien ghem moi phat",
-        "rpm": [55, 95], "mag": [5, 8], "killEff": 0.45, "caliberMult": 1.6, "pellets": 9, "pierce": 0,
-        "spreadDeg": 12.0, "reload": [2.6, 3.6], "style": "spread", "reloadStyle": "shell",
+        "ref": "Remington 870 12ga 00 buck — bom tay ~65 nhip/phut, 9 vien ghem moi phat. FANTASY: MOT PHAT DON SACH MOT VUNG. Doi lai: 1.09s giua 2 phat, bang 5 vien, nap tung vien 0.75s/vien -- ban truot mot phat la tra gia bang ca nhip. Non 26 do rong gan bang ca hanh lang o cu ly 8m, caliberMult 3.4 nghia la MOI VIEN GHEM du giet mot con trash (con du sau vai phong HP scaling).",
+        "rpm": [55, 95], "mag": [5, 8], "killEff": 0.55, "caliberMult": 3.4, "pellets": 9, "pierce": 0,
+        "spreadDeg": 26.0, "reload": [2.6, 3.6], "style": "spread", "reloadStyle": "shell",
+        "pelletRadiusM": 0.85, "falloffStartM": 7.0, "falloffEndM": 13.0, "falloffMin": 0.4,
         "proj": { "color": "#ffb14a", "sizeM": 0.038, "lenM": 0.18, "speed": 95 }
       },
       "marksman": {
@@ -105,8 +106,8 @@
     },
     {
       "id": "rw_shotgun_mienghang", "name": "Miệng Hang", "class": "ranged", "archetype": "shotgun", "tier": 1,
-      "unlock": "start", "dmg": 64, "rpm": 55, "pellets": 9, "mag": 5, "reserveMax": 53,
-      "reloadTime": 3.77, "spreadDeg": 12, "rangeM": 12, "pierce": 0,
+      "unlock": "start", "dmg": 136, "rpm": 55, "pellets": 9, "mag": 5, "reserveMax": 44,
+      "reloadTime": 3.77, "spreadDeg": 26, "rangeM": 12, "pierce": 0,
       "knockback": 1.6, "critMult": 2.0, "tags": ["spacing", "crowd", "starter"],
       "desc": "Nòng cưa ngắn. Công cụ dãn cách tốt nhất trong hầm: một phát là cả hàng đầu lùi lại."
     },
@@ -133,8 +134,8 @@
     },
     {
       "id": "rw_shotgun_longmoc", "name": "Lồng Móc", "class": "ranged", "archetype": "shotgun", "tier": 2,
-      "unlock": "boss1", "dmg": 101, "rpm": 55, "pellets": 9, "mag": 5, "reserveMax": 140,
-      "reloadTime": 3.77, "spreadDeg": 12, "rangeM": 14, "pierce": 0,
+      "unlock": "boss1", "dmg": 216, "rpm": 55, "pellets": 9, "mag": 5, "reserveMax": 115,
+      "reloadTime": 3.77, "spreadDeg": 26, "rangeM": 14, "pierce": 0,
       "knockback": 1.9, "critMult": 2.0, "tags": ["spacing", "crowd"],
       "desc": "Lên quy lát nghe như xương gãy. Đẩy lùi cả một cửa vòm."
     },
@@ -182,8 +183,8 @@
     },
     {
       "id": "rw_shotgun_hamtoi", "name": "Hàm Tối", "class": "ranged", "archetype": "shotgun", "tier": 5,
-      "unlock": "depth5", "dmg": 1157, "rpm": 78, "pellets": 9, "mag": 8, "reserveMax": 600,
-      "reloadTime": 3.77, "spreadDeg": 12, "rangeM": 13, "pierce": 0,
+      "unlock": "depth5", "dmg": 2459, "rpm": 78, "pellets": 9, "mag": 8, "reserveMax": 491,
+      "reloadTime": 3.77, "spreadDeg": 26, "rangeM": 13, "pierce": 0,
       "knockback": 1.5, "critMult": 2.0, "tags": ["spacing", "crowd", "auto"],
       "desc": "Shotgun tự động. Giữ ngón và cả dải Cận chiến biến thành sương."
     },

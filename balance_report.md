@@ -23,18 +23,18 @@
 | Vu khi | Lop | T | dmg cu | dmg moi | Doi | Metric | Sau chuan hoa | Muc tieu | Lech | Ghi chu |
 |---|---|---|---|---|---|---|---|---|---|---|
 | Kèn Đồng | ranged | 1 | 128 | 128 | 0.0% | dpsSustained | 218 | 110 | +97.9% OK | rpm 150 | mag 10 | ban het bang 4.0s | 10.0 mang/bang tren wave 31 con | reserve 7.0 wave |
-| Miệng Hang | ranged | 1 | 64 | 64 | 0.0% | dpsSustained | 312 | 110 | +183.8% OK | rpm 55 | mag 5 | ban het bang 5.5s | 20.3 mang/bang tren wave 31 con | reserve 6.9 wave |
+| Miệng Hang | ranged | 1 | 64 | 136 | +112.5% | dpsSustained | 663 | 110 | +503.1% OK | rpm 55 | mag 5 | ban het bang 5.5s | 24.8 mang/bang tren wave 31 con | reserve 7.0 wave |
 | Ổ Chuột | ranged | 1 | 120 | 120 | 0.0% | dpsSustained | 612 | 110 | +456.3% OK | rpm 700 | mag 25 | ban het bang 2.1s | 25.0 mang/bang tren wave 31 con | reserve 7.0 wave |
 | Gọng Sắt | ranged | 2 | 285 | 285 | 0.0% | dpsSustained | 1,286 | 259 | +397.5% OK | rpm 600 | mag 25 | ban het bang 2.5s | 25.0 mang/bang tren wave 81 con | reserve 7.0 wave |
 | Gai Mực | ranged | 2 | 824 | 824 | 0.0% | dpsSustained | 477 | 259 | +84.6% OK | rpm 51 | mag 1 | ban het bang 1.2s | 2.0 mang/bang tren wave 81 con | reserve 7.0 wave |
-| Lồng Móc | ranged | 2 | 101 | 101 | 0.0% | dpsSustained | 493 | 259 | +90.6% OK | rpm 55 | mag 5 | ban het bang 5.5s | 20.3 mang/bang tren wave 81 con | reserve 7.0 wave |
+| Lồng Móc | ranged | 2 | 101 | 216 | +113.9% | dpsSustained | 1,054 | 259 | +307.6% OK | rpm 55 | mag 5 | ban het bang 5.5s | 24.8 mang/bang tren wave 81 con | reserve 7.0 wave |
 | Mắt Cú | ranged | 3 | 1224 | 1224 | 0.0% | dpsSustained | 1,353 | 607 | +122.8% OK | rpm 105 | mag 10 | ban het bang 5.7s | 15.0 mang/bang tren wave 153 con | reserve 7.0 wave |
 | Trống Đôi | ranged | 3 | 514 | 514 | 0.0% | dpsSustained | 3,293 | 607 | +442.0% OK | rpm 650 | mag 100 | ban het bang 9.2s | 100.0 mang/bang tren wave 153 con | reserve 7.0 wave |
 | Hơi Ngầm | ranged | 3 | 367 | 367 | 0.0% | dpsSustained | 2,377 | 607 | +291.3% OK | rpm 600 | mag 80 | ban het bang 8.0s | 40.0 mang/bang tren wave 153 con | reserve 7.0 wave |
 | Nồi Đất | ranged | 4 | 2426 | 2426 | 0.0% | dpsSustained | 1,102 | 1,428 | -22.8% OK | rpm 42 | mag 6 | ban het bang 8.6s | 10.5 mang/bang tren wave 239 con | reserve 7.0 wave |
 | Mũi Kim | ranged | 4 | 809 | 809 | 0.0% | dpsSustained | 4,704 | 1,428 | +229.5% OK | rpm 700 | mag 32 | ban het bang 2.7s | 32.0 mang/bang tren wave 239 con | reserve 7.0 wave |
 | Đinh Sắt | ranged | 4 | 6469 | 6469 | 0.0% | dpsSustained | 2,598 | 1,428 | +82.0% OK | rpm 34 | mag 6 | ban het bang 10.6s | 14.4 mang/bang tren wave 239 con | reserve 7.0 wave |
-| Hàm Tối | ranged | 5 | 1157 | 1157 | 0.0% | dpsSustained | 8,394 | 3,355 | +150.2% OK | rpm 78 | mag 8 | ban het bang 6.2s | 32.4 mang/bang tren wave 347 con | reserve 7.0 wave |
+| Hàm Tối | ranged | 5 | 1157 | 2459 | +112.5% | dpsSustained | 17,841 | 3,355 | +431.8% OK | rpm 78 | mag 8 | ban het bang 6.2s | 39.6 mang/bang tren wave 347 con | reserve 7.0 wave |
 | Ruột Đất | ranged | 5 | 2314 | 2314 | 0.0% | dpsSustained | 6,799 | 3,355 | +102.7% OK | rpm 210 | mag 69 | ban het bang 19.7s | 120.8 mang/bang tren wave 347 con | reserve 7.0 wave |
 | Ống Sấm | ranged | 5 | 6508 | 6508 | 0.0% | dpsSustained | 3,089 | 3,355 | -7.9% OK | rpm 45 | mag 6 | ban het bang 8.0s | 10.5 mang/bang tren wave 347 con | reserve 7.0 wave |
 | Lõi Nổ | ranged | 6 | 32977 | 32977 | 0.0% | dpsSustained | 50,443 | 7,884 | +539.8% OK | rpm 150 | mag 16 | ban het bang 6.4s | 28.0 mang/bang tren wave 455 con | reserve 7.0 wave |
@@ -55,7 +55,7 @@
 
 ## Ket luan
 
-- Thay doi lon nhat: **0.0%**
+- Thay doi lon nhat: **113.9%**
 - Moi vu khi bay gio nam dung tren duong cong tier. Cac rang buoc con lai (mag clear ratio,
   reserve waves, TTK trash, melee > ranged) do `audit_gdd.ps1` kiem tra va co the FAIL/WARN.
 - Day la so **first-pass**: dung de bat dau playtest, khong phai so da tune.

@@ -107,6 +107,24 @@ export class InputRouter {
       return;
     }
     if (this.state === ST.HOLD_FIRE) {
+      /* THOAT KHOA sung -> dao.
+         Luat khoa sinh ra de MOT cu cham khong ra HAI hanh dong -- van dung. Nhung
+         cach cu bat nguoi choi NHAC TAY moi lan doi tu ban sang chem, va o mot game
+         quai toi lien tuc thi mot lan nhac tay la mot nhip mat trang. Do chinh la cho
+         "chuyen doi giua can chien va ban xa khong muot".
+         Gio mot cu quet DUT KHOAT (nhanh hon nguong thuong 1.35 lan VA di du dai) pha
+         duoc khoa va ra dao ngay. Nguong cao hon nguong nhan dang binh thuong nen mot
+         cu re tay vo tinh trong luc giu ban khong the pha nham. */
+      if (vel < this.P.slideVel * 0.5) this.holdAnchor = { x, y };   // re cham -> dat lai moc
+      const tdx = x - this.holdAnchor.x, tdy = y - this.holdAnchor.y;
+      if (vel >= this.P.slideVel * 1.35 &&
+          Math.hypot(tdx, tdy) / this.screenW >= this.P.slideMinLen) {
+        this.h.onHoldEnd?.();
+        this.p0 = { x: this.holdAnchor.x, y: this.holdAnchor.y };
+        this.state = ST.SLIDE;
+        this._resolveSlide();
+        return;
+      }
       this.h.onHoldMove?.(x, y);
       return;
     }
@@ -164,6 +182,7 @@ export class InputRouter {
 
   _enterHold() {
     this.state = ST.HOLD_FIRE;
+    this.holdAnchor = { x: this.p.x, y: this.p.y };   // moc do quang duong de thoat khoa
     this._emit(GESTURE.HOLD);
     this.h.onHoldStart?.(this.p.x, this.p.y);
   }

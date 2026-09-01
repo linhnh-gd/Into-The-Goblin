@@ -174,9 +174,13 @@ export class EnemyPool {
     const CELL = 1.0;
     const grid = this._grid || (this._grid = new Map());
     grid.clear();
+    /* KHOA LA SO NGUYEN, khong phai chuoi. Ban cu dung `${cx},${cz}` -> moi frame de ra
+       240 chuoi moi + 240 lan bam Map bang chuoi, o 60fps la 14.400 chuoi/giay chi de
+       vut di. Do la nguon GC pause (frame xau nhat 3.9ms) va no chi lo ra dung luc dong
+       quai -- tuc dung luc khong duoc phep giat. z co the am nen phai cong offset. */
     for (const e of this.list) {
       if (!e.alive) continue;
-      const key = `${Math.round(e.x / CELL)},${Math.round(e.z / CELL)}`;
+      const key = (Math.round(e.x / CELL) + 512) * 4096 + (Math.round(e.z / CELL) + 2048);
       let arr = grid.get(key);
       if (!arr) { arr = []; grid.set(key, arr); }
       arr.push(e);
@@ -187,7 +191,7 @@ export class EnemyPool {
       const cx = Math.round(e.x / CELL), cz = Math.round(e.z / CELL);
       for (let ox = -1; ox <= 1; ox++) {
         for (let oz = -1; oz <= 1; oz++) {
-          const arr = grid.get(`${cx + ox},${cz + oz}`);
+          const arr = grid.get((cx + ox + 512) * 4096 + (cz + oz + 2048));
           if (!arr) continue;
           for (const o of arr) {
             if (o === e) continue;

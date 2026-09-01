@@ -17,6 +17,32 @@ Nếu ba thứ này lệch nhau dù chỉ 2 frame thì cảm giác vỡ. **Tất
 
 ## 2. Bảng tham số juice
 
+### 2.0 Ngân sách đóng băng — luật đứng trên cả bảng dưới
+
+Hit stop **dừng hẳn cả game** (`timeScale` trả về 0). Bảng 2.1 nói mỗi sự kiện đóng băng bao lâu; mục
+này nói **tổng cộng được phép bao nhiêu**. Không có trần thì bảng 2.1 tự phản bội chính nó: giữ tay bắn
+liên thanh hay chém liên tục làm hàng loạt sự kiện chồng lên nhau, và ở mật độ đó hit stop **không còn
+đọc ra là "đã"** — nó đọc ra là **máy giật**.
+
+| Số (`gamefeel.json` → `hitstopRules`) | Giá trị | Việc |
+|---|---|---|
+| `maxFrac` | **0.08** | Tối đa **8%** thời gian THỰC được đóng băng. Hồi 0.08s ngân sách cho mỗi giây thực |
+| `bucketSec` | 0.20 | Burst tối đa — đủ chứa cú Chém Hoàn Hảo 7 frame mà không bị cắt |
+| `minGapSec` | 0.13 | Hai lần đóng băng phải cách nhau — **luôn có nhịp SỐNG** ở giữa |
+
+Đo được trước khi có trần: giữ tay bắn rifle → **21% số frame** bị đóng băng, chém liên tục → **20%**.
+Trường hợp bệnh lý (mỗi frame một tick slide) làm game **đứng hẳn**. Sau khi có trần: 8%, và con số đó
+là **bảo đảm của thiết kế**, không phải kết quả may mắn của một lần tune.
+
+Hai luật đi kèm, quan trọng ngang cái trần:
+
+1. **Chém trượt thì KHÔNG đóng băng.** Dừng cả màn hình để nói "bạn vừa trượt" là lấy thứ đắt nhất
+   trong game trả cho thứ rẻ nhất.
+2. **Nhát slide chỉ đóng băng khi CÓ MẠNG.** Mỗi đoạn rê tay là một tick; đóng băng mọi tick thì cả
+   màn hình giật suốt cú quẹt.
+
+Cú đánh lẻ tẻ vẫn ăn nguyên hit stop trong bảng 2.1 — chỉ bắn/chém liên tục mới bị cắt.
+
 ### 2.1 Hit stop (đóng băng khi va chạm)
 
 | Sự kiện | Frame đóng băng (60fps) | Timescale |

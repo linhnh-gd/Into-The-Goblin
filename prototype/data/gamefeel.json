@@ -77,6 +77,13 @@
     "densityRampEnd": 1.35
   },
   "_comment": "Tune juice o day, KHONG hardcode trong code. Luat: hitstop + shake + particle phai trigger CUNG 1 FRAME.",
+  "hitstopRules": {
+    "_comment": "NGAN SACH DONG BANG. addHitstop lam timeScale tra ve 0, tuc DUNG HAN ca game. Do duoc tren prototype: giu tay ban rifle -> 21% so frame bi dong bang, chem lien tuc -> 20%. O muc mot phan nam so frame, hitstop khong con doc ra la 'do' nua ma doc ra la 'may giat'. Leaky bucket: toi da maxFrac thoi gian THUC duoc dong bang, burst toi da bucketSec, va hai lan dong bang phai cach nhau minGapSec de luon co nhip SONG o giua. Cu danh le te van an nguyen hitstop; chi ban/chem lien tuc moi bi cat.",
+    "maxFrac": 0.08,
+    "bucketSec": 0.20,
+    "minGapSec": 0.13
+  },
+
   "globalRules": {
     "shakeDecayPerFrame": 0.86,
     "shakeReturnMaxSec": 0.35,

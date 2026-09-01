@@ -21,7 +21,10 @@ export class Juice {
     this.refW = g.referenceScreenWidthPx;
 
     this.shake = { x: 0, y: 0, roll: 0, amp: 0 };
+    this.HS = GD.feel.hitstopRules;
     this.hitstop = 0;
+    this.hsBudget = this.HS.bucketSec;      // giay dong bang con lai trong ngan sach
+    this.hsGap = 0;                          // nhip SONG bat buoc giua 2 lan dong bang
     this.slowmo = 0;
     this.slowmoScale = 1;
     this.slowmoCd = 0;
@@ -103,7 +106,20 @@ export class Juice {
     this.shake.y = dirY * this.shake.amp;
     this.shake.roll = roll;
   }
-  addHitstop(frames) { this.hitstop = Math.max(this.hitstop, frames / 60); }
+  /* HITSTOP CO NGAN SACH (docs/13 muc 2b).
+     `timeScale` tra ve 0 khi dang hitstop, tuc DUNG HAN ca game -- nen moi cu goi
+     addHitstop la mot lan man hinh chet cung. Khong co tran thi ban lien tuc / chem
+     lien tuc lam 1/5 so frame bi dong bang va nguoi choi doc ra la MAY GIAT.
+     Leaky bucket: hoi maxFrac giay dong bang cho moi giay THUC, burst toi da
+     bucketSec, va sau moi lan dong bang phai co minGapSec nhip SONG. */
+  addHitstop(frames) {
+    if (frames <= 0 || this.hsGap > 0) return;
+    const want = Math.min(frames / 60, this.hsBudget);
+    if (want < 1 / 120) return;                        // duoi nua frame thi khong ai thay
+    this.hitstop = Math.max(this.hitstop, want);
+    this.hsBudget -= want;
+    this.hsGap = this.HS.minGapSec;
+  }
   addSlowmo(sec, scale) {
     if (this.slowmoCd > 0) return;                 // cooldown 1.5s (docs/13)
     this.slowmo = sec; this.slowmoScale = scale;
@@ -266,7 +282,11 @@ export class Juice {
   }
 
   /** dt hieu dung sau hitstop / slowmo. */
+  /** @param {number} dt thoi gian THUC cua frame (chua bi scale) */
   timeScale(dt) {
+    // ngan sach hoi theo thoi gian THUC, ke ca trong luc dang dong bang
+    this.hsBudget = Math.min(this.HS.bucketSec, this.hsBudget + this.HS.maxFrac * dt);
+    if (this.hsGap > 0) this.hsGap -= dt;
     if (this.hitstop > 0) { this.hitstop -= dt; return 0; }
     if (this.slowmo > 0) { this.slowmo -= dt; return dt * this.slowmoScale; }
     return dt;

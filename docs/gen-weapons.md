@@ -7,11 +7,11 @@
 | Tên | ID | Kiểu | Tier | Mở ở | Damage | RPM | Viên | Băng | Dự trữ | Reload | Tầm | Xuyên | Knockback | Crit | DPS bền | Tag | Mô tả |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | Kèn Đồng | rw_pistol_kendong | pistol | T1 | start | 128 | 150 | 1 | 10 | 217 | 1.88s | 22m | - | 0.35m | x2.5 | 218 | precision, starter | Ổ quay sáu viên han gỉ. Một phát một mạng goblin — nếu ngươi nhắm. |
-| Miệng Hang | rw_shotgun_mienghang | shotgun | T1 | start | 64 | 55 | 9 | 5 | 53 | 3.77s | 12m | - | 1.6m | x2.0 | 312 | spacing, crowd, starter | Nòng cưa ngắn. Công cụ dãn cách tốt nhất trong hầm: một phát là cả hàng đầu lùi lại. |
+| Miệng Hang | rw_shotgun_mienghang | shotgun | T1 | start | 136 | 55 | 9 | 5 | 44 | 3.77s | 12m | - | 1.6m | x2.0 | 663 | spacing, crowd, starter | Nòng cưa ngắn. Công cụ dãn cách tốt nhất trong hầm: một phát là cả hàng đầu lùi lại. |
 | Ổ Chuột | rw_smg_ochuot | smg | T1 | depth1 | 120 | 700 | 1 | 25 | 217 | 2.76s | 16m | - | 0.15m | x2.0 | 612 | sustain, holddrag | Bắn như chuột gặm. Giữ và rê ngón — để dành nhắm cho khẩu khác. |
 | Gai Mực | rw_crossbow_gaimuc | crossbow | T2 | depth2 | 824 | 51 | 1 | 1 | 292 | 0.55s | 22m | 2 | 1.1m | x3.0 | 477 | pierce, precision | Một mũi xuyên năm cái đầu. Xếp hàng đi, lũ goblin. |
 | Gọng Sắt | rw_rifle_gongsat | rifle | T2 | depth2 | 285 | 600 | 1 | 25 | 569 | 3.04s | 22m | - | 0.4m | x2.5 | 1286 | allround, midband | Khẩu không có nhược điểm và cũng không có gì đặc biệt. Đó là điểm mạnh của nó. |
-| Lồng Móc | rw_shotgun_longmoc | shotgun | T2 | boss1 | 101 | 55 | 9 | 5 | 140 | 3.77s | 14m | - | 1.9m | x2.0 | 493 | spacing, crowd | Lên quy lát nghe như xương gãy. Đẩy lùi cả một cửa vòm. |
+| Lồng Móc | rw_shotgun_longmoc | shotgun | T2 | boss1 | 216 | 55 | 9 | 5 | 115 | 3.77s | 14m | - | 1.9m | x2.0 | 1054 | spacing, crowd | Lên quy lát nghe như xương gãy. Đẩy lùi cả một cửa vòm. |
 | Hơi Ngầm | rw_flamer_hoingam | flamer | T3 | boss2 | 367 | 600 | 1 | 80 | 2144 | 4.35s | 7m | - | 0.0m | x1.0 | 2377 | dot, areadenial, nokb | Không đẩy được ai. Nhưng lửa lan, và cả hành lang cháy theo. |
 | Trống Đôi | rw_lmg_trongdoi | lmg | T3 | depth3 | 514 | 650 | 1 | 100 | 1072 | 6.38s | 18m | - | 0.2m | x1.8 | 3293 | sustain, holddrag, crowd | Sáu mươi viên trong một băng trống. Rê ngón qua cả wave, đừng thả. |
 | Mắt Cú | rw_rifle_matcu | marksman | T3 | depth3 | 1224 | 105 | 1 | 10 | 715 | 3.33s | 22m | 1 | 0.7m | x3.0 | 1353 | precision, headshot | Dành cho kẻ thích tap từng phát. Headshot x3 và không tha ai. |
@@ -20,7 +20,7 @@
 | Đinh Sắt | rw_sniper_dinhsat | sniper | T4 | boss3 | 6469 | 34 | 1 | 6 | 698 | 4.35s | 22m | 3 | 1.4m | x4.0 | 2598 | pierce, precision, boss | Xuyên tám con một phát và ghim con cuối vào tường. |
 | Ruột Đất | rw_acid_ruotdat | acid | T5 | depth5 | 2314 | 210 | 1 | 69 | 1389 | 3.77s | 9m | - | 0.05m | x1.0 | 6799 | dot, areadenial, armorbreak | Axit ăn qua giáp. Goblin Khiên không còn là vấn đề. |
 | Ống Sấm | rw_launcher_ongsam | launcher | T5 | boss4 | 6508 | 45 | 1 | 6 | 1389 | 4.64s | 20m | - | 2.8m | x1.5 | 3089 | aoe, spacing, wavewipe | Bắn ra tiếng sấm. Xác bay hết về phía Dải Xa. |
-| Hàm Tối | rw_shotgun_hamtoi | shotgun | T5 | depth5 | 1157 | 78 | 9 | 8 | 600 | 3.77s | 13m | - | 1.5m | x2.0 | 8394 | spacing, crowd, auto | Shotgun tự động. Giữ ngón và cả dải Cận chiến biến thành sương. |
+| Hàm Tối | rw_shotgun_hamtoi | shotgun | T5 | depth5 | 2459 | 78 | 9 | 8 | 491 | 3.77s | 13m | - | 1.5m | x2.0 | 17841 | spacing, crowd, auto | Shotgun tự động. Giữ ngón và cả dải Cận chiến biến thành sương. |
 | Miệng Mỏ | rw_deeptech_miengmo | deeptech | T6 | depth7 | 32977 | 102 | 1 | 16 | 1820 | 4.06s | 15m | - | 2.2m | x2.0 | 39166 | gold, spacing, crowd | Nạp bằng vàng thay vì đạn. Bắn ra mười hai mảnh quặng nóng đỏ. |
 | Lõi Nổ | rw_deeptech_loino | deeptech | T6 | boss5 | 32977 | 150 | 1 | 16 | 1820 | 4.06s | 20m | - | 1.2m | x2.5 | 50443 | depth, scaling | Mỗi Depth xuống sâu cho khẩu này +9% damage. Càng sâu càng dữ. |
 | Ruột Sắt | rw_minigun_ruotsat | minigun | T6 | boss6 | 5819 | 1800 | 1 | 200 | 3185 | 7.25s | 18m | - | 0.25m | x1.8 | 83626 | sustain, holddrag, crowd | Một trăm năm mươi viên. Bốn giây rưỡi reload — và đó là bốn giây rưỡi dùng dao. |

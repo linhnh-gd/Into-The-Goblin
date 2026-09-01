@@ -536,12 +536,12 @@ footer{padding:34px 0 0;color:var(--muted);font-size:12.5px;border-top:1px solid
 <h3>1. Bảng gesture chính thức</h3>
 <div class="tw"><table>
 <thead><tr><th>Gesture</th><th>Điều kiện nhận (chuẩn hoá theo <code>S</code> = chiều rộng màn hình)</th><th>Hành động</th><th>Vũ khí</th></tr></thead><tbody>
-<tr><td><strong>Tap</strong></td><td>Ngón nhấc lên trong <code>&lt; 180ms</code> <strong>và</strong> tổng di chuyển <code>&lt; 0.05S</code></td><td>1 phát bắn nhắm vào điểm tap</td><td>Tầm xa</td></tr>
-<tr><td><strong>Hold</strong></td><td>Ngón giữ <code>&gt;= 180ms</code>, tốc độ <code>&lt; 900 px/s</code></td><td>Bắn liên tục vào điểm đang giữ (theo RPM)</td><td>Tầm xa</td></tr>
-<tr><td><strong>Hold &amp; Drag</strong></td><td>Đã ở trạng thái Hold rồi mới di chuyển, tốc độ <code>&lt; 900 px/s</code></td><td>Bắn liên tục, tâm ngắm đi theo ngón</td><td>Tầm xa</td></tr>
-<tr><td><strong>Slide nhẹ</strong></td><td>Tốc độ đỉnh <code>&gt;= 900 px/s</code> trong <code>&lt;= 250ms</code> đầu, độ dài <code>0.12S–0.55S</code>, góc lệch khỏi ngang <code>&lt;= 55°</code></td><td>Chém nhẹ</td><td>Cận chiến</td></tr>
+<tr><td><strong>Tap</strong></td><td>Ngón nhấc lên trong <code>&lt; 130ms</code> <strong>và</strong> tổng di chuyển <code>&lt; 0.05S</code></td><td>1 phát bắn nhắm vào điểm tap</td><td>Tầm xa</td></tr>
+<tr><td><strong>Hold</strong></td><td>Ngón giữ <code>&gt;= 130ms</code>, tốc độ <code>&lt; 520 px/s</code></td><td>Bắn liên tục vào điểm đang giữ (theo RPM)</td><td>Tầm xa</td></tr>
+<tr><td><strong>Hold &amp; Drag</strong></td><td>Đã ở trạng thái Hold rồi mới di chuyển, tốc độ <code>&lt; 520 px/s</code></td><td>Bắn liên tục, tâm ngắm đi theo ngón</td><td>Tầm xa</td></tr>
+<tr><td><strong>Slide nhẹ</strong></td><td>Tốc độ đỉnh <code>&gt;= 520 px/s</code> trong <code>&lt;= 300ms</code> đầu, độ dài <code>0.12S–0.55S</code>, góc lệch khỏi ngang <code>&lt;= 55°</code></td><td>Chém nhẹ</td><td>Cận chiến</td></tr>
 <tr><td><strong>Slide nặng</strong></td><td>Như trên nhưng độ dài <code>&gt; 0.55S</code></td><td>Chém nặng: 2x stamina, 2.0x damage, 2.2x knockback, arc +30°</td><td>Cận chiến</td></tr>
-<tr><td><strong>Slide dọc xuống</strong></td><td>Tốc độ <code>&gt;= 900 px/s</code>, góc lệch khỏi <em>dọc</em> <code>&lt;= 25°</code>, hướng xuống</td><td><strong>Bước Lùi</strong>: lùi 1.2m, 0.15s bất tử, cooldown 2.5s</td><td>—</td></tr>
+<tr><td><strong>Slide dọc xuống</strong></td><td>Tốc độ <code>&gt;= 520 px/s</code>, góc lệch khỏi <em>dọc</em> <code>&lt;= 25°</code>, hướng xuống</td><td><strong>Bước Lùi</strong>: lùi 1.2m, 0.15s bất tử, cooldown 2.5s</td><td>—</td></tr>
 <tr><td><strong>Slide dọc lên</strong></td><td>Như trên, hướng lên</td><td><strong>Xốc Tới</strong>: tiến 2.0m, đẩy văng quái trên đường, cooldown 4s</td><td>—</td></tr>
 <tr><td><strong>Two-finger tap</strong></td><td>2 ngón chạm trong <code>120ms</code></td><td>Kích Bảo Vật / Ultimate</td><td>—</td></tr>
 <tr><td><strong>Tap nút góc phải-dưới</strong></td><td>—</td><td>Reload thủ công / Nạp Hoàn Hảo</td><td>Tầm xa</td></tr>
@@ -561,15 +561,15 @@ TOUCH_DOWN
   |
   |-- ghi t0, p0. state = PENDING
   v
-PENDING  (cửa sổ quyết định: 180ms hoặc tới khi vượt ngưỡng)
+PENDING  (cửa sổ quyết định: 130ms hoặc tới khi vượt ngưỡng)
   |
-  |-- Nếu vận tốc tức thời &gt;= 900 px/s TRƯỚC 250ms
+  |-- Nếu vận tốc tức thời &gt;= 520 px/s TRƯỚC 300ms
   |        --&gt; state = SLIDE  (khoá, không thể quay lại bắn trong lần chạm này)
   |
-  |-- Nếu nhấc ngón trước 180ms &amp; |p - p0| &lt; 0.05S
+  |-- Nếu nhấc ngón trước 130ms &amp; |p - p0| &lt; 0.05S
   |        --&gt; FIRE_SINGLE(p0);  state = IDLE
   |
-  |-- Nếu giữ tới 180ms mà chưa đạt ngưỡng vận tốc
+  |-- Nếu giữ tới 130ms mà chưa đạt ngưỡng vận tốc
   |        --&gt; state = HOLD_FIRE  (khoá, phần còn lại của lần chạm này KHÔNG thể thành chém)
   v
 SLIDE  (tích luỹ điểm cho tới khi nhấc ngón hoặc đạt 400ms)
@@ -582,7 +582,14 @@ HOLD_FIRE
   |-- bắn theo RPM tại vị trí ngón (cập nhật mỗi frame)
   |-- nhấc ngón --&gt; IDLE
 </code></pre>
-<p><strong>Nguyên tắc khoá (latching):</strong> một lần chạm chỉ được là <strong>một</strong> loại hành động. Đã vào <code>HOLD_FIRE</code> thì quẹt nhanh cũng không ra dao; đã vào <code>SLIDE</code> thì giữ lại cũng không ra súng. Không có chuyển tiếp giữa hai nhánh — đây chính là cái làm nó &quot;rõ ràng&quot; như docs yêu cầu.</p>
+<p><strong>Nguyên tắc khoá (latching):</strong> một lần chạm chỉ được là <strong>một</strong> loại hành động — đã vào <code>SLIDE</code> thì giữ lại cũng không ra súng. Đây là cái làm nó &quot;rõ ràng&quot; như docs yêu cầu.</p>
+<p><strong>Một lối thoát khoá, chỉ một chiều: <code>HOLD_FIRE</code> → <code>SLIDE</code>.</strong> Bản đầu khoá <strong>cả hai chiều</strong>, nên muốn đổi từ bắn sang chém phải <strong>nhấc tay</strong> rồi quẹt lại. Trong một game quái tới liên tục, một lần nhấc tay là một nhịp mất trắng — và đó chính là cảm giác &quot;chuyển đổi giữa cận chiến và bắn xa không mượt&quot;.</p>
+<div class="tw"><table>
+<thead><tr><th></th><th>Điều kiện</th><th>Vì sao an toàn</th></tr></thead><tbody>
+<tr><td>Thoát khoá</td><td>vận tốc <code>&gt;= 1.35 ×</code> ngưỡng quẹt <strong>và</strong> đi được <code>&gt;= slideMinLength</code></td><td>Cao hơn hẳn ngưỡng nhận dạng thường: một cú rê tay vô tình trong lúc giữ bắn <strong>không</strong> phá được khoá</td></tr>
+<tr><td>Mốc đo quãng đường</td><td>đặt lại mỗi khi vận tốc tụt dưới <code>0.5 ×</code> ngưỡng</td><td>Rê chậm cả giây không cộng dồn thành &quot;một cú quẹt&quot;</td></tr>
+</tbody></table></div>
+<p>Chiều ngược lại (<code>SLIDE</code> → bắn) <strong>vẫn khoá</strong>: đang chém mà lỡ tay ra một phát đạn là mất đạn, mà đạn là tài nguyên khan hiếm nhất (trụ P2). Nhấc tay rồi chạm là đủ nhanh cho chiều đó.</p>
 <p><strong>Đa điểm chạm:</strong> chỉ ngón <strong>đầu tiên</strong> điều khiển combat. Ngón thứ 2 chỉ dùng cho two-finger tap (Ultimate) và bị bỏ qua trong mọi trường hợp khác.</p>
 <hr />
 <h3>2b. Súng rút/cất và chém liên tục (bản cài đặt hiện tại)</h3>
@@ -616,7 +623,7 @@ HOLD_FIRE
 <p>Nhát <strong>đầu tiên</strong> vẫn đi qua <code>slash()</code> nguyên giá (có chém nặng theo độ dài). Các đoạn sau mới dùng <code>slideTickDamageMult</code> — nên chém liên tục <strong>không thay thế</strong> một nhát chém nặng canh đúng lúc.</p>
 <p><strong>Phân biệt với súng:</strong> hướng của đoạn quẹt đầu tiên quyết định, và <strong>khoá</strong> lại. Quẹt ngang (≤55° khỏi trục ngang) → vào chế độ chém liên tục, súng được cất. Không di chuyển ngón → rút súng. Vùng chết 55–65° vẫn giữ nguyên: thà mất input còn hơn làm sai input.</p>
 <h4>Độ trễ vào chế độ bắn liên tục</h4>
-<p><code>tapMaxDuration</code> <strong>180 → 110ms</strong>. Đây là độ trễ từ lúc chạm tới lúc súng bắt đầu bắn liên tục — nó phải đủ dài để phân biệt với một cú quẹt chém, và đủ ngắn để không thấy khựng.</p>
+<p><code>tapMaxDuration</code> <strong>180 → 130ms</strong>. Đây là độ trễ từ lúc chạm tới lúc súng bắt đầu bắn liên tục — nó phải đủ dài để phân biệt với một cú quẹt chém, và đủ ngắn để không thấy khựng.</p>
 <p><strong>Máy trạng thái phải được đánh thức bằng HẸN GIỜ, không phải bằng <code>pointermove</code>.</strong> Bản đầu chỉ kiểm tra <code>elapsed &gt;= tapMaxDuration</code> bên trong hàm xử lý <code>pointermove</code>; giữ ngón tay <strong>đứng yên</strong> thì không có sự kiện move nào, máy trạng thái kẹt ở <code>PENDING</code>, và tới lúc nhả tay nó thành một cái TAP. Nghĩa là <strong>phải rê tay mới bắn liên tục được</strong>. Đo sau khi sửa: giữ yên hoàn toàn → vào chế độ bắn liên tục sau <strong>132ms</strong>.</p>
 <p>Hẹn giờ phải bị <strong>huỷ</strong> ở hai chỗ: khi khoá sang SLIDE, và khi nhả tay. Không huỷ thì một cú quẹt chém sẽ rút súng ra giữa chừng. Đo: quẹt nhanh → vào chế độ chém, <strong>không</strong> ra súng, tốn <strong>0 đạn</strong>.</p>
 <h3>2c. BỎ quẹt dọc — và vùng chết mất lý do tồn tại theo</h3>
@@ -637,10 +644,10 @@ HOLD_FIRE
 <h3>3. Tham số tinh chỉnh (đưa vào <code>data/controls.json</code>, không hardcode)</h3>
 <div class="tw"><table>
 <thead><tr><th>Tham số</th><th>Mặc định</th><th>Ghi chú tune</th></tr></thead><tbody>
-<tr><td><code>tapMaxDuration</code></td><td>180 ms</td><td>Tăng nếu tester &quot;muốn bắn mà ra dao&quot;</td></tr>
+<tr><td><code>tapMaxDuration</code></td><td>130 ms</td><td>Tăng nếu tester &quot;muốn bắn mà ra dao&quot;</td></tr>
 <tr><td><code>tapMaxTravel</code></td><td>0.05 S</td><td></td></tr>
-<tr><td><code>slideVelocityThreshold</code></td><td>900 px/s</td><td><strong>Số quan trọng nhất của game.</strong> Test trên máy 60Hz và 120Hz</td></tr>
-<tr><td><code>slideDetectWindow</code></td><td>250 ms</td><td></td></tr>
+<tr><td><code>slideVelocityThreshold</code></td><td><strong>520 px/s</strong></td><td><strong>Số quan trọng nhất của game.</strong> 900 px/s trên màn 390px CSS là <strong>2.3 chiều rộng màn hình mỗi giây</strong> — một cú <em>bung</em> tay, không phải một cú quẹt. Hậu quả: quẹt bình thường bị đọc thành <code>HOLD</code> (rút súng), và do luật khoá thì không ra dao được nữa cho tới khi nhấc tay. 520 = 1.35 chiều rộng/giây. An toàn vì <code>slideMinLength</code> vẫn chặn: quẹt ngắn quá thì rơi về tap</td></tr>
+<tr><td><code>slideDetectWindow</code></td><td>300 ms</td><td>Rộng hơn cho người bắt đầu quẹt chậm rồi nhanh dần</td></tr>
 <tr><td><code>slideMinLength</code></td><td>0.12 S</td><td>Dưới ngưỡng này coi là tap</td></tr>
 <tr><td><code>heavySlideLength</code></td><td>0.55 S</td><td></td></tr>
 <tr><td><code>meleeAngleMax</code></td><td>55°</td><td></td></tr>
@@ -784,6 +791,18 @@ HOLD_FIRE
 <tr><td>Gai Mực (nỏ, xuyên 2)</td><td><strong>3</strong></td><td>full mỗi con</td></tr>
 </tbody></table></div>
 <blockquote><strong>Lưu ý cân bằng:</strong> <code>spread</code> giữ nguyên tổng sát thương một phát (chia ra chứ không nhân lên), nên nó <strong>không</strong> phá đường cong DPS. Nhưng <code>pierce</code> và <code>aoe</code> thì <strong>có</strong> nhân lên trong đám đông — mô hình <code>dpsSustained</code> chỉ đo đơn mục tiêu. Đó là bản sắc của archetype, không phải lỗi; nhưng khi tinh chỉnh <code>pierce</code>/<code>aoeRadiusM</code> thì phải nhớ chúng nằm <strong>ngoài</strong> ngân sách DPS.</blockquote>
+<h4>5c-bis. Shotgun: MỘT PHÁT DỌN SẠCH MỘT VÙNG</h4>
+<p>Cơ chế <code>spread</code> đúng nhưng bản đầu <strong>tune sai hướng</strong>: nón 12°, <code>caliberMult</code> 1.6 (mỗi viên ghém vừa đúng 1 lần HP trash, hết scaling là không giết nổi), và dung sai bắt trúng 0.42m — nên phần lớn viên ghém bay qua khe giữa hai con. Kết quả đọc ra là <em>&quot;shotgun yếu, vùng bắn nhỏ&quot;</em>.</p>
+<div class="tw"><table>
+<thead><tr><th>Số</th><th>Cũ → mới</th><th>Việc</th></tr></thead><tbody>
+<tr><td><code>spreadDeg</code></td><td>12 → <strong>26</strong></td><td>Ở 8m nón phủ <strong>3.7m</strong> — hơn nửa chiều rộng hành lang</td></tr>
+<tr><td><code>caliberMult</code></td><td>1.6 → <strong>3.4</strong></td><td>Mỗi viên ghém = <strong>3.4 lần HP trash</strong> → vẫn one-shot sau vài phòng HP scaling</td></tr>
+<tr><td><code>pelletRadiusM</code></td><td>0.42 → <strong>0.85</strong></td><td>Viên ghém bắt được con nằm lệch trục, không bay lọt khe</td></tr>
+<tr><td><code>killEff</code></td><td>0.45 → <strong>0.55</strong></td><td>Nón rộng hơn thì trúng nhiều hơn → normalize tự hạ đạn dự trữ xuống</td></tr>
+<tr><td><code>falloffStart/End/Min</code></td><td>— → <strong>7m / 13m / 0.4</strong></td><td>Ngoài 7m sát thương tắt dần, còn 40% ở 13m</td></tr>
+</tbody></table></div>
+<p>Đo lại (T1, <code>dmg</code> 136 × 9 viên, bắn vào đám 14 con): <strong>6 / 2 / 4 / 3 mạng mỗi phát</strong> — mọi con trúng đều chết. Đó là &quot;dọn sạch một vùng&quot;.</p>
+<p><strong>Cái giá phải trả đi kèm, không tách rời:</strong> 1.09s giữa hai phát · băng <strong>5 viên</strong> · nạp <strong>từng viên</strong> 0.75s/viên. Một phát trượt không chỉ mất đạn, nó mất cả nhịp. Và <code>falloff</code> giữ cho nó là vũ khí <strong>cự ly gần</strong> chứ không thành khẩu bắn tỉa đám đông ở dải Xa — nếu bỏ falloff thì không còn lý do gì để cầm khẩu khác.</p>
 <h3>5d. Mô phỏng theo SỐ LIỆU VŨ KHÍ THẬT — và đảo ngược mô hình cân bằng</h3>
 <p>Mô hình cũ ép <strong>mọi súng có cùng DPS ở cùng tier</strong>. Hệ quả: nhịp bắn thật <strong>không thể tồn tại</strong> — muốn SMG bắn 700 nhịp/phút thì sát thương mỗi viên phải tụt xuống mức vô nghĩa, còn muốn viên đạn mạnh thì phải kéo nhịp bắn xuống 48 (shotgun) hay 155 (rifle), tức chậm hơn đời thật 4–5 lần.</p>
 <p><strong>Đảo lại:</strong> sát thương suy từ <strong>cỡ đạn</strong>, nhịp bắn lấy từ <strong>số liệu thật</strong>, và <strong>ĐẠN mới là thứ cân bằng</strong>.</p>
@@ -1890,6 +1909,23 @@ goldPerKill(enemy, D) = enemy.goldDrop
 <blockquote>&quot;Khi một đòn trúng: hit stop đóng băng hành động, màn hình rung <strong>theo trục của đòn</strong>, và hạt bắn ra <strong>từ điểm va chạm</strong> — tạo thành một vòng cảm giác thống nhất.&quot;</blockquote>
 <p>Nếu ba thứ này lệch nhau dù chỉ 2 frame thì cảm giác vỡ. <strong>Tất cả phải trigger trong cùng một frame.</strong></p>
 <h3>2. Bảng tham số juice</h3>
+<h4>2.0 Ngân sách đóng băng — luật đứng trên cả bảng dưới</h4>
+<p>Hit stop <strong>dừng hẳn cả game</strong> (<code>timeScale</code> trả về 0). Bảng 2.1 nói mỗi sự kiện đóng băng bao lâu; mục này nói <strong>tổng cộng được phép bao nhiêu</strong>. Không có trần thì bảng 2.1 tự phản bội chính nó: giữ tay bắn liên thanh hay chém liên tục làm hàng loạt sự kiện chồng lên nhau, và ở mật độ đó hit stop <strong>không còn đọc ra là &quot;đã&quot;</strong> — nó đọc ra là <strong>máy giật</strong>.</p>
+<div class="tw"><table>
+<thead><tr><th>Số (<code>gamefeel.json</code> → <code>hitstopRules</code>)</th><th>Giá trị</th><th>Việc</th></tr></thead><tbody>
+<tr><td><code>maxFrac</code></td><td><strong>0.08</strong></td><td>Tối đa <strong>8%</strong> thời gian THỰC được đóng băng. Hồi 0.08s ngân sách cho mỗi giây thực</td></tr>
+<tr><td><code>bucketSec</code></td><td>0.20</td><td>Burst tối đa — đủ chứa cú Chém Hoàn Hảo 7 frame mà không bị cắt</td></tr>
+<tr><td><code>minGapSec</code></td><td>0.13</td><td>Hai lần đóng băng phải cách nhau — <strong>luôn có nhịp SỐNG</strong> ở giữa</td></tr>
+</tbody></table></div>
+<p>Đo được trước khi có trần: giữ tay bắn rifle → <strong>21% số frame</strong> bị đóng băng, chém liên tục → <strong>20%</strong>. Trường hợp bệnh lý (mỗi frame một tick slide) làm game <strong>đứng hẳn</strong>. Sau khi có trần: 8%, và con số đó là <strong>bảo đảm của thiết kế</strong>, không phải kết quả may mắn của một lần tune.</p>
+<p>Hai luật đi kèm, quan trọng ngang cái trần:</p>
+<ol>
+<li><strong>Chém trượt thì KHÔNG đóng băng.</strong> Dừng cả màn hình để nói &quot;bạn vừa trượt&quot; là lấy thứ đắt nhất</li>
+<span class="cont">trong game trả cho thứ rẻ nhất.</span>
+<li><strong>Nhát slide chỉ đóng băng khi CÓ MẠNG.</strong> Mỗi đoạn rê tay là một tick; đóng băng mọi tick thì cả</li>
+<span class="cont">màn hình giật suốt cú quẹt.</span>
+</ol>
+<p>Cú đánh lẻ tẻ vẫn ăn nguyên hit stop trong bảng 2.1 — chỉ bắn/chém liên tục mới bị cắt.</p>
 <h4>2.1 Hit stop (đóng băng khi va chạm)</h4>
 <div class="tw"><table>
 <thead><tr><th>Sự kiện</th><th>Frame đóng băng (60fps)</th><th>Timescale</th></tr></thead><tbody>
@@ -2768,6 +2804,12 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>45</td><td><strong>Nạp đạn nhanh quá và shotgun nạp cả băng cùng lúc.</strong> Reload 1.4–2.6s là một cái chớp mắt, không phải một quyết định — trụ P2 (vòng khoá ĐẠN ↔ STAMINA) mất bản lề. Riêng shotgun nạp cả 5 viên một lần thì mất luôn cá tính đặc trưng nhất của nó</td><td><code>balance.reloadGlobalMult</code> = <strong>1.45</strong> nhân vào dải reload mọi archetype (normalize clamp vào dải ĐÃ nhân nên idempotent). Shotgun <code>reloadStyle: &quot;shell&quot;</code> — <strong>nạp từng viên</strong> 0.75s/viên, nạp đủ vẫn tốn 3.77s nhưng <strong>cắt ngang được bất cứ lúc nào</strong>. Nỏ đi hướng ngược lại: băng <strong>1 mũi tên</strong>, nạp <strong>0.55s</strong> — ngắn hơn nhịp bắn 1.18s nên nạp không bao giờ chặn tay</td></tr>
 <tr><td>46</td><td><strong>&quot;Đang nạp&quot; nói bằng một thanh mảnh 13px.</strong> Nạp là trạng thái người chơi <strong>không bắn được</strong> — trạng thái nặng nhất trong trận — mà tín hiệu của nó nhỏ hơn cả dãy vạch đạn bình thường. Ngoại vi không bắt được, và cửa sổ Nạp Hoàn Hảo rộng 0.25s thì càng không</td><td>Vòng tròn 64px thay chỗ dãy vạch: <strong>vòng đứt nét XOAY</strong> (ngoại vi bắt chuyển động ngay cả khi mắt khoá vào quái) + cung vàng tiến độ + vạch xanh cửa sổ + số giây ở giữa + chữ <code>ĐANG NẠP</code> / <code>ĐANG NẠP VIÊN 3/5</code>. Cùng lúc dời <strong>stamina</strong> từ góc dưới lên cột trạng thái, và cho <strong>viền màn hình</strong> thành kênh sinh tồn (chớp đỏ khi trúng, đập đỏ khi HP &lt; 35%). Xem <code>14</code> mục 7c–7e</td></tr>
 <tr><td>47</td><td><strong>Bộ 50 thẻ nâng cấp toàn logic.</strong> Điều kiện (&quot;khi HP &lt; 30%&quot;), đánh đổi (&quot;vàng x1.4 nhưng −15% HP&quot;), cơ chế riêng (&quot;chém trúng thì phát bắn sau +60%&quot;), combo ẩn mở thẻ Legendary. Người chơi đọc ba thẻ này ngay sau khi vừa chạy 50m và đang thở — đó là <strong>ba bài toán</strong> đặt vào đúng lúc họ ít khả năng giải nhất</td><td>Viết lại thành <strong>12 chỉ số × 4 bậc</strong>: mỗi thẻ là MỘT con số cộng vào MỘT chỉ số, không điều kiện, không drawback. Bậc chỉ đổi con số (Sát Thương I/IV = +15%/+57%), Lộc kéo bậc lên. <code>applyCard()</code> thành bảng tra cứu phẳng theo <code>stat</code> — thêm thẻ mới trong data không phải sửa dòng code nào. Cơ chế riêng dời hẳn về <strong>Bảo Vật</strong> và <strong>Talent</strong>, nơi người chơi ngồi đọc ngoài trận</td></tr>
+</tbody></table></div>
+<div class="tw"><table>
+<thead><tr><th>48</th><th><strong>&quot;Giật lag&quot; không phải lag — là hit stop.</strong> <code>addHitstop</code> làm <code>timeScale</code> trả về 0, tức <strong>dừng hẳn cả game</strong>, và nó được gọi ở <strong>mọi</strong> cú trúng: mỗi nạn nhân của một phát shotgun, mỗi tick slide, và cả khi <strong>chém trượt</strong>. Đo: giữ tay bắn rifle → <strong>21% số frame</strong> đóng băng; chém liên tục → <strong>20%</strong>; ép mỗi frame một tick slide → game <strong>đứng hẳn</strong>. Ở mật độ đó hit stop không còn đọc ra là &quot;đã&quot; mà là &quot;máy hỏng&quot;</th><th><code>hitstopRules</code> leaky bucket: <code>maxFrac</code> <strong>0.08</strong> (trần cứng 8% thời gian thực), <code>bucketSec</code> 0.20 (burst đủ cho Chém Hoàn Hảo 7 frame), <code>minGapSec</code> 0.13 (<strong>luôn có nhịp SỐNG</strong> giữa hai lần đóng băng). Cộng hai luật: chém trượt <strong>không</strong> đóng băng, và nhát slide chỉ đóng băng <strong>khi có mạng</strong>. Cú đánh lẻ vẫn ăn nguyên hit stop</th></tr></thead><tbody>
+<tr><td>49</td><td><strong><code>_separate</code> đẻ 240 chuỗi mỗi frame.</strong> Khoá lưới không gian dùng `<code> </code>${cx},${cz}<code> </code><code> — ở 60fps với 240 con là <strong>14.400 chuỗi/giây</strong> chỉ để vứt đi, và GC pause lộ ra <strong>đúng lúc đông quái</strong> (frame xấu nhất 3.9ms). Nó chiếm 56% thời gian của </code>pool.update`</td><td>Khoá thành số nguyên <code>(cx+512)*4096 + (cz+2048)</code>. Đo lại: <code>_separate</code> <strong>0.131ms → 0.028ms</strong>, frame xấu nhất 3.9 → 3.1ms, và hết hẳn rác chuỗi mỗi frame</td></tr>
+<tr><td>50</td><td><strong>Ngưỡng nhận quẹt 900 px/s là một cú BUNG tay, không phải cú quẹt.</strong> Trên màn 390px CSS đó là 2.3 chiều rộng màn hình mỗi giây. Quẹt bình thường bị đọc thành <code>HOLD</code> → rút súng, và <strong>luật khoá hai chiều</strong> thì từ đó không ra dao được nữa cho tới khi <strong>nhấc tay</strong>. Mỗi lần đổi bắn ↔ chém là một nhịp mất trắng — đó chính là &quot;chuyển đổi không mượt&quot;</td><td>Ngưỡng <strong>900 → 520 px/s</strong> (1.35 chiều rộng/giây), cửa sổ nhận 250 → 300ms. Và mở <strong>một lối thoát khoá một chiều</strong> <code>HOLD_FIRE → SLIDE</code>: quẹt dứt khoát (≥ 1.35× ngưỡng <strong>và</strong> đủ dài) ra dao ngay, không cần nhấc tay. Chiều ngược lại vẫn khoá vì lỡ tay bắn là mất đạn. Đo: giữ 220ms (súng ra) → quẹt → ra dao trong cùng một lần chạm</td></tr>
+<tr><td>51</td><td><strong>Shotgun tune sai hướng nên phản bội chính cơ chế <code>spread</code> của nó.</strong> Nón 12°, <code>caliberMult</code> 1.6 (mỗi viên ghém vừa đúng 1 lần HP trash — hết scaling là không giết nổi), dung sai bắt trúng 0.42m nên phần lớn viên ghém bay lọt khe giữa hai con. Đọc ra là &quot;yếu, vùng bắn nhỏ&quot;</td><td>Nón <strong>26°</strong> (phủ 3.7m ở cự ly 8m), <code>caliberMult</code> <strong>3.4</strong>, <code>pelletRadiusM</code> <strong>0.85</strong>, cộng <strong>tắt dần theo tầm</strong> 7m→13m còn 40% để nó vẫn là vũ khí cự ly gần. Đo: bắn vào đám 14 con ra <strong>6 / 2 / 4 / 3 mạng mỗi phát</strong> — mọi con trúng đều chết. Cái giá đi kèm không tách rời: 1.09s/phát, băng 5, nạp từng viên</td></tr>
 </tbody></table></div>
 <blockquote><strong>Lỗi #14 và #16 đã bị chính thiết kế vượt qua.</strong> Khi chuyển sang <strong>quái đứng yên</strong>, bài toán đón đầu của <code>pincer</code> (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó <strong>đã bị bỏ khỏi code</strong>. Lane spring (#16) thì vẫn giữ, nhưng giờ nó chỉ chống separation làm lệch làn khi quái spawn chồng nhau, không còn phải chống lực đẩy dồn theo suốt đường đi. Ghi lại ở đây vì hai lỗi đó <strong>là lỗi thật</strong> ở thời điểm phát hiện, và vì nó cho thấy giá của việc đổi mô hình di chuyển: mọi thứ suy ra từ tốc độ quái đều phải tính lại.</blockquote>
 <p>Ngoài ra prototype xác nhận <strong>công thức số quái phải tính theo <code>composition</code></strong>, không phải <code>tpCost</code> trung bình toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 lần. Đã ghi vào <code>16</code> mục 4.4.</p>

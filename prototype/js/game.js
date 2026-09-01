@@ -252,9 +252,10 @@ export class Game {
       Moi vien lay mot goc ngau nhien trong non `spreadDeg` roi tim con gan tia do nhat.
       Gan thi nhieu vien chum vao MOT con (thua sat thuong), xa thi tan ra hoac truot --
       dung nhu shotgun that, va tu no can bang thay vi phai chia deu N muc tieu. */
-  spreadTargets(nPellets, spreadDeg, rnd = Math.random) {
+  spreadTargets(nPellets, spreadDeg, cfg = {}, rnd = Math.random) {
     const cand = [];
     const far = GD.feel.run.tapFarM;
+    const radius = cfg.pelletRadiusM != null ? cfg.pelletRadiusM : 0.42;
     for (const e of this.pool.list) {
       if (!e.alive) continue;
       const zGap = this.playerZ - e.z;
@@ -271,11 +272,22 @@ export class Game {
       for (const c of cand) {
         // sai lech NGANG cua vien dan tai do sau cua con do
         const err = Math.abs(Math.tan(a - c.ang)) * c.d;
-        if (err < 0.42 + 0.3 * c.e.scale && err < bestErr) { bestErr = err; best = c.e; }
+        if (err < radius + 0.3 * c.e.scale && err < bestErr) { bestErr = err; best = c.e; }
       }
       out.push(best);            // null = vien nay truot
     }
     return out;
+  }
+
+  /** Tat dan theo tam (dan ghem): nguyen luc toi falloffStartM, con falloffMin o
+   *  falloffEndM. Day la thu giu cho mot khau "don sach mot vung" khong bien thanh
+   *  khau ban tia dam dong o dai Xa -- no phai la vu khi CU LY GAN. */
+  rangeFalloff(cfg, dist) {
+    const s = cfg.falloffStartM, e = cfg.falloffEndM;
+    if (s == null || e == null || e <= s || dist <= s) return 1;
+    const min = cfg.falloffMin != null ? cfg.falloffMin : 0.4;
+    const k = Math.min(1, (dist - s) / (e - s));
+    return 1 - (1 - min) * k;
   }
   /** Danh sach muc tieu tu nham, gan nhat truoc, uu tien LAN GIUA (docs/04 muc 2b). */
   pickAutoList(n) {
@@ -362,7 +374,7 @@ export class Game {
     if (hitCfg.style === 'spread') {
       /* Moi vien ghem co goc rieng: nhieu vien co the chum vao MOT con, hoac truot han.
          Day la ly do shotgun manh o gan va vo dung o xa -- khong can luat rieng nao. */
-      const shots = this.spreadTargets(pellets, rw.spreadDeg || 10);
+      const shots = this.spreadTargets(pellets, rw.spreadDeg || 10, hitCfg);
       const per = new Map();
       const half = ((rw.spreadDeg || 10) * Math.PI) / 180 / 2;
       for (let i = 0; i < shots.length; i++) {
@@ -377,7 +389,11 @@ export class Game {
           this.proj.fire(mz.x, mz.y, mz.z, Math.sin(a) * d, 0.5, this.playerZ - Math.cos(a) * d, look);
         }
       }
-      victims = [...per].map(([e, n]) => ({ e, mult: n }));
+      // tat dan theo tam: dan ghem o 13m chi con falloffMin so voi trong 7m
+      victims = [...per].map(([e, n]) => {
+        const d = Math.hypot(e.x, this.playerZ - e.z);
+        return { e, mult: n * this.rangeFalloff(hitCfg, d) };
+      });
     } else if (hitCfg.style === 'pierce') {
       // xuyen qua: con dau + n con phia sau no tren cung truc chay
       const extra = [];
@@ -450,7 +466,9 @@ export class Game {
     const hits = this._blade(s, reach, arc, maxT);
     const sh = GD.feel.shake.find((x) => x.event === (heavy ? 'Chém nặng' : 'Chém nhẹ')) || { amplitudePx: 6 };
     this.juice.addShake(sh.amplitudePx, nx, ny);
-    this.juice.addHitstop(hits.length ? (heavy ? 5 : 3) : 1);
+    // CHEM TRUOT thi khong dong bang: dung han man hinh de thong bao "ban vua truot"
+    // la lay thu dat nhat trong game (mot frame song) de tra cho thu re nhat.
+    if (hits.length) this.juice.addHitstop(heavy ? 5 : 3);
 
     if (!hits.length) { this.combo = 0; this.comboT = 0; return; }
 
@@ -684,7 +702,9 @@ export class Game {
         source: 'melee', archetype: mw.archetype, heavy: false, weakPoint: false, crit,
       })) killed++;
     }
-    this.juice.addHitstop(2);
+    // Nhat slide chi dong bang khi CO MANG. Moi doan re tay la mot tick, ma dong bang
+    // moi tick thi ca man hinh giat lien tuc suot cu quet -- do la cai "giat" do duoc.
+    if (killed) this.juice.addHitstop(2);
     this.audio.hitFlesh();
     if (killed) { this.combo = Math.min(5, this.combo + 1); this.comboT = 1.2; this.ui.combo(this.combo); }
   }

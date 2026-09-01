@@ -154,6 +154,28 @@ Trước đây **mọi** súng đều dùng `dmg × pellets` **dồn hết vào 
 > `dpsSustained` chỉ đo đơn mục tiêu. Đó là bản sắc của archetype, không phải lỗi; nhưng khi tinh chỉnh
 > `pierce`/`aoeRadiusM` thì phải nhớ chúng nằm **ngoài** ngân sách DPS.
 
+### 5c-bis. Shotgun: MỘT PHÁT DỌN SẠCH MỘT VÙNG
+
+Cơ chế `spread` đúng nhưng bản đầu **tune sai hướng**: nón 12°, `caliberMult` 1.6 (mỗi viên ghém vừa
+đúng 1 lần HP trash, hết scaling là không giết nổi), và dung sai bắt trúng 0.42m — nên phần lớn viên
+ghém bay qua khe giữa hai con. Kết quả đọc ra là *"shotgun yếu, vùng bắn nhỏ"*.
+
+| Số | Cũ → mới | Việc |
+|---|---|---|
+| `spreadDeg` | 12 → **26** | Ở 8m nón phủ **3.7m** — hơn nửa chiều rộng hành lang |
+| `caliberMult` | 1.6 → **3.4** | Mỗi viên ghém = **3.4 lần HP trash** → vẫn one-shot sau vài phòng HP scaling |
+| `pelletRadiusM` | 0.42 → **0.85** | Viên ghém bắt được con nằm lệch trục, không bay lọt khe |
+| `killEff` | 0.45 → **0.55** | Nón rộng hơn thì trúng nhiều hơn → normalize tự hạ đạn dự trữ xuống |
+| `falloffStart/End/Min` | — → **7m / 13m / 0.4** | Ngoài 7m sát thương tắt dần, còn 40% ở 13m |
+
+Đo lại (T1, `dmg` 136 × 9 viên, bắn vào đám 14 con): **6 / 2 / 4 / 3 mạng mỗi phát** — mọi con trúng
+đều chết. Đó là "dọn sạch một vùng".
+
+**Cái giá phải trả đi kèm, không tách rời:** 1.09s giữa hai phát · băng **5 viên** · nạp **từng viên**
+0.75s/viên. Một phát trượt không chỉ mất đạn, nó mất cả nhịp. Và `falloff` giữ cho nó là vũ khí **cự ly
+gần** chứ không thành khẩu bắn tỉa đám đông ở dải Xa — nếu bỏ falloff thì không còn lý do gì để cầm khẩu
+khác.
+
 
 ## 5d. Mô phỏng theo SỐ LIỆU VŨ KHÍ THẬT — và đảo ngược mô hình cân bằng
 

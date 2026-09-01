@@ -12,12 +12,12 @@
 
 | Gesture | Điều kiện nhận (chuẩn hoá theo `S` = chiều rộng màn hình) | Hành động | Vũ khí |
 |---|---|---|---|
-| **Tap** | Ngón nhấc lên trong `< 180ms` **và** tổng di chuyển `< 0.05S` | 1 phát bắn nhắm vào điểm tap | Tầm xa |
-| **Hold** | Ngón giữ `>= 180ms`, tốc độ `< 900 px/s` | Bắn liên tục vào điểm đang giữ (theo RPM) | Tầm xa |
-| **Hold & Drag** | Đã ở trạng thái Hold rồi mới di chuyển, tốc độ `< 900 px/s` | Bắn liên tục, tâm ngắm đi theo ngón | Tầm xa |
-| **Slide nhẹ** | Tốc độ đỉnh `>= 900 px/s` trong `<= 250ms` đầu, độ dài `0.12S–0.55S`, góc lệch khỏi ngang `<= 55°` | Chém nhẹ | Cận chiến |
+| **Tap** | Ngón nhấc lên trong `< 130ms` **và** tổng di chuyển `< 0.05S` | 1 phát bắn nhắm vào điểm tap | Tầm xa |
+| **Hold** | Ngón giữ `>= 130ms`, tốc độ `< 520 px/s` | Bắn liên tục vào điểm đang giữ (theo RPM) | Tầm xa |
+| **Hold & Drag** | Đã ở trạng thái Hold rồi mới di chuyển, tốc độ `< 520 px/s` | Bắn liên tục, tâm ngắm đi theo ngón | Tầm xa |
+| **Slide nhẹ** | Tốc độ đỉnh `>= 520 px/s` trong `<= 300ms` đầu, độ dài `0.12S–0.55S`, góc lệch khỏi ngang `<= 55°` | Chém nhẹ | Cận chiến |
 | **Slide nặng** | Như trên nhưng độ dài `> 0.55S` | Chém nặng: 2x stamina, 2.0x damage, 2.2x knockback, arc +30° | Cận chiến |
-| **Slide dọc xuống** | Tốc độ `>= 900 px/s`, góc lệch khỏi *dọc* `<= 25°`, hướng xuống | **Bước Lùi**: lùi 1.2m, 0.15s bất tử, cooldown 2.5s | — |
+| **Slide dọc xuống** | Tốc độ `>= 520 px/s`, góc lệch khỏi *dọc* `<= 25°`, hướng xuống | **Bước Lùi**: lùi 1.2m, 0.15s bất tử, cooldown 2.5s | — |
 | **Slide dọc lên** | Như trên, hướng lên | **Xốc Tới**: tiến 2.0m, đẩy văng quái trên đường, cooldown 4s | — |
 | **Two-finger tap** | 2 ngón chạm trong `120ms` | Kích Bảo Vật / Ultimate | — |
 | **Tap nút góc phải-dưới** | — | Reload thủ công / Nạp Hoàn Hảo | Tầm xa |
@@ -43,15 +43,15 @@ TOUCH_DOWN
   |
   |-- ghi t0, p0. state = PENDING
   v
-PENDING  (cửa sổ quyết định: 180ms hoặc tới khi vượt ngưỡng)
+PENDING  (cửa sổ quyết định: 130ms hoặc tới khi vượt ngưỡng)
   |
-  |-- Nếu vận tốc tức thời >= 900 px/s TRƯỚC 250ms
+  |-- Nếu vận tốc tức thời >= 520 px/s TRƯỚC 300ms
   |        --> state = SLIDE  (khoá, không thể quay lại bắn trong lần chạm này)
   |
-  |-- Nếu nhấc ngón trước 180ms & |p - p0| < 0.05S
+  |-- Nếu nhấc ngón trước 130ms & |p - p0| < 0.05S
   |        --> FIRE_SINGLE(p0);  state = IDLE
   |
-  |-- Nếu giữ tới 180ms mà chưa đạt ngưỡng vận tốc
+  |-- Nếu giữ tới 130ms mà chưa đạt ngưỡng vận tốc
   |        --> state = HOLD_FIRE  (khoá, phần còn lại của lần chạm này KHÔNG thể thành chém)
   v
 SLIDE  (tích luỹ điểm cho tới khi nhấc ngón hoặc đạt 400ms)
@@ -65,9 +65,20 @@ HOLD_FIRE
   |-- nhấc ngón --> IDLE
 ```
 
-**Nguyên tắc khoá (latching):** một lần chạm chỉ được là **một** loại hành động. Đã vào `HOLD_FIRE` thì
-quẹt nhanh cũng không ra dao; đã vào `SLIDE` thì giữ lại cũng không ra súng. Không có chuyển tiếp giữa hai
-nhánh — đây chính là cái làm nó "rõ ràng" như docs yêu cầu.
+**Nguyên tắc khoá (latching):** một lần chạm chỉ được là **một** loại hành động — đã vào `SLIDE` thì
+giữ lại cũng không ra súng. Đây là cái làm nó "rõ ràng" như docs yêu cầu.
+
+**Một lối thoát khoá, chỉ một chiều: `HOLD_FIRE` → `SLIDE`.** Bản đầu khoá **cả hai chiều**, nên muốn
+đổi từ bắn sang chém phải **nhấc tay** rồi quẹt lại. Trong một game quái tới liên tục, một lần nhấc tay
+là một nhịp mất trắng — và đó chính là cảm giác "chuyển đổi giữa cận chiến và bắn xa không mượt".
+
+| | Điều kiện | Vì sao an toàn |
+|---|---|---|
+| Thoát khoá | vận tốc `>= 1.35 ×` ngưỡng quẹt **và** đi được `>= slideMinLength` | Cao hơn hẳn ngưỡng nhận dạng thường: một cú rê tay vô tình trong lúc giữ bắn **không** phá được khoá |
+| Mốc đo quãng đường | đặt lại mỗi khi vận tốc tụt dưới `0.5 ×` ngưỡng | Rê chậm cả giây không cộng dồn thành "một cú quẹt" |
+
+Chiều ngược lại (`SLIDE` → bắn) **vẫn khoá**: đang chém mà lỡ tay ra một phát đạn là mất đạn, mà đạn
+là tài nguyên khan hiếm nhất (trụ P2). Nhấc tay rồi chạm là đủ nhanh cho chiều đó.
 
 **Đa điểm chạm:** chỉ ngón **đầu tiên** điều khiển combat. Ngón thứ 2 chỉ dùng cho two-finger tap
 (Ultimate) và bị bỏ qua trong mọi trường hợp khác.
@@ -123,7 +134,7 @@ nguyên: thà mất input còn hơn làm sai input.
 
 ### Độ trễ vào chế độ bắn liên tục
 
-`tapMaxDuration` **180 → 110ms**. Đây là độ trễ từ lúc chạm tới lúc súng bắt đầu bắn liên tục — nó phải đủ
+`tapMaxDuration` **180 → 130ms**. Đây là độ trễ từ lúc chạm tới lúc súng bắt đầu bắn liên tục — nó phải đủ
 dài để phân biệt với một cú quẹt chém, và đủ ngắn để không thấy khựng.
 
 **Máy trạng thái phải được đánh thức bằng HẸN GIỜ, không phải bằng `pointermove`.** Bản đầu chỉ kiểm tra
@@ -155,10 +166,10 @@ Quẹt dọc lên (Xốc Tới) và quẹt dọc xuống (Bước Lùi) **đã b
 
 | Tham số | Mặc định | Ghi chú tune |
 |---|---|---|
-| `tapMaxDuration` | 180 ms | Tăng nếu tester "muốn bắn mà ra dao" |
+| `tapMaxDuration` | 130 ms | Tăng nếu tester "muốn bắn mà ra dao" |
 | `tapMaxTravel` | 0.05 S | |
-| `slideVelocityThreshold` | 900 px/s | **Số quan trọng nhất của game.** Test trên máy 60Hz và 120Hz |
-| `slideDetectWindow` | 250 ms | |
+| `slideVelocityThreshold` | **520 px/s** | **Số quan trọng nhất của game.** 900 px/s trên màn 390px CSS là **2.3 chiều rộng màn hình mỗi giây** — một cú *bung* tay, không phải một cú quẹt. Hậu quả: quẹt bình thường bị đọc thành `HOLD` (rút súng), và do luật khoá thì không ra dao được nữa cho tới khi nhấc tay. 520 = 1.35 chiều rộng/giây. An toàn vì `slideMinLength` vẫn chặn: quẹt ngắn quá thì rơi về tap |
+| `slideDetectWindow` | 300 ms | Rộng hơn cho người bắt đầu quẹt chậm rồi nhanh dần |
 | `slideMinLength` | 0.12 S | Dưới ngưỡng này coi là tap |
 | `heavySlideLength` | 0.55 S | |
 | `meleeAngleMax` | 55° | |
