@@ -401,10 +401,18 @@ export class Game {
     /* CHUA LEN DAN XONG. Truoc day day la `return` cam lang: nguoi choi cam shotgun cham
        lien tuc, khong ra vien nao, khong tieng nao, khong gi nhuc nhich -- doc ra nhu
        sung hong hoac may nuot input. Gio no tra ve mot tieng CO KHAN. */
-    if (this.fireCd > 0) { if (single) this._dryClick(); return; }
+    // epsilon: fireInterval 0.1s tru 6 frame x 1/60 ra mot so duong ti hon, du de nuot
+    // mot nhip ban -- rifle 600 rpm mat 1 phat moi giay chi vi sai so dau phay dong.
+    if (this.fireCd > 1e-6) { if (single) this._dryClick(); return; }
 
     const rw = this.rw;
-    this.fireCd = this.fireInterval;
+    /* CONG DON thay vi gan cung: giu lai phan am cua fireCd (da qua han bao nhieu).
+       Gan cung `= fireInterval` thi moi phat bi lam tron len boi frame — SMG nhip
+       0.0857s (5.14 frame) chi ban duoc moi 6 frame, tuc 10 phat/giay thay vi 12.
+       Ca mo hinh vu khi dung rpm THAT nen nhip do duoc phai khop voi rpm trong data.
+       Chan phan bu o nua nhip de sau mot khoang nghi dai khong ban don mot luc. */
+    this.fireCd = this.fireInterval +
+      Math.max(-this.fireInterval * 0.5, Math.min(0, this.fireCd));
     this.mag--;
     this.gun.flash();
     /* LEN DAN: animation chay dung bang khoang cach that giua 2 phat, khong phai mot con
@@ -890,28 +898,39 @@ export class Game {
   /* ============================ UPDATE ============================ */
   step(dtRaw) {
     if (!this.running) return;
-    const dt = this.juice.timeScale(Math.min(0.05, dtRaw));
+    const raw = Math.min(0.05, dtRaw);
+    const dt = this.juice.timeScale(raw);
+
+    /* DONG HO CUA NGUOI CHOI CHAY THEO THOI GIAN THUC KHI DANG HITSTOP.
+       Hitstop lam dt = 0, va truoc day MOI dong ho deu nam trong `if (dt > 0)` --
+       ke ca nhip ban, thoi gian nap va cooldown ne. He qua nguoc doi: cang trung
+       nhieu quai thi cang nhieu hitstop, cang nhieu hitstop thi sung cang BAN CHAM.
+       Do duoc: rifle nhip ly thuyet 10 phat/giay chi ra 7-8 phat, va con so do bam
+       theo ti le dong bang tung giay -- nguoi choi doc ra la "may giay dau ban cham
+       hon luc sau" (docs/18 loi #59).
+       Hitstop la hieu ung TRINH DIEN, no khong duoc phep danh thue len nhip ban.
+       Slow-mo thi KHAC: do la mot nhip kich duoc thiet ke, cham lai la co y -- nen
+       no van scale binh thuong. */
+    const dtCd = this.juice.frozen ? raw : dt;
+    this.fireCd = Math.max(0, this.fireCd - dtCd);
+    this.swingCd = Math.max(0, this.swingCd - dtCd);
+    this.dodgeCd = Math.max(0, this.dodgeCd - dtCd);
+    this.dryClickCd = Math.max(0, (this.dryClickCd || 0) - dtCd);
+    this.dashCd = Math.max(0, this.dashCd - dtCd);
+    this.iframe = Math.max(0, this.iframe - dtCd);
+    if (this.reloading) {
+      this.reloadT += dtCd;
+      this.ui.reloadProgress(this.reloadT / this.reloadDur);
+      if (this.reloadT >= this.reloadDur) this._finishReload();
+    }
 
     if (dt > 0) {
-      this.fireCd = Math.max(0, this.fireCd - dt);
-      this.swingCd = Math.max(0, this.swingCd - dt);
-      this.dodgeCd = Math.max(0, this.dodgeCd - dt);
-      this.dryClickCd = Math.max(0, (this.dryClickCd || 0) - dt);
-      this.dashCd = Math.max(0, this.dashCd - dt);
-      this.iframe = Math.max(0, this.iframe - dt);
-
       // stamina hoi sau 0.6s
       this.staminaIdle += dt;
       if (this.staminaIdle > this.const.staminaRegenDelay) {
         this.stam = Math.min(this.stamMax, this.stam + (this.const.staminaRegen + this.mods.staminaRegenAdd) * dt);
       }
       if (this.comboT > 0) { this.comboT -= dt; if (this.comboT <= 0) { this.combo = 0; this.ui.combo(0); } }
-
-      if (this.reloading) {
-        this.reloadT += dt;
-        this.ui.reloadProgress(this.reloadT / this.reloadDur);
-        if (this.reloadT >= this.reloadDur) this._finishReload();
-      }
 
       // giu de ban lien tuc
       if (this.holdPt && !this.reloading && this.mag > 0) this.shootAt(this.holdPt.x, this.holdPt.y, false);

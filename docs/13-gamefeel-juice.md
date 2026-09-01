@@ -43,6 +43,34 @@ Hai luật đi kèm, quan trọng ngang cái trần:
 
 Cú đánh lẻ tẻ vẫn ăn nguyên hit stop trong bảng 2.1 — chỉ bắn/chém liên tục mới bị cắt.
 
+### 2.0b. Hit stop KHÔNG được đánh thuế lên nhịp bắn
+
+Hit stop đóng băng bằng cách trả `dt = 0`. Nếu **mọi** đồng hồ đều nằm sau `if (dt > 0)` thì đồng
+hồ vũ khí cũng đứng theo — và ra một hệ quả ngược đời:
+
+> Càng trúng nhiều quái → càng nhiều hit stop → **súng càng bắn chậm**.
+
+Nghĩa là vũ khí yếu đi đúng lúc đông quái nhất, còn bắn hụt vào khoảng không thì đạt tốc độ tối đa.
+Đo được: rifle 600 rpm (nhịp lý thuyết **10 phát/giây**) chỉ ra **7–8 phát**, và con số đó bám theo
+tỉ lệ đóng băng từng giây. Người chơi đọc ra là *"mấy giây đầu bắn chậm hơn lúc sau"* — vì ngân sách
+đóng băng đầy nhất ở đầu mỗi đợt giao tranh.
+
+**Luật:** hit stop là hiệu ứng **trình diễn**, nó dừng thế giới chứ không dừng **đồng hồ của người
+chơi**. Các đồng hồ sau chạy theo **thời gian thực** ngay cả trong hit stop:
+
+`fireCd` · `swingCd` · thời gian nạp đạn · cooldown né/xốc · i-frame · cooldown tiếng cò khan.
+
+**Slow-mo thì ngược lại** — nó là một nhịp kịch được thiết kế (Chém Hoàn Hảo, dọn sạch phòng), chậm
+lại là *có ý*, nên nó vẫn scale mọi thứ như thường.
+
+Kèm một chi tiết nhỏ nhưng đủ nuốt một phát bắn mỗi giây: cổng `fireCd > 0` phải có **epsilon**.
+`0.1s − 6 × (1/60)` ra một số dương tí hon do dấu phẩy động, và cái số đó làm rifle mất đúng 1 phát
+mỗi giây. Cộng thêm: khi bắn thì **cộng dồn** `fireCd += fireInterval` (giữ phần đã quá hạn, chặn ở
+nửa nhịp) chứ không gán cứng — gán cứng thì mọi nhịp bị làm tròn lên theo frame.
+
+Đo lại sau khi sửa: rifle **10/10/10/10/10/10 phát mỗi giây**, và **bằng nhau** dù bắn vào khoảng
+không (0% đóng băng) hay vào giữa đám quái (10–22% đóng băng).
+
 ### 2.1 Hit stop (đóng băng khi va chạm)
 
 | Sự kiện | Frame đóng băng (60fps) | Timescale |

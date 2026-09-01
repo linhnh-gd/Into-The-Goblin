@@ -25,6 +25,7 @@ export class Juice {
     this.hitstop = 0;
     this.hsBudget = this.HS.bucketSec;      // giay dong bang con lai trong ngan sach
     this.hsGap = 0;                          // nhip SONG bat buoc giua 2 lan dong bang
+    this.frozen = false;                     // frame nay co bi hitstop dong bang khong
     this.slowmo = 0;
     this.slowmoScale = 1;
     this.slowmoCd = 0;
@@ -287,6 +288,9 @@ export class Juice {
     // ngan sach hoi theo thoi gian THUC, ke ca trong luc dang dong bang
     this.hsBudget = Math.min(this.HS.bucketSec, this.hsBudget + this.HS.maxFrac * dt);
     if (this.hsGap > 0) this.hsGap -= dt;
+    // `frozen` = frame nay bi hitstop dong bang. game.js doc co nay de cho dong ho vu khi
+    // chay theo thoi gian THUC -- hitstop khong duoc phep lam cham nhip ban (docs/18 #59).
+    this.frozen = this.hitstop > 0;
     if (this.hitstop > 0) { this.hitstop -= dt; return 0; }
     if (this.slowmo > 0) { this.slowmo -= dt; return dt * this.slowmoScale; }
     return dt;
