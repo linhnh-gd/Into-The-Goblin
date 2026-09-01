@@ -135,6 +135,51 @@ Ba luật đi kèm, tất cả đều cần thiết:
 ---
 
 
+## 2e. BỎ LUẬT KHOÁ — đi là dao, dừng là súng
+
+Luật khoá (*"một lần chạm chỉ được là MỘT loại hành động"*) là luật gốc của máy trạng thái này. Nó sinh
+ra khi hold còn là **hold-and-drag**: giữ để bắn *vào chỗ ngón tay đang chỉ*, nên ngón tay có lý do chính
+đáng để di chuyển trong lúc giữ, và "di chuyển" vì thế **mơ hồ** — vừa có thể là rê tâm ngắm, vừa có thể
+là chém. Luật khoá là cách xử lý sự mơ hồ đó.
+
+**Sự mơ hồ đó đã biến mất khi hold thành AUTO-AIM** (`04` mục 6a). Giữ tại chỗ là tự ngắm tự bắn — ngón
+tay không còn việc gì để làm trong lúc giữ. Từ đó mọi chuyển động đáng kể chỉ còn **một** cách hiểu.
+
+Nên luật khoá bị bỏ, thay bằng một cặp đối xứng trong **cùng một cú chạm**:
+
+| Ngón tay | Kết quả | Ngưỡng |
+|---|---|---|
+| **ĐI** quá `holdBreakTravel` tính từ điểm dừng gần nhất | ra **dao** ngay | 26px (0.07 S) — **không cần vận tốc** |
+| **DỪNG** quá `sliceStillMs` | **súng** tự rút ra bắn | 150 ms |
+
+Không còn lần nào phải nhấc tay để đổi vũ khí.
+
+**Vì sao bỏ được điều kiện vận tốc.** Trước đây phá khoá cần `1.15 × slideVelocityThreshold` = 414 px/s —
+ngưỡng *cao hơn* cả ngưỡng nhận diện quẹt thường, đặt cao có chủ đích để một cú rê tay khi hold-and-drag
+không phá nhầm. Không còn hold-and-drag thì không còn cái cần chống, và cái ngưỡng đó chỉ còn là thuế:
+đo được một cú kéo dứt khoát ở **150–200 px/s bị nuốt hoàn toàn** — vẫn bắn, không ra dao.
+
+**Cái chống chém oan bây giờ là MỐC TỰ ĐẶT LẠI, không phải vận tốc.** Ngón cái đặt trên màn hình luôn
+xê dịch. Nên mốc đo quãng đường được **đặt lại mỗi khi ngón tay chậm hơn `holdRestVel` (90 px/s)**: xê
+dịch chậm không bao giờ cộng dồn, dù trôi bao xa. Đo: giữ bắn rồi trượt **40px trong 1.2 giây** (trung
+bình 39 px/s) → **0 nhát chém oan**. Muốn ra dao thì phải đi 26px *mà không dừng lại giữa chừng* — tức
+là một cử động thật, không phải một cái trôi tay.
+
+### Nhả tay khỏi giữ-bắn là một tuyên bố ý định
+
+Kể cả khi vẫn nhấc tay, thao tác đó trước đây **không đạt được gì**:
+
+| Bước | Trạng thái input | Súng |
+|---|---|---|
+| Đang giữ bắn | `HOLD_FIRE` | ra ngoài |
+| **Nhả tay** | `IDLE` | **vẫn ra ngoài** — `gunHoldSec` 0.30s mới cất |
+| Chạm lại sau 130ms | **`HOLD_FIRE` lại** | vẫn ra ngoài → bắn lại **ngay**, không có độ trễ rút súng |
+
+Cú chạm mới bị ném thẳng trở lại cho súng, và vì súng chưa kịp cất nên nó bắn lại tức thì. Đo được:
+nhả tay rồi quẹt tốn **72px** mới ra dao, còn **không** nhấc tay mà vẩy thẳng chỉ tốn **48px** — nhấc
+tay bị phạt *nặng hơn* là không nhấc. Sửa: trong `weaponSwitchWindow` (300ms) sau khi nhả tay, quãng
+đường chốt rút về `slideMinLength` và súng phải đợi `reholdDelay` (220ms) mới được tóm lại ngón tay.
+
 ## 2b. Súng rút/cất và chém liên tục (bản cài đặt hiện tại)
 
 Hai gesture chính được viết lại để **trạng thái nhìn thấy được trên màn hình**, không phải đọc HUD.
@@ -218,10 +263,14 @@ Quẹt dọc lên (Xốc Tới) và quẹt dọc xuống (Bước Lùi) **đã b
 | `tapMaxDuration` | 130 ms | Tăng nếu tester "muốn bắn mà ra dao" |
 | `tapMaxTravel` | 0.05 S | |
 | `slideVelocityThreshold` | **360 px/s** | **Số quan trọng nhất của game.** 900 px/s trên màn 390px CSS là **2.3 chiều rộng màn hình mỗi giây** — một cú *bung* tay, không phải một cú quẹt. Hậu quả: quẹt bình thường bị đọc thành `HOLD` (rút súng), và do luật khoá thì không ra dao được nữa cho tới khi nhấc tay. 360 = 0.96 chiều rộng/giây. An toàn vì cú tap được bảo vệ bằng luật NGÓN TAY ĐÃ DỪNG (mục 2d), không phải bằng ngưỡng vận tốc cao |
-| `slideDetectWindow` | 300 ms | Rộng hơn cho người bắt đầu quẹt chậm rồi nhanh dần |
 | `slideMinLength` | 0.12 S | Quãng đường tối thiểu để tính là chém lúc **nhả tay** |
 | `slideCommitLength` | **0.18 S** | Đi đủ xa này thì **chốt** thành nhát chém ngay giữa cú, không đợi nhả tay |
 | `tapStillMs` | **60 ms** | Không có cử động nào trong ngần ấy ms trước lúc nhả = ngón tay đã dừng = **TAP** |
+| `holdBreakTravel` | **0.07 S** | Đang giữ bắn mà ngón đi quá ngần này tính từ điểm dừng gần nhất → **chém ngay, không cần vận tốc**. Xem mục 2e |
+| `holdRestVel` | 90 px/s | Dưới mức này coi là ngón đang **dừng** → đặt lại mốc. Ngón cái xê dịch từ từ (đo được ~39 px/s) không cộng dồn thành chém oan |
+| `sliceStillMs` | **150 ms** | Đang chém mà ngón dừng ngần này → **súng tự rút ra bắn** |
+| `weaponSwitchWindow` | 300 ms | Nhả tay khỏi giữ-bắn rồi chạm lại trong ngần này = **đang đổi vũ khí** → quãng đường chốt rút về `slideMinLength` |
+| `reholdDelay` | 220 ms | Trong cửa sổ trên, súng phải đợi ngần này mới được tóm lại ngón tay |
 | `heavySlideLength` | 0.55 S | |
 | `meleeAngleMax` | 55° | |
 | `moveAngleMin` | 65° | |

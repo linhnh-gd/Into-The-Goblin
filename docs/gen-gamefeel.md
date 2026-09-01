@@ -88,10 +88,14 @@
 | tapMaxDuration | 130 | ms | Do TRE truoc khi sung bat dau ban lien tuc. Tang neu tester muon ban ma ra dao |
 | tapMaxTravel | 0.05 | S |  |
 | slideVelocityThreshold | 360 | px/s | SO QUAN TRONG NHAT CUA GAME. 900 px/s tren man 390px CSS la 2.3 chieu rong man hinh moi giay -- mot cu BUNG tay, khong phai mot cu quet. Hau qua: quet binh thuong bi doc thanh HOLD (rut sung) va do luat khoa thi khong ra dao duoc nua cho toi khi nhac tay. 520 = 1.35 chieu rong/giay, dung tam mot cu quet that. An toan vi slideMinLength van chan: quet ngan qua thi roi ve tap. |
-| slideDetectWindow | 300 | ms | Cua so nhan dang quet. Rong hon mot chut cho nguoi choi bat dau quet cham roi nhanh dan. |
 | slideMinLength | 0.12 | S | Quang duong toi thieu de mot cu quet duoc tinh la chem luc NHAC TAY |
 | slideCommitLength | 0.18 | S | Di du xa nay thi CHOT thanh nhat chem ngay, khong doi nhac tay. Duoi nguong: doi den luc nhac tay roi xem ngon tay da DUNG chua -- dung roi la tap truot tay, con dang bay la ve nhanh. |
 | tapStillMs | 60 | ms | Khong co cu di chuyen nao trong ngan ay ms truoc luc nhac tay = ngon tay da dung = TAP. |
+| weaponSwitchWindow | 300 | ms | NHA TAY KHOI GIU-BAN LA MOT TUYEN BO Y DINH. Trong ngan ay ms sau khi nha tay, cu cham tiep theo duoc coi la DOI SANG DAO: quang duong chot rut ve slideMinLength, va sung phai doi lau hon moi duoc tom lai ngon tay. Truoc do nha tay khong duoc gi ca -- cu cham moi bi nem thang lai vao HOLD_FIRE sau 130ms va vi sung chua cat (gunHoldSec 0.30s) nen no ban lai ngay, con cu quet thi phai pha khoa sung them mot lan nua. |
+| reholdDelay | 220 | ms | Do tre truoc khi sung duoc tom lai ngon tay, CHI trong cua so weaponSwitchWindow. Dai hon tapMaxDuration vi tay nguoi cham xuong roi moi vay -- 130ms la ngan hon do tre van dong binh thuong, nen cu vay bi nuot. Ngoai cua so do van la tapMaxDuration. |
+| holdBreakTravel | 0.07 | S | Dang GIU-BAN ma ngon tay di qua ngan nay tinh tu diem dung gan nhat -> chuyen sang CHEM ngay, khong can van toc. Lam duoc vi hold da la AUTO-AIM: giu tai cho la tu ngam tu ban, nen ngon tay KHONG con ly do gi de di chuyen trong luc giu. Moi chuyen dong dang ke deu chi co the la y dinh chem. Truoc day phai dat 1.15 lan nguong quet moi pha duoc khoa. |
+| holdRestVel | 90 | px/s | Duoi muc nay coi la ngon tay DANG DUNG -> dat lai moc do quang duong. De ngon cai xe dich tu tu trong luc giu ban khong cong don thanh mot cu chem oan. |
+| sliceStillMs | 150 | ms | Dang CHEM ma ngon tay dung yen ngan nay -> rut sung ra ban. Cap voi holdBreakTravel thanh mot cap doi xung: DI = dao, DUNG = sung, doi qua doi lai trong CUNG mot cu cham, khong can nhac tay. |
 | heavySlideLength | 0.55 | S | Cho phép người chơi tune 0.40–0.70 |
 | dodgeCooldown | 2.5 | s |  |
 | dashCooldown | 4.0 | s |  |

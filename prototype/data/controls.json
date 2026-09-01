@@ -13,10 +13,14 @@
     { "key": "tapMaxDuration", "value": 130, "unit": "ms", "note": "Do TRE truoc khi sung bat dau ban lien tuc. Tang neu tester muon ban ma ra dao" },
     { "key": "tapMaxTravel", "value": 0.05, "unit": "S", "note": "" },
     { "key": "slideVelocityThreshold", "value": 360, "unit": "px/s", "note": "SO QUAN TRONG NHAT CUA GAME. 900 px/s tren man 390px CSS la 2.3 chieu rong man hinh moi giay -- mot cu BUNG tay, khong phai mot cu quet. Hau qua: quet binh thuong bi doc thanh HOLD (rut sung) va do luat khoa thi khong ra dao duoc nua cho toi khi nhac tay. 520 = 1.35 chieu rong/giay, dung tam mot cu quet that. An toan vi slideMinLength van chan: quet ngan qua thi roi ve tap." },
-    { "key": "slideDetectWindow", "value": 300, "unit": "ms", "note": "Cua so nhan dang quet. Rong hon mot chut cho nguoi choi bat dau quet cham roi nhanh dan." },
     { "key": "slideMinLength", "value": 0.12, "unit": "S", "note": "Quang duong toi thieu de mot cu quet duoc tinh la chem luc NHAC TAY" },
     { "key": "slideCommitLength", "value": 0.18, "unit": "S", "note": "Di du xa nay thi CHOT thanh nhat chem ngay, khong doi nhac tay. Duoi nguong: doi den luc nhac tay roi xem ngon tay da DUNG chua -- dung roi la tap truot tay, con dang bay la ve nhanh." },
     { "key": "tapStillMs", "value": 60, "unit": "ms", "note": "Khong co cu di chuyen nao trong ngan ay ms truoc luc nhac tay = ngon tay da dung = TAP." },
+    { "key": "weaponSwitchWindow", "value": 300, "unit": "ms", "note": "NHA TAY KHOI GIU-BAN LA MOT TUYEN BO Y DINH. Trong ngan ay ms sau khi nha tay, cu cham tiep theo duoc coi la DOI SANG DAO: quang duong chot rut ve slideMinLength, va sung phai doi lau hon moi duoc tom lai ngon tay. Truoc do nha tay khong duoc gi ca -- cu cham moi bi nem thang lai vao HOLD_FIRE sau 130ms va vi sung chua cat (gunHoldSec 0.30s) nen no ban lai ngay, con cu quet thi phai pha khoa sung them mot lan nua." },
+    { "key": "reholdDelay", "value": 220, "unit": "ms", "note": "Do tre truoc khi sung duoc tom lai ngon tay, CHI trong cua so weaponSwitchWindow. Dai hon tapMaxDuration vi tay nguoi cham xuong roi moi vay -- 130ms la ngan hon do tre van dong binh thuong, nen cu vay bi nuot. Ngoai cua so do van la tapMaxDuration." },
+    { "key": "holdBreakTravel", "value": 0.07, "unit": "S", "note": "Dang GIU-BAN ma ngon tay di qua ngan nay tinh tu diem dung gan nhat -> chuyen sang CHEM ngay, khong can van toc. Lam duoc vi hold da la AUTO-AIM: giu tai cho la tu ngam tu ban, nen ngon tay KHONG con ly do gi de di chuyen trong luc giu. Moi chuyen dong dang ke deu chi co the la y dinh chem. Truoc day phai dat 1.15 lan nguong quet moi pha duoc khoa." },
+    { "key": "holdRestVel", "value": 90, "unit": "px/s", "note": "Duoi muc nay coi la ngon tay DANG DUNG -> dat lai moc do quang duong. De ngon cai xe dich tu tu trong luc giu ban khong cong don thanh mot cu chem oan." },
+    { "key": "sliceStillMs", "value": 150, "unit": "ms", "note": "Dang CHEM ma ngon tay dung yen ngan nay -> rut sung ra ban. Cap voi holdBreakTravel thanh mot cap doi xung: DI = dao, DUNG = sung, doi qua doi lai trong CUNG mot cu cham, khong can nhac tay." },
     { "key": "heavySlideLength", "value": 0.55, "unit": "S", "note": "Cho phép người chơi tune 0.40–0.70" },
     { "key": "dodgeCooldown", "value": 2.5, "unit": "s", "note": "" },
     { "key": "dashCooldown", "value": 4.0, "unit": "s", "note": "" },
@@ -24,9 +28,9 @@
     { "key": "crosshairScreenHeight", "value": 0.62, "unit": "tỉ lệ", "note": "Thấp hơn giữa vì ngón tay đến từ dưới" }
   ],
   "stateMachine": {
-    "latchRule": "Mot lan cham CHI duoc la MOT loai hanh dong. Da vao HOLD_FIRE thi quet nhanh cung khong ra dao; da vao SLIDE thi giu lai cung khong ra sung.",
+    "latchRule": "BO LUAT KHOA (docs/03 muc 2e). No sinh ra khi hold con la hold-and-drag, luc do di chuyen ngon tay VUA co the la re tam ngam VUA co the la chem. Hold da thanh AUTO-AIM nen su mo ho do khong con: giu tai cho la tu ngam tu ban, ngon tay khong con viec gi de lam trong luc giu. Thay bang mot cap doi xung trong CUNG mot cu cham: DI qua holdBreakTravel tinh tu diem dung gan nhat -> ra dao ngay (khong can van toc); DUNG qua sliceStillMs -> sung tu rut ra ban. Khong con lan nao phai nhac tay de doi vu khi. Chong chem oan bang MOC TU DAT LAI (holdRestVel) chu khong bang nguong van toc cao.",
     "multiTouch": "Chi ngon DAU TIEN dieu khien combat. Ngon thu 2 chi dung cho two-finger tap.",
-    "states": ["TOUCH_DOWN", "PENDING (180ms)", "SLIDE (locked)", "HOLD_FIRE (locked)", "IDLE"]
+    "states": ["TOUCH_DOWN", "PENDING (tapMaxDuration)", "SLIDE", "SLIDE_CONT", "HOLD_FIRE", "IDLE"]
   },
   "accessibility": [
     { "id": "ac_haivung", "name": "Chế độ Hai Vùng", "desc": "Nửa dưới màn hình = chỉ chém, nửa trên = chỉ bắn. TU DONG goi y neu ti le input bi huy > 15% trong 2 run. Mac dinh BAT cho nguoi moi trong 3 run dau (A/B test)" },
