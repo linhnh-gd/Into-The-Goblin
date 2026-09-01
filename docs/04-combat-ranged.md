@@ -290,11 +290,23 @@ nhịp bắn xuống 48 (shotgun) hay 155 (rifle), tức chậm hơn đời th�
 viên 5.56 của rifle (4.5), và cả hai đều bé tí so với viên .50 của sniper (24.0). Nó thay cho sàn "120 cứng"
 — cái đó không diễn tả được sự khác nhau giữa các cỡ đạn.
 
-### DPS không còn là ràng buộc; số wave mà cơ đạn giải quyết được mới là
+### DPS không còn là ràng buộc; SỐ BĂNG PHỤ mới là
 
 SMG 700 nhịp/phút và sniper 40 nhịp/phút **không thể** có cùng DPS, và **không nên**. Thứ giữ chúng ngang
-nhau là: cơ số đạn mang theo giải quyết được **7 wave** cho mọi khẩu (`reserveWavesTarget`), và **một băng
-đạn không dọn nổi một wave** (trụ P2). Nên đối mặt là *bắn xối xả rồi hết đạn sớm* vs *bắn dè rồi đủ đạn lâu*.
+nhau là: mọi khẩu mang đúng **1.5 băng phụ** (`reserveMagsTarget`), và **một băng đạn không dọn nổi một
+wave** (trụ P2). Nên đối mặt là *bắn xối xả rồi hết đạn sớm* vs *bắn dè rồi đủ đạn lâu*.
+
+> **Mô hình cũ đo bằng "đủ cho 7 wave" và nó vô hiệu hoá chính trụ P2.** Công thức đó cho ra 217 viên
+> cho súng lục (**21 băng phụ**), 569 cho rifle (**22 băng**), 292 mũi cho nỏ. Với ngần ấy đạn, người
+> chơi **không bao giờ chạm vào cái trần đạn** trong một phòng — mà "hết đạn" chính là thứ duy nhất
+> buộc người ta rút dao ra. Trụ P2 tồn tại trên giấy chứ không bao giờ chạy.
+>
+> Đo sau khi đổi (rifle, băng 25 + **38 dự trữ**, giữ tay bắn liên tục suốt phòng R1): **hết sạch băng
+> 3 lần**, kết thúc phòng với **0 đạn dự trữ**, 28 mạng. Hết đạn giờ là một sự kiện **thật**, xảy ra
+> vài lần mỗi phòng — và đó là lý do để rút dao.
+>
+> `reserveMinShots` = 6 là sàn cho khẩu có băng quá nhỏ: nỏ băng 1 viên mà nhân 1.5 thì chỉ còn **2 mũi
+> tên** dự trữ.
 
 Đo được: Ổ Chuột (SMG) bắn hết băng 25 viên trong **2.1s**; Kèn Đồng 10 viên trong **4.0s**; Miệng Hang
 5 viên trong **5.5s**. Đó mới là cảm giác khác nhau giữa các khẩu.
@@ -312,12 +324,25 @@ shotgun mạnh ở gần và vô dụng ở xa, mà **không cần luật riêng
 
 ## 6. Knockback từ đạn (docs: "quái chết thì bị đẩy lùi về phía sau")
 
-| | Công thức |
-|---|---|
-| Khi trúng (còn sống) | `push = kb_weapon * (1 - kbResist_enemy) * hitReaction.impulseMult` theo **vector đạn** |
-| **Giật ngược (lurch)** | `lurchDistM * max(lurchMinFrac, 1 - kbResist)` trong `lurchSec`, kèm **nén người** |
-| Khi chết | `launch = kb_weapon * 2.2 * (1 - kbResist)` — xác bay ngược về phía sau, đổ vào đồng bọn |
-| Va chạm xác | Xác đang bay đẩy lùi quái nó chạm, truyền 35% lực (**domino**) |
+| | Công thức | Hướng |
+|---|---|---|
+| Khi trúng (còn sống) | `push = kb_weapon * (1 - kbResist_enemy) * hitReaction.impulseMult` | **THẲNG RA SAU** dọc hành lang |
+| **Giật ngược (lurch)** | `lurchDistM * max(lurchMinFrac, 1 - kbResist)` trong `lurchSec`, kèm **nén người** | **THẲNG RA SAU** |
+| Khi chết | `launch = kb_weapon * 2.2 * (1 - kbResist)` | **theo vector quẹt / vector đạn** |
+| Va chạm xác | Xác đang bay đẩy lùi quái nó chạm, truyền 35% lực (**domino**) | |
+
+> **Quái còn sống bị đẩy THẲNG RA SAU, xác thì bay theo vector quẹt.** Hai thứ khác hướng nhau là cố ý.
+>
+> Hành lang có **ba làn** và chỉ làn giữa gây damage. Đẩy theo hướng quẹt là đẩy **NGANG** — một nhát
+> chém ngang hất quái từ làn giữa sang làn bên, tức nó **âm thầm xoá mối đe doạ** theo một cách người
+> chơi không chủ định và cũng không đọc ra được. Đẩy thẳng ra sau thì knockback chỉ làm đúng một việc:
+> **mua thêm khoảng cách**. Đó cũng là cả lý do tồn tại của shotgun (công cụ dãn cách).
+>
+> Xác thì ngược lại: nó **không còn là mối đe doạ** nên bay hướng nào cũng được, và "xác đứt đôi bay
+> theo đúng đường ngón tay" là money shot của game (`05` mục 6). Đo: chém ngang một con — con **sống**
+> lùi 1.76m thẳng ra sau, 0m ngang; con **chết** thì xác bay `lx 2.2 / lz -1.1`, tức sang bên.
+>
+> Công tắc: `gamefeel.json` → `hitReaction.pushStraightBack`.
 
 Domino là thứ khiến shotgun "sướng": một phát vào đám 6 con ở cửa hẹp thì cả 6 lùi lại.
 

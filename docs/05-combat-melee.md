@@ -95,7 +95,7 @@ Bắn súng **không** reset chuỗi (khuyến khích trộn hai loại vũ khí
 
 | Thứ | Quy tắc |
 |---|---|
-| Xác | Bay theo `launchVector`, ragdoll 1.2s rồi tan thành khói + vàng |
+| Xác | Bay theo `launchVector`, ragdoll 1.2s rồi tan thành khói + vàng. **Chỉ XÁC mới bay theo vector quẹt** — quái còn sống bị đẩy thẳng ra sau, xem `04` mục 6 |
 | Chém ngang | Xác bay sang bên, đập vào tường thì bật lại (truyền 25% lực cho quái gần đó) |
 | Chém chéo lên | Xác bay lên cao — cảnh đẹp nhất, ưu tiên cho vũ khí nặng |
 | Xác đang bay | Đẩy quái nó chạm, truyền 35% lực (domino, giống đạn) |

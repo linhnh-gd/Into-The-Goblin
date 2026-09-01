@@ -708,6 +708,11 @@ foreach ($g in $genMap) {
 $auditPath = Join-Path $rootDir 'audit_report.md'
 $auditLine = 'chua chay audit'
 $auditPass = 0; $auditWarn = 0; $auditFail = 0
+# CHAY audit truoc khi doc bao cao. Truoc day cho nay chi DOC audit_report.md co san,
+# nen dong "audit: PASS x / FAIL y" ma build in ra co the la ket qua cua mot lan chay
+# tu rat lau truoc -- build xanh trong khi data da FAIL tu bao gio khong ai biet.
+$auditScript = Join-Path $rootDir 'audit_gdd.ps1'
+if (Test-Path $auditScript) { & $auditScript | Out-Null }
 if (Test-Path $auditPath) {
     $at = [System.IO.File]::ReadAllText($auditPath, [System.Text.Encoding]::UTF8)
     if ($at -match '\*\*PASS (\d+) / WARN (\d+) / FAIL (\d+)\*\* trong (\d+)') {

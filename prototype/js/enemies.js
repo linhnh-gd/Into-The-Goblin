@@ -438,15 +438,26 @@ export class EnemyPool {
   damage(e, amount, o) {
     if (!e.alive) return false;
     const kx = o.kx || 0, kz = o.kz || 0, kbForce = o.kbForce || 0;
+    /* HUONG DAY LUI. Mac dinh: THANG RA SAU LUNG QUAI (doc hanh lang, ra xa nguoi choi),
+       khong theo vector dan hay vector quet.
+       Vi sao: hanh lang co BA LAN va chi lan giua gay damage. Day theo huong quet la day
+       NGANG -- mot nhat chem ngang hat quai tu lan giua sang lan ben, tuc no am tham xoa
+       moi de doa theo cach nguoi choi khong chu dinh va cung khong doc ra duoc. Day thang
+       ra sau thi knockback chi lam dung mot viec: MUA THEM KHOANG CACH. Do cung la ca ly
+       do ton tai cua shotgun (cong cu dan cach).
+       XAC van bay theo vector quet -- xem cuoi ham. */
+    const SB = GD.feel.hitReaction.pushStraightBack;
+    const pkx = SB ? 0 : kx;
+    const pkz = SB ? -1 : kz;
 
     if (e.invuln) {
       // Bong Ham: khong giet duoc, chi day duoc (docs/09)
       const r = 1 - e.kbResist;
       const HRi = GD.feel.hitReaction;
-      this._push(e, kx, kz, kbForce * r * 2.4);
+      this._push(e, pkx, pkz, kbForce * r * 2.4);
       e.lurchDur = e.lurch = HRi.lurchSec;
       e.lurchAmt = HRi.lurchDistM * Math.max(HRi.lurchMinFrac, r);
-      e.lurchX = kx; e.lurchZ = kz;
+      e.lurchX = pkx; e.lurchZ = pkz;
       e.flash = 0.5;
       return { alive: true, dmgDealt: 0, blocked: true, invuln: true };
     }
@@ -497,8 +508,8 @@ export class EnemyPool {
       e.lurchDur = HR.lurchSec;
       e.lurch = HR.lurchSec;
       e.lurchAmt = HR.lurchDistM * Math.max(HR.lurchMinFrac, r);
-      e.lurchX = kx; e.lurchZ = kz;
-      this._push(e, kx, kz, kbForce * r);
+      e.lurchX = pkx; e.lurchZ = pkz;
+      this._push(e, pkx, pkz, kbForce * r);
       return { alive: true, dmgDealt: dmg, blocked, weak, flanked };
     }
 

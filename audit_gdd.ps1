@@ -281,16 +281,27 @@ foreach ($itW in $gdWpn.weapons) {
         $killsShot = [double]$itW.pellets * [Math]::Min(1.0, [double]$itW.dmg / (Get-TrashHp $tier)) * (1 + $pierceN) * $aoeF * $kEff
         $countW = (Get-WaveEhp $tier) / ((Get-TrashHp $tier) * 1.15)
         $magRatio = ([double]$itW.mag * $killsShot) / $countW
+        $magSec = [double]$itW.mag / ([double]$itW.rpm / 60.0)
+        # BANG DAN KHONG PHAI DON VI CHOI CUA MOI KHAU. Khau nao co reloadTime NGAN HON
+        # khoang cach giua 2 phat thi viec nap KHONG BAO GIO chan tay -- no ban theo NHIP,
+        # khong bao gio "dung lai nap ca bang". Voi nhung khau do, don vi choi la NHIP BAN
+        # chu khong phai bang dan, nen hai gate ve CO bang dan do sai vat.
+        # Vi du: No (bang 1 mui, nap 0.55s, nhip 1.18s) -- xem docs/04 muc 6b.
+        $napKhongChan = ([double]$itW.reloadTime -lt (60.0 / [double]$itW.rpm))
         if ($magRatio -gt 1.0) { $magFail += "$($itW.id) $([Math]::Round($magRatio,2)) (>1.0)" }
+        elseif ($napKhongChan) { }   # bang dan khong phai don vi choi -> bo qua san duoi
         # San duoi: mot bang dan phai lam duoc VIEC GI DO. 0.25 la nguong cho sung thuong;
         # vu khi chinh xac (no 4 mui, launcher 4 qua) von co bang rat nho ma van dung duoc,
         # nen san ha xuong 0.08. Cai bao ve that su la "bang dan phai ban duoc >= 2s".
         elseif ($magRatio -lt 0.08 -and $tier -le 2) { $magFail += "$($itW.id) $([Math]::Round($magRatio,2)) (<0.08 o T$tier)" }
         elseif ($magRatio -lt 0.45 -or $magRatio -gt 0.70) { $magWarn += "$($itW.id) T$tier $([Math]::Round($magRatio,2))" }
-        $magSec = [double]$itW.mag / ([double]$itW.rpm / 60.0)
-        if ($magSec -lt 1.2) { $magFail += "$($itW.id) ban het bang trong $([Math]::Round($magSec,2))s (<1.2s)" }
-        $resWaves = ([double]$itW.reserveMax * $killsShot) / $countW
-        if ($resWaves -lt 6 -or $resWaves -gt 9) { $reserveWarn += "$($itW.id) $([Math]::Round($resWaves,1))" }
+        if ($magSec -lt 1.2 -and -not $napKhongChan) { $magFail += "$($itW.id) ban het bang trong $([Math]::Round($magSec,2))s (<1.2s)" }
+        # Du tru do bang SO BANG PHU, khong bang "du cho N wave" (docs/18 loi #61).
+        # Khau co bang 1 vien (no) an san reserveMinShots nen ti le cao la dung -> bo qua.
+        $resMags = [double]$itW.reserveMax / [Math]::Max(1, [double]$itW.mag)
+        if ([double]$itW.mag -ge 4 -and ($resMags -lt 1.2 -or $resMags -gt 2.2)) {
+            $reserveWarn += "$($itW.id) $([Math]::Round($resMags,1)) bang"
+        }
         if (-not $rangedByTier.ContainsKey($tier)) { $rangedByTier[$tier] = @() }
         $rangedByTier[$tier] += $dps
     }
@@ -320,7 +331,7 @@ Assert-True 'WPN' 'GATE P2: khong bang dan nao don sach ca wave (magClearRatio <
     ("vi pham: " + (Join-Or $magFail))
 Assert-True 'WPN' 'magClearRatio trong [0.45, 0.70] (y do thiet ke)' ($magWarn.Count -eq 0) `
     ("ngoai khoang: " + (Join-Or $magWarn)) 'WARN'
-Assert-True 'WPN' 'Du tru du 6-9 wave neu khong melee' ($reserveWarn.Count -eq 0) `
+Assert-True 'WPN' 'Du tru chi 1.2-2.2 BANG PHU (het dan phai la su kien that)' ($reserveWarn.Count -eq 0) `
     ("ngoai khoang: " + (Join-Or $reserveWarn)) 'WARN'
 # DAO NGUOC (yeu cau nguoi choi): CAN CHIEN PHAI YEU HON SUNG.
 # Ly do van chat che: sung manh hon nhung TON DAN; dao yeu hon nhung MIEN PHI va con

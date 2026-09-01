@@ -47,7 +47,10 @@
 
     "_kbBudgetComment": "MOI con co mot ngan sach day tinh bang MET. Cu day het bao nhieu met thi tru bay nhieu; ngan sach hoi lai kbRefillMps met/giay. Vi kbRefillMps (1.2) THAP HON HAN toc do chay cua nguoi choi (speedMps 4.2), mot con bi ban/chem lien tuc van CHAC CHAN bi nguoi choi duoi kip -- chem slide lien tuc KHONG the bien thanh tuong chan giu quai ngoai tam vinh vien. Cu danh dau tien van an nguyen luc (ngan sach day), nen cam giac 'nay' khong mat.",
     "kbBudgetM": 4.0,
-    "kbRefillMps": 1.2
+    "kbRefillMps": 1.2,
+
+    "_pushStraightBackComment": "Knockback day THANG RA SAU LUNG QUAI (doc hanh lang, ra xa nguoi choi), khong theo vector dan hay vector quet. Ly do: trong hanh lang 3 lan, day theo huong quet la day NGANG -- mot nhat chem ngang hat quai ra khoi lan giua, tuc no am tham xoa moi de doa theo mot cach nguoi choi khong he chu dinh va cung khong doc ra duoc. Day thang ra sau thi knockback lam dung mot viec: MUA THEM KHOANG CACH. Do la ca ly do ton tai cua shotgun (cong cu dan cach). XAC thi VAN bay theo vector quet -- do la money shot cua game (docs/05 muc 6), va xac thi khong con la moi de doa nen bay huong nao cung duoc.",
+    "pushStraightBack": true
   },
   "lanes": {
     "_comment": "BA LAN. Lan giua LON nhat va la lan DUY NHAT gay dmg cho nguoi choi. Hai lan ben nho hon: quai dung o day khong cham duoc, giet la vang THEM.",

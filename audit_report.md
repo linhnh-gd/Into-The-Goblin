@@ -6,14 +6,14 @@
 
 | Nhom | Trang thai | Check | Chi tiet |
 |---|---|---|---|
-| LOAD | **PASS** | Moi dataset load duoc va khong rong | weapons=30, enemies=21, bosses=7, affixes=7, waves=19, depths=7, roomTypes=8, events=8, cards=50, relics=12, talents=24, currencies=6, shop=13, buildings=12 |
-| ID | **PASS** | Moi id la duy nhat (toan bo dataset) | 198 id; trung: khong |
+| LOAD | **PASS** | Moi dataset load duoc va khong rong | weapons=30, enemies=21, bosses=7, affixes=7, waves=19, depths=7, roomTypes=8, events=8, cards=48, relics=12, talents=24, currencies=6, shop=13, buildings=12 |
+| ID | **PASS** | Moi id la duy nhat (toan bo dataset) | 196 id; trung: khong |
 | ID | **PASS** | Quy uoc prefix id (docs/16 muc 2) | sai prefix: khong |
 | REF | **PASS** | waves.json: moi enemy id ton tai | 19 template; sai: 0 |
 | REF | **PASS** | depths.json: enemy/boss/weapon id ton tai | 7 depth; sai: 0 |
 | REF | **PASS** | bosses.drops: weapon id ton tai | sai: 0 |
 | REF | **PASS** | blackMist.spawnEnemy ton tai | en_special_bongham |
-| REF | **PASS** | combo unlock tro dung ca hai chieu | 5 combo; sai: 0 |
+| REF | **PASS** | combo unlock tro dung ca hai chieu | 0 combo; sai: 0 |
 | REF | **PASS** | Khong co quai orphan (khong wave template nao dung) | orphan: khong |
 | ECON | **PASS** | GATE: moi currency co >=1 source VA >=1 sink | 6 currency: gold, luck, shards, ingots, gems, tickets |
 | ECON | **PASS** | shop: price > 0 va currency ton tai | 13 item; sai: 0 |
@@ -28,8 +28,8 @@
 | WPN | **PASS** | Luon con >=1 nhat chem trong 1.4s khi stamina can (regen*1.4 >= staminaCost) | vi pham: khong |
 | WPN | **PASS** | Co it nhat 1 vu khi T1 one-shot trash o Depth 1 | one-shot: rw_pistol_kendong, rw_shotgun_mienghang, rw_smg_ochuot |
 | WPN | **PASS** | GATE P2: khong bang dan nao don sach ca wave (magClearRatio <= 1.0) | vi pham: 0 |
-| WPN | **WARN** | magClearRatio trong [0.45, 0.70] (y do thiet ke) | ngoai khoang: rw_pistol_kendong T1 0.32, rw_smg_ochuot T1 0.81, rw_rifle_gongsat T2 0.31, rw_crossbow_gaimuc T2 0.1, rw_shotgun_longmoc T2 0.25, rw_rifle_matcu T3 0.1, rw_flamer_hoingam T3 0.26, rw_launcher_noidat T4 0.04, rw_smg_muikim T4 0.13, rw_sniper_dinhsat T4 0.06, rw_shotgun_hamtoi T5 0.09, rw_acid_ruotdat T5 0.35, rw_launcher_ongsam T5 0.03, rw_deeptech_loino T6 0.06, rw_deeptech_miengmo T6 0.06, rw_minigun_ruotsat T6 0.44 |
-| WPN | **PASS** | Du tru du 6-9 wave neu khong melee | ngoai khoang: 0 |
+| WPN | **WARN** | magClearRatio trong [0.45, 0.70] (y do thiet ke) | ngoai khoang: rw_pistol_kendong T1 0.32, rw_shotgun_mienghang T1 0.8, rw_smg_ochuot T1 0.81, rw_rifle_gongsat T2 0.31, rw_shotgun_longmoc T2 0.3, rw_rifle_matcu T3 0.1, rw_flamer_hoingam T3 0.26, rw_launcher_noidat T4 0.04, rw_smg_muikim T4 0.13, rw_sniper_dinhsat T4 0.06, rw_shotgun_hamtoi T5 0.11, rw_acid_ruotdat T5 0.35, rw_launcher_ongsam T5 0.03, rw_deeptech_loino T6 0.06, rw_deeptech_miengmo T6 0.06, rw_minigun_ruotsat T6 0.44 |
+| WPN | **PASS** | Du tru chi 1.2-2.2 BANG PHU (het dan phai la su kien that) | ngoai khoang: 0 |
 | WPN | **PASS** | Melee DPS THAP HON ranged DPS o cung tier (dao nguoc, docs/05 muc 8.3) | so sanh 6 tier; vi pham: 0 |
 | WPN | **PASS** | Moi Depth 1-5 mo it nhat 1 cong cu dan cach (kb >= 1.0) | thieu: khong |
 | WPN | **PASS** | Moi vu khi duoc mo o mot Depth nao do | khong co duong mo: khong |
@@ -58,8 +58,8 @@
 | ROOM | **PASS** | Suong Den mien tru phong Boss / Shop / Mieu | boss, shop, shrine |
 | TALENT | **PASS** | Talent: delta >= 2%, cost tang don dieu theo tung currency, branch ton tai | 24 talent / 120 bac; sai: 0 |
 | TALENT | **PASS** | Moi nhanh talent co >=3 talent | nong=6, luoi=6, da=6, den=6; thieu: khong |
-| CARD | **PASS** | The: co tag, co effect, rarity hop le, khong the rac | 50 the; sai: 0 |
-| CARD | **PASS** | Phan bo rarity co du 4 bac | common=16, rare=18, epic=11, legendary=5 |
+| CARD | **PASS** | The: co tag, co effect, rarity hop le, khong the rac | 48 the; sai: 0 |
+| CARD | **PASS** | Phan bo rarity co du 4 bac | common=12, rare=12, epic=12, legendary=12 |
 | CARD | **PASS** | The cuc manh (delta >= 80%) phai co gia phai tra | khong co gia: khong |
 | FEEL | **PASS** | Luat juice: cap rung, do tre input, hitstop, coin chime | shake cap 26px / input 3 frame / 9 hitstop; sai: 0 |
 | FEEL | **PASS** | Rung khi chem phai co huong theo vector slide | 3 su kien rung theo vector slide |

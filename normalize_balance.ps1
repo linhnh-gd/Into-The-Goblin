@@ -47,7 +47,10 @@ $newRpm = @{}
 $flooredIds = @()
 $archSpec        = $B.archetypeSpec
 $magClearTarget  = [double]$B.magClearTarget
-$reserveWavesTarget = [double]$B.reserveWavesTarget
+$reserveMags = 1.5
+if ($null -ne $B.reserveMagsTarget) { $reserveMags = [double]$B.reserveMagsTarget }
+$reserveMinShots = 6
+if ($null -ne $B.reserveMinShots) { $reserveMinShots = [double]$B.reserveMinShots }
 # Nhan chung vao dai reload cua MOI archetype. Clamp vao dai DA NHAN chu khong nhan
 # thang vao reloadTime cu -> chay lai nhieu lan van ra cung ket qua (idempotent).
 $reloadMult = 1.0
@@ -152,8 +155,11 @@ foreach ($w in $data.weapons) {
             $mag = [Math]::Round($mag)
             if ($mag -lt 1) { $mag = 1 }
 
-            $reserve = [Math]::Round($reserveWavesTarget * $countWave / [Math]::Max(0.01, $killsPerShot))
-            if ($reserve -lt $mag * 2) { $reserve = $mag * 2 }
+            # DAN DU TRU do bang SO BANG PHU. Mo hinh cu ("du cho N wave") cho ra 21-22
+            # bang phu moi khau -- nguoi choi khong bao gio cham vao tran dan, va tru P2
+            # (vong khoa DAN <-> STAMINA) khong bao gio bi kich hoat. Xem docs/18 loi #61.
+            $reserve = [Math]::Round($mag * $reserveMags)
+            if ($reserve -lt $reserveMinShots) { $reserve = $reserveMinShots }
 
             $newRpm[$w.id] = $rpm
             $newMag[$w.id] = [int]$mag
