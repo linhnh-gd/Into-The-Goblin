@@ -131,10 +131,35 @@ Bây giờ cuối hành lang là một **bức tường có hai cửa**:
 
 | | |
 |---|---|
-| Khi nào hiện | Ngay lúc chạy đủ `roomDistanceM` (150m) |
-| Ở đâu | `doorApproachM` = **22m** phía trước — nhìn thấy từ xa, chạy tới được |
+| Khi nào hiện | Khi còn cách cửa `doorRevealM` = **45m** — tức từ khoảng **mét 127** |
+| Ở đâu | `doorApproachM` = **22m** sau vạch đích |
 | Dừng ở đâu | `doorStopGapM` = **10m** trước cửa |
-| Quái | Con nào còn sống **phía trước** thì giải tán; phía sau để nguyên |
+| Quái | **Thưa dần về 0** trong `endTaperM` = 30m cuối, không bị xoá |
+| Sau vạch đích | **Không bắn, không chém được** (`advancing`) |
+
+**Cổng phải được BÁO TRƯỚC, và quái phải TỰ HẾT.** Bản đầu dựng cửa đúng lúc chạm 150m,
+cùng lúc đám quái phía trước bị dọn một loạt — hai sự kiện đó đập vào nhau thành một cái
+giật: cổng *bật* ra và quái *biến mất*. Người chơi không đọc được là mình đã đi hết đường;
+họ đọc được là game vừa cắt cảnh.
+
+Vị trí cửa tính được **từ đầu phòng** (`roomStartZ − roomDist − doorApproachM`), nên nó hiện
+ra khi còn cách 45m — thấy trước khoảng **5.5 giây**. Và mật độ spawn giảm tuyến tính về 0
+trong 30m cuối, kèm luật **không spawn con nào rơi ra sau vạch đích**. Đo:
+
+| mét | quái phía trước |
+|---|---|
+| 102 | 33 |
+| 121 | 17 |
+| 132 | 9 |
+| 136 | 3 |
+| **139** | **0** |
+
+Hành lang **tự trống** trước vạch đích 11m. Cái `despawnAhead` ở vạch đích vẫn giữ, nhưng
+giờ nó gần như không còn gì để dọn — nó là lưới an toàn, không phải cơ chế.
+
+> **Sương nuốt mất cổng.** Lần đầu cửa hiện đúng chỗ đúng lúc mà người chơi vẫn không thấy
+> gì: `FogExp2` mật độ 0.055 thì ở 31m đã che **94%**. "Hiện ra sớm" thành vô nghĩa. Lòng cửa
+> là một **ngọn đèn**, không phải một mảng tường — nên nó đặt `fog: false` để xuyên qua sương.
 
 **Vì sao dừng ở 10m chứ không phải sát cửa.** Màn dọc: `fovDegVertical` 72° là góc nhìn **dọc**,
 còn bề ngang hẹp hơn nhiều (~37° ở tỉ lệ 9:19.5). Ở 3m trước tường chỉ thấy được **2.1m bề ngang** —

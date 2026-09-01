@@ -181,12 +181,20 @@ export class Director {
          Luy thua densityRampEnd > 1 -> cuoi doan dong hon dau doan (crescendo). */
       const seg = Math.max(0.001, this.waveSegM);
       const f = Math.min(1, Math.max(0, (this.distRun - this.waveStartDist) / seg));
-      const want = Math.ceil(this.waveQueueTotal * Math.pow(f, GD.feel.run.densityRampEnd));
+      /* THUA DAN VE CUOI PHONG. Truoc day quai ra deu tay toi tan met thu 150, roi o dung
+         vach dich thi ca dam phia truoc bi don sach mot luot -- nguoi choi thay quai BIEN
+         MAT chu khong thay minh da di qua het. Gio mat do giam tuyen tinh trong
+         `endTaperM` met cuoi, va KHONG spawn con nao roi ra sau vach dich: het phong la
+         hanh lang tu no da trong, khong phai bi xoa (docs/18 loi #80). */
+      const conLai = this.roomDist - this.distRun;
+      const taper = GD.feel.run.endTaperM ?? 30;
+      const heSoCuoi = Math.max(0, Math.min(1, conLai / taper));
+      const want = Math.ceil(this.waveQueueTotal * Math.pow(f, GD.feel.run.densityRampEnd) * heSoCuoi);
       const spawned = this.waveQueueTotal - this.spawnQueue.length;
       let budget = Math.max(0, want - spawned);
       while (budget-- > 0 && this.spawnQueue.length) {
         if (this.pool.aliveCount >= HARD().maxTotalAlive) break;
-        this._spawnOne(this.spawnQueue.shift(), px, pz);
+        this._spawnOne(this.spawnQueue.shift(), px, pz, conLai);
       }
       this.phase = this.spawnQueue.length ? 'spawning' : 'fighting';
 
@@ -233,11 +241,17 @@ export class Director {
 
      KHOANG SPAWN: quai dung yen nen toc do tiep can = toc do chay. Moi pattern phai
      spawn xa hon tapNearM + minReactionSec * speedMps (audit co gate). */
-  _spawnOne(id, px, pz) {
+  _spawnOne(id, px, pz, conLai = Infinity) {
     const rnd = this.spawnRnd || Math.random;
     const LN = GD.feel.lanes;
     const pat = GD.waves.directorRules.spawnPatterns[this.spawnPattern] || {};
-    const dist = pat.spawnDistM || [12, 21];
+    let dist = pat.spawnDistM || [12, 21];
+    /* Khong de con nao roi ra SAU vach dich: no se dung ngay tren duong toi hai canh cua,
+       va la thu duy nhat con phai xoa di. Het cho thi thoi khong spawn nua. */
+    if (conLai < dist[1]) {
+      if (conLai < dist[0] + 2) { this.spawnQueue.unshift(id); return; }
+      dist = [dist[0], Math.max(dist[0] + 0.5, conLai - 1)];
+    }
 
     const sideX = () => {
       const side = rnd() < 0.5 ? -1 : 1;

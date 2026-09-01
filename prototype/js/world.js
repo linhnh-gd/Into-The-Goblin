@@ -200,10 +200,17 @@ export class World {
          duoc. Hai cua deu vang, cua NONG chi lech sang phia do hon: van trong ho vang,
          nhung mat doc ra ngay la khong giong nhau. */
       const mau = nhan?.hot ? 0xff8a2b : 0xffc53d;
+      /* `fog: false` -- va day moi la thu lam cua nhin thay duoc tu xa. Suong o mat do
+         0.055 thi o 31m da che 94%: cua co dung do that nhung nguoi choi khong thay gi
+         ca, va "hien ra som" thanh vo nghia. Long cua la mot NGON DEN, khong phai mot
+         mang tuong -- den thi phai xuyen qua suong (docs/18 loi #81). */
       const long = new THREE.Mesh(new THREE.PlaneGeometry(DW, DH),
-        new THREE.MeshBasicMaterial({ color: mau, transparent: true, opacity: 0.16 }));
+        new THREE.MeshBasicMaterial({ color: mau, transparent: true, opacity: 0.34, fog: false }));
       long.position.set(x, DH / 2, -0.25); g.add(long);
-      const den = new THREE.PointLight(mau, 12, 9, 1.8);
+      const khung2 = new THREE.Mesh(new THREE.PlaneGeometry(DW + 0.5, DH + 0.3),
+        new THREE.MeshBasicMaterial({ color: mau, transparent: true, opacity: 0.10, fog: false }));
+      khung2.position.set(x, DH / 2, -0.3); g.add(khung2);
+      const den = new THREE.PointLight(mau, 26, 16, 1.6);
       den.position.set(x, DH * 0.75, 1.2); g.add(den);
     }
     this.doorZ = z;

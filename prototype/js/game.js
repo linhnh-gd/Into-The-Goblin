@@ -741,7 +741,7 @@ export class Game {
 
   /** @returns {boolean} co ban duoc khong */
   gunUp() {
-    if (!this.running) return false;
+    if (!this.running || this.advancing) return false;
     if (this.reloading) {
       if (this.mag > 0) this.cancelReload();      // con dan -> huy reload, ban tiep
       else {
@@ -1027,6 +1027,7 @@ export class Game {
         if (applied > 0) this.takeDamage(applied);
       }
 
+      this._capNhatCua();
       // director
       const ev = this.director.update(dt, 0, this.playerZ, () => {});
       if (ev?.cleared) this._roomCleared();
@@ -1101,12 +1102,11 @@ export class Game {
        CON SONG roi mot lop UI phu len -- nguoi choi khong toi dau ca, ho bi mot cai menu
        chan lai. Gio: quai con lai phia truoc GIAI TAN, hai canh cua hien ra o cuoi hanh
        lang, va nguoi choi CHAY NOT doan cuoi toi cho no. */
-    this.fork = this.director.makeFork({
-      hp: this.hp, hpMax: this.hpMax, reserve: this.reserve, reserveMax: this.reserveMax,
-    });
-    const A = GD.feel.run.doorApproachM ?? 11;
-    this.doorZ = this.playerZ - A;
-    this.world.showDoors(this.doorZ, this.fork?.[0], this.fork?.[1]);
+    /* QUA VACH DICH LA HET DANH. `advancing` chan ca `shootAt` lan `slash` -- doan chay
+       toi cua khong con gi de ban, ma nguoi choi thi van con phan xa chien dau: cham mot
+       cai la ban het bang vao khoang khong. Cai gi khong con y nghia thi khong duoc phep
+       tieu tai nguyen (docs/18 loi #79). */
+    this.advancing = true;
     /* Chi don quai PHIA TRUOC -- dung duong di toi cua. Quai phia sau cu de do, chay
        qua roi thi chung khong con la van de cua ai ca.
        KHONG cho vang: giet duoc truoc vach dich moi an vang. Bo chay la mat -- 150m
@@ -1137,9 +1137,29 @@ export class Game {
     this._enterRoom();
   }
 
+  /* CUA PHAI HIEN RA TU XA. Truoc day no duoc dung dung luc cham 150m, cung luc dam quai
+     phia truoc bien mat -- hai su kien do dap vao nhau thanh mot cai giat. Gio vi tri cua
+     tinh duoc TU DAU PHONG (roomStartZ - roomDist - doorApproachM), nen no hien ra khi con
+     cach `doorRevealM` va nguoi choi NHIN THAY minh dang toi gan cai gi. */
+  _capNhatCua() {
+    const d = this.director;
+    if (!d.isCombatRoom || d.roomStartZ === null || this.doorsShown) return;
+    const A = GD.feel.run.doorApproachM ?? 22;
+    this.doorZ = d.roomStartZ - d.roomDist - A;
+    if (this.playerZ - this.doorZ > (GD.feel.run.doorRevealM ?? 45)) return;
+    this.fork = d.makeFork({
+      hp: this.hp, hpMax: this.hpMax, reserve: this.reserve, reserveMax: this.reserveMax,
+    });
+    this.world.showDoors(this.doorZ, this.fork?.[0], this.fork?.[1]);
+    this.doorsShown = true;
+  }
+
   _enterRoom() {
     // playerZ chay lien tuc, khong reset -- hanh lang tu tai su dung (world.js)
     this.roomNoHit = true;
+    this.advancing = false;
+    this.doorsShown = false;
+    this.world.hideDoors();
     this.director.beginRoom();
     const d = this.director;
     if (!d.isCombatRoom) {
