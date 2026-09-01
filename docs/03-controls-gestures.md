@@ -264,7 +264,7 @@ Quẹt dọc lên (Xốc Tới) và quẹt dọc xuống (Bước Lùi) **đã b
 | `tapMaxTravel` | 0.05 S | |
 | `slideVelocityThreshold` | **360 px/s** | **Số quan trọng nhất của game.** 900 px/s trên màn 390px CSS là **2.3 chiều rộng màn hình mỗi giây** — một cú *bung* tay, không phải một cú quẹt. Hậu quả: quẹt bình thường bị đọc thành `HOLD` (rút súng), và do luật khoá thì không ra dao được nữa cho tới khi nhấc tay. 360 = 0.96 chiều rộng/giây. An toàn vì cú tap được bảo vệ bằng luật NGÓN TAY ĐÃ DỪNG (mục 2d), không phải bằng ngưỡng vận tốc cao |
 | `slideMinLength` | 0.12 S | Quãng đường tối thiểu để tính là chém lúc **nhả tay** |
-| `slideCommitLength` | **0.18 S** | Đi đủ xa này thì **chốt** thành nhát chém ngay giữa cú, không đợi nhả tay |
+| `slideCommitLength` | **0.18 S** | Đi đủ xa này thì **chốt** thành nhát chém ngay giữa cú, không đợi nhả tay. Nhưng nếu ngón tay **còn đang bay** (`vel >= slideVelocityThreshold`) thì chốt sớm ngay ở `slideMinLength` — xem `18` lỗi #69 |
 | `tapStillMs` | **60 ms** | Không có cử động nào trong ngần ấy ms trước lúc nhả = ngón tay đã dừng = **TAP** |
 | `holdBreakTravel` | **0.07 S** | Đang giữ bắn mà ngón đi quá ngần này tính từ điểm dừng gần nhất → **chém ngay, không cần vận tốc**. Xem mục 2e |
 | `holdRestVel` | 90 px/s | Dưới mức này coi là ngón đang **dừng** → đặt lại mốc. Ngón cái xê dịch từ từ (đo được ~39 px/s) không cộng dồn thành chém oan |

@@ -8,7 +8,9 @@
     "meleeBandScreenPct": [45, 75]
   },
   "melee": {
-    "_comment": "Chem lien tuc kieu chem hoa qua: giu ngon tay va re thi chem mai, drain stamina.",
+    "_comment": "Chem lien tuc kieu chem hoa qua: giu ngon tay va re thi chem mai, drain stamina. staminaRegenDelaySec la do tre truoc khi stamina bat dau hoi lai sau khi thoi chem -- no sinh ra de chem lien tiep khong duoc hoi mien phi giua hai nhat. Nhung RUT SUNG RA la tuyen bo da thoi chem han, nen duong do co do tre RIENG (staminaRegenDelayGunSec = 0): doi sang sung thi hoi NGAY. Truoc day tong do tre cam thay duoc la sliceStillMs 150ms + 600ms = 750ms.",
+    "staminaRegenDelaySec": 0.30,
+    "staminaRegenDelayGunSec": 0.0,
     "slideStaminaPerSec": 34,
     "slideHitCooldownSec": 0.22,
     "slideTickDamageMult": 0.62,

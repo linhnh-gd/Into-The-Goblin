@@ -39,7 +39,8 @@ function statTotalText(stat, kind, steps) {
 const hitCfgOf = (rw) => (GD.weapons.balance.archetypeSpec || {})[rw.archetype] || { style: 'single' };
 
 const P = () => ({
-  hpBase: 100, staminaMax: 100, staminaRegen: 18, staminaRegenDelay: 0.6,
+  hpBase: 100, staminaMax: 100, staminaRegen: 18,
+  staminaRegenDelay: GD.feel.melee.staminaRegenDelaySec ?? 0.6,
   staminaLow: 0.5, advanceSpeed: 2.4,
 });
 
@@ -729,6 +730,12 @@ export class Game {
       }
     }
     this.slicing = false;
+    /* RUT SUNG RA LA TUYEN BO DA THOI CHEM HAN -- khong phai mot khoang nghi giua hai
+       nhat. Do tre hoi stamina sinh ra de chan cai thu hai, nen no khong co ly do gi ap
+       vao cai thu nhat. Truoc day doi tu chem sang ban phai cho sliceStillMs 150ms roi
+       600ms nua moi thay thanh stamina nhuc nhich: 750ms nhin nhu bi treo. */
+    this.staminaIdle = Math.max(this.staminaIdle,
+      this.const.staminaRegenDelay - (GD.feel.melee.staminaRegenDelayGunSec ?? 0));
     this.gunWanted = true;
     this.gunTimer = GD.feel.gun.gunHoldSec;
     this.gun.setOut(true);

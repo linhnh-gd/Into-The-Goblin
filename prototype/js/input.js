@@ -76,7 +76,8 @@ export class InputRouter {
   _endCurrent() {
     clearTimeout(this._holdTimer);
     clearTimeout(this._stillTimer);
-    if (this.state === ST.HOLD_FIRE) { this.holdEndedAt = performance.now(); this.h.onHoldEnd?.(); }
+    this._ghiDongTac();
+    if (this.state === ST.HOLD_FIRE) this.h.onHoldEnd?.();
     else this._endSlicing();
     this.state = ST.IDLE;
     this.id = null;
@@ -109,7 +110,7 @@ export class InputRouter {
        quet thi phai pha khoa sung them mot lan nua. Do duoc: nha tay ton 72px moi ra dao,
        KHONG nhac tay ma vay thang chi ton 48px -- nhac tay bi phat NANG HON la khong
        nhac, dung nguoc voi y dinh (docs/18 loi #66). */
-    this.afterHold = (this.t0 - (this.holdEndedAt || -1e9)) < this.P.switchWindow;
+    this.afterHold = (this.t0 - (this.dongTacTruoc || -1e9)) < this.P.switchWindow;
     /* HEN GIO vao HOLD_FIRE. Truoc day _enterHold() CHI duoc goi trong pointermove, nen
        giu ngon tay DUNG YEN thi khong co su kien move nao va sung khong bao gio ban lien
        tuc -- phai re tay moi ra dan. Do la "hold bi delay" ma nguoi choi gap. */
@@ -192,8 +193,16 @@ export class InputRouter {
       const tdx = x - this.p0.x, tdy = y - this.p0.y;
       // `slideCommitLen` sinh ra de bao ve CU TAP truot tay. Mot cu quet thoat ra tu
       // che do giu ban thi khong phai tap, y do da ro tu van toc -> chot som hon.
-      const chot = this._chotLen();
-      if (Math.hypot(tdx, tdy) / this.screenW >= chot ||
+      const dai = Math.hypot(tdx, tdy) / this.screenW;
+      /* CHOT SOM KHI NGON TAY CON DANG BAY. `slideCommitLength` (68px) phai dat cao vi no
+         chan mot cu tap truot tay, ma tap truot tay co the di toi ~55px. Nhung cai tach
+         duoc hai thu do khong phai quang duong -- la ngon tay DA DUNG hay CON DANG BAY,
+         dung luat da dung o `_up`. Tap truot tay toi 45px thi da giam toc gan het; cu quet
+         that thi van dang full toc. Nen o 45px, chi can hoi "con bay khong" la chot duoc,
+         som hon 23px so voi truoc. Quan trong vi truoc khi chot thi KHONG co vet chem nao
+         hien ra ca -- nguoi choi thay nhat chem bat dau tre hon ngon tay that (loi #69). */
+      const conBay = vel >= this.P.slideVel;
+      if (dai >= this._chotLen() || (conBay && dai >= this.P.slideMinLen) ||
           elapsed >= this.P.slideResolveMax) this._resolveSlide();
       return;
     }
@@ -235,9 +244,10 @@ export class InputRouter {
         this.h.onTap?.(this.p.x, this.p.y);
       }
     } else if (this.state === ST.HOLD_FIRE) {
-      this.holdEndedAt = now;
+      this._ghiDongTac();
       this.h.onHoldEnd?.();
     } else if (this.state === ST.SLIDE_CONT) {
+      this._ghiDongTac();
       this._endSlicing();
     } else if (this.state === ST.SLIDE) {
       /* NGON TAY DA DUNG hay CON DANG BAY luc nhac?
@@ -251,6 +261,7 @@ export class InputRouter {
         this._emit(GESTURE.TAP);
         this.h.onTap?.(this.p0.x, this.p0.y);
       } else {
+        this._ghiDongTac();
         this._resolveSlide();
         this._endSlicing();
       }
@@ -284,6 +295,13 @@ export class InputRouter {
      DI thi ra dao, DUNG thi ra sung -- doi qua doi lai trong CUNG mot cu cham, khong bao
      gio phai nhac tay. Phai la mot hen gio chu khong kiem trong `pointermove`, vi ngon tay
      dung yen thi khong sinh ra su kien move nao ca. */
+  /* CUA SO DOI VU KHI tinh tu luc KET THUC mot dong tac CHIEN DAU -- giu-ban hoac chem,
+     KHONG tinh cu tap. Quet hai nhat lien tiep thi nhat thu hai cung dang o giua tran nhu
+     vay, bat no tra lai gia cua mot cu cham nguoi lanh la sai. Nhung neu tinh ca tap thi
+     hai cu tap lien tiep se ha nguong bao ve cua chinh cu tap thu hai xuong -- tap truot
+     tay lai bi doc thanh chem, dung lai loi #56 (loi #69). */
+  _ghiDongTac() { this.dongTacTruoc = performance.now(); }
+
   /** Tat che do chem: dung tru stamina NGAY. Goi nhieu lan cung khong sao. */
   _endSlicing() {
     if (!this.slicingActive) return;

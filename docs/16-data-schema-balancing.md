@@ -57,7 +57,7 @@ lại công thức. Mọi giá trị thực nằm trong `data/*.json`. **Không 
 | `armorMax` | 0.60 | giảm damage tối đa 60%, giảm dần (diminishing) |
 | `staminaMax` | 100 | |
 | `staminaRegen` | 18 / s | |
-| `staminaRegenDelay` | 0.6 s | |
+| `staminaRegenDelay` | **0.30 s** | Đưa ra `gamefeel.json` → `melee.staminaRegenDelaySec`. Rút súng ra thì hồi **ngay** (`staminaRegenDelayGunSec` = 0): rút súng là tuyên bố đã thôi chém hẳn, không phải khoảng nghỉ giữa hai nhát |
 | `staminaLowThreshold` | 0.50 | **dưới mức này: melee attack speed x0.5** (docs) |
 | `staminaBarFadeDelay` | 2.0 s | (docs) |
 | `advanceSpeed` | 2.4 m/s | ngoài combat |
