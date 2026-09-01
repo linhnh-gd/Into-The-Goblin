@@ -53,7 +53,7 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 | Chế độ Hai Vùng (fallback rủi ro R1) | **Có**, bật ở màn hình đầu |
 | Băng đạn / dự trữ / reload / **Nạp Hoàn Hảo** (cửa sổ ngẫu nhiên có seed) | **Có** |
 | Stamina + ngưỡng 50% giảm 50% tốc độ chém | **Có** |
-| **Cướp Đạn**: 6 mạng chém = 1 băng đạn | **Có** |
+| **Cướp Đạn**: 16 mạng chém = 1 băng đạn | **Có** |
 | Chém Hoàn Hảo (≥3 con/nhát) + combo 5 bậc | **Có** |
 | Knockback + xác bay **theo đúng vector quẹt** + domino | **Có** |
 | Wave director theo `TP_budget(R,w)` + `countPerTP` | **Có** |
@@ -143,6 +143,9 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 | 51 | **Shotgun tune sai hướng nên phản bội chính cơ chế `spread` của nó.** Nón 12°, `caliberMult` 1.6 (mỗi viên ghém vừa đúng 1 lần HP trash — hết scaling là không giết nổi), dung sai bắt trúng 0.42m nên phần lớn viên ghém bay lọt khe giữa hai con. Đọc ra là "yếu, vùng bắn nhỏ" | Nón **26°** (phủ 3.7m ở cự ly 8m), `caliberMult` **3.4**, `pelletRadiusM` **0.85**, cộng **tắt dần theo tầm** 7m→13m còn 40% để nó vẫn là vũ khí cự ly gần. Đo: bắn vào đám 14 con ra **6 / 2 / 4 / 3 mạng mỗi phát** — mọi con trúng đều chết. Cái giá đi kèm không tách rời: 1.09s/phát, băng 5, nạp từng viên |
 
 | 52 | **Tự nhắm cho CẢ tap lẫn hold nên không còn cách nào chọn mục tiêu.** Lý do bỏ tap-vào-target ở lỗi #24 vẫn đúng (chạm chính xác vào hình bóng nhỏ ở 4.2 m/s là bài kiểm tra ngón tay), nhưng nó bị áp cho **cả hai** gesture — hậu quả: thấy con Thuốc Nổ sắp nổ vào mặt cũng không bắn riêng nó được, và yếu điểm Ogre thành thứ **tự động ăn** chứ không phải phần thưởng của việc nhắm. `pickByScreen` đã có sẵn trong `enemies.js` nhưng **không ai gọi** | Tách hai chế độ: **tap = bắn đúng chỗ chạm** (nón trợ giúp `aimCone` 4°, ăn yếu điểm khi chạm nửa dưới hitbox, và **trượt được** — trượt là thứ làm chế độ chính xác có giá trị); **hold = tự nhắm** như cũ nhưng **không bao giờ** ăn yếu điểm. Nón đạn ghém của shotgun cũng xoay theo hướng nhắm chứ không cố định thẳng trước mặt. Thêm dấu chạm tại chỗ (vàng = trúng / xám = trượt) vì nếu không thì "bắn trượt" và "máy không nhận input" nhìn giống hệt nhau |
+
+| 53 | **Đạn ghém bắn xuyên qua người sống.** Mỗi viên chọn con có **sai lệch ngang nhỏ nhất**, không phải con **gần nhất trên tia**. Một con ở 12m nằm đúng tia (lệch 0.05m) thắng một con ở 4m nằm lệch 0.5m — nên một phát giết con **đằng sau** trong khi mấy con trước mặt không xảy ra gì. Sửa lần đầu thành "gần nhất thì dừng" lại hỏng kiểu khác: `pelletRadiusM` 0.85 cho bề ngang tia **1.15m**, gấp đôi thân goblin thật, nên con đứng giữa **nuốt 9.9/9 viên** còn hai con cạnh nó ăn 0 | Mô hình của game horde (Left 4 Dead / Killing Floor): duyệt từ **gần ra xa**, viên ghém dừng ở con đầu tiên nó chạm, và **chỉ xuyên tiếp khi nó GIẾT được** con đó (`penetrationMult` 0.6, tối đa `penetrateMax` 3). `pelletRadiusM` về **0.6**. Đo: 3 con xếp hàng đều yếu → **cả 3 chết**; đúng cảnh đó nhưng con đầu 60× HP → **cả 3 sống**. Bất biến: không bao giờ có con sau chết mà con trước còn sống |
+| 54 | **Cướp Đạn 6 mạng/băng làm vòng khoá ĐẠN ↔ STAMINA mất hết căng thẳng.** Một phòng có 100–170 con; chém 40 con là được gần 7 băng, tức **không bao giờ hết đạn** — mà "đạn hữu hạn" chính là trụ P2, là lý do tồn tại của cả cơ chế cận chiến | **16 mạng = 1 băng**, và chuyển hằng số ra `gamefeel.json` → `melee.scavengeKillsPerMag` (trước nằm cứng trong `game.js`). 40 mạng chém = 2.5 băng: vẫn đáng để vào gần chém, nhưng không thay thế được việc giữ đạn |
 
 > **Lỗi #14 và #16 đã bị chính thiết kế vượt qua.** Khi chuyển sang **quái đứng yên**, bài toán đón đầu của
 > `pincer` (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó **đã bị bỏ khỏi code**.

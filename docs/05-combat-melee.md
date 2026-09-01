@@ -207,7 +207,7 @@ không — quái làn giữa tự đến trước mặt. "Vào gần" không cò
 | Sát thương | **cao hơn** | thấp hơn |
 | Chi phí | **tốn đạn** (băng + dự trữ hữu hạn) | miễn phí, chỉ tốn stamina (tự hồi) |
 | Nạp lại | phải nhả tay, mất nhịp | không |
-| Cướp Đạn | — | 6 mạng chém = **1 băng đạn** |
+| Cướp Đạn | — | **16** mạng chém = **1 băng đạn** (`gamefeel.json` → `melee.scavengeKillsPerMag`) |
 
 Nên quyết định mỗi giây là: *bắn để giết nhanh mà tốn đạn*, hay *chém để giữ đạn mà chậm hơn*. Nếu dao vừa
 mạnh hơn vừa miễn phí thì không ai bắn cả — đó mới là điều phá vòng lặp, chứ không phải chuyện dám vào gần.

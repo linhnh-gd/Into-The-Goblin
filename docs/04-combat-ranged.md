@@ -11,7 +11,7 @@ reload không bắn được, chỉ dùng cận chiến* · *knockback tuỳ lo�
 |---|---|---|---|
 | 1 | **Băng đạn** (`mag`) | Reload | Vòng tròn quanh tâm ngắm, mỗi viên là 1 vạch |
 | 2 | **Đạn dự trữ** (`reserve`) | Melee kill (Cướp Đạn), hòm, shop, card | Số dưới HUD phải: `24 / 60` |
-| 3 | **Cướp Đạn** (`scavenge`) | +1 mỗi melee kill; **Chém Hoàn Hảo tính x2** | Thanh nhỏ hình băng đạn; đầy 6 điểm = +1 băng |
+| 3 | **Cướp Đạn** (`scavenge`) | +1 mỗi melee kill; **Chém Hoàn Hảo tính x2** | Thanh nhỏ hình băng đạn; đầy 16 điểm = +1 băng |
 
 > **Đây là pillar P2.** Súng không có đạn vô hạn, và đạn **không mua được giữa combat** — đường duy nhất
 > để có đạn trong lúc đánh là **giết bằng dao**. Ngược lại chém liên tục thì hết stamina. Hai đồng hồ này
@@ -175,7 +175,7 @@ ghém bay qua khe giữa hai con. Kết quả đọc ra là *"shotgun yếu, vù
 |---|---|---|
 | `spreadDeg` | 12 → **26** | Ở 8m nón phủ **3.7m** — hơn nửa chiều rộng hành lang |
 | `caliberMult` | 1.6 → **3.4** | Mỗi viên ghém = **3.4 lần HP trash** → vẫn one-shot sau vài phòng HP scaling |
-| `pelletRadiusM` | 0.42 → **0.85** | Viên ghém bắt được con nằm lệch trục, không bay lọt khe |
+| `pelletRadiusM` | 0.42 → **0.6** | Bề ngang tia đạn. 0.85 thì con gần nhất **nuốt cả 9 viên** — xem 5c-ter |
 | `killEff` | 0.45 → **0.55** | Nón rộng hơn thì trúng nhiều hơn → normalize tự hạ đạn dự trữ xuống |
 | `falloffStart/End/Min` | — → **7m / 13m / 0.4** | Ngoài 7m sát thương tắt dần, còn 40% ở 13m |
 
@@ -186,6 +186,50 @@ ghém bay qua khe giữa hai con. Kết quả đọc ra là *"shotgun yếu, vù
 0.75s/viên. Một phát trượt không chỉ mất đạn, nó mất cả nhịp. Và `falloff` giữ cho nó là vũ khí **cự ly
 gần** chứ không thành khẩu bắn tỉa đám đông ở dải Xa — nếu bỏ falloff thì không còn lý do gì để cầm khẩu
 khác.
+
+### 5c-ter. Viên ghém là một TIA — và chỉ xuyên qua khi nó GIẾT được
+
+Cách chọn mục tiêu của từng viên ghém là chỗ dễ sai nhất, và nó đã sai theo cả hai hướng.
+
+**Sai lần 1 — bắn xuyên qua người sống.** Mỗi viên chọn con có **sai lệch ngang nhỏ nhất**. Một con ở
+12m nằm đúng tia (lệch 0.05m) thắng một con ở 4m nằm lệch 0.5m — nên một phát bắn **giết con đằng sau
+trong khi mấy con trước mặt không xảy ra gì**. Không game bắn súng nào làm thế.
+
+**Sai lần 2 — con gần nhất nuốt cả loạt.** Sửa thành "con **gần nhất** trên tia thì dừng lại", nhưng
+với `pelletRadiusM` 0.85 thì bề ngang tia là **1.15m** — gấp đôi thân goblin thật (0.52m). Con đứng
+giữa che kín cả nón: đo được **9.9/9 viên vào một con**, hai con đứng cạnh ở ±1.4m ăn **0**.
+
+**Mô hình đúng**, lấy từ các game horde (Left 4 Dead, Killing Floor):
+
+```
+   viên ghém = một TIA, duyệt các con từ GẦN ra XA
+     |
+     |-- con đầu tiên nằm trong bề ngang tia  -->  ăn đạn
+     |        |
+     |        |-- viên đó GIẾT được nó   -->  đạn XUYÊN TIẾP (x penetrationMult)
+     |        |                                sang con kế, tối đa penetrateMax con
+     |        |
+     |        |-- KHÔNG giết được        -->  viên đạn DỪNG LẠI
+     |
+     |-- không con nào trong bề ngang    -->  viên bay lọt qua đám
+```
+
+| Số | Giá trị | Việc |
+|---|---|---|
+| `pelletRadiusM` | **0.6** | Bề ngang tia (+ `0.3 × scale` theo cỡ con). Đủ rộng để không lọt khe, đủ hẹp để không che cả nón |
+| `penetrateMax` | **3** | Tối đa 3 lần xuyên cho một viên |
+| `penetrationMult` | **0.6** | Xuyên qua thì yếu đi — hàng thứ ba khó chết hơn hàng đầu |
+
+Luật **"chỉ xuyên khi giết"** là thứ làm cả hai yêu cầu cùng đúng một lúc:
+
+| Cảnh đo được | Kết quả |
+|---|---|
+| 3 con xếp hàng, đều yếu | **cả 3 chết** — một phát dọn sạch một hàng |
+| 3 con xếp hàng, **con đầu trâu (60× HP)** | **cả 3 sống** — con dày chặn hết, không con nào sau lưng chết |
+| 6 con rải trong nón, 5–9m | **cả 6 chết** |
+
+Dòng thứ hai là bất biến quan trọng nhất: **không bao giờ có cảnh con đằng sau chết mà con trước mặt
+còn sống.** Đó không phải hệ quả của việc tune số, nó là hệ quả của thứ tự duyệt.
 
 
 ## 5d. Mô phỏng theo SỐ LIỆU VŨ KHÍ THẬT — và đảo ngược mô hình cân bằng

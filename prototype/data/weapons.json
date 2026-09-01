@@ -46,7 +46,8 @@
         "ref": "Remington 870 12ga 00 buck — bom tay ~65 nhip/phut, 9 vien ghem moi phat. FANTASY: MOT PHAT DON SACH MOT VUNG. Doi lai: 1.09s giua 2 phat, bang 5 vien, nap tung vien 0.75s/vien -- ban truot mot phat la tra gia bang ca nhip. Non 26 do rong gan bang ca hanh lang o cu ly 8m, caliberMult 3.4 nghia la MOI VIEN GHEM du giet mot con trash (con du sau vai phong HP scaling).",
         "rpm": [55, 95], "mag": [5, 8], "killEff": 0.55, "caliberMult": 3.4, "pellets": 9, "pierce": 0,
         "spreadDeg": 26.0, "reload": [2.6, 3.6], "style": "spread", "reloadStyle": "shell",
-        "pelletRadiusM": 0.85, "falloffStartM": 7.0, "falloffEndM": 13.0, "falloffMin": 0.4,
+        "pelletRadiusM": 0.6, "falloffStartM": 7.0, "falloffEndM": 13.0, "falloffMin": 0.4,
+        "penetrateMax": 3, "penetrationMult": 0.6,
         "proj": { "color": "#ffb14a", "sizeM": 0.038, "lenM": 0.18, "speed": 95 }
       },
       "marksman": {

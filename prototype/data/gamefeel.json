@@ -13,6 +13,8 @@
     "slideHitCooldownSec": 0.22,
     "slideTickDamageMult": 0.62,
     "slideKbMult": 0.55,
+    "_scavengeComment": "CUOP DAN: bao nhieu mang chem thi doi duoc 1 bang dan. 6 la qua re -- mot phong co 100-170 con, chem 40 con la duoc gan 7 bang, tuc KHONG BAO GIO het dan va vong khoa DAN <-> STAMINA (tru P2) mat het cang thang. 16 thi 40 mang chem = 2.5 bang: van dang de vao gan chem, nhung khong thay the duoc viec giu dan.",
+    "scavengeKillsPerMag": 16,
     "slideMinSegPx": 14,
     "bladeWidthFrac": 0.058,
     "trailFadeSec": 0.26,

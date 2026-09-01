@@ -40,7 +40,7 @@ const hitCfgOf = (rw) => (GD.weapons.balance.archetypeSpec || {})[rw.archetype] 
 
 const P = () => ({
   hpBase: 100, staminaMax: 100, staminaRegen: 18, staminaRegenDelay: 0.6,
-  staminaLow: 0.5, scavengePerMag: 6, advanceSpeed: 2.4,
+  staminaLow: 0.5, advanceSpeed: 2.4,
 });
 
 export class Game {
@@ -110,7 +110,7 @@ export class Game {
       magMult: 1, reloadMult: 1, reserveMult: 1, meleeDmg: 1, rangedDmg: 1,
       kb: 1, corpseLaunch: 1, gold: 1, hpAdd: 0, hpMult: 1, staminaAdd: 0, staminaRegenAdd: 0,
       staminaCostMult: 1, reachAdd: 0, arcAdd: 0, crit: 0.05, critMult: rw.critMult,
-      scavengeNeed: c.scavengePerMag, perfectNeed: 3, magnetMult: 1, dmgTakenMult: 1,
+      scavengeNeed: GD.feel.melee.scavengeKillsPerMag, perfectNeed: 3, magnetMult: 1, dmgTakenMult: 1,
       aimCone: 4, dodgeCdMult: 1, heavyLen: null, noLowPenalty: false,
       dmgPerLuck4: 0, dmgPer1000Gold: 0, twoBlades: false, collapse: false, rofMult: 1,
     };
@@ -255,7 +255,7 @@ export class Game {
       Moi vien lay mot goc ngau nhien trong non `spreadDeg` roi tim con gan tia do nhat.
       Gan thi nhieu vien chum vao MOT con (thua sat thuong), xa thi tan ra hoac truot --
       dung nhu shotgun that, va tu no can bang thay vi phai chia deu N muc tieu. */
-  spreadTargets(nPellets, spreadDeg, cfg = {}, centerAng = 0, rnd = Math.random) {
+  spreadTargets(nPellets, spreadDeg, cfg = {}, centerAng = 0, unit = 1, rnd = Math.random) {
     const cand = [];
     const far = GD.feel.run.tapFarM;
     const radius = cfg.pelletRadiusM != null ? cfg.pelletRadiusM : 0.42;
@@ -267,20 +267,51 @@ export class Game {
       if (d > far) continue;
       cand.push({ e, d, ang: Math.atan2(e.x, zGap) });
     }
+    // gan truoc xa sau: mot lan sort cho ca loat, thay vi do lai cho tung vien
+    cand.sort((p, q) => p.d - q.d);
+
+    /* MOI VIEN GHEM LA MOT TIA, DI TU GAN RA XA (docs/04 muc 5c-ter).
+       LOI CU (docs/18 loi #53): chon con co SAI LECH NGANG NHO NHAT thay vi con GAN
+       NHAT tren tia. Mot con o 12m nam dung tia (lech 0.05m) thang mot con o 4m nam
+       lech 0.5m -- nen mot phat ban giet con DANG SAU trong khi may con truoc mat
+       khong xay ra gi. Doc ra nhu dan xuyen qua nguoi song.
+
+       Mo hinh dung, lay tu cac game horde (Left 4 Dead / Killing Floor):
+         - vien ghem cham con DAU TIEN tren tia,
+         - neu vien do GIET duoc no thi dan DI XUYEN QUA (con penetrationMult sat
+           thuong) sang con ke tiep, toi da penetrateMax con,
+         - neu KHONG giet duoc thi vien dan DUNG LAI o do.
+       Luat "chi xuyen khi giet" bao dam khong bao gio co canh con dang sau chet ma con
+       truoc mat con song, ma van giu duoc fantasy "mot phat don sach mot hang". */
     const half = (spreadDeg * Math.PI) / 180 / 2;
-    const out = [];
+    const maxPen = Math.max(0, cfg.penetrateMax || 0);
+    const penMult = cfg.penetrationMult != null ? cfg.penetrationMult : 0.6;
+    const hp = new Map();                       // HP mo phong trong ca loat ban
+    const dmgOut = new Map();                   // con -> tong sat thuong loat nay
+    const firstHit = [];                        // con dau tien cua tung vien, de ve vien dan
+
     for (let i = 0; i < nPellets; i++) {
       // non dan ghem xoay theo huong NGAM (tap: diem cham; hold: con tu nham)
       const a = centerAng + (rnd() * 2 - 1) * half;
-      let best = null, bestErr = Infinity;
+      let mult = 1;
+      let through = 0;
+      let first = null;
       for (const c of cand) {
         // sai lech NGANG cua vien dan tai do sau cua con do
         const err = Math.abs(Math.tan(a - c.ang)) * c.d;
-        if (err < radius + 0.3 * c.e.scale && err < bestErr) { bestErr = err; best = c.e; }
+        if (err >= radius + 0.3 * c.e.scale) continue;      // tia di lot qua ben canh
+        if (!first) first = c.e;
+        const dmg = unit * mult * this.rangeFalloff(cfg, c.d);
+        dmgOut.set(c.e, (dmgOut.get(c.e) || 0) + dmg);
+        const left = (hp.has(c.e) ? hp.get(c.e) : c.e.hp) - dmg;
+        hp.set(c.e, left);
+        if (left > 0 || through >= maxPen) break;           // khong giet duoc -> dan dung lai
+        through++;
+        mult *= penMult;                                     // xuyen qua thi yeu di
       }
-      out.push(best);            // null = vien nay truot
+      firstHit.push(first);
     }
-    return out;
+    return { dmgOut, firstHit };
   }
 
   /** Tat dan theo tam (dan ghem): nguyen luc toi falloffStartM, con falloffMin o
@@ -421,15 +452,13 @@ export class Game {
     const mz = this.muzzle();
     let victims = [];          // { e, mult }
     if (hitCfg.style === 'spread') {
-      /* Moi vien ghem co goc rieng: nhieu vien co the chum vao MOT con, hoac truot han.
-         Day la ly do shotgun manh o gan va vo dung o xa -- khong can luat rieng nao. */
-      const shots = this.spreadTargets(pellets, rw.spreadDeg || 10, hitCfg, aimAng);
-      const per = new Map();
+      /* Moi vien ghem la mot TIA di tu gan ra xa, dung o con dau tien no cham, va chi
+         XUYEN TIEP khi no giet duoc con do. spreadTargets() lo phan mo phong; o day chi
+         con ve vien dan va quy doi ra danh sach nan nhan. */
+      const { dmgOut, firstHit } = this.spreadTargets(pellets, rw.spreadDeg || 10, hitCfg, aimAng, unit);
       const half = ((rw.spreadDeg || 10) * Math.PI) / 180 / 2;
-      for (let i = 0; i < shots.length; i++) {
-        const e = shots[i];
+      for (const e of firstHit) {
         if (e) {
-          per.set(e, (per.get(e) || 0) + 1);
           this.proj.fire(mz.x, mz.y, mz.z, e.x, 0.62 * e.scale, e.z, look);
         } else {
           // vien truot: van bay ra cho nguoi choi thay do tan
@@ -438,11 +467,8 @@ export class Game {
           this.proj.fire(mz.x, mz.y, mz.z, Math.sin(a) * d, 0.5, this.playerZ - Math.cos(a) * d, look);
         }
       }
-      // tat dan theo tam: dan ghem o 13m chi con falloffMin so voi trong 7m
-      victims = [...per].map(([e, n]) => {
-        const d = Math.hypot(e.x, this.playerZ - e.z);
-        return { e, mult: n * this.rangeFalloff(hitCfg, d) };
-      });
+      // dmgOut da tinh ca falloff va he so xuyen -> quy ve `mult` cua mot vien don vi
+      victims = [...dmgOut].map(([e, dmg]) => ({ e, mult: unit > 0 ? dmg / unit : 0 }));
     } else if (hitCfg.style === 'pierce') {
       // xuyen qua: con dau + n con phia sau no tren cung truc chay
       const extra = [];

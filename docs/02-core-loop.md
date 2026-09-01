@@ -29,7 +29,7 @@ Ba tầng vòng lặp. Tầng nào cũng phải có **quyết định**, không 
         |  +12 stamina, +1 bậc combo, slow-mo 0.12s         |
         |  (mỗi 10 lần Chém Hoàn Hảo = +1 Lộc)              |
         |                                                   |
-   6 mạng chém = +1 băng đạn miễn phí  --------------------->+
+   16 mạng chém = +1 băng đạn miễn phí --------------------->+
 ```
 
 **Quyết định người chơi phải ra mỗi 2–6 giây:** *"Tao bắn nốt băng này rồi mới chém, hay chém trước để

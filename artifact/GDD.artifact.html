@@ -337,7 +337,7 @@ footer{padding:34px 0 0;color:var(--muted);font-size:12.5px;border-top:1px solid
 <section class="doc" id="doc-01"><p class="docnum">01</p><h2>Overview</h2><div class="rule"></div><div class="body wide"><h3>Pitch một câu</h3>
 <blockquote><strong>Một khẩu súng, một lưỡi dao, và một cái hầm goblin sâu không đáy. Súng hết đạn thì phải vào gần mà chém — và chém đủ thì lại có đạn.</strong></blockquote>
 <h3>Pitch 30 giây (dùng cho pitch deck / store)</h3>
-<p>Into the Goblin là <strong>FPS màn hình dọc chơi một tay</strong>. Nhân vật tự tiến sâu vào hầm; ngón tay bạn dành 100% cho việc giết: <strong>tap để bắn</strong>, <strong>quẹt để chém</strong>. Súng có băng đạn — hết đạn phải lùi về dùng dao; mỗi 6 mạng chém được lại nạp cho bạn một băng đạn mới. Đó là toàn bộ nhịp của game, và nó lặp mỗi 3 giây.</p>
+<p>Into the Goblin là <strong>FPS màn hình dọc chơi một tay</strong>. Nhân vật tự tiến sâu vào hầm; ngón tay bạn dành 100% cho việc giết: <strong>tap để bắn</strong>, <strong>quẹt để chém</strong>. Súng có băng đạn — hết đạn phải lùi về dùng dao; mỗi 16 mạng chém được lại nạp cho bạn một băng đạn mới. Đó là toàn bộ nhịp của game, và nó lặp mỗi 3 giây.</p>
 <p>Hầm chia thành phòng và wave. Càng xuống sâu, quái càng đông và càng khoẻ — tới Depth 1 phòng 6 đã có gần <strong>60 con cùng lúc trên màn hình</strong>, và chết là nổ vàng đầy mặt. Ở mỗi Cổng, hầm mở ra <strong>hai cửa</strong> với biển báo nói trước cái gì đợi bên trong: <em>ĐÔNG · vàng ×1.25</em> hay <em>YÊN · có suối máu</em>. Bạn hết máu thì chọn cửa an toàn và chấp nhận ít vàng. Bạn đang mạnh thì lao vào cửa đông. Hầm không hỏi bạn muốn khó cỡ nào — nó tự khó lên. Bạn chỉ chọn đường đi qua nó.</p>
 <h3>5 Design Pillar</h3>
 <div class="tw"><table>
@@ -420,7 +420,7 @@ footer{padding:34px 0 0;color:var(--muted);font-size:12.5px;border-top:1px solid
         |  +12 stamina, +1 bậc combo, slow-mo 0.12s         |
         |  (mỗi 10 lần Chém Hoàn Hảo = +1 Lộc)              |
         |                                                   |
-   6 mạng chém = +1 băng đạn miễn phí  ---------------------&gt;+
+   16 mạng chém = +1 băng đạn miễn phí ---------------------&gt;+
 </code></pre>
 <p><strong>Quyết định người chơi phải ra mỗi 2–6 giây:</strong> <em>&quot;Tao bắn nốt băng này rồi mới chém, hay chém trước để đẩy nó ra rồi mới bắn?&quot;</em> — vì knockback của súng và của dao khác nhau, và stamina/đạn là hai đồng hồ chạy ngược nhau.</p>
 <p><strong>Đây là P2.</strong> Nếu người chơi có thể thắng bằng cách chỉ dùng một loại vũ khí thì pillar này chết — xem ràng buộc số học trong <code>16-data-schema-balancing.md</code> mục &quot;TTK &amp; khoá tài nguyên&quot;.</p>
@@ -672,7 +672,7 @@ HOLD_FIRE
 <thead><tr><th>Tầng</th><th>Tên</th><th>Hồi bằng cách nào</th><th>Hiển thị</th></tr></thead><tbody>
 <tr><td>1</td><td><strong>Băng đạn</strong> (<code>mag</code>)</td><td>Reload</td><td>Vòng tròn quanh tâm ngắm, mỗi viên là 1 vạch</td></tr>
 <tr><td>2</td><td><strong>Đạn dự trữ</strong> (<code>reserve</code>)</td><td>Melee kill (Cướp Đạn), hòm, shop, card</td><td>Số dưới HUD phải: <code>24 / 60</code></td></tr>
-<tr><td>3</td><td><strong>Cướp Đạn</strong> (<code>scavenge</code>)</td><td>+1 mỗi melee kill; <strong>Chém Hoàn Hảo tính x2</strong></td><td>Thanh nhỏ hình băng đạn; đầy 6 điểm = +1 băng</td></tr>
+<tr><td>3</td><td><strong>Cướp Đạn</strong> (<code>scavenge</code>)</td><td>+1 mỗi melee kill; <strong>Chém Hoàn Hảo tính x2</strong></td><td>Thanh nhỏ hình băng đạn; đầy 16 điểm = +1 băng</td></tr>
 </tbody></table></div>
 <blockquote><strong>Đây là pillar P2.</strong> Súng không có đạn vô hạn, và đạn <strong>không mua được giữa combat</strong> — đường duy nhất để có đạn trong lúc đánh là <strong>giết bằng dao</strong>. Ngược lại chém liên tục thì hết stamina. Hai đồng hồ này chạy ngược nhau và đó là toàn bộ chiều sâu của combat.</blockquote>
 <p>Ràng buộc thiết kế (audit gate): với mọi vũ khí, <code>mag * dmgPerShot</code> phải giết được <strong>ít hơn</strong> số quái của một wave trung bình ở cùng Depth (mặc định: 45–70% wave). Nếu một băng đạn dọn sạch được wave thì melee thành vô dụng và P2 chết.</p>
@@ -781,12 +781,43 @@ HOLD_FIRE
 <thead><tr><th>Số</th><th>Cũ → mới</th><th>Việc</th></tr></thead><tbody>
 <tr><td><code>spreadDeg</code></td><td>12 → <strong>26</strong></td><td>Ở 8m nón phủ <strong>3.7m</strong> — hơn nửa chiều rộng hành lang</td></tr>
 <tr><td><code>caliberMult</code></td><td>1.6 → <strong>3.4</strong></td><td>Mỗi viên ghém = <strong>3.4 lần HP trash</strong> → vẫn one-shot sau vài phòng HP scaling</td></tr>
-<tr><td><code>pelletRadiusM</code></td><td>0.42 → <strong>0.85</strong></td><td>Viên ghém bắt được con nằm lệch trục, không bay lọt khe</td></tr>
+<tr><td><code>pelletRadiusM</code></td><td>0.42 → <strong>0.6</strong></td><td>Bề ngang tia đạn. 0.85 thì con gần nhất <strong>nuốt cả 9 viên</strong> — xem 5c-ter</td></tr>
 <tr><td><code>killEff</code></td><td>0.45 → <strong>0.55</strong></td><td>Nón rộng hơn thì trúng nhiều hơn → normalize tự hạ đạn dự trữ xuống</td></tr>
 <tr><td><code>falloffStart/End/Min</code></td><td>— → <strong>7m / 13m / 0.4</strong></td><td>Ngoài 7m sát thương tắt dần, còn 40% ở 13m</td></tr>
 </tbody></table></div>
 <p>Đo lại (T1, <code>dmg</code> 136 × 9 viên, bắn vào đám 14 con): <strong>6 / 2 / 4 / 3 mạng mỗi phát</strong> — mọi con trúng đều chết. Đó là &quot;dọn sạch một vùng&quot;.</p>
 <p><strong>Cái giá phải trả đi kèm, không tách rời:</strong> 1.09s giữa hai phát · băng <strong>5 viên</strong> · nạp <strong>từng viên</strong> 0.75s/viên. Một phát trượt không chỉ mất đạn, nó mất cả nhịp. Và <code>falloff</code> giữ cho nó là vũ khí <strong>cự ly gần</strong> chứ không thành khẩu bắn tỉa đám đông ở dải Xa — nếu bỏ falloff thì không còn lý do gì để cầm khẩu khác.</p>
+<h4>5c-ter. Viên ghém là một TIA — và chỉ xuyên qua khi nó GIẾT được</h4>
+<p>Cách chọn mục tiêu của từng viên ghém là chỗ dễ sai nhất, và nó đã sai theo cả hai hướng.</p>
+<p><strong>Sai lần 1 — bắn xuyên qua người sống.</strong> Mỗi viên chọn con có <strong>sai lệch ngang nhỏ nhất</strong>. Một con ở 12m nằm đúng tia (lệch 0.05m) thắng một con ở 4m nằm lệch 0.5m — nên một phát bắn <strong>giết con đằng sau trong khi mấy con trước mặt không xảy ra gì</strong>. Không game bắn súng nào làm thế.</p>
+<p><strong>Sai lần 2 — con gần nhất nuốt cả loạt.</strong> Sửa thành &quot;con <strong>gần nhất</strong> trên tia thì dừng lại&quot;, nhưng với <code>pelletRadiusM</code> 0.85 thì bề ngang tia là <strong>1.15m</strong> — gấp đôi thân goblin thật (0.52m). Con đứng giữa che kín cả nón: đo được <strong>9.9/9 viên vào một con</strong>, hai con đứng cạnh ở ±1.4m ăn <strong>0</strong>.</p>
+<p><strong>Mô hình đúng</strong>, lấy từ các game horde (Left 4 Dead, Killing Floor):</p>
+<pre class="ascii"><code>
+   viên ghém = một TIA, duyệt các con từ GẦN ra XA
+     |
+     |-- con đầu tiên nằm trong bề ngang tia  --&gt;  ăn đạn
+     |        |
+     |        |-- viên đó GIẾT được nó   --&gt;  đạn XUYÊN TIẾP (x penetrationMult)
+     |        |                                sang con kế, tối đa penetrateMax con
+     |        |
+     |        |-- KHÔNG giết được        --&gt;  viên đạn DỪNG LẠI
+     |
+     |-- không con nào trong bề ngang    --&gt;  viên bay lọt qua đám
+</code></pre>
+<div class="tw"><table>
+<thead><tr><th>Số</th><th>Giá trị</th><th>Việc</th></tr></thead><tbody>
+<tr><td><code>pelletRadiusM</code></td><td><strong>0.6</strong></td><td>Bề ngang tia (+ <code>0.3 × scale</code> theo cỡ con). Đủ rộng để không lọt khe, đủ hẹp để không che cả nón</td></tr>
+<tr><td><code>penetrateMax</code></td><td><strong>3</strong></td><td>Tối đa 3 lần xuyên cho một viên</td></tr>
+<tr><td><code>penetrationMult</code></td><td><strong>0.6</strong></td><td>Xuyên qua thì yếu đi — hàng thứ ba khó chết hơn hàng đầu</td></tr>
+</tbody></table></div>
+<p>Luật <strong>&quot;chỉ xuyên khi giết&quot;</strong> là thứ làm cả hai yêu cầu cùng đúng một lúc:</p>
+<div class="tw"><table>
+<thead><tr><th>Cảnh đo được</th><th>Kết quả</th></tr></thead><tbody>
+<tr><td>3 con xếp hàng, đều yếu</td><td><strong>cả 3 chết</strong> — một phát dọn sạch một hàng</td></tr>
+<tr><td>3 con xếp hàng, <strong>con đầu trâu (60× HP)</strong></td><td><strong>cả 3 sống</strong> — con dày chặn hết, không con nào sau lưng chết</td></tr>
+<tr><td>6 con rải trong nón, 5–9m</td><td><strong>cả 6 chết</strong></td></tr>
+</tbody></table></div>
+<p>Dòng thứ hai là bất biến quan trọng nhất: <strong>không bao giờ có cảnh con đằng sau chết mà con trước mặt còn sống.</strong> Đó không phải hệ quả của việc tune số, nó là hệ quả của thứ tự duyệt.</p>
 <h3>5d. Mô phỏng theo SỐ LIỆU VŨ KHÍ THẬT — và đảo ngược mô hình cân bằng</h3>
 <p>Mô hình cũ ép <strong>mọi súng có cùng DPS ở cùng tier</strong>. Hệ quả: nhịp bắn thật <strong>không thể tồn tại</strong> — muốn SMG bắn 700 nhịp/phút thì sát thương mỗi viên phải tụt xuống mức vô nghĩa, còn muốn viên đạn mạnh thì phải kéo nhịp bắn xuống 48 (shotgun) hay 155 (rifle), tức chậm hơn đời thật 4–5 lần.</p>
 <p><strong>Đảo lại:</strong> sát thương suy từ <strong>cỡ đạn</strong>, nhịp bắn lấy từ <strong>số liệu thật</strong>, và <strong>ĐẠN mới là thứ cân bằng</strong>.</p>
@@ -1019,7 +1050,7 @@ cat neu       : khoang cach tu (ex,ey) den DOAN do  &lt;=  bladeWidthPx + 26*sca
 <tr><td>Sát thương</td><td><strong>cao hơn</strong></td><td>thấp hơn</td></tr>
 <tr><td>Chi phí</td><td><strong>tốn đạn</strong> (băng + dự trữ hữu hạn)</td><td>miễn phí, chỉ tốn stamina (tự hồi)</td></tr>
 <tr><td>Nạp lại</td><td>phải nhả tay, mất nhịp</td><td>không</td></tr>
-<tr><td>Cướp Đạn</td><td>—</td><td>6 mạng chém = <strong>1 băng đạn</strong></td></tr>
+<tr><td>Cướp Đạn</td><td>—</td><td><strong>16</strong> mạng chém = <strong>1 băng đạn</strong> (<code>gamefeel.json</code> → <code>melee.scavengeKillsPerMag</code>)</td></tr>
 </tbody></table></div>
 <p>Nên quyết định mỗi giây là: <em>bắn để giết nhanh mà tốn đạn</em>, hay <em>chém để giữ đạn mà chậm hơn</em>. Nếu dao vừa mạnh hơn vừa miễn phí thì không ai bắn cả — đó mới là điều phá vòng lặp, chứ không phải chuyện dám vào gần.</p>
 <p><code>meleeAdvantage</code> hạ tiếp xuống <strong>0.307</strong> → T1 dmg = <strong>30</strong>. <strong>Luật &quot;trash chết 1 nhát&quot; đã BỎ</strong> (<code>09</code> nguyên tắc 4 không còn áp cho cận chiến): 30 dmg vs trash 40 HP nên cần <strong>2 nhát</strong>, và một đoạn quét liên tục (62%) cần <strong>3 lượt</strong>. Đây là hệ quả trực tiếp của việc hạ sát thương cận chiến xuống 30, và <code>meleeOneShotFactor</code> + gate one-shot đã bị gỡ khỏi cả normalizer lẫn audit.</p>
@@ -2689,7 +2720,7 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>Chế độ Hai Vùng (fallback rủi ro R1)</td><td><strong>Có</strong>, bật ở màn hình đầu</td></tr>
 <tr><td>Băng đạn / dự trữ / reload / <strong>Nạp Hoàn Hảo</strong> (cửa sổ ngẫu nhiên có seed)</td><td><strong>Có</strong></td></tr>
 <tr><td>Stamina + ngưỡng 50% giảm 50% tốc độ chém</td><td><strong>Có</strong></td></tr>
-<tr><td><strong>Cướp Đạn</strong>: 6 mạng chém = 1 băng đạn</td><td><strong>Có</strong></td></tr>
+<tr><td><strong>Cướp Đạn</strong>: 16 mạng chém = 1 băng đạn</td><td><strong>Có</strong></td></tr>
 <tr><td>Chém Hoàn Hảo (≥3 con/nhát) + combo 5 bậc</td><td><strong>Có</strong></td></tr>
 <tr><td>Knockback + xác bay <strong>theo đúng vector quẹt</strong> + domino</td><td><strong>Có</strong></td></tr>
 <tr><td>Wave director theo <code>TP_budget(R,w)</code> + <code>countPerTP</code></td><td><strong>Có</strong></td></tr>
@@ -2783,6 +2814,10 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 </tbody></table></div>
 <div class="tw"><table>
 <thead><tr><th>52</th><th><strong>Tự nhắm cho CẢ tap lẫn hold nên không còn cách nào chọn mục tiêu.</strong> Lý do bỏ tap-vào-target ở lỗi #24 vẫn đúng (chạm chính xác vào hình bóng nhỏ ở 4.2 m/s là bài kiểm tra ngón tay), nhưng nó bị áp cho <strong>cả hai</strong> gesture — hậu quả: thấy con Thuốc Nổ sắp nổ vào mặt cũng không bắn riêng nó được, và yếu điểm Ogre thành thứ <strong>tự động ăn</strong> chứ không phải phần thưởng của việc nhắm. <code>pickByScreen</code> đã có sẵn trong <code>enemies.js</code> nhưng <strong>không ai gọi</strong></th><th>Tách hai chế độ: <strong>tap = bắn đúng chỗ chạm</strong> (nón trợ giúp <code>aimCone</code> 4°, ăn yếu điểm khi chạm nửa dưới hitbox, và <strong>trượt được</strong> — trượt là thứ làm chế độ chính xác có giá trị); <strong>hold = tự nhắm</strong> như cũ nhưng <strong>không bao giờ</strong> ăn yếu điểm. Nón đạn ghém của shotgun cũng xoay theo hướng nhắm chứ không cố định thẳng trước mặt. Thêm dấu chạm tại chỗ (vàng = trúng / xám = trượt) vì nếu không thì &quot;bắn trượt&quot; và &quot;máy không nhận input&quot; nhìn giống hệt nhau</th></tr></thead><tbody>
+</tbody></table></div>
+<div class="tw"><table>
+<thead><tr><th>53</th><th><strong>Đạn ghém bắn xuyên qua người sống.</strong> Mỗi viên chọn con có <strong>sai lệch ngang nhỏ nhất</strong>, không phải con <strong>gần nhất trên tia</strong>. Một con ở 12m nằm đúng tia (lệch 0.05m) thắng một con ở 4m nằm lệch 0.5m — nên một phát giết con <strong>đằng sau</strong> trong khi mấy con trước mặt không xảy ra gì. Sửa lần đầu thành &quot;gần nhất thì dừng&quot; lại hỏng kiểu khác: <code>pelletRadiusM</code> 0.85 cho bề ngang tia <strong>1.15m</strong>, gấp đôi thân goblin thật, nên con đứng giữa <strong>nuốt 9.9/9 viên</strong> còn hai con cạnh nó ăn 0</th><th>Mô hình của game horde (Left 4 Dead / Killing Floor): duyệt từ <strong>gần ra xa</strong>, viên ghém dừng ở con đầu tiên nó chạm, và <strong>chỉ xuyên tiếp khi nó GIẾT được</strong> con đó (<code>penetrationMult</code> 0.6, tối đa <code>penetrateMax</code> 3). <code>pelletRadiusM</code> về <strong>0.6</strong>. Đo: 3 con xếp hàng đều yếu → <strong>cả 3 chết</strong>; đúng cảnh đó nhưng con đầu 60× HP → <strong>cả 3 sống</strong>. Bất biến: không bao giờ có con sau chết mà con trước còn sống</th></tr></thead><tbody>
+<tr><td>54</td><td><strong>Cướp Đạn 6 mạng/băng làm vòng khoá ĐẠN ↔ STAMINA mất hết căng thẳng.</strong> Một phòng có 100–170 con; chém 40 con là được gần 7 băng, tức <strong>không bao giờ hết đạn</strong> — mà &quot;đạn hữu hạn&quot; chính là trụ P2, là lý do tồn tại của cả cơ chế cận chiến</td><td><strong>16 mạng = 1 băng</strong>, và chuyển hằng số ra <code>gamefeel.json</code> → <code>melee.scavengeKillsPerMag</code> (trước nằm cứng trong <code>game.js</code>). 40 mạng chém = 2.5 băng: vẫn đáng để vào gần chém, nhưng không thay thế được việc giữ đạn</td></tr>
 </tbody></table></div>
 <blockquote><strong>Lỗi #14 và #16 đã bị chính thiết kế vượt qua.</strong> Khi chuyển sang <strong>quái đứng yên</strong>, bài toán đón đầu của <code>pincer</code> (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó <strong>đã bị bỏ khỏi code</strong>. Lane spring (#16) thì vẫn giữ, nhưng giờ nó chỉ chống separation làm lệch làn khi quái spawn chồng nhau, không còn phải chống lực đẩy dồn theo suốt đường đi. Ghi lại ở đây vì hai lỗi đó <strong>là lỗi thật</strong> ở thời điểm phát hiện, và vì nó cho thấy giá của việc đổi mô hình di chuyển: mọi thứ suy ra từ tốc độ quái đều phải tính lại.</blockquote>
 <p>Ngoài ra prototype xác nhận <strong>công thức số quái phải tính theo <code>composition</code></strong>, không phải <code>tpCost</code> trung bình toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 lần. Đã ghi vào <code>16</code> mục 4.4.</p>
