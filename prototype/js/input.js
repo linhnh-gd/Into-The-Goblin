@@ -68,9 +68,27 @@ export class InputRouter {
 
   get screenW() { return this.el.clientWidth || 1; }
 
+  /** Ket thuc cu cham dang theo doi, khong phat gesture nao. */
+  _endCurrent() {
+    clearTimeout(this._holdTimer);
+    if (this.state === ST.HOLD_FIRE) this.h.onHoldEnd?.();
+    else if (this.state === ST.SLIDE_CONT) this.h.onSlideEnd?.();
+    this.state = ST.IDLE;
+    this.id = null;
+  }
+
   _down(e) {
     e.preventDefault();
-    if (this.id !== null) return;           // chi ngon DAU TIEN dieu khien combat
+    /* Mot ngon tay MOI (isPrimary) den trong khi van dang theo doi ngon cu, nghia la
+       ngon cu DA NHAC LEN roi ma `pointerup` cua no bi mat hoac den muon -- chuyen
+       thuong gap tren man cam ung khi nhac tay roi cham lai ngay lap tuc. Ma do dung
+       la luc nguoi choi ban het dan, nha tay ra de quet. Bo qua ngon moi thi ca cu quet
+       do bi nuot mat va nguoi choi phai nhac tay lam lai (docs/18 loi #60).
+       Ngon thu HAI that su (isPrimary = false) thi van bo qua nhu cu. */
+    if (this.id !== null) {
+      if (!e.isPrimary) return;             // chi ngon DAU TIEN dieu khien combat
+      this._endCurrent();
+    }
     this.id = e.pointerId;
     this.state = ST.PENDING;
     this.t0 = performance.now();
@@ -217,11 +235,26 @@ export class InputRouter {
     this.id = null;
   }
 
+  /* Vao che do giu-ban. NHUNG chi khi sung THAT SU ban duoc.
+     Sung het sach dan (dang nap) ma van khoa vao HOLD_FIRE thi ngon tay bi NHOT trong
+     mot trang thai khong lam gi ca: khong ban duoc vi het dan, khong chem duoc vi da
+     khoa. Do duoc: giu roi quet 333 px/s luc het dan -> ban 0, chem 0. Con luc con dan
+     thi chinh thao tac do ban 2 phat. Chinh la "ban het dan, nha tay ra quet ma khong
+     slide duoc ngay" (docs/18 loi #60).
+     Bi tu choi thi O LAI PENDING -- cu cham van con nguyen co hoi thanh nhat chem -- va
+     hen gio thu lai, de nap xong la tu dong ban tiep ma khong phai nhac tay. */
   _enterHold() {
+    if (this.h.onHoldStart?.(this.p.x, this.p.y) === false) {
+      this.state = ST.PENDING;
+      clearTimeout(this._holdTimer);
+      this._holdTimer = setTimeout(() => {
+        if (this.state === ST.PENDING && this.id !== null) this._enterHold();
+      }, 80);
+      return;
+    }
     this.state = ST.HOLD_FIRE;
     this.holdAnchor = { x: this.p.x, y: this.p.y };   // moc do quang duong de thoat khoa
     this._emit(GESTURE.HOLD);
-    this.h.onHoldStart?.(this.p.x, this.p.y);
   }
 
   /** Phan giai mot lan quet. BO quet doc len/xuong (yeu cau nguoi choi), nen MOI cu quet

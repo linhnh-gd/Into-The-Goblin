@@ -64,7 +64,17 @@ export class Game {
 
     this.input = new InputRouter(canvas, {
       onTap: (x, y) => { if (this.gunUp()) { this.shootAt(x, y, true); this.gunRelease(); } },
-      onHoldStart: (x, y) => { if (this.gunUp()) this.holdPt = { x, y }; },
+      /* Tra ve FALSE de tu choi vao che do giu-ban. Het sach dan thi phai tu choi:
+         nhan hold luc do la nhot ngon tay o mot trang thai khong lam gi ca. Va KHONG
+         goi gunUp() o day khi dang nap voi bang rong -- gunUp() co tac dung phu la
+         tinh mot cu Nap Hoan Hao, ma _enterHold() con duoc thu lai nhieu lan thi cu
+         nap do bi tieu mat vao mot thoi diem ngau nhien. Nap Hoan Hao la viec cua TAP. */
+      onHoldStart: (x, y) => {
+        if (this.reloading && this.mag <= 0) return false;
+        if (!this.gunUp()) return false;
+        this.holdPt = { x, y };
+        return true;
+      },
       onHoldMove: (x, y) => { if (this.holdPt) this.holdPt = { x, y }; },
       onHoldEnd: () => { this.holdPt = null; this.gunRelease(); },
       onMelee: (s) => this.slash(s),

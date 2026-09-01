@@ -13,11 +13,11 @@
 | Gesture | Điều kiện nhận (chuẩn hoá theo `S` = chiều rộng màn hình) | Hành động | Vũ khí |
 |---|---|---|---|
 | **Tap** | Ngón nhấc lên trong `< 130ms` **và** tổng di chuyển `< 0.05S` | 1 phát bắn **đúng chỗ chạm** (nón trợ giúp 4°), ăn được yếu điểm, trượt được | Tầm xa |
-| **Hold** | Ngón giữ `>= 130ms`, tốc độ `< 430 px/s` | Bắn liên tục, **tự nhắm** con gần nhất làn giữa. Không ăn yếu điểm | Tầm xa |
-| **Hold & Drag** | Đã ở trạng thái Hold rồi mới di chuyển, tốc độ `< 430 px/s` | Bắn liên tục — vẫn **tự nhắm**, vị trí ngón không đổi mục tiêu | Tầm xa |
-| **Slide nhẹ** | Tốc độ đỉnh `>= 430 px/s` trong `<= 300ms` đầu, độ dài `0.12S–0.55S`, góc lệch khỏi ngang `<= 55°` | Chém nhẹ | Cận chiến |
+| **Hold** | Ngón giữ `>= 130ms`, tốc độ `< 360 px/s` | Bắn liên tục, **tự nhắm** con gần nhất làn giữa. Không ăn yếu điểm | Tầm xa |
+| **Hold & Drag** | Đã ở trạng thái Hold rồi mới di chuyển, tốc độ `< 360 px/s` | Bắn liên tục — vẫn **tự nhắm**, vị trí ngón không đổi mục tiêu | Tầm xa |
+| **Slide nhẹ** | Tốc độ đỉnh `>= 360 px/s` trong `<= 300ms` đầu, độ dài `0.12S–0.55S`, góc lệch khỏi ngang `<= 55°` | Chém nhẹ | Cận chiến |
 | **Slide nặng** | Như trên nhưng độ dài `> 0.55S` | Chém nặng: 2x stamina, 2.0x damage, 2.2x knockback, arc +30° | Cận chiến |
-| **Slide dọc xuống** | Tốc độ `>= 430 px/s`, góc lệch khỏi *dọc* `<= 25°`, hướng xuống | **Bước Lùi**: lùi 1.2m, 0.15s bất tử, cooldown 2.5s | — |
+| **Slide dọc xuống** | Tốc độ `>= 360 px/s`, góc lệch khỏi *dọc* `<= 25°`, hướng xuống | **Bước Lùi**: lùi 1.2m, 0.15s bất tử, cooldown 2.5s | — |
 | **Slide dọc lên** | Như trên, hướng lên | **Xốc Tới**: tiến 2.0m, đẩy văng quái trên đường, cooldown 4s | — |
 | **Two-finger tap** | 2 ngón chạm trong `120ms` | Kích Bảo Vật / Ultimate | — |
 | **Tap nút góc phải-dưới** | — | Reload thủ công / Nạp Hoàn Hảo | Tầm xa |
@@ -45,7 +45,7 @@ TOUCH_DOWN
   v
 PENDING  (cửa sổ quyết định: 130ms hoặc tới khi vượt ngưỡng)
   |
-  |-- Nếu vận tốc tức thời >= 430 px/s VÀ đã đi quá 0.05S, TRƯỚC 300ms
+  |-- Nếu vận tốc tức thời >= 360 px/s VÀ đã đi quá 0.05S, TRƯỚC 300ms
   |        --> state = SLIDE  (khoá, không thể quay lại bắn trong lần chạm này)
   |
   |-- Nếu nhấc ngón trước 130ms & |p - p0| < 0.05S
@@ -81,8 +81,18 @@ là một nhịp mất trắng — và đó chính là cảm giác "chuyển đ�
 Chiều ngược lại (`SLIDE` → bắn) **vẫn khoá**: đang chém mà lỡ tay ra một phát đạn là mất đạn, mà đạn
 là tài nguyên khan hiếm nhất (trụ P2). Nhấc tay rồi chạm là đủ nhanh cho chiều đó.
 
-**Đa điểm chạm:** chỉ ngón **đầu tiên** điều khiển combat. Ngón thứ 2 chỉ dùng cho two-finger tap
-(Ultimate) và bị bỏ qua trong mọi trường hợp khác.
+**Đa điểm chạm:** chỉ ngón **đầu tiên** điều khiển combat. Ngón thứ 2 (`isPrimary = false`) chỉ dùng
+cho two-finger tap (Ultimate) và bị bỏ qua trong mọi trường hợp khác.
+
+**Nhưng một ngón `isPrimary` MỚI đến trong khi vẫn đang theo dõi ngón cũ thì phải NHẬN nó.** Nó có
+nghĩa là ngón cũ đã nhấc lên rồi mà `pointerup` bị mất hoặc đến muộn — chuyện thường gặp trên màn
+cảm ứng khi nhấc tay rồi chạm lại ngay. Bỏ qua ngón mới thì cả cú quẹt đó bị nuốt và người chơi
+phải nhấc tay làm lại (`18` lỗi #60). Đóng ngón cũ, nhận ngón mới.
+
+**Không khoá vào `HOLD_FIRE` khi súng không bắn được.** Hết sạch đạn mà vẫn khoá thì ngón tay bị
+**nhốt** trong một trạng thái không làm gì cả: không bắn được vì hết đạn, không chém được vì đã khoá.
+Bị từ chối thì ở lại `PENDING` — cú chạm vẫn còn nguyên cơ hội thành nhát chém — và hẹn giờ thử lại
+mỗi 80ms để nạp xong là tự động bắn tiếp mà không phải nhấc tay.
 
 ## 2d. Cú tap được bảo vệ bằng "NGÓN TAY ĐÃ DỪNG", không bằng ngưỡng vận tốc cao
 
@@ -207,7 +217,7 @@ Quẹt dọc lên (Xốc Tới) và quẹt dọc xuống (Bước Lùi) **đã b
 |---|---|---|
 | `tapMaxDuration` | 130 ms | Tăng nếu tester "muốn bắn mà ra dao" |
 | `tapMaxTravel` | 0.05 S | |
-| `slideVelocityThreshold` | **430 px/s** | **Số quan trọng nhất của game.** 900 px/s trên màn 390px CSS là **2.3 chiều rộng màn hình mỗi giây** — một cú *bung* tay, không phải một cú quẹt. Hậu quả: quẹt bình thường bị đọc thành `HOLD` (rút súng), và do luật khoá thì không ra dao được nữa cho tới khi nhấc tay. 430 = 1.15 chiều rộng/giây. An toàn vì cú tap được bảo vệ bằng luật NGÓN TAY ĐÃ DỪNG (mục 2d), không phải bằng ngưỡng vận tốc cao |
+| `slideVelocityThreshold` | **360 px/s** | **Số quan trọng nhất của game.** 900 px/s trên màn 390px CSS là **2.3 chiều rộng màn hình mỗi giây** — một cú *bung* tay, không phải một cú quẹt. Hậu quả: quẹt bình thường bị đọc thành `HOLD` (rút súng), và do luật khoá thì không ra dao được nữa cho tới khi nhấc tay. 360 = 0.96 chiều rộng/giây. An toàn vì cú tap được bảo vệ bằng luật NGÓN TAY ĐÃ DỪNG (mục 2d), không phải bằng ngưỡng vận tốc cao |
 | `slideDetectWindow` | 300 ms | Rộng hơn cho người bắt đầu quẹt chậm rồi nhanh dần |
 | `slideMinLength` | 0.12 S | Quãng đường tối thiểu để tính là chém lúc **nhả tay** |
 | `slideCommitLength` | **0.18 S** | Đi đủ xa này thì **chốt** thành nhát chém ngay giữa cú, không đợi nhả tay |
