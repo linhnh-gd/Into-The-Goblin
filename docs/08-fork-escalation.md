@@ -120,6 +120,36 @@ nào. Đó là thông tin đầy đủ, nên nó là quyết định *chiến th
 
 ---
 
+### 3d. Ngã Ba phải là một CHỖ, không phải một cái menu
+
+Trước đây chạy hết 150m là người chơi **đứng sựng lại giữa một đám quái còn sống**, rồi một lớp UI
+phủ lên trên. Ngã Ba Hầm — thứ mà mục 3 gọi là "quyết định không gian" — thực ra không hề tồn tại
+trong không gian: nó là hai cái nút. Và vạch đích không có hình hài gì cả, nên người chơi không
+*tới* đâu hết, họ bị một cái menu chặn lại giữa lúc đang bắn.
+
+Bây giờ cuối hành lang là một **bức tường có hai cửa**:
+
+| | |
+|---|---|
+| Khi nào hiện | Ngay lúc chạy đủ `roomDistanceM` (150m) |
+| Ở đâu | `doorApproachM` = **22m** phía trước — nhìn thấy từ xa, chạy tới được |
+| Dừng ở đâu | `doorStopGapM` = **10m** trước cửa |
+| Quái | Con nào còn sống **phía trước** thì giải tán; phía sau để nguyên |
+
+**Vì sao dừng ở 10m chứ không phải sát cửa.** Màn dọc: `fovDegVertical` 72° là góc nhìn **dọc**,
+còn bề ngang hẹp hơn nhiều (~37° ở tỉ lệ 9:19.5). Ở 3m trước tường chỉ thấy được **2.1m bề ngang** —
+không đủ cho một cánh cửa, chứ đừng nói hai. Muốn "chọn giữa hai cửa" thì hai cửa **phải cùng nằm
+trong một khung nhìn**; nếu không thì nó lại thành hai cái nút, chỉ khác là bằng polygon.
+Kéo theo: hai cửa kê sát nhau hơn (tâm cách trục 1.8m thay vì `hallWidth/4` = 2.25m).
+
+**Quái phía trước giải tán KHÔNG rơi vàng.** Giết được trước vạch đích mới ăn vàng — 150m vì thế là
+một **hạn chót thật**, không phải một cái vạch kẻ cho vui. Bỏ chạy là mất phần vàng đó.
+
+**Màu.** `15` đặt luật vàng là **màu ấm duy nhất** của game, nên không được bịa thêm một màu thứ hai
+cho cửa "nguy hiểm" — làm thế là phá chính cái luật khiến Goblin Vàng đọc được. Hai cửa đều vàng,
+cửa **nóng** (`đông` / `tối` / `hẹp` / `có Elite`) chỉ lệch sang phía đỏ hơn: vẫn trong họ vàng,
+nhưng mắt đọc ra ngay là không giống nhau.
+
 ## 4. Lộc — hệ thưởng cho chơi giỏi
 
 Bản trước dùng Greed (tự làm khó) để đẩy chất lượng thẻ. Thay bằng **Lộc**: kiếm bằng **chơi giỏi**.

@@ -930,10 +930,16 @@ export class Game {
       /* CHAY LIEN TUC ve phia truoc (mo hinh Into the Dead).
          Quai KHONG chan duong: con nao toi duoc thi gay dmg roi bi don sang ben ra sau.
          Phong ket thuc khi da chay het run.roomDistanceM, khong phai khi diet het quai. */
-      if (this.director.isCombatRoom && this.director.phase !== 'cleared') {
+      if (this.director.isCombatRoom && (this.director.phase !== 'cleared' || this.approaching)) {
         this.playerZ -= GD.feel.run.speedMps * dt;
         this.bobT += dt * 9;
         this.bob = Math.sin(this.bobT) * 0.045;
+        // toi truoc cua thi dung lai va mo Cong
+        if (this.approaching && this.playerZ <= this.doorZ + (GD.feel.run.doorStopGapM ?? 3.2)) {
+          this.playerZ = this.doorZ + (GD.feel.run.doorStopGapM ?? 3.2);
+          this.approaching = false;
+          this.openGate();
+        }
       } else {
         this.bob *= 0.9;
       }
@@ -1065,20 +1071,38 @@ export class Game {
     this.roomClearSweep = 1.4;
     this.juice.addSlowmo(GD.waves.directorRules.roomClearSlowMo.durationSec,
       GD.waves.directorRules.roomClearSlowMo.timescale);
-    // hut het vang ve
-    setTimeout(() => this.openGate(), 700);
+
+    /* VACH DICH PHAI CO HINH HAI. Truoc day het 150m la dung sung lai giua mot dam quai
+       CON SONG roi mot lop UI phu len -- nguoi choi khong toi dau ca, ho bi mot cai menu
+       chan lai. Gio: quai con lai phia truoc GIAI TAN, hai canh cua hien ra o cuoi hanh
+       lang, va nguoi choi CHAY NOT doan cuoi toi cho no. */
+    this.fork = this.director.makeFork({
+      hp: this.hp, hpMax: this.hpMax, reserve: this.reserve, reserveMax: this.reserveMax,
+    });
+    const A = GD.feel.run.doorApproachM ?? 11;
+    this.doorZ = this.playerZ - A;
+    this.world.showDoors(this.doorZ, this.fork?.[0], this.fork?.[1]);
+    /* Chi don quai PHIA TRUOC -- dung duong di toi cua. Quai phia sau cu de do, chay
+       qua roi thi chung khong con la van de cua ai ca.
+       KHONG cho vang: giet duoc truoc vach dich moi an vang. Bo chay la mat -- 150m
+       thanh mot han chot that chu khong phai mot cai vach ke cho vui. */
+    this.pool.despawnAhead(this.playerZ);
+    this.approaching = true;
   }
 
   openGate() {
     if (!this.running) return;
     this.trail.clear();
-    const fork = this.director.makeFork({
+    const fork = this.fork || this.director.makeFork({
       hp: this.hp, hpMax: this.hpMax, reserve: this.reserve, reserveMax: this.reserveMax,
     });
     this.ui.openGate(this.rollCards(), fork, this);
   }
 
   chooseDoor(door) {
+    this.world.hideDoors();
+    this.approaching = false;
+    this.fork = null;
     const r = this.director.advance(door);
     if (r.newDepth) this.world.setDepth(r.newDepth);
     this.walked++;

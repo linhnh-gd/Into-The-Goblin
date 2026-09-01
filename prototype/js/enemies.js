@@ -611,6 +611,19 @@ export class EnemyPool {
     return out.slice(0, max).map((o) => o.e);
   }
 
+  /** Don quai PHIA TRUOC nguoi choi (z nho hon pz). Dung o vach dich: doan duong toi
+      hai canh cua phai TRONG, con quai da chay qua roi thi khong phai van de cua ai.
+      Khong roi vang -- giet duoc truoc vach dich moi an vang. */
+  despawnAhead(pz) {
+    let n = 0;
+    for (const e of this.list) {
+      if (!e.alive || e.z >= pz) continue;
+      e.alive = false; n++;
+    }
+    if (n) this._writeInstances();
+    return n;
+  }
+
   clear() {
     for (const e of this.list) e.alive = false;
     this._writeInstances();

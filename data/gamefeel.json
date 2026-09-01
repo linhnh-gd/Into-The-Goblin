@@ -65,6 +65,8 @@
     "markerOpacity": 0.34
   },
   "run": {
+    "doorApproachM": 22,
+    "doorStopGapM": 10,
     "_comment": "Mo hinh Into the Dead: QUAI DUNG YEN, nguoi choi chay. Chay het roomDistanceM la xong phong. Quai lan giua va vao nguoi choi thi gay dmg MOT lan roi bien mat (khong roi vang).",
     "speedMps": 4.2,
     "roomDistanceM": 150,

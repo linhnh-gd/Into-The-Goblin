@@ -150,6 +150,72 @@ export class World {
     this.torch.position.set(shake.x * 0.004, 1.9, playerZ + 0.4);
   }
 
+  /* ===================== HAI CANH CUA O VACH DICH =====================
+     Truoc day chay het 150m la nguoi choi DUNG SUNG lai giua mot dam quai con song, roi
+     mot lop UI phu len tren -- vach dich khong he co hinh hai gi trong the gioi. Nguoi
+     choi khong "toi" dau ca, ho chi bi mot cai menu chan lai.
+     Gio cuoi hanh lang la mot BUC TUONG CO HAI CUA: nhin thay tu xa, chay toi duoc, va
+     no cho dam quai mot ly do de giai tan. Nga Ba Ham von da la mot lua chon KHONG GIAN
+     (docs/12) -- de no song trong khong gian that thi khong phai day gi ca. */
+  showDoors(z, nhanA, nhanB) {
+    this.hideDoors();
+    const HW = hallW(), H = 4.2;
+    const g = (this.doorGroup = new THREE.Group());
+    g.position.z = z;
+    this.scene.add(g);
+
+    const matTuong = new THREE.MeshLambertMaterial({ color: this.matWall.color.getHex() });
+    const matKhung = new THREE.MeshLambertMaterial({ color: 0x2a2018 });
+    /* HAI CUA PHAI CUNG NAM TRONG MOT KHUNG NHIN. Man dung: fov 72 do la fov DOC, con
+       be ngang thi hep hon nhieu (ti le ~0.46) -- o 3m truoc tuong chi thay duoc 2.1m
+       be ngang, tuc khong thay noi mot canh cua chu dung noi hai. Nen cua phai ke sat
+       nhau hon va nguoi choi phai dung XA hon (doorStopGapM). */
+    const DW = 2.2, DH = 2.9, DX = 1.8;             // tam cua cach truc 1.8m
+    const beRong = HW / 2 - DX - DW / 2;            // manh tuong ngoai cung
+    const truGiua = 2 * (DX - DW / 2);              // tru giua hai cua
+
+    const tuong = (w, h, x, y) => {
+      if (w <= 0.01) return;
+      const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.6), matTuong);
+      m.position.set(x, y, 0); g.add(m);
+    };
+    tuong(beRong, H, -HW / 2 + beRong / 2, H / 2);
+    tuong(beRong, H, HW / 2 - beRong / 2, H / 2);
+    tuong(truGiua, H, 0, H / 2);
+    tuong(HW, H - DH, 0, DH + (H - DH) / 2);        // xa tren dau hai cua
+
+    for (const [sx, nhan] of [[-1, nhanA], [1, nhanB]]) {
+      const x = sx * DX;
+      // khung cua
+      for (const dx of [-DW / 2, DW / 2]) {
+        const m = new THREE.Mesh(new THREE.BoxGeometry(0.16, DH, 0.7), matKhung);
+        m.position.set(x + dx, DH / 2, 0.06); g.add(m);
+      }
+      const tren = new THREE.Mesh(new THREE.BoxGeometry(DW + 0.32, 0.18, 0.7), matKhung);
+      tren.position.set(x, DH, 0.06); g.add(tren);
+      /* LONG CUA SANG: mot o toi giua mot buc tuong toi thi khong doc ra la "di duoc".
+         Anh sang la thu duy nhat noi duoc "loi di o day" ma khong can chu. */
+      /* MAU: `15` dat luat vang la MAU AM DUY NHAT cua game, nen khong duoc bia them mot
+         mau thu hai cho cua "nguy hiem" -- no se pha chinh cai luat lam Goblin Vang doc
+         duoc. Hai cua deu vang, cua NONG chi lech sang phia do hon: van trong ho vang,
+         nhung mat doc ra ngay la khong giong nhau. */
+      const mau = nhan?.hot ? 0xff8a2b : 0xffc53d;
+      const long = new THREE.Mesh(new THREE.PlaneGeometry(DW, DH),
+        new THREE.MeshBasicMaterial({ color: mau, transparent: true, opacity: 0.16 }));
+      long.position.set(x, DH / 2, -0.25); g.add(long);
+      const den = new THREE.PointLight(mau, 12, 9, 1.8);
+      den.position.set(x, DH * 0.75, 1.2); g.add(den);
+    }
+    this.doorZ = z;
+  }
+
+  hideDoors() {
+    if (!this.doorGroup) return;
+    this.scene.remove(this.doorGroup);
+    this.doorGroup.traverse((o) => { o.geometry?.dispose(); });
+    this.doorGroup = null;
+  }
+
   resize(w, h) {
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
