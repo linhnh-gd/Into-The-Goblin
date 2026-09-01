@@ -370,11 +370,19 @@ thì ở xa lại teo còn 2-3px. Neo bề ngang vào cự ly camera thì nó gi
 Cách cũ lấy "con phía **sau** mục tiêu, lệch trục < 1.1m", tức vẫn là một danh sách quanh **một** mục
 tiêu — và bỏ qua hết những con đứng *trước* nó. Nhưng mũi tên thì không biết đâu là mục tiêu: nó đi
 thẳng, và mọi thứ nằm trên đường đi đều ăn. Nên phải kiểm theo **tia thật**: khoảng cách vuông góc từ
-tâm con quái tới đường bay, trong bán kính `pierceRadiusM` (0.6m). Không giới hạn số con.
+tâm con quái tới đường bay, trong bán kính `pierceRadiusM`, và **chỉ trong tầm súng** (`rangeM` 22m). Không giới hạn số con.
 
-Cái giá là **NHỊP**: `reload` 0.26–0.38 → **0.95–1.30** (×`reloadGlobalMult` = **1.38s**), dài hơn khoảng
+Cái giá là **NHỊP**: `reload` 0.26–0.38 → **1.24–1.60** (×`reloadGlobalMult` = **1.80s**), dài hơn khoảng
 giữa hai phát (1.18s). Từ đây chính cái nạp mới là thứ quyết định tốc độ bắn — bắn hụt một phát là mất
 gần hai giây. Đo: một mũi vào 6 con thẳng hàng → **cả 6 chết**.
+
+**Bán kính luồng trúng là 0.15m, không phải 0.6m.** Thân quái là capsule bán kính **0.26m**, nên bán kính
+kiểm phải là *dung sai ngắm* cộng vào đó, chứ không phải một hành lang riêng. Đặt 0.6m thì luồng rộng
+`2 × (0.6 + 0.26)` = **1.72m**, trong khi quái làn giữa chỉ nằm trong dải rộng **1.8m** — một mũi quét gần
+trọn dải. Đo trên dải 25 con: **~24 con mỗi mũi (96%)**. Với 0.15m thì luồng rộng 0.82m, đo lại còn
+**7.2 con (29%)**. Con số khống chế ở đây là **thân quái**, không phải dung sai: kể cả dung sai bằng 0
+thì luồng vẫn rộng 0.52m — một đường thẳng xuyên qua dải quái đông thì đương nhiên chạm nhiều con, và
+đó chính là fantasy của khẩu này.
 
 > `pierceBalance` (4) là số con mà **mô hình cân bằng** giả định thực tế có trên đường bay — quái hiếm khi
 > thẳng hàng quá 4 con. Nó chỉ dùng để tính dự trữ đạn (mục 1b); trong game thì không có trần. Vì dự trữ

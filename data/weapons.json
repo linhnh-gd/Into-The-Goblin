@@ -69,8 +69,8 @@
       "crossbow": {
         "ref": "No nang â€” that te chi 2-3 phat/phut; game hoa len 30-60 cho choi duoc. MOT mui ten moi bang: ban xong nap ngay, va vi nap (0.5s) NGAN HON khoang giua 2 phat (1.18s) nen nap khong bao gio chan tay -- no thanh vu khi theo NHIP, khong co luc nao dung lai nap ca bang",
         "rpm": [30, 60], "mag": [1, 1], "killEff": 0.65, "caliberMult": 13.0, "pellets": 1, "pierce": 2,
-        "pierceAll": true, "pierceRadiusM": 0.6, "pierceBalance": 4,
-        "spreadDeg": 0.5, "reload": [0.95, 1.30], "style": "pierce",
+        "pierceAll": true, "pierceRadiusM": 0.15, "pierceBalance": 4,
+        "spreadDeg": 0.5, "reload": [1.24, 1.60], "style": "pierce",
         "proj": { "color": "#c9b48a", "sizeM": 0.08, "lenM": 4.5, "speed": 39 }
       },
       "launcher": {
@@ -134,7 +134,7 @@
     {
       "id": "rw_crossbow_gaimuc", "name": "Gai Má»±c", "class": "ranged", "archetype": "crossbow", "tier": 2,
       "unlock": "depth2", "dmg": 824, "rpm": 51, "pellets": 1, "mag": 1, "reserveMax": 16,
-      "reloadTime": 1.38, "spreadDeg": 0.5, "rangeM": 22, "pierce": 2,
+      "reloadTime": 1.8, "spreadDeg": 0.5, "rangeM": 22, "pierce": 2,
       "knockback": 1.1, "critMult": 3.0, "tags": ["pierce", "precision"],
       "desc": "Má»™t mÅ©i xuyÃªn nÄƒm cÃ¡i Ä‘áº§u. Xáº¿p hÃ ng Ä‘i, lÅ© goblin."
     },

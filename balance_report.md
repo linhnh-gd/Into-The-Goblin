@@ -26,7 +26,7 @@
 | Miá»‡ng Hang | ranged | 1 | 136 | 136 | 0.0% | dpsSustained | 663 | 110 | +503.1% OK | rpm 55 | mag 5 | ban het bang 5.5s | 24.8 mang/bang tren wave 31 con | reserve 1.3 wave |
 | á»” Chuá»™t | ranged | 1 | 120 | 120 | 0.0% | dpsSustained | 612 | 110 | +456.3% OK | rpm 700 | mag 25 | ban het bang 2.1s | 25.0 mang/bang tren wave 31 con | reserve 1.2 wave |
 | Gá»ng Sáº¯t | ranged | 2 | 285 | 285 | 0.0% | dpsSustained | 1,286 | 259 | +397.5% OK | rpm 600 | mag 25 | ban het bang 2.5s | 25.0 mang/bang tren wave 81 con | reserve 0.5 wave |
-| Gai Má»±c | ranged | 2 | 824 | 824 | 0.0% | dpsSustained | 322 | 259 | +24.7% OK | rpm 51 | mag 1 | ban het bang 1.2s | 2.6 mang/bang tren wave 81 con | reserve 0.5 wave |
+| Gai Má»±c | ranged | 2 | 824 | 824 | 0.0% | dpsSustained | 277 | 259 | +7.1% OK | rpm 51 | mag 1 | ban het bang 1.2s | 2.6 mang/bang tren wave 81 con | reserve 0.5 wave |
 | Lá»“ng MÃ³c | ranged | 2 | 216 | 216 | 0.0% | dpsSustained | 1,054 | 259 | +307.6% OK | rpm 55 | mag 5 | ban het bang 5.5s | 24.8 mang/bang tren wave 81 con | reserve 0.5 wave |
 | Máº¯t CÃº | ranged | 3 | 1224 | 1224 | 0.0% | dpsSustained | 1,353 | 607 | +122.8% OK | rpm 105 | mag 10 | ban het bang 5.7s | 15.0 mang/bang tren wave 153 con | reserve 0.1 wave |
 | Trá»‘ng ÄÃ´i | ranged | 3 | 514 | 514 | 0.0% | dpsSustained | 3,293 | 607 | +442.0% OK | rpm 650 | mag 100 | ban het bang 9.2s | 100.0 mang/bang tren wave 153 con | reserve 1.0 wave |

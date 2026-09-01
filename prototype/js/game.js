@@ -492,13 +492,17 @@ export class Game {
          di deu an. Nen phai kiem theo TIA that: khoang cach vuong goc tu tam con quai
          toi duong bay (docs/04 muc 6d). */
       const ux = Math.sin(aimAng), uz = -Math.cos(aimAng);
-      const R = hitCfg.pierceRadiusM ?? 0.6;
+      const R = hitCfg.pierceRadiusM ?? 0.15;
+      /* TAM BAY co han. Khong chan thi mui ten giet ca nhung con NGOAI TAM SUNG va nam
+         ngoai ca vet sang (vet chi bay toi tapFarM) -- quai chet o cho nguoi choi khong
+         nhin thay va khong nham vao (docs/18 loi #78). */
+      const xa = rw.rangeM || GD.feel.run.tapFarM;
       const tren = [];
       for (const e of this.pool.list) {
         if (!e.alive) continue;
         const rx = e.x, rz = e.z - this.playerZ;
         const t = rx * ux + rz * uz;                 // chieu dai chieu len tia
-        if (t <= 0) continue;                        // phia sau lung thi khong tinh
+        if (t <= 0 || t > xa) continue;              // sau lung hoac ngoai tam
         const px = rx - ux * t, pz = rz - uz * t;    // phan vuong goc
         if (Math.hypot(px, pz) > R + 0.26 * e.scale) continue;
         tren.push({ e, t });
