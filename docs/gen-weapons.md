@@ -9,7 +9,7 @@
 | Kèn Đồng | rw_pistol_kendong | pistol | T1 | start | 128 | 150 | 1 | 10 | 15 | 1.88s | 22m | - | 0.35m | x2.5 | 218 | precision, starter | Ổ quay sáu viên han gỉ. Một phát một mạng goblin — nếu ngươi nhắm. |
 | Miệng Hang | rw_shotgun_mienghang | shotgun | T1 | start | 136 | 55 | 9 | 5 | 8 | 3.77s | 12m | - | 1.6m | x2.0 | 663 | spacing, crowd, starter | Nòng cưa ngắn. Công cụ dãn cách tốt nhất trong hầm: một phát là cả hàng đầu lùi lại. |
 | Ổ Chuột | rw_smg_ochuot | smg | T1 | depth1 | 120 | 700 | 1 | 25 | 38 | 2.76s | 16m | - | 0.15m | x2.0 | 612 | sustain, holddrag | Bắn như chuột gặm. Giữ và rê ngón — để dành nhắm cho khẩu khác. |
-| Gai Mực | rw_crossbow_gaimuc | crossbow | T2 | depth2 | 824 | 51 | 1 | 1 | 6 | 0.55s | 22m | 2 | 1.1m | x3.0 | 477 | pierce, precision | Một mũi xuyên năm cái đầu. Xếp hàng đi, lũ goblin. |
+| Gai Mực | rw_crossbow_gaimuc | crossbow | T2 | depth2 | 824 | 51 | 1 | 1 | 21 | 0.55s | 22m | 2 | 1.1m | x3.0 | 477 | pierce, precision | Một mũi xuyên năm cái đầu. Xếp hàng đi, lũ goblin. |
 | Gọng Sắt | rw_rifle_gongsat | rifle | T2 | depth2 | 285 | 600 | 1 | 25 | 38 | 3.04s | 22m | - | 0.4m | x2.5 | 1286 | allround, midband | Khẩu không có nhược điểm và cũng không có gì đặc biệt. Đó là điểm mạnh của nó. |
 | Lồng Móc | rw_shotgun_longmoc | shotgun | T2 | boss1 | 216 | 55 | 9 | 5 | 8 | 3.77s | 14m | - | 1.9m | x2.0 | 1054 | spacing, crowd | Lên quy lát nghe như xương gãy. Đẩy lùi cả một cửa vòm. |
 | Hơi Ngầm | rw_flamer_hoingam | flamer | T3 | boss2 | 367 | 600 | 1 | 80 | 120 | 4.35s | 7m | - | 0.0m | x1.0 | 2377 | dot, areadenial, nokb | Không đẩy được ai. Nhưng lửa lan, và cả hành lang cháy theo. |

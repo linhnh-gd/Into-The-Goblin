@@ -317,8 +317,27 @@ wave** (trụ P2). Nên đối mặt là *bắn xối xả rồi hết đạn s�
 > 3 lần**, kết thúc phòng với **0 đạn dự trữ**, 28 mạng. Hết đạn giờ là một sự kiện **thật**, xảy ra
 > vài lần mỗi phòng — và đó là lý do để rút dao.
 >
-> `reserveMinShots` = 6 là sàn cho khẩu có băng quá nhỏ: nỏ băng 1 viên mà nhân 1.5 thì chỉ còn **2 mũi
-> tên** dự trữ.
+> **"1.5 băng phụ" vô nghĩa khi băng chỉ có 1 viên.** Nỏ nạp lại sau *mỗi* phát, nên "băng" không còn là
+> đơn vị của cái gì cả. Sàn cũ (`reserveMinShots` = 6 viên) chỉ là một con số bắt ra từ không khí, và nó
+> sai xa: đo **số mạng cả kho đạn mua được** thì nỏ ra **14**, trong khi shotgun 64 và rifle 63 — chọn nỏ
+> là chọn một ván ngắn hơn **4.5 lần**, chứ không phải chọn một lối chơi khác.
+>
+> Với khẩu có băng < `magSmallThreshold` (4), dự trữ neo vào **SỐ MẠNG** (`reserveKillsFloor` = 42) —
+> thứ duy nhất có nghĩa **giống nhau** ở mọi khẩu:
+> `số phát = ceil(reserveKillsFloor / killsPerShot)`, với `killsPerShot` đã tính cả `pellets`, `pierce`
+> và `killEff`.
+>
+> | | mạng cả kho | giây bắn | |
+> |---|---|---|---|
+> | Rifle | 63 | 6.3s | |
+> | Shotgun | 64 | 14.2s | |
+> | Súng lục | 25 | 10.0s | |
+> | **Nỏ — trước** | **14** | 8.3s | 1 + 6 mũi |
+> | **Nỏ — sau** | **43** | 25.9s | 1 + **21** mũi |
+>
+> Vẫn thấp hơn rifle/shotgun — đúng, vì mỗi mũi ăn 824 damage và xuyên 3 con thẳng hàng, nó không phải
+> khẩu dọn vùng. Nhưng 25.9 giây bắn trong một phòng 35.7 giây nghĩa là **bắn liên tục thì vẫn cạn** ở
+> một phần ba cuối phòng: P2 vẫn còn hiệu lực, chỉ là không còn cạn từ phút đầu.
 
 Đo được: Ổ Chuột (SMG) bắn hết băng 25 viên trong **2.1s**; Kèn Đồng 10 viên trong **4.0s**; Miệng Hang
 5 viên trong **5.5s**. Đó mới là cảm giác khác nhau giữa các khẩu.

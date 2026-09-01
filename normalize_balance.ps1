@@ -49,8 +49,10 @@ $archSpec        = $B.archetypeSpec
 $magClearTarget  = [double]$B.magClearTarget
 $reserveMags = 1.5
 if ($null -ne $B.reserveMagsTarget) { $reserveMags = [double]$B.reserveMagsTarget }
-$reserveMinShots = 6
-if ($null -ne $B.reserveMinShots) { $reserveMinShots = [double]$B.reserveMinShots }
+$reserveKillsFloor = 42
+if ($null -ne $B.reserveKillsFloor) { $reserveKillsFloor = [double]$B.reserveKillsFloor }
+$magSmallThreshold = 4
+if ($null -ne $B.magSmallThreshold) { $magSmallThreshold = [double]$B.magSmallThreshold }
 # Nhan chung vao dai reload cua MOI archetype. Clamp vao dai DA NHAN chu khong nhan
 # thang vao reloadTime cu -> chay lai nhieu lan van ra cung ket qua (idempotent).
 $reloadMult = 1.0
@@ -159,7 +161,14 @@ foreach ($w in $data.weapons) {
             # bang phu moi khau -- nguoi choi khong bao gio cham vao tran dan, va tru P2
             # (vong khoa DAN <-> STAMINA) khong bao gio bi kich hoat. Xem docs/18 loi #61.
             $reserve = [Math]::Round($mag * $reserveMags)
-            if ($reserve -lt $reserveMinShots) { $reserve = $reserveMinShots }
+            # "1.5 bang phu" VO NGHIA khi bang chi 1 vien: khau do nap lai sau MOI phat
+            # nen bang khong con la don vi cua cai gi ca. Voi nhung khau do, neo vao SO
+            # MANG -- thu duy nhat co nghia giong nhau o moi khau (docs/18 loi #75).
+            if ($mag -lt $magSmallThreshold) {
+                $canShots = [Math]::Ceiling($reserveKillsFloor / [Math]::Max(0.01, $killsPerShot))
+                $sanReserve = $canShots - $mag
+                if ($reserve -lt $sanReserve) { $reserve = $sanReserve }
+            }
 
             $newRpm[$w.id] = $rpm
             $newMag[$w.id] = [int]$mag

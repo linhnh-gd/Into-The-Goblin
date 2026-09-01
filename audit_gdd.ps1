@@ -305,9 +305,12 @@ foreach ($itW in $gdWpn.weapons) {
         elseif ($magRatio -lt 0.45 -or $magRatio -gt 0.70) { $magWarn += "$($itW.id) T$tier $([Math]::Round($magRatio,2))" }
         if ($magSec -lt 1.2 -and -not $napKhongChan) { $magFail += "$($itW.id) ban het bang trong $([Math]::Round($magSec,2))s (<1.2s)" }
         # Du tru do bang SO BANG PHU, khong bang "du cho N wave" (docs/18 loi #61).
-        # Khau co bang 1 vien (no) an san reserveMinShots nen ti le cao la dung -> bo qua.
+        # Khau co bang qua nho (no: 1 vien) neo du tru vao SO MANG chu khong vao so bang
+        # phu -- ti le bang phu cua no cao la DUNG theo thiet ke -> bo qua (docs/18 loi #75).
+        $magNho = 4
+        if ($null -ne $gdWpn.balance.magSmallThreshold) { $magNho = [double]$gdWpn.balance.magSmallThreshold }
         $resMags = [double]$itW.reserveMax / [Math]::Max(1, [double]$itW.mag)
-        if ([double]$itW.mag -ge 4 -and ($resMags -lt 1.2 -or $resMags -gt 2.2)) {
+        if ([double]$itW.mag -ge $magNho -and ($resMags -lt 1.2 -or $resMags -gt 2.2)) {
             $reserveWarn += "$($itW.id) $([Math]::Round($resMags,1)) bang"
         }
         if (-not $rangedByTier.ContainsKey($tier)) { $rangedByTier[$tier] = @() }

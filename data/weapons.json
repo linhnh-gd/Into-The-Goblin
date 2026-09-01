@@ -9,9 +9,10 @@
     "reloadGlobalMult": 1.45,
     "magClearMax": 0.95,
     "magClearTarget": 0.85,
-    "_reserveComment": "DAN DU TRU do bang SO BANG PHU, khong bang 'du cho N wave'. Mo hinh cu (reserveWavesTarget 7) cho ra 217 vien cho sung luc = 21 bang phu, 569 cho rifle = 22 bang -- tuc nguoi choi khong bao gio cham vao cai tran dan trong mot phong, va tru P2 (vong khoa DAN <-> STAMINA) khong bao gio bi kich hoat. 1.5 bang phu la con so lam cho 'het dan' thanh mot su kien THAT, xay ra vai lan moi phong, va la ly do de rut dao ra. reserveMinShots la san cho khau co bang qua nho (no: bang 1 vien) -- neu khong thi no chi co 2 mui ten du tru.",
+    "_reserveComment": "DAN DU TRU do bang SO BANG PHU, khong bang 'du cho N wave'. Mo hinh cu (reserveWavesTarget 7) cho ra 217 vien cho sung luc = 21 bang phu, 569 cho rifle = 22 bang -- tuc nguoi choi khong bao gio cham vao cai tran dan trong mot phong, va tru P2 (vong khoa DAN <-> STAMINA) khong bao gio bi kich hoat. 1.5 bang phu la con so lam cho 'het dan' thanh mot su kien THAT. NHUNG '1.5 bang phu' VO NGHIA khi bang chi co 1 vien (no): khau do nap lai sau MOI phat, bang khong con la don vi cua cai gi ca. San cu (reserveMinShots 6 vien) chi la mot con so bat ra tu khong khi -- do duoc: ca kho dan cua no mua duoc 14 mang, trong khi shotgun 64 va rifle 63, tuc chon no la chon mot van ngan hon 4.5 lan. Voi khau bang < magSmallThreshold thi neo vao SO MANG (reserveKillsFloor) -- thu duy nhat co nghia GIONG NHAU o moi khau.",
     "reserveMagsTarget": 1.5,
-    "reserveMinShots": 6,
+    "reserveKillsFloor": 42,
+    "magSmallThreshold": 4,
     "_archetypeSpecNote": "So lieu THAM CHIEU TU VU KHI THAT. rpm = nhip ban thuc te cua khau do; caliberMult = sat thuong moi vien tinh theo HP cua trash CUNG TIER (1.0 = vua du giet 1 con) -- day la cach mo phong co dan lon nho; pellets/pierce/aoeRadiusM = co che; proj = hinh dang vien dan ban ra. CHO Y: DPS gio KHAC NHAU giua cac archetype, dung nhu doi that. Can bang nam o DAN (mag + reserve), khong nam o DPS -- xem docs/04 muc 5d.",
     "archetypeSpec": {
       "pistol": {
@@ -131,7 +132,7 @@
     },
     {
       "id": "rw_crossbow_gaimuc", "name": "Gai Mực", "class": "ranged", "archetype": "crossbow", "tier": 2,
-      "unlock": "depth2", "dmg": 824, "rpm": 51, "pellets": 1, "mag": 1, "reserveMax": 6,
+      "unlock": "depth2", "dmg": 824, "rpm": 51, "pellets": 1, "mag": 1, "reserveMax": 21,
       "reloadTime": 0.55, "spreadDeg": 0.5, "rangeM": 22, "pierce": 2,
       "knockback": 1.1, "critMult": 3.0, "tags": ["pierce", "precision"],
       "desc": "Một mũi xuyên năm cái đầu. Xếp hàng đi, lũ goblin."
