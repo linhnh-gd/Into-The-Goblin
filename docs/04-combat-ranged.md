@@ -11,42 +11,53 @@ reload không bắn được, chỉ dùng cận chiến* · *knockback tuỳ lo�
 |---|---|---|---|
 | 1 | **Băng đạn** (`mag`) | Reload | Vòng tròn quanh tâm ngắm, mỗi viên là 1 vạch |
 | 2 | **Đạn dự trữ** (`reserve`) | Melee kill (Cướp Đạn), hòm, shop, card | Số dưới HUD phải: `24 / 60` |
-| 3 | **Cướp Đạn** (`scavenge`) | Mỗi melee kill = **0.3 giây bắn** của khẩu đang cầm; **Chém Hoàn Hảo tính x2** | Số dự trữ nhích lên đều trong lúc chém |
+| 3 | **Cướp Đạn** (`scavenge`) | Mỗi melee kill = **0.8% kho đạn gốc**; **Chém Hoàn Hảo tính x2** | Số dự trữ nhích lên đều trong lúc chém |
 
 > **Đây là pillar P2.** Súng không có đạn vô hạn, và đạn **không mua được giữa combat** — đường duy nhất
 > để có đạn trong lúc đánh là **giết bằng dao**. Ngược lại chém liên tục thì hết stamina. Hai đồng hồ này
 > chạy ngược nhau và đó là toàn bộ chiều sâu của combat.
 
-### 1b. Tỉ giá Cướp Đạn phải neo vào thứ KHÔNG nâng cấp được
+### 1b. Tỉ giá Cướp Đạn neo vào KHO ĐẠN GỐC
 
-Luật cũ — *"16 mạng chém = 1 băng đạn"* — nghe như một tỉ giá cố định. Nó không phải: **"một băng"
-không phải đơn vị cố định.** Thẻ Băng Đạn cộng tới +95% `magMax` mỗi cấp và chồng được 8 cấp, nên
-cuối run cùng 16 mạng chém đổi được gấp nhiều lần đạn so với đầu run. Thẻ đó **ăn hai lần**: vừa cho
-băng to hơn (lợi ích chính đáng của nó), vừa nhân số đạn cướp được (lợi ích ăn trộm).
+Tỉ giá này đã sai hai lần, mỗi lần vì neo vào một thứ **không** cùng thang đo với kho đạn.
 
-Neo đúng là **GIÂY BẮN** — thứ duy nhất trong game vừa có nghĩa như nhau với mọi khẩu, vừa không thẻ
-nào chạm tới được:
+**Sai lần 1 — neo vào `magMax`** (*"16 mạng chém = 1 băng"*). "Một băng" không phải đơn vị cố định:
+thẻ Băng Đạn cộng tới +95% mỗi cấp, chồng 8 cấp — nên cuối run cùng 16 mạng chém đổi được gấp nhiều
+lần đạn so với đầu run. Thẻ đó **ăn hai lần**: vừa cho băng to hơn, vừa nhân số đạn cướp được.
+
+**Sai lần 2 — neo vào GIÂY BẮN** (`0.3s × rpm/60`). Đúng về nguyên tắc (rpm gốc không nâng cấp được)
+nhưng con số 0.3 được tính khi kho đạn còn **569 viên**. Sau khi cắt kho xuống **38** thì **13 mạng
+chém đã đầy nguyên kho** — đạn lại thành vô hạn lần nữa. Hai con số thôi nói chuyện với nhau.
+
+**Neo đúng: chính KHO ĐẠN GỐC của khẩu đó.**
 
 ```
-   viên/mạng chém = scavengeSecondsPerKill × (rpm GỐC / 60)
-                                              ^^^^^^^
-                    rpm gốc của khẩu súng, KHÔNG phải nhịp bắn hiện tại:
-                    thẻ Nhịp Bắn đổi `fireInterval` nhưng không được đổi tỉ giá này
+   viên/mạng chém = reserveMax GỐC × scavengeReserveFracPerKill
+                    ^^^^^^^^^^^^^^
+                    kho đạn GỐC trong data, KHÔNG phải kho đã nâng cấp:
+                    thẻ Đạn Dự Trữ nâng TRẦN chứa, không nâng TỐC ĐỘ HỒI
 ```
 
-| Khẩu | rpm | viên/mạng | 40 mạng chém đổi được |
-|---|---|---|---|
-| Miệng Hang (shotgun) | 55 | 0.28 | 10 viên = **10.9 giây bắn** |
-| Gọng Sắt (rifle) | 600 | 3.0 | 120 viên = **12.0 giây bắn** |
-| Ổ Chuột (SMG) | 700 | 3.5 | 139 viên = **11.9 giây bắn** |
-| Gai Mực (nỏ) | 51 | 0.26 | 10 mũi = **11.8 giây bắn** |
+Neo vào chính thứ nó nạp lại thì hai con số **không thể lệch nhau nữa**: đổi `reserveMagsTarget` bao
+nhiêu, tỉ giá cướp đạn tự động theo bấy nhiêu.
 
-Bất biến: **một mạng chém luôn đổi được đúng 0.3 giây bóp cò** — bất kể khẩu nào, bất kể đã lấy bao
-nhiêu thẻ. Đo kiểm: chồng 8 thẻ Băng Đạn (mag 5 → 1045) làm số đạn cướp được đổi **0**.
+| Khẩu | Kho gốc | viên/mạng | Mạng để được 1 băng | Mạng để đầy kho |
+|---|---|---|---|---|
+| Gọng Sắt (rifle) | 38 | 0.304 | 83 | **125** |
+| Ổ Chuột (SMG) | 38 | 0.304 | 83 | **125** |
+| Kèn Đồng (súng lục) | 15 | 0.12 | 84 | **125** |
+| Miệng Hang (shotgun) | 8 | 0.064 | 79 | **125** |
+| Gai Mực (nỏ) | 6 | 0.048 | 21 | **125** |
 
-Và đạn được trả **từng viên** chứ không phải một cục mỗi 16 mạng: số dự trữ nhích lên đều trong lúc
-chém, có tiếng báo mỗi khi cộng đủ một băng gốc. Đó là *"hồi đều từ đầu đến cuối"* theo cả hai nghĩa —
-đều trong một trận, và đều suốt cả run.
+Bất biến: **125 mạng chém mới nạp lại được cả kho đạn** — với mọi khẩu. Trước đó là 11–30 mạng.
+Đo kiểm: chồng 4 thẻ Đạn Dự Trữ (kho 38 → 797) làm tốc độ hồi đổi **0**.
+
+Đo trong trận (rifle, chơi thật — bắn khi còn đạn, chém khi hết): hết phòng R1 còn **12/38**, phòng
+R2 còn **23/38**. Đạn không còn tự đầy lại nữa.
+
+Và đạn được trả **từng viên** chứ không phải một cục: số dự trữ nhích lên đều trong lúc chém, có
+tiếng báo mỗi khi cộng đủ một băng gốc (~80 mạng, tức hiếm và đáng). Đó là *"hồi đều từ đầu đến
+cuối"* theo cả hai nghĩa — đều trong một trận, và đều suốt cả run.
 
 Ràng buộc thiết kế (audit gate): với mọi vũ khí, `mag * dmgPerShot` phải giết được **ít hơn** số quái của
 một wave trung bình ở cùng Depth (mặc định: 45–70% wave). Nếu một băng đạn dọn sạch được wave thì melee

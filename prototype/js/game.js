@@ -137,9 +137,12 @@ export class Game {
     this.reserveMax = rw.reserveMax; this.reserve = rw.reserveMax;
     this.scavenge = 0;          // so le vien dan da cuop duoc, chua du 1 vien
     this.scavBanner = 0;        // da cuop bao nhieu vien ke tu lan bao gan nhat
-    /* Mot mang chem = scavengeSecondsPerKill giay ban cua khau dang cam. Dung rw.rpm
-       GOC: rofMult (the Nhip Ban) doi fireInterval nhung khong duoc phep doi ti le nay. */
-    this.scavPerKill = GD.feel.melee.scavengeSecondsPerKill * (rw.rpm / 60);
+    /* Mot mang chem = scavengeReserveFracPerKill cua KHO DAN GOC cua khau dang cam.
+       Dung `rw.reserveMax` (GOC trong data, khong phai `this.reserveMax` da nang cap):
+         1. the Dan Du Tru chi nang TRAN chua, khong nang TOC DO HOI;
+         2. ti gia nay khong the lech khoi co kho dan -- doi `reserveMagsTarget` bao
+            nhieu thi no tu dong theo bay nhieu (docs/18 loi #64). */
+    this.scavPerKill = rw.reserveMax * GD.feel.melee.scavengeReserveFracPerKill;
     this.luck = 0;
     this.gold = 0;
     this.combo = 0; this.comboT = 0;

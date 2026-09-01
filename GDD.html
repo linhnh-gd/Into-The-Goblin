@@ -354,7 +354,7 @@ footer{padding:34px 0 0;color:var(--muted);font-size:12.5px;border-top:1px solid
 <div class="body wide"><h3>Pitch một câu</h3>
 <blockquote><strong>Một khẩu súng, một lưỡi dao, và một cái hầm goblin sâu không đáy. Súng hết đạn thì phải vào gần mà chém — và chém đủ thì lại có đạn.</strong></blockquote>
 <h3>Pitch 30 giây (dùng cho pitch deck / store)</h3>
-<p>Into the Goblin là <strong>FPS màn hình dọc chơi một tay</strong>. Nhân vật tự tiến sâu vào hầm; ngón tay bạn dành 100% cho việc giết: <strong>tap để bắn</strong>, <strong>quẹt để chém</strong>. Súng có băng đạn — hết đạn phải lùi về dùng dao; mỗi mạng chém được lại nạp cho bạn 0.3 giây bắn. Đó là toàn bộ nhịp của game, và nó lặp mỗi 3 giây.</p>
+<p>Into the Goblin là <strong>FPS màn hình dọc chơi một tay</strong>. Nhân vật tự tiến sâu vào hầm; ngón tay bạn dành 100% cho việc giết: <strong>tap để bắn</strong>, <strong>quẹt để chém</strong>. Súng có băng đạn — hết đạn phải lùi về dùng dao; mỗi mạng chém được lại nạp cho bạn một phần kho đạn — 125 mạng mới đầy lại cả kho. Đó là toàn bộ nhịp của game, và nó lặp mỗi 3 giây.</p>
 <p>Hầm chia thành phòng và wave. Càng xuống sâu, quái càng đông và càng khoẻ — tới Depth 1 phòng 6 đã có gần <strong>60 con cùng lúc trên màn hình</strong>, và chết là nổ vàng đầy mặt. Ở mỗi Cổng, hầm mở ra <strong>hai cửa</strong> với biển báo nói trước cái gì đợi bên trong: <em>ĐÔNG · vàng ×1.25</em> hay <em>YÊN · có suối máu</em>. Bạn hết máu thì chọn cửa an toàn và chấp nhận ít vàng. Bạn đang mạnh thì lao vào cửa đông. Hầm không hỏi bạn muốn khó cỡ nào — nó tự khó lên. Bạn chỉ chọn đường đi qua nó.</p>
 <h3>5 Design Pillar</h3>
 <div class="tw"><table>
@@ -438,7 +438,7 @@ footer{padding:34px 0 0;color:var(--muted);font-size:12.5px;border-top:1px solid
         |  +12 stamina, +1 bậc combo, slow-mo 0.12s         |
         |  (mỗi 10 lần Chém Hoàn Hảo = +1 Lộc)              |
         |                                                   |
-   1 mạng chém = +0.3 giây bắn miễn phí --------------------&gt;+
+   125 mạng chém = +1 kho đạn miễn phí ---------------------&gt;+
 </code></pre>
 <p><strong>Quyết định người chơi phải ra mỗi 2–6 giây:</strong> <em>&quot;Tao bắn nốt băng này rồi mới chém, hay chém trước để đẩy nó ra rồi mới bắn?&quot;</em> — vì knockback của súng và của dao khác nhau, và stamina/đạn là hai đồng hồ chạy ngược nhau.</p>
 <p><strong>Đây là P2.</strong> Nếu người chơi có thể thắng bằng cách chỉ dùng một loại vũ khí thì pillar này chết — xem ràng buộc số học trong <code>16-data-schema-balancing.md</code> mục &quot;TTK &amp; khoá tài nguyên&quot;.</p>
@@ -728,27 +728,32 @@ HOLD_FIRE
 <thead><tr><th>Tầng</th><th>Tên</th><th>Hồi bằng cách nào</th><th>Hiển thị</th></tr></thead><tbody>
 <tr><td>1</td><td><strong>Băng đạn</strong> (<code>mag</code>)</td><td>Reload</td><td>Vòng tròn quanh tâm ngắm, mỗi viên là 1 vạch</td></tr>
 <tr><td>2</td><td><strong>Đạn dự trữ</strong> (<code>reserve</code>)</td><td>Melee kill (Cướp Đạn), hòm, shop, card</td><td>Số dưới HUD phải: <code>24 / 60</code></td></tr>
-<tr><td>3</td><td><strong>Cướp Đạn</strong> (<code>scavenge</code>)</td><td>Mỗi melee kill = <strong>0.3 giây bắn</strong> của khẩu đang cầm; <strong>Chém Hoàn Hảo tính x2</strong></td><td>Số dự trữ nhích lên đều trong lúc chém</td></tr>
+<tr><td>3</td><td><strong>Cướp Đạn</strong> (<code>scavenge</code>)</td><td>Mỗi melee kill = <strong>0.8% kho đạn gốc</strong>; <strong>Chém Hoàn Hảo tính x2</strong></td><td>Số dự trữ nhích lên đều trong lúc chém</td></tr>
 </tbody></table></div>
 <blockquote><strong>Đây là pillar P2.</strong> Súng không có đạn vô hạn, và đạn <strong>không mua được giữa combat</strong> — đường duy nhất để có đạn trong lúc đánh là <strong>giết bằng dao</strong>. Ngược lại chém liên tục thì hết stamina. Hai đồng hồ này chạy ngược nhau và đó là toàn bộ chiều sâu của combat.</blockquote>
-<h4>1b. Tỉ giá Cướp Đạn phải neo vào thứ KHÔNG nâng cấp được</h4>
-<p>Luật cũ — <em>&quot;16 mạng chém = 1 băng đạn&quot;</em> — nghe như một tỉ giá cố định. Nó không phải: <strong>&quot;một băng&quot; không phải đơn vị cố định.</strong> Thẻ Băng Đạn cộng tới +95% <code>magMax</code> mỗi cấp và chồng được 8 cấp, nên cuối run cùng 16 mạng chém đổi được gấp nhiều lần đạn so với đầu run. Thẻ đó <strong>ăn hai lần</strong>: vừa cho băng to hơn (lợi ích chính đáng của nó), vừa nhân số đạn cướp được (lợi ích ăn trộm).</p>
-<p>Neo đúng là <strong>GIÂY BẮN</strong> — thứ duy nhất trong game vừa có nghĩa như nhau với mọi khẩu, vừa không thẻ nào chạm tới được:</p>
+<h4>1b. Tỉ giá Cướp Đạn neo vào KHO ĐẠN GỐC</h4>
+<p>Tỉ giá này đã sai hai lần, mỗi lần vì neo vào một thứ <strong>không</strong> cùng thang đo với kho đạn.</p>
+<p><strong>Sai lần 1 — neo vào <code>magMax</code></strong> (<em>&quot;16 mạng chém = 1 băng&quot;</em>). &quot;Một băng&quot; không phải đơn vị cố định: thẻ Băng Đạn cộng tới +95% mỗi cấp, chồng 8 cấp — nên cuối run cùng 16 mạng chém đổi được gấp nhiều lần đạn so với đầu run. Thẻ đó <strong>ăn hai lần</strong>: vừa cho băng to hơn, vừa nhân số đạn cướp được.</p>
+<p><strong>Sai lần 2 — neo vào GIÂY BẮN</strong> (<code>0.3s × rpm/60</code>). Đúng về nguyên tắc (rpm gốc không nâng cấp được) nhưng con số 0.3 được tính khi kho đạn còn <strong>569 viên</strong>. Sau khi cắt kho xuống <strong>38</strong> thì <strong>13 mạng chém đã đầy nguyên kho</strong> — đạn lại thành vô hạn lần nữa. Hai con số thôi nói chuyện với nhau.</p>
+<p><strong>Neo đúng: chính KHO ĐẠN GỐC của khẩu đó.</strong></p>
 <pre class="ascii"><code>
-   viên/mạng chém = scavengeSecondsPerKill × (rpm GỐC / 60)
-                                              ^^^^^^^
-                    rpm gốc của khẩu súng, KHÔNG phải nhịp bắn hiện tại:
-                    thẻ Nhịp Bắn đổi `fireInterval` nhưng không được đổi tỉ giá này
+   viên/mạng chém = reserveMax GỐC × scavengeReserveFracPerKill
+                    ^^^^^^^^^^^^^^
+                    kho đạn GỐC trong data, KHÔNG phải kho đã nâng cấp:
+                    thẻ Đạn Dự Trữ nâng TRẦN chứa, không nâng TỐC ĐỘ HỒI
 </code></pre>
+<p>Neo vào chính thứ nó nạp lại thì hai con số <strong>không thể lệch nhau nữa</strong>: đổi <code>reserveMagsTarget</code> bao nhiêu, tỉ giá cướp đạn tự động theo bấy nhiêu.</p>
 <div class="tw"><table>
-<thead><tr><th>Khẩu</th><th>rpm</th><th>viên/mạng</th><th>40 mạng chém đổi được</th></tr></thead><tbody>
-<tr><td>Miệng Hang (shotgun)</td><td>55</td><td>0.28</td><td>10 viên = <strong>10.9 giây bắn</strong></td></tr>
-<tr><td>Gọng Sắt (rifle)</td><td>600</td><td>3.0</td><td>120 viên = <strong>12.0 giây bắn</strong></td></tr>
-<tr><td>Ổ Chuột (SMG)</td><td>700</td><td>3.5</td><td>139 viên = <strong>11.9 giây bắn</strong></td></tr>
-<tr><td>Gai Mực (nỏ)</td><td>51</td><td>0.26</td><td>10 mũi = <strong>11.8 giây bắn</strong></td></tr>
+<thead><tr><th>Khẩu</th><th>Kho gốc</th><th>viên/mạng</th><th>Mạng để được 1 băng</th><th>Mạng để đầy kho</th></tr></thead><tbody>
+<tr><td>Gọng Sắt (rifle)</td><td>38</td><td>0.304</td><td>83</td><td><strong>125</strong></td></tr>
+<tr><td>Ổ Chuột (SMG)</td><td>38</td><td>0.304</td><td>83</td><td><strong>125</strong></td></tr>
+<tr><td>Kèn Đồng (súng lục)</td><td>15</td><td>0.12</td><td>84</td><td><strong>125</strong></td></tr>
+<tr><td>Miệng Hang (shotgun)</td><td>8</td><td>0.064</td><td>79</td><td><strong>125</strong></td></tr>
+<tr><td>Gai Mực (nỏ)</td><td>6</td><td>0.048</td><td>21</td><td><strong>125</strong></td></tr>
 </tbody></table></div>
-<p>Bất biến: <strong>một mạng chém luôn đổi được đúng 0.3 giây bóp cò</strong> — bất kể khẩu nào, bất kể đã lấy bao nhiêu thẻ. Đo kiểm: chồng 8 thẻ Băng Đạn (mag 5 → 1045) làm số đạn cướp được đổi <strong>0</strong>.</p>
-<p>Và đạn được trả <strong>từng viên</strong> chứ không phải một cục mỗi 16 mạng: số dự trữ nhích lên đều trong lúc chém, có tiếng báo mỗi khi cộng đủ một băng gốc. Đó là <em>&quot;hồi đều từ đầu đến cuối&quot;</em> theo cả hai nghĩa — đều trong một trận, và đều suốt cả run.</p>
+<p>Bất biến: <strong>125 mạng chém mới nạp lại được cả kho đạn</strong> — với mọi khẩu. Trước đó là 11–30 mạng. Đo kiểm: chồng 4 thẻ Đạn Dự Trữ (kho 38 → 797) làm tốc độ hồi đổi <strong>0</strong>.</p>
+<p>Đo trong trận (rifle, chơi thật — bắn khi còn đạn, chém khi hết): hết phòng R1 còn <strong>12/38</strong>, phòng R2 còn <strong>23/38</strong>. Đạn không còn tự đầy lại nữa.</p>
+<p>Và đạn được trả <strong>từng viên</strong> chứ không phải một cục: số dự trữ nhích lên đều trong lúc chém, có tiếng báo mỗi khi cộng đủ một băng gốc (~80 mạng, tức hiếm và đáng). Đó là <em>&quot;hồi đều từ đầu đến cuối&quot;</em> theo cả hai nghĩa — đều trong một trận, và đều suốt cả run.</p>
 <p>Ràng buộc thiết kế (audit gate): với mọi vũ khí, <code>mag * dmgPerShot</code> phải giết được <strong>ít hơn</strong> số quái của một wave trung bình ở cùng Depth (mặc định: 45–70% wave). Nếu một băng đạn dọn sạch được wave thì melee thành vô dụng và P2 chết.</p>
 <hr />
 <h3>2. Reload &amp; Nạp Hoàn Hảo (Perfect Reload)</h3>
@@ -1127,7 +1132,7 @@ cat neu       : khoang cach tu (ex,ey) den DOAN do  &lt;=  bladeWidthPx + 26*sca
 <tr><td>Sát thương</td><td><strong>cao hơn</strong></td><td>thấp hơn</td></tr>
 <tr><td>Chi phí</td><td><strong>tốn đạn</strong> (băng + dự trữ hữu hạn)</td><td>miễn phí, chỉ tốn stamina (tự hồi)</td></tr>
 <tr><td>Nạp lại</td><td>phải nhả tay, mất nhịp</td><td>không</td></tr>
-<tr><td>Cướp Đạn</td><td>—</td><td>1 mạng chém = <strong>0.3 giây bắn</strong> (<code>gamefeel.json</code> → <code>melee.scavengeSecondsPerKill</code>)</td></tr>
+<tr><td>Cướp Đạn</td><td>—</td><td>1 mạng chém = <strong>0.8% kho đạn gốc</strong> — 125 mạng mới đầy lại cả kho (<code>gamefeel.json</code> → <code>melee.scavengeReserveFracPerKill</code>)</td></tr>
 </tbody></table></div>
 <p>Nên quyết định mỗi giây là: <em>bắn để giết nhanh mà tốn đạn</em>, hay <em>chém để giữ đạn mà chậm hơn</em>. Nếu dao vừa mạnh hơn vừa miễn phí thì không ai bắn cả — đó mới là điều phá vòng lặp, chứ không phải chuyện dám vào gần.</p>
 <p><code>meleeAdvantage</code> hạ tiếp xuống <strong>0.307</strong> → T1 dmg = <strong>30</strong>. <strong>Luật &quot;trash chết 1 nhát&quot; đã BỎ</strong> (<code>09</code> nguyên tắc 4 không còn áp cho cận chiến): 30 dmg vs trash 40 HP nên cần <strong>2 nhát</strong>, và một đoạn quét liên tục (62%) cần <strong>3 lượt</strong>. Đây là hệ quả trực tiếp của việc hạ sát thương cận chiến xuống 30, và <code>meleeOneShotFactor</code> + gate one-shot đã bị gỡ khỏi cả normalizer lẫn audit.</p>
@@ -2819,7 +2824,7 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <tr><td>Chế độ Hai Vùng (fallback rủi ro R1)</td><td><strong>Có</strong>, bật ở màn hình đầu</td></tr>
 <tr><td>Băng đạn / dự trữ / reload / <strong>Nạp Hoàn Hảo</strong> (cửa sổ ngẫu nhiên có seed)</td><td><strong>Có</strong></td></tr>
 <tr><td>Stamina + ngưỡng 50% giảm 50% tốc độ chém</td><td><strong>Có</strong></td></tr>
-<tr><td><strong>Cướp Đạn</strong>: 1 mạng chém = 0.3 giây bắn, phẳng cả run</td><td><strong>Có</strong></td></tr>
+<tr><td><strong>Cướp Đạn</strong>: 1 mạng chém = 0.8% kho đạn gốc, phẳng cả run</td><td><strong>Có</strong></td></tr>
 <tr><td>Chém Hoàn Hảo (≥3 con/nhát) + combo 5 bậc</td><td><strong>Có</strong></td></tr>
 <tr><td>Knockback + xác bay <strong>theo đúng vector quẹt</strong> + domino</td><td><strong>Có</strong></td></tr>
 <tr><td>Wave director theo <code>TP_budget(R,w)</code> + <code>countPerTP</code></td><td><strong>Có</strong></td></tr>
@@ -2936,6 +2941,9 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 <thead><tr><th>61</th><th><strong>Knockback đẩy theo vector đòn đánh, tức đẩy NGANG — và nó âm thầm xoá mối đe doạ.</strong> Hành lang có ba làn, chỉ làn giữa gây damage. Một nhát chém ngang hất quái từ làn giữa sang làn bên, nghĩa là knockback đang làm một việc <strong>quan trọng hơn nhiều so với vẻ ngoài của nó</strong>, theo một cách người chơi không chủ định và cũng không đọc ra được</th><th>Quái <strong>còn sống</strong> bị đẩy <strong>thẳng ra sau</strong> dọc hành lang (<code>hitReaction.pushStraightBack</code>), kể cả cú giật (lurch). Knockback giờ chỉ làm đúng một việc: <strong>mua thêm khoảng cách</strong> — cũng là cả lý do tồn tại của shotgun. <strong>Xác thì giữ nguyên</strong> bay theo vector quẹt: nó không còn là mối đe doạ, và đó là money shot của game (<code>05</code> mục 6). Đo: chém ngang — con sống lùi <strong>1.76m thẳng, 0m ngang</strong>; xác bay <code>lx 2.2 / lz -1.1</code></th></tr></thead><tbody>
 <tr><td>62</td><td><strong>Đạn dự trữ nhiều tới mức trụ P2 chưa bao giờ thật sự chạy.</strong> Mô hình <code>reserveWavesTarget</code> = 7 (&quot;đủ cho 7 wave&quot;) cho ra <strong>21–22 băng phụ</strong> mỗi khẩu — 217 viên cho súng lục, 569 cho rifle. Người chơi <strong>không bao giờ chạm vào trần đạn</strong> trong một phòng, mà &quot;hết đạn&quot; chính là thứ duy nhất buộc rút dao ra. Vòng khoá ĐẠN ↔ STAMINA tồn tại trên giấy chứ không bao giờ chạy</td><td>Đổi sang <strong><code>reserveMagsTarget</code> = 1.5 băng phụ</strong> + <code>reserveMinShots</code> = 6 (sàn cho nỏ băng 1 viên). Gate audit cũng đổi theo: từ &quot;đủ 6–9 wave&quot; sang &quot;<strong>1.2–2.2 băng phụ</strong>&quot;. Đo: rifle (băng 25 + 38 dự trữ) giữ tay bắn liên tục suốt phòng R1 → <strong>hết sạch băng 3 lần</strong>, kết thúc với <strong>0 đạn dự trữ</strong></td></tr>
 <tr><td>63</td><td><strong><code>build_pages.ps1</code> chỉ ĐỌC <code>audit_report.md</code> chứ không CHẠY audit — nên dòng &quot;audit: PASS x / FAIL y&quot; mà build in ra có thể là kết quả của một lần chạy từ rất lâu trước.</strong> Phát hiện khi <code>audit_report.md</code> còn nguyên mtime của 11 tiếng trước trong khi data đã đổi hàng chục lần. Trong suốt quãng đó build vẫn in &quot;PASS 83 / FAIL 0&quot; đều đặn, còn audit thật thì đang <strong>FAIL 1</strong> (nỏ băng 1 viên vi phạm hai gate về cỡ băng đạn). Đây là lỗi cùng họ với #38: <strong>lưới an toàn hỏng mà vẫn báo xanh</strong></td><td><code>build_pages.ps1</code> <strong>chạy</strong> <code>audit_gdd.ps1</code> trước khi đọc báo cáo. Và sửa hai gate cỡ băng đạn: khẩu nào có <code>reloadTime</code> <strong>ngắn hơn</strong> khoảng cách giữa 2 phát thì việc nạp không bao giờ chặn tay — với khẩu đó <strong>băng đạn không phải đơn vị chơi</strong>, nhịp bắn mới là, nên hai gate đó đo sai vật</td></tr>
+</tbody></table></div>
+<div class="tw"><table>
+<thead><tr><th>64</th><th><strong>Cắt kho đạn 15 lần nhưng để nguyên tỉ giá Cướp Đạn — đạn lại thành vô hạn.</strong> Lỗi #62 hạ <code>reserveMax</code> của rifle từ 569 xuống 38, còn tỉ giá cướp đạn vẫn là <code>0.3 giây bắn/mạng</code> (= 3 viên/mạng) vốn được tính cho kho 569. Kết quả: <strong>13 mạng chém đầy nguyên kho đạn</strong> — mà một phòng có 100–170 con. Sửa một đầu của cán cân mà quên đầu kia thì cán cân lật ngược lại y như cũ. Đo: rifle 13 mạng, SMG 11, súng lục 20, shotgun 30</th><th>Neo tỉ giá vào <strong>chính kho đạn gốc</strong>: <code>viên/mạng = reserveMax GỐC × scavengeReserveFracPerKill</code> (0.008). Neo vào chính thứ nó nạp lại thì hai con số <strong>không thể lệch nhau nữa</strong> — đổi <code>reserveMagsTarget</code> bao nhiêu, tỉ giá tự động theo bấy nhiêu. Đo lại: <strong>125 mạng chém mới đầy kho, ~80 mạng mới được một băng</strong>, đồng đều cho mọi khẩu (trước: 11–30). Dùng kho GỐC nên thẻ Đạn Dự Trữ nâng trần chứa mà không nâng tốc độ hồi (chồng 4 thẻ: kho 38 → 797, tốc độ hồi đổi <strong>0</strong>). Chơi thật: hết phòng R1 còn 12/38, R2 còn 23/38</th></tr></thead><tbody>
 </tbody></table></div>
 <blockquote><strong>Lỗi #14 và #16 đã bị chính thiết kế vượt qua.</strong> Khi chuyển sang <strong>quái đứng yên</strong>, bài toán đón đầu của <code>pincer</code> (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó <strong>đã bị bỏ khỏi code</strong>. Lane spring (#16) thì vẫn giữ, nhưng giờ nó chỉ chống separation làm lệch làn khi quái spawn chồng nhau, không còn phải chống lực đẩy dồn theo suốt đường đi. Ghi lại ở đây vì hai lỗi đó <strong>là lỗi thật</strong> ở thời điểm phát hiện, và vì nó cho thấy giá của việc đổi mô hình di chuyển: mọi thứ suy ra từ tốc độ quái đều phải tính lại.</blockquote>
 <p>Ngoài ra prototype xác nhận <strong>công thức số quái phải tính theo <code>composition</code></strong>, không phải <code>tpCost</code> trung bình toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 lần. Đã ghi vào <code>16</code> mục 4.4.</p>
