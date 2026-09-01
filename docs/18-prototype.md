@@ -53,7 +53,7 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 | Chế độ Hai Vùng (fallback rủi ro R1) | **Có**, bật ở màn hình đầu |
 | Băng đạn / dự trữ / reload / **Nạp Hoàn Hảo** (cửa sổ ngẫu nhiên có seed) | **Có** |
 | Stamina + ngưỡng 50% giảm 50% tốc độ chém | **Có** |
-| **Cướp Đạn**: 16 mạng chém = 1 băng đạn | **Có** |
+| **Cướp Đạn**: 1 mạng chém = 0.3 giây bắn, phẳng cả run | **Có** |
 | Chém Hoàn Hảo (≥3 con/nhát) + combo 5 bậc | **Có** |
 | Knockback + xác bay **theo đúng vector quẹt** + domino | **Có** |
 | Wave director theo `TP_budget(R,w)` + `countPerTP` | **Có** |
@@ -146,6 +146,8 @@ Rồi mở `http://localhost:8123`. Bắt buộc chạy qua HTTP — prototype d
 
 | 53 | **Đạn ghém bắn xuyên qua người sống.** Mỗi viên chọn con có **sai lệch ngang nhỏ nhất**, không phải con **gần nhất trên tia**. Một con ở 12m nằm đúng tia (lệch 0.05m) thắng một con ở 4m nằm lệch 0.5m — nên một phát giết con **đằng sau** trong khi mấy con trước mặt không xảy ra gì. Sửa lần đầu thành "gần nhất thì dừng" lại hỏng kiểu khác: `pelletRadiusM` 0.85 cho bề ngang tia **1.15m**, gấp đôi thân goblin thật, nên con đứng giữa **nuốt 9.9/9 viên** còn hai con cạnh nó ăn 0 | Mô hình của game horde (Left 4 Dead / Killing Floor): duyệt từ **gần ra xa**, viên ghém dừng ở con đầu tiên nó chạm, và **chỉ xuyên tiếp khi nó GIẾT được** con đó (`penetrationMult` 0.6, tối đa `penetrateMax` 3). `pelletRadiusM` về **0.6**. Đo: 3 con xếp hàng đều yếu → **cả 3 chết**; đúng cảnh đó nhưng con đầu 60× HP → **cả 3 sống**. Bất biến: không bao giờ có con sau chết mà con trước còn sống |
 | 54 | **Cướp Đạn 6 mạng/băng làm vòng khoá ĐẠN ↔ STAMINA mất hết căng thẳng.** Một phòng có 100–170 con; chém 40 con là được gần 7 băng, tức **không bao giờ hết đạn** — mà "đạn hữu hạn" chính là trụ P2, là lý do tồn tại của cả cơ chế cận chiến | **16 mạng = 1 băng**, và chuyển hằng số ra `gamefeel.json` → `melee.scavengeKillsPerMag` (trước nằm cứng trong `game.js`). 40 mạng chém = 2.5 băng: vẫn đáng để vào gần chém, nhưng không thay thế được việc giữ đạn |
+
+| 55 | **Cướp Đạn neo vào `magMax`, mà `magMax` thì nâng cấp được — nên thẻ Băng Đạn ĂN HAI LẦN.** "16 mạng chém = 1 băng" nghe như một tỉ giá cố định, nhưng "một băng" không phải đơn vị cố định: thẻ Băng Đạn cộng tới **+95%** mỗi cấp, chồng 8 cấp. Cuối run cùng 16 mạng chém đổi được gấp nhiều lần đạn so với đầu run — thẻ đó vừa cho băng to hơn, **vừa nhân số đạn cướp được**. Tốc độ hồi đạn dốc lên theo build thay vì phẳng | Neo vào **GIÂY BẮN**, thứ không thẻ nào chạm tới: `bullets/kill = scavengeSecondsPerKill × rpm_GỐC / 60`. `rw.rpm` gốc không nâng cấp được (`rofMult` chỉ đổi `fireInterval`), nên tỉ giá **phẳng suốt run** và **giống nhau giữa mọi khẩu**. Đo: 40 mạng chém = ~12 giây bắn cho cả 4 khẩu (shotgun 10.9s · rifle 12.0s · SMG 11.9s · nỏ 11.8s), và chồng 8 thẻ Băng Đạn (mag 5 → 1045) làm số đạn cướp được đổi **0**. Cộng thêm: trả **từng viên** thay vì một cục mỗi 16 mạng — thanh đạn nhích lên đều trong lúc chém |
 
 > **Lỗi #14 và #16 đã bị chính thiết kế vượt qua.** Khi chuyển sang **quái đứng yên**, bài toán đón đầu của
 > `pincer` (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó **đã bị bỏ khỏi code**.

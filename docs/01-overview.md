@@ -9,7 +9,7 @@
 
 Into the Goblin là **FPS màn hình dọc chơi một tay**. Nhân vật tự tiến sâu vào hầm; ngón tay bạn dành 100%
 cho việc giết: **tap để bắn**, **quẹt để chém**. Súng có băng đạn — hết đạn phải lùi về dùng dao;
-mỗi 16 mạng chém được lại nạp cho bạn một băng đạn mới. Đó là toàn bộ nhịp của game, và nó lặp mỗi 3 giây.
+mỗi mạng chém được lại nạp cho bạn 0.3 giây bắn. Đó là toàn bộ nhịp của game, và nó lặp mỗi 3 giây.
 
 Hầm chia thành phòng và wave. Càng xuống sâu, quái càng đông và càng khoẻ — tới Depth 1 phòng 6 đã có gần
 **60 con cùng lúc trên màn hình**, và chết là nổ vàng đầy mặt. Ở mỗi Cổng, hầm mở ra **hai cửa** với biển

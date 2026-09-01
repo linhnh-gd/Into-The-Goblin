@@ -110,7 +110,7 @@ export class Game {
       magMult: 1, reloadMult: 1, reserveMult: 1, meleeDmg: 1, rangedDmg: 1,
       kb: 1, corpseLaunch: 1, gold: 1, hpAdd: 0, hpMult: 1, staminaAdd: 0, staminaRegenAdd: 0,
       staminaCostMult: 1, reachAdd: 0, arcAdd: 0, crit: 0.05, critMult: rw.critMult,
-      scavengeNeed: GD.feel.melee.scavengeKillsPerMag, perfectNeed: 3, magnetMult: 1, dmgTakenMult: 1,
+      scavengeMult: 1, perfectNeed: 3, magnetMult: 1, dmgTakenMult: 1,
       aimCone: 4, dodgeCdMult: 1, heavyLen: null, noLowPenalty: false,
       dmgPerLuck4: 0, dmgPer1000Gold: 0, twoBlades: false, collapse: false, rofMult: 1,
     };
@@ -125,7 +125,11 @@ export class Game {
     this.staminaIdle = 0;
     this.mag = rw.mag; this.magMax = rw.mag;
     this.reserveMax = rw.reserveMax; this.reserve = rw.reserveMax;
-    this.scavenge = 0;
+    this.scavenge = 0;          // so le vien dan da cuop duoc, chua du 1 vien
+    this.scavBanner = 0;        // da cuop bao nhieu vien ke tu lan bao gan nhat
+    /* Mot mang chem = scavengeSecondsPerKill giay ban cua khau dang cam. Dung rw.rpm
+       GOC: rofMult (the Nhip Ban) doi fireInterval nhung khong duoc phep doi ti le nay. */
+    this.scavPerKill = GD.feel.melee.scavengeSecondsPerKill * (rw.rpm / 60);
     this.luck = 0;
     this.gold = 0;
     this.combo = 0; this.comboT = 0;
@@ -575,7 +579,7 @@ export class Game {
       this.perfectSlashes++;
       this.stam = Math.min(this.stamMax, this.stam + 12);
       this.combo = Math.min(5, this.combo + 1);
-      this.scavenge += killed;                              // tinh x2
+      this.scavengeKills(killed);                           // tinh x2
       this.juice.addSlowmo(0.12, 0.35);
       this.juice.addShake(20, nx, ny);
       this.audio.duck(0.6, 0.12);
@@ -584,14 +588,33 @@ export class Game {
       if (this.perfectSlashes % 10 === 0) this.addLuck(1, 'Chém Hoàn Hảo x10');
     }
 
-    // Cuop Dan: N mang chem = 1 bang dan
-    this.scavenge += killed;
-    while (this.scavenge >= this.mods.scavengeNeed) {
-      this.scavenge -= this.mods.scavengeNeed;
-      this.reserve = Math.min(this.reserveMax, this.reserve + this.magMax);
-      this.ui.banner('CƯỚP ĐẠN', '+1 băng');
-    }
+    this.scavengeKills(killed);
     if (this.mods.twoBlades) this.buffNextShot = 1;
+  }
+
+  /* CUOP DAN — do bang GIAY BAN, khong bang "mot bang dan".
+     "Mot bang" khong phai mot don vi co dinh: the Bang Dan cong toi +95% `magMax`, nen
+     cung 16 mang chem ma cuoi run doi duoc gan gap doi dan so voi dau run. The do AN HAI
+     LAN -- vua cho bang to hon, vua nhan so dan cuop duoc (docs/18 loi #55).
+     Neo vao GIAY BAN thi khong the nao cham toi: no suy tu `rw.rpm` GOC, ma rpm goc
+     khong co the nao nang cap duoc (`rofMult` chi doi `fireInterval`, khong doi rw.rpm).
+     He qua: toc do hoi dan PHANG tu dau den cuoi run, va giong nhau giua moi khau.
+     Cong don theo SO LE roi tra tung vien -> thanh dan nhich len deu trong luc chem,
+     thay vi nhay mot cuc moi 16 mang. */
+  scavengeKills(killed) {
+    if (killed <= 0 || this.reserve >= this.reserveMax) return;
+    this.scavenge += killed * this.scavPerKill * (this.mods.scavengeMult || 1);
+    const whole = Math.floor(this.scavenge);
+    if (whole <= 0) return;
+    this.scavenge -= whole;
+    const before = this.reserve;
+    this.reserve = Math.min(this.reserveMax, this.reserve + whole);
+    // moc bao: cu du MOT BANG GOC thi keu mot tieng, de nhip thuong van con
+    this.scavBanner += this.reserve - before;
+    if (this.scavBanner >= this.rw.mag) {
+      this.scavBanner = 0;
+      this.ui.banner('CƯỚP ĐẠN', `+${this.rw.mag} viên`);
+    }
   }
 
   /** @param {object} o {kx,kz,kbForce,source,archetype,heavy,weakPoint,crit}

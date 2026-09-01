@@ -248,7 +248,7 @@ export class UI {
         `tap ${s.tap}  hold ${s.hold}  chém ${s.melee}  né ${s.move}\n` +
         `HUỶ ${s.cancelled}/${s.total} = ${rate}%  (ngưỡng Sprint 0 < 8%)\n` +
         `TP R${g.director.R} w${g.director.waveIdx}  phase ${g.director.phase}\n` +
-        `stam ${Math.round(g.stam)}  cướp đạn ${g.scavenge}/${g.mods.scavengeNeed}`;
+        `stam ${Math.round(g.stam)}  cướp đạn ${g.scavPerKill.toFixed(2)} viên/mạng`;
     }
   }
 
