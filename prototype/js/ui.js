@@ -102,7 +102,7 @@ export class UI {
     m.classList.add('on');
   }
 
-  showStamina() { this.el.stamWrap.classList.add('on'); this.stamHide = 2.0; }
+  showStamina() { this.el.stamWrap.classList.add('on'); this.stamHide = 0.7; }
   flashStamina() { this.showStamina(); this.el.stamWrap.classList.add('low'); }
   mist(level) { this.el.mist.style.opacity = String(level); }
 
@@ -225,8 +225,13 @@ export class UI {
     const dTot = Math.round(g.director.roomDist || 0);
     e.distVal.textContent = dTot ? dRun + '/' + dTot : '--';
     e.distFill.style.width = dTot ? Math.min(100, (dRun / dTot) * 100) + '%' : '0%';
+    /* Thanh stamina hien SUOT LUC CHUA DAY, chi an khi da day lai.
+       Truoc day no fade sau 2s ke tu nhat cuoi -- tuc no bien mat DUNG LUC nguoi choi
+       dang cho hoi de chem tiep, giau di dung cai duy nhat ho dang doi. Con dang hoi
+       thi no con la thong tin. */
     e.stamFill.style.width = `${(g.stam / g.stamMax) * 100}%`;
     e.stamWrap.classList.toggle('low', g.stam < g.stamMax * 0.5);
+    if (g.running && g.stam < g.stamMax - 0.01) { e.stamWrap.classList.add('on'); this.stamHide = 0.7; }
 
     this.ammoTick(g);
 

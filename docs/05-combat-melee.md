@@ -13,7 +13,7 @@ enemy trong tầm và trúng slide thì get hit* · *knockback* · ***xác kẻ 
 | Tối đa | 100 (+ talent/card) | |
 | Hồi | **18 / giây**, bắt đầu sau **0.6s** kể từ nhát cuối | Đảm bảo luôn có 1 nhát nhẹ sau ~1.4s dù cạn sạch |
 | Ngưỡng kiệt sức | **< 50%** → **tốc độ chém x0.5** (docs) | Không chặn hẳn — vẫn chém được, chỉ chậm |
-| Hiển thị | Hiện khi tấn công; **ngừng cận chiến 2s → fade dần trong 0.5s** (docs) | Không chiếm chỗ HUD khi đang bắn |
+| Hiển thị | Hiện **suốt lúc chưa đầy**, chỉ ẩn khi đã hồi đầy lại | Hồi 18/giây nên từ 0 lên đầy mất **5.6s**. Fade sau 2s như bản cũ là giấu đi đúng cái người chơi đang chờ (`18` lỗi #58) |
 | Màu | > 50% vàng · < 50% đỏ + nhấp nháy nhẹ + tiếng thở gấp | Dạy ngưỡng 50% không cần chữ |
 
 **Vì sao ngưỡng 50% là thiết kế tốt:** nó tạo ra một "vách" mà người chơi cảm nhận được trong ngón tay

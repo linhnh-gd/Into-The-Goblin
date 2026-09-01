@@ -87,9 +87,11 @@
 |---|---|---|---|
 | tapMaxDuration | 130 | ms | Do TRE truoc khi sung bat dau ban lien tuc. Tang neu tester muon ban ma ra dao |
 | tapMaxTravel | 0.05 | S |  |
-| slideVelocityThreshold | 520 | px/s | SO QUAN TRONG NHAT CUA GAME. 900 px/s tren man 390px CSS la 2.3 chieu rong man hinh moi giay -- mot cu BUNG tay, khong phai mot cu quet. Hau qua: quet binh thuong bi doc thanh HOLD (rut sung) va do luat khoa thi khong ra dao duoc nua cho toi khi nhac tay. 520 = 1.35 chieu rong/giay, dung tam mot cu quet that. An toan vi slideMinLength van chan: quet ngan qua thi roi ve tap. |
+| slideVelocityThreshold | 430 | px/s | SO QUAN TRONG NHAT CUA GAME. 900 px/s tren man 390px CSS la 2.3 chieu rong man hinh moi giay -- mot cu BUNG tay, khong phai mot cu quet. Hau qua: quet binh thuong bi doc thanh HOLD (rut sung) va do luat khoa thi khong ra dao duoc nua cho toi khi nhac tay. 520 = 1.35 chieu rong/giay, dung tam mot cu quet that. An toan vi slideMinLength van chan: quet ngan qua thi roi ve tap. |
 | slideDetectWindow | 300 | ms | Cua so nhan dang quet. Rong hon mot chut cho nguoi choi bat dau quet cham roi nhanh dan. |
-| slideMinLength | 0.12 | S | Dưới ngưỡng này coi là tap |
+| slideMinLength | 0.12 | S | Quang duong toi thieu de mot cu quet duoc tinh la chem luc NHAC TAY |
+| slideCommitLength | 0.18 | S | Di du xa nay thi CHOT thanh nhat chem ngay, khong doi nhac tay. Duoi nguong: doi den luc nhac tay roi xem ngon tay da DUNG chua -- dung roi la tap truot tay, con dang bay la ve nhanh. |
+| tapStillMs | 60 | ms | Khong co cu di chuyen nao trong ngan ay ms truoc luc nhac tay = ngon tay da dung = TAP. |
 | heavySlideLength | 0.55 | S | Cho phép người chơi tune 0.40–0.70 |
 | dodgeCooldown | 2.5 | s |  |
 | dashCooldown | 4.0 | s |  |

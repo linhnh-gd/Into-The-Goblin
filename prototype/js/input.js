@@ -38,6 +38,8 @@ export class InputRouter {
       slideVel: c.slideVelocityThreshold,
       slideWindow: c.slideDetectWindow,
       slideMinLen: c.slideMinLength,
+      slideCommitLen: c.slideCommitLength,
+      tapStillMs: c.tapStillMs,
       heavyLen: c.heavySlideLength,
       slideResolveMax: 400,
       slideMinSegPx: GD.feel.melee.slideMinSegPx,
@@ -76,6 +78,7 @@ export class InputRouter {
     this.p = { ...this.p0 };
     this.prev = { ...this.p0, t: this.t0 };
     this.peakVel = 0;
+    this.fromHoldEscape = false;
     /* HEN GIO vao HOLD_FIRE. Truoc day _enterHold() CHI duoc goi trong pointermove, nen
        giu ngon tay DUNG YEN thi khong co su kien move nao va sung khong bao gio ban lien
        tuc -- phai re tay moi ra dan. Do la "hold bi delay" ma nguoi choi gap. */
@@ -97,8 +100,15 @@ export class InputRouter {
     this.p = { x, y };
     const elapsed = now - this.t0;
 
+    this.lastVel = vel;
+    this.lastMoveT = now;
+
     if (this.state === ST.PENDING) {
-      if (elapsed <= this.P.slideWindow && vel >= this.P.slideVel) {
+      /* Khoa sang chem phai co CA van toc LAN quang duong. Chi nhin van toc thoi thi
+         moi cu tap hoi truot tay deu bi nuot -- ngon cai bam nhanh bao gio cung xe
+         dich vai chuc pixel, ma 50px tren man 375 da du vuot nguong (docs/18 loi #56). */
+      const travel = Math.hypot(x - this.p0.x, y - this.p0.y) / this.screenW;
+      if (elapsed <= this.P.slideWindow && vel >= this.P.slideVel && travel > this.P.tapMaxTravel) {
         clearTimeout(this._holdTimer);
         this.state = ST.SLIDE;                       // KHOA sang nhanh chem
       } else if (elapsed >= this.P.tapMaxDuration) {
@@ -117,21 +127,36 @@ export class InputRouter {
          cu re tay vo tinh trong luc giu ban khong the pha nham. */
       if (vel < this.P.slideVel * 0.5) this.holdAnchor = { x, y };   // re cham -> dat lai moc
       const tdx = x - this.holdAnchor.x, tdy = y - this.holdAnchor.y;
-      if (vel >= this.P.slideVel * 1.35 &&
-          Math.hypot(tdx, tdy) / this.screenW >= this.P.slideMinLen) {
+      /* Quang duong chi can bang `tapMaxTravel` (19px) chu khong phai `slideMinLen`
+         (45px): VAN TOC moi la thu quyet dinh o day. Giu de ban thi ngon tay hoac dung
+         yen hoac re CHAM (hold-and-drag), khong bao gio dat 1.15x nguong quet -- nen
+         khong the pha khoa nham. Bat 45px lam cu vay tay dut khoat van bi nuot. */
+      if (vel >= this.P.slideVel * 1.15 &&
+          Math.hypot(tdx, tdy) / this.screenW >= this.P.tapMaxTravel) {
+        /* Chuyen sang SLIDE roi DE NO TU CHAY, khong goi `_resolveSlide()` ngay tai day.
+           Goi ngay thi quang duong moi co 19-25px, duoi `slideMinLen`, va _resolveSlide
+           se roi vao nhanh "qua ngan -> coi la tap" — nuot luon ca cu cham, khong ban
+           cung khong chem. Cho no chay tiep thi vai frame nua la du dai de thanh nhat
+           chem that (docs/18 loi #57). t0 dat lai de dong ho 400ms tinh tu day. */
         this.h.onHoldEnd?.();
         this.p0 = { x: this.holdAnchor.x, y: this.holdAnchor.y };
+        this.t0 = now;
         this.state = ST.SLIDE;
-        this._resolveSlide();
+        // y do da duoc chung minh bang VAN TOC -> khong phai doi du slideCommitLen nua
+        this.fromHoldEscape = true;
         return;
       }
       this.h.onHoldMove?.(x, y);
       return;
     }
     if (this.state === ST.SLIDE) {
-      // phan giai huong som nhat co the: du dai la quyet dinh luon, khong doi het 400ms
+      /* Chot som khi da di DU DAI de khong the la mot cu tap truot tay (slideCommitLen).
+         Duoi nguong do thi doi toi luc nhac tay moi quyet dinh -- xem `_up`. */
       const tdx = x - this.p0.x, tdy = y - this.p0.y;
-      if (Math.hypot(tdx, tdy) / this.screenW >= this.P.slideMinLen ||
+      // `slideCommitLen` sinh ra de bao ve CU TAP truot tay. Mot cu quet thoat ra tu
+      // che do giu ban thi khong phai tap, y do da ro tu van toc -> chot som hon.
+      const chot = this.fromHoldEscape ? this.P.slideMinLen : this.P.slideCommitLen;
+      if (Math.hypot(tdx, tdy) / this.screenW >= chot ||
           elapsed >= this.P.slideResolveMax) this._resolveSlide();
       return;
     }
@@ -173,8 +198,20 @@ export class InputRouter {
     } else if (this.state === ST.SLIDE_CONT) {
       this.h.onSlideEnd?.();
     } else if (this.state === ST.SLIDE) {
-      this._resolveSlide();
-      if (this.state === ST.SLIDE_CONT) this.h.onSlideEnd?.();
+      /* NGON TAY DA DUNG hay CON DANG BAY luc nhac?
+         Tap truot tay va ve nhanh co the di CUNG mot quang duong; khac nhau duy nhat o
+         cho mot cai da dung lai roi moi nhac, mot cai van con dang chuyen dong. Do la
+         thu tach duoc hai cai ma quang duong khong tach duoc. */
+      const dung = (now - (this.lastMoveT || 0)) > this.P.tapStillMs ||
+                   (this.lastVel || 0) < this.P.slideVel;
+      if (travel / this.screenW < this.P.slideCommitLen && dung) {
+        this.state = ST.CONSUMED;
+        this._emit(GESTURE.TAP);
+        this.h.onTap?.(this.p0.x, this.p0.y);
+      } else {
+        this._resolveSlide();
+        if (this.state === ST.SLIDE_CONT) this.h.onSlideEnd?.();
+      }
     }
     this.state = ST.IDLE;
     this.id = null;

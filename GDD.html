@@ -537,11 +537,11 @@ footer{padding:34px 0 0;color:var(--muted);font-size:12.5px;border-top:1px solid
 <div class="tw"><table>
 <thead><tr><th>Gesture</th><th>Điều kiện nhận (chuẩn hoá theo <code>S</code> = chiều rộng màn hình)</th><th>Hành động</th><th>Vũ khí</th></tr></thead><tbody>
 <tr><td><strong>Tap</strong></td><td>Ngón nhấc lên trong <code>&lt; 130ms</code> <strong>và</strong> tổng di chuyển <code>&lt; 0.05S</code></td><td>1 phát bắn <strong>đúng chỗ chạm</strong> (nón trợ giúp 4°), ăn được yếu điểm, trượt được</td><td>Tầm xa</td></tr>
-<tr><td><strong>Hold</strong></td><td>Ngón giữ <code>&gt;= 130ms</code>, tốc độ <code>&lt; 520 px/s</code></td><td>Bắn liên tục, <strong>tự nhắm</strong> con gần nhất làn giữa. Không ăn yếu điểm</td><td>Tầm xa</td></tr>
-<tr><td><strong>Hold &amp; Drag</strong></td><td>Đã ở trạng thái Hold rồi mới di chuyển, tốc độ <code>&lt; 520 px/s</code></td><td>Bắn liên tục — vẫn <strong>tự nhắm</strong>, vị trí ngón không đổi mục tiêu</td><td>Tầm xa</td></tr>
-<tr><td><strong>Slide nhẹ</strong></td><td>Tốc độ đỉnh <code>&gt;= 520 px/s</code> trong <code>&lt;= 300ms</code> đầu, độ dài <code>0.12S–0.55S</code>, góc lệch khỏi ngang <code>&lt;= 55°</code></td><td>Chém nhẹ</td><td>Cận chiến</td></tr>
+<tr><td><strong>Hold</strong></td><td>Ngón giữ <code>&gt;= 130ms</code>, tốc độ <code>&lt; 430 px/s</code></td><td>Bắn liên tục, <strong>tự nhắm</strong> con gần nhất làn giữa. Không ăn yếu điểm</td><td>Tầm xa</td></tr>
+<tr><td><strong>Hold &amp; Drag</strong></td><td>Đã ở trạng thái Hold rồi mới di chuyển, tốc độ <code>&lt; 430 px/s</code></td><td>Bắn liên tục — vẫn <strong>tự nhắm</strong>, vị trí ngón không đổi mục tiêu</td><td>Tầm xa</td></tr>
+<tr><td><strong>Slide nhẹ</strong></td><td>Tốc độ đỉnh <code>&gt;= 430 px/s</code> trong <code>&lt;= 300ms</code> đầu, độ dài <code>0.12S–0.55S</code>, góc lệch khỏi ngang <code>&lt;= 55°</code></td><td>Chém nhẹ</td><td>Cận chiến</td></tr>
 <tr><td><strong>Slide nặng</strong></td><td>Như trên nhưng độ dài <code>&gt; 0.55S</code></td><td>Chém nặng: 2x stamina, 2.0x damage, 2.2x knockback, arc +30°</td><td>Cận chiến</td></tr>
-<tr><td><strong>Slide dọc xuống</strong></td><td>Tốc độ <code>&gt;= 520 px/s</code>, góc lệch khỏi <em>dọc</em> <code>&lt;= 25°</code>, hướng xuống</td><td><strong>Bước Lùi</strong>: lùi 1.2m, 0.15s bất tử, cooldown 2.5s</td><td>—</td></tr>
+<tr><td><strong>Slide dọc xuống</strong></td><td>Tốc độ <code>&gt;= 430 px/s</code>, góc lệch khỏi <em>dọc</em> <code>&lt;= 25°</code>, hướng xuống</td><td><strong>Bước Lùi</strong>: lùi 1.2m, 0.15s bất tử, cooldown 2.5s</td><td>—</td></tr>
 <tr><td><strong>Slide dọc lên</strong></td><td>Như trên, hướng lên</td><td><strong>Xốc Tới</strong>: tiến 2.0m, đẩy văng quái trên đường, cooldown 4s</td><td>—</td></tr>
 <tr><td><strong>Two-finger tap</strong></td><td>2 ngón chạm trong <code>120ms</code></td><td>Kích Bảo Vật / Ultimate</td><td>—</td></tr>
 <tr><td><strong>Tap nút góc phải-dưới</strong></td><td>—</td><td>Reload thủ công / Nạp Hoàn Hảo</td><td>Tầm xa</td></tr>
@@ -563,7 +563,7 @@ TOUCH_DOWN
   v
 PENDING  (cửa sổ quyết định: 130ms hoặc tới khi vượt ngưỡng)
   |
-  |-- Nếu vận tốc tức thời &gt;= 520 px/s TRƯỚC 300ms
+  |-- Nếu vận tốc tức thời &gt;= 430 px/s VÀ đã đi quá 0.05S, TRƯỚC 300ms
   |        --&gt; state = SLIDE  (khoá, không thể quay lại bắn trong lần chạm này)
   |
   |-- Nếu nhấc ngón trước 130ms &amp; |p - p0| &lt; 0.05S
@@ -586,11 +586,43 @@ HOLD_FIRE
 <p><strong>Một lối thoát khoá, chỉ một chiều: <code>HOLD_FIRE</code> → <code>SLIDE</code>.</strong> Bản đầu khoá <strong>cả hai chiều</strong>, nên muốn đổi từ bắn sang chém phải <strong>nhấc tay</strong> rồi quẹt lại. Trong một game quái tới liên tục, một lần nhấc tay là một nhịp mất trắng — và đó chính là cảm giác &quot;chuyển đổi giữa cận chiến và bắn xa không mượt&quot;.</p>
 <div class="tw"><table>
 <thead><tr><th></th><th>Điều kiện</th><th>Vì sao an toàn</th></tr></thead><tbody>
-<tr><td>Thoát khoá</td><td>vận tốc <code>&gt;= 1.35 ×</code> ngưỡng quẹt <strong>và</strong> đi được <code>&gt;= slideMinLength</code></td><td>Cao hơn hẳn ngưỡng nhận dạng thường: một cú rê tay vô tình trong lúc giữ bắn <strong>không</strong> phá được khoá</td></tr>
+<tr><td>Thoát khoá</td><td>vận tốc <code>&gt;= 1.15 ×</code> ngưỡng quẹt <strong>và</strong> đi được <code>&gt;= tapMaxTravel</code> (19px)</td><td><strong>Vận tốc</strong> mới là thứ quyết định. Giữ để bắn thì ngón tay hoặc đứng yên hoặc rê CHẬM (hold-and-drag) — không bao giờ đạt 1.15× ngưỡng quẹt. Bắt 45px làm cú vẫy tay dứt khoát vẫn bị nuốt</td></tr>
+<tr><td>Sau khi thoát</td><td>chốt thành nhát chém ở <code>slideMinLength</code> chứ không phải <code>slideCommitLength</code></td><td>Ý đồ đã chứng minh bằng vận tốc rồi, không cần lớp bảo vệ cho cú tap nữa — nên nhát chém ra <strong>giữa cú vẫy</strong>, không đợi nhả tay</td></tr>
 <tr><td>Mốc đo quãng đường</td><td>đặt lại mỗi khi vận tốc tụt dưới <code>0.5 ×</code> ngưỡng</td><td>Rê chậm cả giây không cộng dồn thành &quot;một cú quẹt&quot;</td></tr>
 </tbody></table></div>
 <p>Chiều ngược lại (<code>SLIDE</code> → bắn) <strong>vẫn khoá</strong>: đang chém mà lỡ tay ra một phát đạn là mất đạn, mà đạn là tài nguyên khan hiếm nhất (trụ P2). Nhấc tay rồi chạm là đủ nhanh cho chiều đó.</p>
 <p><strong>Đa điểm chạm:</strong> chỉ ngón <strong>đầu tiên</strong> điều khiển combat. Ngón thứ 2 chỉ dùng cho two-finger tap (Ultimate) và bị bỏ qua trong mọi trường hợp khác.</p>
+<h3>2d. Cú tap được bảo vệ bằng &quot;NGÓN TAY ĐÃ DỪNG&quot;, không bằng ngưỡng vận tốc cao</h3>
+<p>Đây là chỗ hai yêu cầu đối đầu nhau trực tiếp:</p>
+<ul>
+<li><em>&quot;Chuyển sang chém phải nhạy hơn&quot;</em> → <strong>hạ</strong> ngưỡng nhận quẹt.</li>
+<li><em>&quot;Tap vào mà không bắn&quot;</em> → <strong>nâng</strong> ngưỡng, để cú tap hơi trượt tay không bị nuốt thành nhát chém.</li>
+</ul>
+<p>Một con số không thể vừa cao vừa thấp. Lời giải là <strong>đừng dùng một con số</strong> — dùng đúng cái phân biệt được hai thứ đó. Đo thực tế: ngón cái bấm nhanh trên màn 375px <strong>trôi 30–55px là bình thường</strong>, và ở 30ms thì 50px = 1.600 px/s, thừa sức vượt mọi ngưỡng vận tốc hợp lý. Quãng đường và vận tốc <strong>đều không</strong> tách được hai gesture này.</p>
+<p>Cái tách được: <strong>cú tap thì ngón tay đã dừng lại rồi mới nhấc; cú vẽ thì ngón tay vẫn còn đang bay.</strong></p>
+<div class="tw"><table>
+<thead><tr><th>Lúc nhả tay</th><th>Điều kiện</th><th>Kết luận</th></tr></thead><tbody>
+<tr><td>Đã đi <code>&lt; slideCommitLength</code> <strong>và</strong> (không cử động trong <code>tapStillMs</code> <strong>hoặc</strong> vận tốc cuối <code>&lt; ngưỡng</code>)</td><td>ngón tay <strong>đã dừng</strong></td><td><strong>TAP</strong> — bắn</td></tr>
+<tr><td>Còn lại</td><td>ngón tay <strong>còn đang bay</strong></td><td><strong>CHÉM</strong></td></tr>
+</tbody></table></div>
+<p>Ba luật đi kèm, tất cả đều cần thiết:</p>
+<ol>
+<li><strong>Khoá sang SLIDE phải có CẢ vận tốc LẪN quãng đường &gt; <code>tapMaxTravel</code>.</strong> Chỉ nhìn vận tốc thì một</li>
+<span class="cont">cái giật tay 20px cũng khoá mất, và từ đó không bắn được nữa.</span>
+<li><strong>Chốt sớm giữa cú chỉ khi đã đi quá <code>slideCommitLength</code>.</strong> Dưới ngưỡng đó thì <em>đợi tới lúc nhả tay</em></li>
+<span class="cont">rồi mới xử — vì chỉ lúc đó mới biết ngón tay dừng hay chưa.</span>
+<li><strong>Lối thoát khoá <code>HOLD_FIRE → SLIDE</code> KHÔNG được resolve ngay tại chỗ.</strong> Lúc thoát, quãng đường mới</li>
+<span class="cont">~19–25px, dưới <code>slideMinLength</code> — gọi <code>_resolveSlide()</code> ngay thì nó rơi vào nhánh *&quot;quá ngắn → coi</span>
+<span class="cont">là tap&quot;* và <strong>nuốt luôn cả cú chạm</strong>: không bắn, cũng không chém. Phải chuyển state rồi để nó chạy</span>
+<span class="cont">tiếp vài frame.</span>
+</ol>
+<p>Đo sau khi sửa (màn 375px):</p>
+<div class="tw"><table>
+<thead><tr><th>Thao tác</th><th>Kết quả</th></tr></thead><tbody>
+<tr><td>Tap trôi tay 0 / 30 / <strong>55px</strong> rồi dừng</td><td><strong>BẮN</strong> cả ba (trước: 50px trở lên là mất phát bắn)</td></tr>
+<tr><td>Đang giữ bắn, vẫy tay 60 / 80 / 120px</td><td><strong>RA DAO ngay giữa cú vẫy</strong>, không cần nhả tay</td></tr>
+<tr><td>Đang giữ bắn, rê <strong>chậm</strong> 120px (ngắm)</td><td><strong>Vẫn cầm súng</strong> — hold-and-drag không bị phá nhầm</td></tr>
+</tbody></table></div>
 <hr />
 <h3>2b. Súng rút/cất và chém liên tục (bản cài đặt hiện tại)</h3>
 <p>Hai gesture chính được viết lại để <strong>trạng thái nhìn thấy được trên màn hình</strong>, không phải đọc HUD.</p>
@@ -646,9 +678,11 @@ HOLD_FIRE
 <thead><tr><th>Tham số</th><th>Mặc định</th><th>Ghi chú tune</th></tr></thead><tbody>
 <tr><td><code>tapMaxDuration</code></td><td>130 ms</td><td>Tăng nếu tester &quot;muốn bắn mà ra dao&quot;</td></tr>
 <tr><td><code>tapMaxTravel</code></td><td>0.05 S</td><td></td></tr>
-<tr><td><code>slideVelocityThreshold</code></td><td><strong>520 px/s</strong></td><td><strong>Số quan trọng nhất của game.</strong> 900 px/s trên màn 390px CSS là <strong>2.3 chiều rộng màn hình mỗi giây</strong> — một cú <em>bung</em> tay, không phải một cú quẹt. Hậu quả: quẹt bình thường bị đọc thành <code>HOLD</code> (rút súng), và do luật khoá thì không ra dao được nữa cho tới khi nhấc tay. 520 = 1.35 chiều rộng/giây. An toàn vì <code>slideMinLength</code> vẫn chặn: quẹt ngắn quá thì rơi về tap</td></tr>
+<tr><td><code>slideVelocityThreshold</code></td><td><strong>430 px/s</strong></td><td><strong>Số quan trọng nhất của game.</strong> 900 px/s trên màn 390px CSS là <strong>2.3 chiều rộng màn hình mỗi giây</strong> — một cú <em>bung</em> tay, không phải một cú quẹt. Hậu quả: quẹt bình thường bị đọc thành <code>HOLD</code> (rút súng), và do luật khoá thì không ra dao được nữa cho tới khi nhấc tay. 430 = 1.15 chiều rộng/giây. An toàn vì cú tap được bảo vệ bằng luật NGÓN TAY ĐÃ DỪNG (mục 2d), không phải bằng ngưỡng vận tốc cao</td></tr>
 <tr><td><code>slideDetectWindow</code></td><td>300 ms</td><td>Rộng hơn cho người bắt đầu quẹt chậm rồi nhanh dần</td></tr>
-<tr><td><code>slideMinLength</code></td><td>0.12 S</td><td>Dưới ngưỡng này coi là tap</td></tr>
+<tr><td><code>slideMinLength</code></td><td>0.12 S</td><td>Quãng đường tối thiểu để tính là chém lúc <strong>nhả tay</strong></td></tr>
+<tr><td><code>slideCommitLength</code></td><td><strong>0.18 S</strong></td><td>Đi đủ xa này thì <strong>chốt</strong> thành nhát chém ngay giữa cú, không đợi nhả tay</td></tr>
+<tr><td><code>tapStillMs</code></td><td><strong>60 ms</strong></td><td>Không có cử động nào trong ngần ấy ms trước lúc nhả = ngón tay đã dừng = <strong>TAP</strong></td></tr>
 <tr><td><code>heavySlideLength</code></td><td>0.55 S</td><td></td></tr>
 <tr><td><code>meleeAngleMax</code></td><td>55°</td><td></td></tr>
 <tr><td><code>moveAngleMin</code></td><td>65°</td><td></td></tr>
@@ -954,7 +988,7 @@ HOLD_FIRE
 <tr><td>Tối đa</td><td>100 (+ talent/card)</td><td></td></tr>
 <tr><td>Hồi</td><td><strong>18 / giây</strong>, bắt đầu sau <strong>0.6s</strong> kể từ nhát cuối</td><td>Đảm bảo luôn có 1 nhát nhẹ sau ~1.4s dù cạn sạch</td></tr>
 <tr><td>Ngưỡng kiệt sức</td><td><strong>&lt; 50%</strong> → <strong>tốc độ chém x0.5</strong> (docs)</td><td>Không chặn hẳn — vẫn chém được, chỉ chậm</td></tr>
-<tr><td>Hiển thị</td><td>Hiện khi tấn công; <strong>ngừng cận chiến 2s → fade dần trong 0.5s</strong> (docs)</td><td>Không chiếm chỗ HUD khi đang bắn</td></tr>
+<tr><td>Hiển thị</td><td>Hiện <strong>suốt lúc chưa đầy</strong>, chỉ ẩn khi đã hồi đầy lại</td><td>Hồi 18/giây nên từ 0 lên đầy mất <strong>5.6s</strong>. Fade sau 2s như bản cũ là giấu đi đúng cái người chơi đang chờ (<code>18</code> lỗi #58)</td></tr>
 <tr><td>Màu</td><td>&gt; 50% vàng · &lt; 50% đỏ + nhấp nháy nhẹ + tiếng thở gấp</td><td>Dạy ngưỡng 50% không cần chữ</td></tr>
 </tbody></table></div>
 <p><strong>Vì sao ngưỡng 50% là thiết kế tốt:</strong> nó tạo ra một &quot;vách&quot; mà người chơi cảm nhận được trong ngón tay (nhát chém đột nhiên nặng nề) chứ không phải một con số. Người chơi giỏi sẽ <strong>chém 3 nhát rồi lùi 1 nhịp</strong> để giữ trên 50% — đây là nhịp (rhythm) chứ không phải spam.</p>
@@ -2873,6 +2907,11 @@ powershell -ExecutionPolicy Bypass -File .\serve_local.ps1
 </tbody></table></div>
 <div class="tw"><table>
 <thead><tr><th>55</th><th><strong>Cướp Đạn neo vào <code>magMax</code>, mà <code>magMax</code> thì nâng cấp được — nên thẻ Băng Đạn ĂN HAI LẦN.</strong> &quot;16 mạng chém = 1 băng&quot; nghe như một tỉ giá cố định, nhưng &quot;một băng&quot; không phải đơn vị cố định: thẻ Băng Đạn cộng tới <strong>+95%</strong> mỗi cấp, chồng 8 cấp. Cuối run cùng 16 mạng chém đổi được gấp nhiều lần đạn so với đầu run — thẻ đó vừa cho băng to hơn, <strong>vừa nhân số đạn cướp được</strong>. Tốc độ hồi đạn dốc lên theo build thay vì phẳng</th><th>Neo vào <strong>GIÂY BẮN</strong>, thứ không thẻ nào chạm tới: <code>bullets/kill = scavengeSecondsPerKill × rpm_GỐC / 60</code>. <code>rw.rpm</code> gốc không nâng cấp được (<code>rofMult</code> chỉ đổi <code>fireInterval</code>), nên tỉ giá <strong>phẳng suốt run</strong> và <strong>giống nhau giữa mọi khẩu</strong>. Đo: 40 mạng chém = ~12 giây bắn cho cả 4 khẩu (shotgun 10.9s · rifle 12.0s · SMG 11.9s · nỏ 11.8s), và chồng 8 thẻ Băng Đạn (mag 5 → 1045) làm số đạn cướp được đổi <strong>0</strong>. Cộng thêm: trả <strong>từng viên</strong> thay vì một cục mỗi 16 mạng — thanh đạn nhích lên đều trong lúc chém</th></tr></thead><tbody>
+</tbody></table></div>
+<div class="tw"><table>
+<thead><tr><th>56</th><th><strong>Cú tap hơi trượt tay bị nuốt thành nhát chém — &quot;tap vào mà không bắn&quot;.</strong> Máy trạng thái khoá sang <code>SLIDE</code> <strong>chỉ dựa vào vận tốc</strong>, rồi resolve theo quãng đường. Đo: ngón cái bấm nhanh trên màn 375px trôi <strong>≥ 50px là mất phát bắn</strong>, mà trôi ngần ấy là chuyện bình thường. Hạ <code>slideVelocityThreshold</code> ở lỗi #50 làm nó <strong>nặng thêm</strong>: càng nhiều cú tap vượt cổng vận tốc. Và không con số nào cứu được — ở 30ms thì 50px = 1.600 px/s, thừa vượt mọi ngưỡng hợp lý; quãng đường lẫn vận tốc <strong>đều không</strong> tách được &quot;tap trượt tay&quot; khỏi &quot;vẽ nhanh&quot;</th><th>Đổi hẳn thứ dùng để phân biệt: <strong>ngón tay đã DỪNG hay còn đang BAY lúc nhả</strong>. Tap thì dừng rồi mới nhấc; vẽ thì vẫn đang chuyển động. Thêm <code>slideCommitLength</code> 0.18S (chốt sớm giữa cú) + <code>tapStillMs</code> 60ms, và khoá sang SLIDE phải có <strong>cả</strong> vận tốc <strong>lẫn</strong> quãng đường &gt; <code>tapMaxTravel</code>. Đo lại: tap trôi 0/30/<strong>55px</strong> đều bắn; vẽ nhanh 50px+ vẫn ra dao. Nhờ đó hạ tiếp ngưỡng quẹt 520 → <strong>430</strong> mà không hy sinh cú tap</th></tr></thead><tbody>
+<tr><td>57</td><td><strong>Lối thoát khoá súng → dao NUỐT LUÔN cú chạm.</strong> Lối thoát ở lỗi #50 gọi <code>_resolveSlide()</code> ngay tại điểm thoát, nhưng lúc đó quãng đường mới ~19–25px — dưới <code>slideMinLength</code>, nên nó rơi vào nhánh <em>&quot;quá ngắn → coi là tap&quot;</em>, đặt state = <code>CONSUMED</code> và kết thúc: <strong>không bắn, cũng không chém</strong>. Tệ hơn cả trước khi có lối thoát</td><td>Lúc thoát chỉ <strong>chuyển state sang SLIDE</strong> rồi để nó chạy tiếp, không resolve tại chỗ. Kèm cờ <code>fromHoldEscape</code>: cú quẹt thoát ra từ chế độ giữ đã chứng minh ý đồ bằng vận tốc rồi, nên chốt ở <code>slideMinLength</code> chứ không phải <code>slideCommitLength</code> — nhát chém ra <strong>giữa cú vẫy</strong>, không đợi nhả tay. Ngưỡng thoát cũng hạ: 1.35× → <strong>1.15×</strong> và quãng đường 45px → <strong>19px</strong></td></tr>
+<tr><td>58</td><td><strong>Thanh stamina fade đi ĐÚNG LÚC người chơi đang chờ nó hồi.</strong> <code>showStamina()</code> đặt hẹn giờ 2s kể từ nhát chém cuối rồi ẩn — nhưng stamina hồi 18/giây, nghĩa là từ 0 lên đầy mất <strong>5.6 giây</strong>. Thanh biến mất ở giây thứ 2, giấu đi đúng cái duy nhất người chơi đang nhìn để biết bao giờ chém tiếp được</td><td>Hiện <strong>suốt lúc chưa đầy</strong>, chỉ ẩn khi đã đầy lại (trễ 0.7s cho khỏi giật). Còn đang hồi thì nó còn là thông tin</td></tr>
 </tbody></table></div>
 <blockquote><strong>Lỗi #14 và #16 đã bị chính thiết kế vượt qua.</strong> Khi chuyển sang <strong>quái đứng yên</strong>, bài toán đón đầu của <code>pincer</code> (#14) không còn ý nghĩa — không ai di chuyển để phải đón đầu, nên bộ giải đó <strong>đã bị bỏ khỏi code</strong>. Lane spring (#16) thì vẫn giữ, nhưng giờ nó chỉ chống separation làm lệch làn khi quái spawn chồng nhau, không còn phải chống lực đẩy dồn theo suốt đường đi. Ghi lại ở đây vì hai lỗi đó <strong>là lỗi thật</strong> ở thời điểm phát hiện, và vì nó cho thấy giá của việc đổi mô hình di chuyển: mọi thứ suy ra từ tốc độ quái đều phải tính lại.</blockquote>
 <p>Ngoài ra prototype xác nhận <strong>công thức số quái phải tính theo <code>composition</code></strong>, không phải <code>tpCost</code> trung bình toàn pool — lấy trung bình (có Ogre tp 8.0) cho ra con số sai gấp 3 lần. Đã ghi vào <code>16</code> mục 4.4.</p>
